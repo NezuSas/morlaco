@@ -27,6 +27,8 @@ Escribe tu esquina como se dan las direcciones en Cuenca ("Sucre y Borrero") y M
   para llamar.
 - **Qué líneas de bus pasan cerca**, cada cuánto pasan hoy y su recorrido en el mapa, y las paradas más
   cercanas.
+- **Qué bus te lleva a donde vas**: escribe el destino y te propone líneas directas, con un transbordo o ir a
+  pie, con los pasos y el tiempo estimado, y la dibuja en el mapa.
 - **Dónde está la BiciPública más cercana**, y en el mapa las ciclovías y los puntos de carga para autos
   eléctricos.
 
@@ -133,6 +135,21 @@ empresas vienen del CSV; como `agency_url` se usa la web de la EMOV, que regula 
 Para que estas rutas aparezcan en Google Maps, Google pide que el feed lo envíe el operador o la autoridad de
 transporte: este archivo puede servir de base para proponérselo a la EMOV o al municipio.
 
+## ¿Qué bus me lleva?
+
+Desde la respuesta de la página se escribe un destino y Morlaco busca, con los recorridos y las frecuencias
+del municipio:
+
+- **líneas directas**: pasan a menos de 500 m del origen y, más adelante en su recorrido (en el sentido
+  correcto), a menos de 500 m del destino;
+- **con un transbordo**, si no hay al menos dos directas: dos líneas cuyos recorridos se acercan a menos de
+  200 m;
+- **a pie**, si el destino está a menos de 1,5 km (se prefiere caminar si tarda casi lo mismo).
+
+El tiempo suma lo que se camina (4,5 km/h), lo que se va en bus (15 km/h) y la espera (media frecuencia de
+hoy). Las opciones con un bus que ya no pasa a esa hora quedan al final y lo dicen. El tranvía no tiene horario
+publicado: se remite a su web. Todo se calcula en el navegador, en milisegundos (`web/rutas.js`).
+
 ## La página web
 
 En [`web/`](web/) hay una página que usa estos datos, publicada en
@@ -232,6 +249,7 @@ web/
   manifest.webmanifest  datos para instalar la página como app
   calles.js           búsqueda de calles e intersecciones (sin DOM)
   buses.js            líneas cercanas y su frecuencia del día (sin DOM)
+  rutas.js            "¿qué bus me lleva?": directas, con transbordo o a pie (sin DOM)
   app.js              mapa, búsqueda y pintado de la respuesta
   estilos.css
 ```
@@ -241,7 +259,6 @@ regístrala en `FUENTES` de `cli.py` y añade sus pruebas.
 
 ## Próximos pasos
 
-- Responder "¿qué bus me lleva de aquí a allá?" con el GTFS.
 - Cortes de agua de ETAPA y un bot de Telegram.
 
 ## Colaborar

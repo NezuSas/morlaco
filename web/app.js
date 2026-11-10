@@ -32,6 +32,7 @@ import {
   ubicarEsquina,
 } from "./calles.js";
 import { describirDestinos, describirFrecuencia, lineasCercanas } from "./buses.js";
+import { planificar, prepararLineas } from "./rutas.js";
 import { etiquetaIdioma, idioma, idiomaInicial, listar, t, usarIdioma } from "./textos.js";
 
 const DATOS = "../datos/";
@@ -198,6 +199,7 @@ function crearMapa(zonas, alElegir) {
   const marcasParadas = L.layerGroup().addTo(mapa);
   const callesResaltadas = L.layerGroup().addTo(mapa);
   const lineaResaltada = L.layerGroup().addTo(mapa);
+  const rutaCapa = L.layerGroup().addTo(mapa);
 
   return {
     leaflet: mapa,
@@ -236,9 +238,60 @@ function crearMapa(zonas, alElegir) {
       const encuadre = principales.length ? L.geoJSON({ type: "FeatureCollection", features: principales }) : capa;
       mapa.fitBounds(encuadre.getBounds(), { padding: [30, 30], animate: !SIN_MOVIMIENTO });
     },
+    /** Dibuja una opción de "¿qué bus me lleva?": tramos a pie punteados y en bus llenos. */
+    dibujarRuta(opcion, destino) {
+      rutaCapa.clearLayers();
+      lineaResaltada.clearLayers();
+      if (!opcion) return;
+      const capas = [];
+      for (const t of opcion.tramos) {
+        if (t.modo === "caminar") {
+          if (t.metros < 5) continue;
+          capas.push(
+            L.polyline(
+              [
+                [t.desde.lat, t.desde.lon],
+                [t.hasta.lat, t.hasta.lon],
+              ],
+              { color: color("--tinta-suave"), weight: 3, dashArray: "2 7", lineCap: "round", interactive: false },
+            ),
+          );
+        } else {
+          capas.push(
+            L.polyline(
+              t.coords.map(([lon, lat]) => [lat, lon]),
+              { color: t.tipo === "tranvia" ? color("--tomebamba") : color("--cupula-hondo"), weight: 5, opacity: 0.9, interactive: false },
+            ),
+          );
+          capas.push(
+            L.marker([t.subida.lat, t.subida.lon], {
+              interactive: false,
+              keyboard: false,
+              icon: L.divIcon({
+                className: "",
+                html: `<span class="etiqueta-ruta">${t.tipo === "tranvia" ? "T" : t.linea}</span>`,
+                iconSize: [28, 22],
+                iconAnchor: [14, 11],
+              }),
+            }),
+          );
+        }
+      }
+      capas.push(
+        L.marker([destino.lat, destino.lon], {
+          interactive: false,
+          keyboard: false,
+          zIndexOffset: 900,
+          icon: L.divIcon({ className: "", html: '<span class="punto-destino"></span>', iconSize: [20, 20], iconAnchor: [10, 10] }),
+        }),
+      );
+      const grupo = L.featureGroup(capas).addTo(rutaCapa);
+      mapa.fitBounds(grupo.getBounds(), { padding: [40, 40], animate: !SIN_MOVIMIENTO });
+    },
     mostrar(punto, zona, paradas) {
       callesResaltadas.clearLayers();
       lineaResaltada.clearLayers();
+      rutaCapa.clearLayers();
       for (const { zona: z, capa } of capas.values()) {
         capa.setStyle(estilo(z, zona && z.properties.zona === zona.properties.zona, Boolean(zona)));
       }
@@ -719,6 +772,86 @@ function pintarLineas(cercanas, mapa) {
   nota.textContent = t("lineasNota");
 }
 
+// ---------- ¿Qué bus me lleva? ----------
+
+/** Los pasos de una opción, en palabras. */
+function pasosDeOpcion(opcion, paradas) {
+  const cerca = (punto) => {
+    const parada = paradas ? masCercano(punto, paradas, 250) : null;
+    return parada ? t("pasoCerca", { parada: direccionLegible(parada.ubicacion) }) : "";
+  };
+  const pasos = [];
+  const { tramos } = opcion;
+  if (opcion.tipo === "pie") return [t("pasoSoloPie", { distancia: formatoDistancia(tramos[0].metros) })];
+  tramos.forEach((tramo, i) => {
+    if (tramo.modo === "bus") {
+      const frecuencia = tramo.horario?.intervalo_min ? t("pasoFrecuencia", { minutos: tramo.horario.intervalo_min }) : "";
+      const datos = { linea: tramo.linea, hacia: tramo.hacia, distancia: formatoDistancia(tramo.metros) };
+      pasos.push((tramo.tipo === "tranvia" ? t("pasoTomarTranvia", datos) : t("pasoTomar", datos)) + frecuencia);
+      return;
+    }
+    const siguiente = tramos[i + 1];
+    const distancia = formatoDistancia(tramo.metros);
+    if (i === 0) {
+      const texto =
+        siguiente.tipo === "tranvia"
+          ? t("pasoCaminarATranvia", { distancia })
+          : t("pasoCaminarA", { distancia, linea: siguiente.linea });
+      pasos.push(texto + cerca(tramo.hasta));
+    } else if (siguiente) {
+      pasos.push(t("pasoCambiar", { distancia, linea: siguiente.linea }) + cerca(tramo.hasta));
+    } else {
+      pasos.push(t("pasoLlegar", { distancia }));
+    }
+  });
+  return pasos;
+}
+
+function pintarOpciones(opciones, destino, mapa, paradas) {
+  const lista = $("ruta-opciones");
+  const botones = [];
+  lista.replaceChildren(
+    ...opciones.map((opcion, i) => {
+      const buses = opcion.tramos.filter((tramo) => tramo.modo === "bus");
+      const insignias = buses.length
+        ? buses.map((b) =>
+            elemento("span", { class: `numero-linea${b.tipo === "tranvia" ? " tranvia" : ""}`, "aria-hidden": "true" }, b.tipo === "tranvia" ? "T" : b.linea),
+          )
+        : [elemento("span", { class: "numero-linea pie", "aria-hidden": "true" }, t("rutaPie"))];
+      const conTranvia = buses.some((b) => b.tipo === "tranvia");
+      const detalle = [
+        buses.length > 1 ? t("rutaTransbordo") : null,
+        opcion.fueraDeHorario ? t("rutaFueraHorario") : null,
+        // El municipio no publica el horario del tranvía: se remite a su web.
+        conTranvia ? t("rutaTranviaHorario") : null,
+      ]
+        .filter(Boolean)
+        .join(" · ");
+      const boton = elemento(
+        "button",
+        { type: "button", class: "opcion-ruta", "aria-pressed": i === 0 ? "true" : "false" },
+        elemento(
+          "span",
+          { class: "opcion-cabecera" },
+          elemento("strong", { class: "opcion-minutos" }, t("rutaMinutos", { n: opcion.minutos })),
+          elemento("span", { class: "opcion-insignias" }, ...insignias),
+          detalle ? elemento("span", { class: "frecuencia" }, detalle) : null,
+        ),
+        elemento("ol", { class: "opcion-pasos" }, ...pasosDeOpcion(opcion, paradas).map((paso) => elemento("li", {}, paso))),
+      );
+      boton.addEventListener("click", () => {
+        for (const b of botones) b.setAttribute("aria-pressed", "false");
+        boton.setAttribute("aria-pressed", "true");
+        mapa.dibujarRuta(opcion, destino);
+      });
+      botones.push(boton);
+      return elemento("li", {}, boton);
+    }),
+  );
+  $("ruta-nota").hidden = !opciones.length;
+  if (opciones.length) mapa.dibujarRuta(opciones[0], destino);
+}
+
 // ---------- Ubicar al usuario ----------
 
 // El índice de calles pesa unos cientos de KB: se descarga la primera vez que se busca.
@@ -870,7 +1003,14 @@ async function iniciar() {
     $("actualizado").textContent = t("actualizado", { fecha: enCuenca.format(new Date(fechas.at(-1))) });
   }
 
+  let puntoActual = null;
+  let recorridos = null;
   const elegir = (punto, origen) => {
+    puntoActual = punto;
+    $("ruta-opciones").replaceChildren();
+    $("ruta-nota").hidden = true;
+    mensaje("");
+    $("ruta-mensaje").textContent = "";
     const zona = zonaDe(punto.lon, punto.lat, zonas);
     const cercanas = paradas ? paradasCercanas(punto, paradas) : [];
     $("respuesta").hidden = false;
@@ -937,6 +1077,43 @@ async function iniciar() {
       mensaje(error.message, true);
     } finally {
       boton.disabled = false;
+    }
+  });
+
+  // ¿Qué bus me lleva? Del punto elegido al destino que se escriba.
+  $("ruta").addEventListener("submit", async (evento) => {
+    evento.preventDefault();
+    const texto = $("destino").value.trim();
+    const aviso = $("ruta-mensaje");
+    aviso.classList.remove("error");
+    if (!texto || !puntoActual || !lineas) return;
+    const boton = evento.submitter;
+    if (boton) boton.disabled = true;
+    aviso.textContent = t("rutaBuscando");
+    try {
+      const destino = await ubicarTexto(texto);
+      if (destino.error) {
+        aviso.textContent = destino.error;
+        aviso.classList.add("error");
+        $("ruta-opciones").replaceChildren();
+        return;
+      }
+      recorridos ??= prepararLineas(lineas, rutas?.rutas ?? []);
+      const opciones = planificar(puntoActual, destino.punto, recorridos);
+      if (!opciones.length) {
+        aviso.textContent = t("rutaNinguna");
+        aviso.classList.add("error");
+        $("ruta-opciones").replaceChildren();
+        $("ruta-nota").hidden = true;
+        return;
+      }
+      aviso.textContent = t("rutaDestino", { texto: destino.texto });
+      pintarOpciones(opciones, destino.punto, mapa, paradas);
+    } catch {
+      aviso.textContent = t("busquedaSinRespuesta");
+      aviso.classList.add("error");
+    } finally {
+      if (boton) boton.disabled = false;
     }
   });
 

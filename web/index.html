@@ -191,6 +191,17 @@
                 <svg class="icono" aria-hidden="true"><use href="#i-bus" /></svg>
                 <span data-t="tituloBuses">Buses cerca de ti</span>
               </h2>
+              <h3 class="subtitulo" data-t="subtituloRuta">¿Qué bus me lleva?</h3>
+              <form id="ruta" class="ruta" role="search">
+                <label for="destino" data-t="etiquetaDestino">¿A dónde vas? Escribe una esquina o un lugar</label>
+                <div class="campo">
+                  <input id="destino" name="destino" type="search" placeholder="Mall del Río" required />
+                  <button type="submit" data-t="buscarRuta">Buscar ruta</button>
+                </div>
+                <p id="ruta-mensaje" class="mensaje" role="status" aria-live="polite"></p>
+              </form>
+              <ol id="ruta-opciones" class="ruta-opciones"></ol>
+              <p id="ruta-nota" class="detalle" hidden data-t="rutaNota"></p>
               <h3 class="subtitulo" data-t="subtituloLineas">Líneas que pasan cerca</h3>
               <ul id="lineas" class="lineas"></ul>
               <p id="lineas-nota" class="detalle"></p>

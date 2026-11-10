@@ -21,6 +21,7 @@ const PRECARGA = [
   "logica.js",
   "calles.js",
   "buses.js",
+  "rutas.js",
   "textos.js",
   "icono.svg",
   "manifest.webmanifest",

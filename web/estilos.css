@@ -782,6 +782,116 @@ button.linea .metros {
   font-variant-numeric: tabular-nums;
 }
 
+/* ---------- ¿Qué bus me lleva? ---------- */
+
+.ruta {
+  margin-top: 0.5rem;
+}
+
+.ruta label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: var(--t-0);
+  color: var(--tinta-suave);
+}
+
+.ruta-opciones {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+button.opcion-ruta {
+  display: grid;
+  gap: 0.4rem;
+  width: 100%;
+  padding: 0.75rem 0.85rem;
+  border: 1.5px solid var(--linea);
+  border-radius: var(--radio-control);
+  background: var(--superficie);
+  color: var(--tinta);
+  font-weight: 400;
+  text-align: left;
+}
+
+button.opcion-ruta:hover {
+  border-color: var(--cupula);
+  background: var(--superficie);
+}
+
+button.opcion-ruta[aria-pressed="true"] {
+  border-color: var(--cupula);
+  box-shadow: inset 4px 0 0 var(--cupula);
+}
+
+.opcion-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.6rem;
+}
+
+.opcion-minutos {
+  font-size: var(--t-2);
+}
+
+.opcion-insignias {
+  display: inline-flex;
+  gap: 0.3rem;
+}
+
+.opcion-insignias .numero-linea {
+  min-width: 2rem;
+  height: 1.7rem;
+  font-size: var(--t-0);
+}
+
+.opcion-insignias .numero-linea.pie {
+  min-width: 0;
+  height: auto;
+  padding: 0.15rem 0.55rem;
+  background: transparent;
+  color: var(--tinta);
+  border: 1.5px solid var(--tinta-suave);
+  white-space: nowrap;
+}
+
+.opcion-pasos {
+  margin: 0;
+  padding-left: 1.2rem;
+  font-size: var(--t-0);
+  color: var(--tinta-suave);
+}
+
+.opcion-pasos li + li {
+  margin-top: 0.15rem;
+}
+
+.etiqueta-ruta {
+  display: grid;
+  place-items: center;
+  height: 22px;
+  min-width: 28px;
+  padding: 0 0.3rem;
+  border-radius: 6px;
+  background: var(--cupula-hondo);
+  color: var(--sobre-cupula);
+  border: 2px solid #fff;
+  font: 700 0.75rem/1 var(--letra);
+}
+
+.punto-destino {
+  display: block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--aviso);
+  border: 3px solid #fff;
+  box-shadow: 0 1px 5px rgb(0 0 0 / 0.35);
+}
+
 /* ---------- Farmacias ---------- */
 
 .farmacias-lista {
