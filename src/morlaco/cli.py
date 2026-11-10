@@ -9,7 +9,7 @@ from collections.abc import Callable, Sequence
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from morlaco import cambios, catalogo, red, revision
+from morlaco import cambios, catalogo, paginas, red, revision
 from morlaco.comun import Resultado
 from morlaco.fuentes import (
     agua,
@@ -93,6 +93,10 @@ def actualizar(
     escribir_json(ruta_estado, dict(sorted(estado.items())))
     # El catálogo no lleva fechas: solo cambia si cambia la descripción de los datos.
     catalogo.escribir_indice(salida)
+    # Las páginas para buscadores viven en web/, junto a datos/ (solo en el repositorio real).
+    web = salida.resolve().parent / "web"
+    if (web / "index.html").exists():
+        paginas.escribir(salida, web)
     return 1 if fallos else 0
 
 

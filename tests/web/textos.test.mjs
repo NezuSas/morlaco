@@ -14,11 +14,11 @@ test("los dos idiomas tienen las mismas claves", () => {
   assert.deepEqual(clavesQueFaltan(), []);
 });
 
-for (const pagina of ["index.html", "datos.html"]) {
+for (const pagina of ["index.html", "datos.html", "cartel.html"]) {
   test(`todas las claves que usa ${pagina} existen`, () => {
     const html = readFileSync(new URL(`../../web/${pagina}`, import.meta.url), "utf8");
     const claves = [...html.matchAll(/data-t(?:-html|-aria-label|-placeholder)?="(\w+)"/g)].map((m) => m[1]);
-    assert.ok(claves.length > 15, `solo ${claves.length} textos marcados`);
+    assert.ok(claves.length > 8, `solo ${claves.length} textos marcados`);
     for (const idiomaPrueba of ["es", "en"]) {
       usarIdioma(idiomaPrueba);
       for (const clave of claves) assert.doesNotThrow(() => t(clave), `falta ${idiomaPrueba}:${clave}`);

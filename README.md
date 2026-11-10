@@ -65,7 +65,9 @@ está vive en [`docs/fuentes.md`](docs/fuentes.md).
 
 Morlaco tells you what's happening today on your street in Cuenca, Ecuador: when the garbage truck comes,
 planned power and water cuts, on-duty pharmacies, nearby buses, the tram and air quality. The
-[website](https://nezusas.github.io/morlaco/web/) is available in Spanish and English.
+[website](https://nezusas.github.io/morlaco/web/) is available in Spanish and English, with simple
+[pages](https://nezusas.github.io/morlaco/web/info/en/) for each garbage zone, on-duty pharmacies and water
+cuts, and a [printable poster](https://nezusas.github.io/morlaco/web/cartel.html?lang=en) with a QR code.
 
 All the data is open: static JSON, GeoJSON, GTFS and iCalendar files at
 `https://nezusas.github.io/morlaco/datos/`, readable from any program or website (open CORS) and updated
@@ -274,6 +276,18 @@ Alegreya Sans, de Huerta Tipográfica, con licencia SIL OFL) van en [`web/fuente
 página no pide nada a servidores de terceros salvo el mapa y la calidad del aire (a la EMOV, sin enviarle tu
 ubicación: la estación más cercana se elige en tu navegador).
 
+Para quien no busca en el mapa hay **páginas simples** en [`web/info/`](web/info/) (y en inglés en
+`web/info/en/`): el horario de la basura de cada zona, las farmacias de turno de la semana y los cortes de agua
+anunciados. Son HTML fijo, sin JavaScript, para que los buscadores las encuentren ("horario de basura zona 4
+Cuenca") y lleven a la página; cada zona tiene su imagen para compartir con el horario. Las escribe
+`morlaco actualizar` con los datos del día, junto con el mapa del sitio para buscadores
+([`sitemap.xml`](sitemap.xml)). Si EMAC cambia el horario de una zona, hay que rehacer su imagen en
+`web/info/img/` (una prueba avisa si falta alguna).
+
+El [**cartel para imprimir**](https://nezusas.github.io/morlaco/web/cartel.html) lleva el código QR de la página,
+para la puerta de un edificio, una tienda o la casa comunal. Se imprime en una hoja A4, en español o en inglés,
+y si eliges una zona dice también a qué hora pasa la basura (`cartel.html?zona=4`).
+
 Se cuida la **accesibilidad**: contraste suficiente en claro y en oscuro, navegación con teclado con un
 enlace para saltar al contenido, títulos en orden para lectores de pantalla y controles de buen tamaño.
 
@@ -311,6 +325,7 @@ El workflow [`actualizar-datos.yml`](.github/workflows/actualizar-datos.yml) lo 
   `farmacias`, `tranvia` y `agua`.
 - **Los lunes a las 06:30** revisa todas y publica aunque no haya cambios, para que conste la revisión.
 - Antes de publicar pasa todas las pruebas con los datos nuevos. Si alguna falla, no publica nada.
+- Con los datos nuevos rehace las páginas simples de `web/info/` y el mapa del sitio.
 - Publica en `main` solo si algún archivo de datos cambió o si una fuente empezó a fallar o se recuperó. Eso lo
   decide `morlaco cambios`.
 - Si una fuente falla, publica el resto y la ejecución queda en rojo, así que GitHub avisa por correo.
@@ -348,6 +363,7 @@ src/morlaco/
   cli.py              comandos "morlaco actualizar" y "morlaco cambios"
   cambios.py          decide si hay algo que publicar tras actualizar
   catalogo.py         el catálogo de los datos (datos/indice.json) y su política de estabilidad
+  paginas.py          las páginas simples para buscadores (web/info/) y el mapa del sitio
   revision.py         lo que se queda viejo: farmacias que se acaban, avisos que vencen, fuentes que fallan
   fuentes/
     emac.py           zonas de recolección (KML)

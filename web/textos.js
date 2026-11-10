@@ -240,12 +240,29 @@ const TEXTOS = {
       'Datos de <a href="https://emac.gob.ec/mapa-zonas-de-recoleccion/">EMAC EP</a>, <a href="https://www.centrosur.gob.ec/suspensiones-programadas/">Centro Sur</a> y el portal <a href="https://cuencaendatos.cuenca.gob.ec">Cuenca en Datos</a> del GAD Municipal. Calles: © colaboradores de <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> (ODbL).',
     pieColaborar:
       '¿Un dato está mal o no encuentra tu esquina? Escríbenos a <a data-aviso href="mailto:nezu.ec@nezuecuador.com">nezu.ec@nezuecuador.com</a> o, si tienes cuenta de GitHub, <a href="https://github.com/NezuSas/morlaco/issues/new/choose">abre un aviso</a>. ¿Programas? <a href="https://github.com/NezuSas/morlaco/blob/main/CONTRIBUTING.md">Colabora con Morlaco</a>. Todos los datos son abiertos: <a href="datos.html">úsalos en tu app o tu investigación</a>.',
+    pieMas:
+      'Sin abrir el mapa: <a href="info/">horario de la basura por zona, farmacias de turno y cortes de agua</a>. ¿Quieres que tus vecinos lo usen? <a href="cartel.html">Imprime un cartel con el código QR</a>.',
     pieAviso:
       "Las calles se buscan en esta página; solo cuando buscas un lugar (como un parque o un centro comercial), el texto se envía a OpenStreetMap (Nominatim) para ubicarlo. La calidad del aire se pide a la web de la EMOV, sin enviarle tu ubicación.",
     sobreTitulo:
       "Sobre estos datos",
     sobreIntro:
       'Morlaco lo hace y lo mantiene <a href="https://www.nezuecuador.com/">Nezu S.A.S.</a>, en Cuenca. Junta datos públicos de varias instituciones; no es un servicio oficial. Ante cualquier duda, consulta la fuente.',
+    cartelTituloPagina: "Cartel de Morlaco para imprimir",
+    cartelVolver: "Volver a Morlaco",
+    cartelAyuda: "Para la puerta de tu edificio, tu tienda o la casa comunal. Si eliges tu zona, el cartel dice también a qué hora pasa la basura.",
+    cartelZonaEtiqueta: "Horario de la basura",
+    cartelSinZona: "Sin horario",
+    cartelImprimir: "Imprimir",
+    cartelPregunta: "¿Qué pasa hoy en tu calle?",
+    cartelEscanea: "Escanea el código con la cámara del teléfono",
+    cartelEsquina: "y escribe tu calle o tu esquina. Gratis, sin anuncios y sin instalar nada.",
+    cartelQueHay: "A qué hora pasa el recolector de basura, los cortes de luz y de agua, las farmacias de turno, los buses y el tranvía, y el aire que respiras en Cuenca.",
+    cartelZona: "Zona {zona}",
+    cartelZonaDias: "El recolector pasa {dias}, de {desde} a {hasta}.",
+    cartelZonaCeleste: "La funda celeste, con reciclables, va el {dia}.",
+    cartelOtroIdioma: "Also in English: what’s happening on your street today in Cuenca.",
+    cartelPie: "Morlaco no es un servicio oficial: usa datos públicos de Cuenca. Hecho en Cuenca por Nezu S.A.S.",
     pieAutoria: 'Hecho en Cuenca por <a href="https://www.nezuecuador.com/">Nezu S.A.S.</a> Código y datos abiertos.',
     sobreBasura:
       "<strong>Recolección.</strong> Zonas y horarios del <a href=\"https://emac.gob.ec/mapa-zonas-de-recoleccion/\">mapa de EMAC EP</a>. Si EMAC los cambia, el calendario se actualiza solo.",
@@ -630,12 +647,29 @@ const TEXTOS = {
       'Data from <a href="https://emac.gob.ec/mapa-zonas-de-recoleccion/">EMAC EP</a>, <a href="https://www.centrosur.gob.ec/suspensiones-programadas/">Centro Sur</a> and the city’s <a href="https://cuencaendatos.cuenca.gob.ec">Cuenca en Datos</a> portal. Streets: © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors (ODbL).',
     pieColaborar:
       'Is something wrong, or can’t it find your corner? Email us at <a data-aviso href="mailto:nezu.ec@nezuecuador.com">nezu.ec@nezuecuador.com</a> or, if you have a GitHub account, <a href="https://github.com/NezuSas/morlaco/issues/new/choose">open an issue</a>. Do you code? <a href="https://github.com/NezuSas/morlaco/blob/main/CONTRIBUTING.md">Help build Morlaco</a>. All the data is open: <a href="datos.html">use it in your app or research</a>.',
+    pieMas:
+      'Without the map: <a href="info/en/">garbage schedule by zone, on-duty pharmacies and water cuts</a>. Want your neighbours to use it? <a href="cartel.html">Print a poster with the QR code</a>.',
     pieAviso:
       "Streets are searched on this page; only when you search for a place (like a park or a mall) is the text sent to OpenStreetMap (Nominatim) to find it. Air quality is requested from EMOV’s website, without sending it your location.",
     sobreTitulo:
       "About this data",
     sobreIntro:
       'Morlaco is built and maintained by <a href="https://www.nezuecuador.com/">Nezu S.A.S.</a>, in Cuenca. It brings together public data from several institutions; it is not an official service. If in doubt, check the source.',
+    cartelTituloPagina: "Printable Morlaco poster",
+    cartelVolver: "Back to Morlaco",
+    cartelAyuda: "For the door of your building, your shop or your community hall. Pick your zone and the poster also shows when the garbage truck comes.",
+    cartelZonaEtiqueta: "Garbage schedule",
+    cartelSinZona: "No schedule",
+    cartelImprimir: "Print",
+    cartelPregunta: "What’s happening on your street today?",
+    cartelEscanea: "Scan the code with your phone’s camera",
+    cartelEsquina: "and type your street or your corner. Free, no ads, nothing to install.",
+    cartelQueHay: "When the garbage truck comes, power and water cuts, on-duty pharmacies, buses and the tram, and the air you breathe in Cuenca.",
+    cartelZona: "Zone {zona}",
+    cartelZonaDias: "The truck comes by on {dias}, {desde} to {hasta}.",
+    cartelZonaCeleste: "The light-blue recycling bag goes out on {dia}.",
+    cartelOtroIdioma: "También en español: qué pasa hoy en tu calle en Cuenca.",
+    cartelPie: "Morlaco is not an official service: it uses Cuenca’s public data. Made in Cuenca by Nezu S.A.S.",
     pieAutoria: 'Made in Cuenca by <a href="https://www.nezuecuador.com/">Nezu S.A.S.</a> Open code and open data.',
     sobreBasura:
       "<strong>Garbage collection.</strong> Zones and times from the <a href=\"https://emac.gob.ec/mapa-zonas-de-recoleccion/\">EMAC EP map</a>. If EMAC changes them, the calendar updates itself.",

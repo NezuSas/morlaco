@@ -18,10 +18,14 @@ from pathlib import Path
 ESTADO = "estado.json"
 
 
+# Fuera de datos/, lo que también genera la actualización: las páginas para buscadores.
+GENERADOS = ("../web/info", "../sitemap.xml")
+
+
 def archivos_cambiados(datos: Path) -> list[str]:
     """Rutas, relativas a datos/, de lo que git ve cambiado o nuevo, sin estado.json."""
     salida = subprocess.run(
-        ["git", "status", "--porcelain", "--untracked-files=all", "--", "."],
+        ["git", "status", "--porcelain", "--untracked-files=all", "--", ".", *GENERADOS],
         cwd=datos,
         capture_output=True,
         encoding="utf-8",
@@ -35,9 +39,14 @@ def archivos_cambiados(datos: Path) -> list[str]:
         check=True,
     ).stdout.strip()
     rutas = []
+    carpeta = raiz.rstrip("/")
+    padre = carpeta.rsplit("/", 1)[0] + "/" if "/" in carpeta else ""
     for linea in salida.splitlines():
         ruta = linea[3:].strip().strip('"').split(" -> ")[-1]
-        relativa = ruta.removeprefix(raiz)
+        if ruta.startswith(raiz):
+            relativa = ruta.removeprefix(raiz)
+        else:
+            relativa = "../" + ruta.removeprefix(padre)
         if relativa != ESTADO:
             rutas.append(relativa)
     return sorted(rutas)
@@ -65,6 +74,8 @@ def mensaje_commit(archivos: list[str], estado: dict, hoy: date) -> str:
     rotas = sorted(n for n, e in estado.items() if not e.get("ok"))
     if cambiadas:
         titulo = f"Datos al día ({hoy.isoformat()}): {', '.join(cambiadas)}"
+    elif any(a.startswith("../") for a in archivos):
+        titulo = f"Páginas al día ({hoy.isoformat()})"
     else:
         titulo = f"Datos revisados ({hoy.isoformat()}): sin cambios"
     cuerpo = []

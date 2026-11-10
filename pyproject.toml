@@ -40,5 +40,7 @@ select = ["E", "F", "W", "I", "B", "UP"]
 "tests/test_farmacias.py" = ["E501"]
 # El catálogo es texto para personas: cada descripción va en su línea, como se lee.
 "src/morlaco/catalogo.py" = ["E501"]
+# Los textos de las páginas para buscadores, cada uno en su línea.
+"src/morlaco/paginas.py" = ["E501"]
 # Filas de ejemplo copiadas de los CSV del portal, en una línea como en el archivo.
 "tests/test_cerca.py" = ["E501"]
