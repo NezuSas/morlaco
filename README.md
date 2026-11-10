@@ -316,6 +316,12 @@ El workflow [`actualizar-datos.yml`](.github/workflows/actualizar-datos.yml) lo 
 - Si una fuente falla, publica el resto y la ejecución queda en rojo, así que GitHub avisa por correo.
 - Si la prensa anuncia un corte de agua nuevo, abre un aviso en GitHub (etiqueta `corte-agua`) para que una
   persona lo revise; GitHub también lo manda por correo.
+- **Revisa lo que se queda viejo** con `morlaco revisar` y lo pone en un único aviso, "Datos por revisar"
+  (etiqueta `revisar-datos`), que se actualiza cada día y se cierra solo cuando todo está al día:
+  - las farmacias de turno publicadas se acaban en menos de 7 días;
+  - un cambio de línea o el aviso de feriados vence en menos de 14 días;
+  - el pasaje o los feriados llevan más de 90 días sin revisarse;
+  - una fuente sigue fallando.
 - También se puede lanzar a mano desde la pestaña *Actions*, con todas las fuentes o solo algunas.
 
 ## Desarrollo
@@ -342,6 +348,7 @@ src/morlaco/
   cli.py              comandos "morlaco actualizar" y "morlaco cambios"
   cambios.py          decide si hay algo que publicar tras actualizar
   catalogo.py         el catálogo de los datos (datos/indice.json) y su política de estabilidad
+  revision.py         lo que se queda viejo: farmacias que se acaban, avisos que vencen, fuentes que fallan
   fuentes/
     emac.py           zonas de recolección (KML)
     centrosur.py      suspensiones de luz (PDF) y cronogramas sueltos (API de WordPress)
@@ -374,8 +381,6 @@ regístrala en `FUENTES` de `cli.py` y añade sus pruebas.
 
 ## Próximos pasos
 
-- Avisar con anticipación cuando un dato mantenido a mano (pasaje, feriados, cambios de líneas) esté por
-  caducar.
 - Horarios de recolección de las parroquias rurales (EMAC solo publica la regla general).
 - Comparar el servicio de mapas del municipio (`ide.cuenca.gob.ec`) con los datos de buses actuales.
 - Un bot de Telegram o WhatsApp que responda con tu calle.

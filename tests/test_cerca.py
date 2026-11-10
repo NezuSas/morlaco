@@ -125,6 +125,7 @@ def test_obtener_junta_las_cuatro_fuentes():
     resultado = cerca.obtener(descargar)
     datos = resultado.archivos["ciudad/cerca.geojson"]
     assert resultado.resumen == {"wifi": 1, "mercados": 1, "pilas": 1, "guardia": 1}
+    assert datos["metadata"]["fuentes"]["wifi"]["fecha"] == "2026"
     assert sorted(f["properties"]["tipo"] for f in datos["features"]) == [
         "guardia",
         "mercado",

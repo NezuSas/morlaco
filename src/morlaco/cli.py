@@ -9,7 +9,7 @@ from collections.abc import Callable, Sequence
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from morlaco import cambios, catalogo, red
+from morlaco import cambios, catalogo, red, revision
 from morlaco.comun import Resultado
 from morlaco.fuentes import (
     agua,
@@ -96,6 +96,13 @@ def actualizar(
     return 1 if fallos else 0
 
 
+def revisar_datos(datos: Path) -> int:
+    """Imprime, como lista de tareas, lo que se está quedando viejo (nada si todo está al día)."""
+    hoy = revision.hoy_en_cuenca()
+    print(revision.informe(revision.revisar(datos, hoy), hoy), end="")
+    return 0
+
+
 def avisos_de_agua(datos: Path) -> int:
     """Imprime, una por línea en JSON, las notas de cortes de agua que falta revisar."""
     avisos = _leer_estado(datos / "agua" / "avisos.json")
@@ -144,7 +151,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="Lista las notas de cortes de agua que falta revisar (una por línea, JSON).",
     )
     pend.add_argument("--datos", type=Path, default=Path("datos"), help="Carpeta de datos.")
+    rev_datos = sub.add_parser(
+        "revisar",
+        help="Lista lo que se queda viejo: farmacias, avisos que vencen, fuentes que fallan.",
+    )
+    rev_datos.add_argument("--datos", type=Path, default=Path("datos"), help="Carpeta de datos.")
     args = parser.parse_args(argv)
+    if args.comando == "revisar":
+        return revisar_datos(args.datos)
     if args.comando == "avisos-agua":
         return avisos_de_agua(args.datos)
     if args.comando == "cambios":

@@ -616,7 +616,12 @@ function pintarCerca(punto, coleccion) {
       );
     }),
   );
-  nota.textContent = t("cercaNota");
+  // De cuándo es cada archivo del municipio, para que se vea si un dato es viejo.
+  const mes = new Intl.DateTimeFormat(etiquetaIdioma(), { month: "long", year: "numeric", timeZone: "UTC" });
+  const fechas = Object.entries(coleccion.metadata?.fuentes ?? {})
+    .filter(([, f]) => f.fecha)
+    .map(([clave, f]) => t("cercaFecha", { que: t("cercaFuentes")[clave] ?? clave, fecha: mes.format(new Date(`${f.fecha}T12:00:00Z`)) }));
+  nota.textContent = [t("cercaNota"), fechas.length ? t("cercaFechas", { lista: listar(fechas) }) : null].filter(Boolean).join(" ");
 }
 
 /** Los cortes de agua confirmados de hoy y de los próximos días, con su fuente. */
@@ -1360,7 +1365,7 @@ function pintarOpciones(opciones, destino, mapa, paradas, transporte) {
 }
 
 /** El pasaje vigente, bajo el buscador de rutas. */
-function pintarPasaje(tarifas) {
+function pintarPasaje(tarifas, revisado) {
   const caja = $("pasaje");
   if (!tarifas?.bus || !tarifas?.tranvia) {
     caja.hidden = true;
@@ -1377,6 +1382,7 @@ function pintarPasaje(tarifas) {
       t("pasajeBusSin", { sin: dolares(bus.sin_subsidio) }),
     ),
     elemento("p", {}, t("pasajeTranvia", { normal: dolares(tranvia.normal) })),
+    revisado ? elemento("p", { class: "detalle" }, t("revisadoEl", { fecha: fechaLarga().format(new Date(`${revisado}T12:00:00Z`)) })) : null,
   );
   caja.hidden = false;
 }
@@ -1792,7 +1798,7 @@ async function iniciar() {
     pintarParadas(cercanas);
     const cercanasLineas = lineas ? lineasCercanas(punto, lineas, rutas?.rutas ?? []) : null;
     pintarLineas(cercanasLineas, mapa, { punto, transporte, estaciones: estacionesTranvia });
-    pintarPasaje(transporte?.tarifas);
+    pintarPasaje(transporte?.tarifas, transporte?.metadata?.revisado);
     const resumen = pintarResumen({ zona, suspensiones, turnos: turnosFarmacias, cercanas: cercanasLineas });
     pintarFarmacias(turnosFarmacias, punto, (f) => resumen.farmaciaCercana(f));
     // Un corte de agua de hoy o de mañana sale también en el resumen.

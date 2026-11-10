@@ -8,6 +8,10 @@
 #
 # Si la prensa anuncia un corte de agua en Cuenca, abre un aviso (issue) para que
 # una persona lo lea y, si es real, lo copie a datos/manual/agua.json.
+#
+# Y revisa lo que se está quedando viejo (farmacias que se acaban, avisos que
+# vencen, datos a mano sin revisar, fuentes que fallan) en un aviso que se
+# actualiza cada día y se cierra solo cuando todo está al día.
 name: Actualizar datos
 
 on:
@@ -131,6 +135,27 @@ jobs:
                   check=True,
               )
           EOF
+
+      - name: Revisar lo que se queda viejo
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          morlaco revisar > "$RUNNER_TEMP/revision.md"
+          gh label create revisar-datos --color b97a12 --description "Datos que se quedan viejos" --force
+          abierto=$(gh issue list --label revisar-datos --state open --limit 1 --json number --jq '.[0].number // empty')
+          if [ -s "$RUNNER_TEMP/revision.md" ]; then
+            cat "$RUNNER_TEMP/revision.md"
+            if [ -n "$abierto" ]; then
+              gh issue edit "$abierto" --body-file "$RUNNER_TEMP/revision.md"
+            else
+              gh issue create --label revisar-datos --title "Datos por revisar" --body-file "$RUNNER_TEMP/revision.md"
+            fi
+          elif [ -n "$abierto" ]; then
+            gh issue close "$abierto" --comment "Todo está al día."
+          else
+            echo "Todo está al día."
+          fi
 
       - name: Avisar si alguna fuente falló
         if: steps.descargar.outputs.fallo == 'si'

@@ -375,7 +375,12 @@ def obtener(descargar: red.Descargador = red.descargar) -> Resultado:
         if not nuevos:
             raise ValueError(f"{clave}: ningún punto quedó ubicado en Cuenca")
         puntos += nuevos
-        fuentes[clave] = {**_metadata(paquete, recurso), "descartados": descartados}
+        fuentes[clave] = {
+            **_metadata(paquete, recurso),
+            # De cuándo es el archivo del municipio: la página lo muestra junto a los lugares.
+            "fecha": str(recurso.get("last_modified") or recurso.get("created") or "")[:10] or None,
+            "descartados": descartados,
+        }
         resumen[clave] = len(nuevos)
         if descartados:
             resumen[f"{clave}_descartados"] = descartados

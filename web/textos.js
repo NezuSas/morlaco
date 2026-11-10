@@ -91,6 +91,10 @@ const TEXTOS = {
     cercaNinguno: "No encontramos WiFi gratis, mercados, puntos para pilas ni la Guardia Ciudadana cerca de este punto.",
     cercaError: "No se pudieron cargar los lugares cercanos.",
     cercaNota: "Distancias en línea recta. Datos del portal Cuenca en Datos: confirma el horario antes de ir.",
+    cercaFuentes: { wifi: "WiFi", mercados: "mercados", pilas: "pilas", guardia: "Guardia Ciudadana" },
+    cercaFecha: "{que} ({fecha})",
+    cercaFechas: "Datos publicados por el municipio: {lista}.",
+    revisadoEl: "Revisado el {fecha}.",
     tituloAgua: "Cortes de agua",
     aguaSinCortes: "No hay cortes de agua anunciados para los próximos días.",
     aguaSinCortesNota:
@@ -477,6 +481,10 @@ const TEXTOS = {
     cercaNinguno: "We found no free WiFi, markets, battery drop-off points or City Guard posts near this point.",
     cercaError: "Nearby places couldn’t be loaded.",
     cercaNota: "Straight-line distances. Data from the Cuenca en Datos portal: check the hours before you go.",
+    cercaFuentes: { wifi: "WiFi", mercados: "markets", pilas: "batteries", guardia: "City Guard" },
+    cercaFecha: "{que} ({fecha})",
+    cercaFechas: "Data published by the city: {lista}.",
+    revisadoEl: "Checked on {fecha}.",
     tituloAgua: "Water cuts",
     aguaSinCortes: "No water cuts announced for the coming days.",
     aguaSinCortesNota:

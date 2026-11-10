@@ -11,6 +11,7 @@
         "datos": "https://cuencaendatos.cuenca.gob.ec/dataset/76ae0314-b80e-4177-8d02-f130d95fc6a0/resource/c828c1a9-9ed5-418b-8351-46cc3b3ead69/download/gadcuenca_zonaswifif_2026oc.csv",
         "archivo": "GADCuenca_ZonasWifi_2026oct.csv",
         "licencia": "No indicada en el portal",
+        "fecha": "2026-10-30",
         "descartados": 10
       },
       "mercados": {
@@ -20,6 +21,7 @@
         "datos": "https://cuencaendatos.cuenca.gob.ec/dataset/4cf73282-4aaf-4224-bf78-6712b4598ebe/resource/bec938be-87aa-452a-8752-9e3a0fefaa3b/download/gadcuenca_mercados_2025abril.csv",
         "archivo": "GADCuenca_Mercados_2025Abril.csv",
         "licencia": "Creative Commons Non-Commercial (Cualquiera)",
+        "fecha": "2025-05-06",
         "descartados": 0
       },
       "pilas": {
@@ -29,6 +31,7 @@
         "datos": "https://cuencaendatos.cuenca.gob.ec/dataset/b6bd3be3-aaea-47b2-b746-4eb7ae3caf12/resource/2a607593-78ae-4c6a-bada-e80ac0453de9/download/gadcuenca_pilasusadas_2025marzo.csv",
         "archivo": "GADCuenca_PilasUsadas_2025Marzo.csv",
         "licencia": "Creative Commons Non-Commercial (Cualquiera)",
+        "fecha": "2025-04-22",
         "descartados": 0
       },
       "guardia": {
@@ -38,6 +41,7 @@
         "datos": "https://cuencaendatos.cuenca.gob.ec/dataset/30fc3976-acd1-439b-9184-45043eec6c41/resource/1ff43998-d826-4b3e-a5e4-74c459ee9fc0/download/gadcuenca_equipamientoseguridad_2025.csv",
         "archivo": "GADCuenca_EquipamientoSeguridad_2025Junio.csv",
         "licencia": "Creative Commons Non-Commercial (Cualquiera)",
+        "fecha": "2025-06-16",
         "descartados": 0
       }
     }
