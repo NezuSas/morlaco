@@ -278,7 +278,7 @@ function crearMapa(zonas, alElegir) {
           capas.push(
             L.polyline(
               t.coords.map(([lon, lat]) => [lat, lon]),
-              { color: t.tipo === "tranvia" ? color("--tomebamba") : color("--cupula-hondo"), weight: 5, opacity: 0.9, interactive: false },
+              { color: t.tipo === "tranvia" ? color("--tranvia") : color("--cupula-hondo"), weight: 5, opacity: 0.9, interactive: false },
             ),
           );
           capas.push(
@@ -1363,8 +1363,8 @@ async function iniciar() {
     $("punto-nombre").replaceChildren(
       clave ? elemento("span", { class: "punto-lugar" }, nombreLugar(clave)) : "",
       nombreActual ?? t("puntoGuardado"),
-      z ? elemento("span", { class: "punto-zona" }, t("zonaRecoleccion", { zona: z })) : "",
     );
+    $("punto-zona").textContent = z ? t("zonaRecoleccion", { zona: z }) : t("fueraZonas");
     for (const boton of document.querySelectorAll(".lugar-boton")) {
       boton.setAttribute("aria-pressed", String(boton.dataset.lugar === clave));
     }
@@ -1419,7 +1419,9 @@ async function iniciar() {
     const cercanas = paradas ? paradasCercanas(punto, paradas) : [];
     $("respuesta").hidden = false;
     $("inicio").hidden = true;
+    // Con respuesta, el buscador se recoge tras el letrero hasta que se pida cambiar de lugar.
     document.querySelector(".consulta").classList.add("con-respuesta");
+    document.querySelector(".consulta").classList.remove("cambiando");
     pintarBasura(zona);
     pintarLuz(suspensiones);
     pintarParadas(cercanas);
@@ -1438,7 +1440,7 @@ async function iniciar() {
       // "Tu punto" ya dice dónde: el mensaje de la búsqueda sobra. Tras una acción de la
       // persona, la vista baja a la respuesta.
       mensaje("");
-      $("respuesta").scrollIntoView({ behavior: SIN_MOVIMIENTO ? "auto" : "smooth", block: "start" });
+      $("tu-punto").scrollIntoView({ behavior: SIN_MOVIMIENTO ? "auto" : "smooth", block: "start" });
     }
   };
 
@@ -1458,7 +1460,7 @@ async function iniciar() {
         // La respuesta anterior era de otro lugar: se oculta para no confundir.
         $("respuesta").hidden = true;
         $("inicio").hidden = false;
-        document.querySelector(".consulta").classList.remove("con-respuesta");
+        document.querySelector(".consulta").classList.remove("con-respuesta", "cambiando");
         if (resultado.resaltar) mapa.resaltar(resultado.resaltar);
         mensaje(resultado.error, true);
         if (resultado.reportable) {
@@ -1543,6 +1545,7 @@ async function iniciar() {
   // Navegación por secciones y fichas del resumen.
   $("respuesta").addEventListener("click", irASeccion);
   $("cambiar-punto").addEventListener("click", () => {
+    document.querySelector(".consulta").classList.add("cambiando");
     $("buscar").scrollIntoView({ behavior: SIN_MOVIMIENTO ? "auto" : "smooth", block: "center" });
     $("direccion").focus({ preventScroll: true });
     $("direccion").select();

@@ -1,74 +1,106 @@
-/* Morlaco. Paleta: el azul de las cúpulas de la Catedral Nueva, el blanco de cal de
-   las fachadas y los colores reales de las fundas de EMAC (negra y celeste). */
+/* Morlaco, como la cerámica de Cuenca: un muro de azulejo cobalto (el azul de las
+   cúpulas de la Catedral Nueva), tu calle en un letrero de cerámica como los del
+   Centro Histórico y, debajo, todo lo demás en blanco de cal, sin cajas. Los únicos
+   colores fuera del azul son reales: las fundas de EMAC (negra y celeste), el
+   verde del Tomebamba y el rojo del tranvía. */
 
 :root {
-  --cal: #f6f8f7;
-  --cal-hondo: #e9eeec;
+  /* Cal y tinta */
   --superficie: #ffffff;
-  --tinta: #1c2733;
-  --tinta-suave: #4b5866;
-  --cupula: #2d63a8;
-  --cupula-hondo: #1f4a82;
+  --cal: #f4f6f9;
+  --cal-hondo: #e8ecf2;
+  --linea: #d8dee7;
+  --tinta: #141d2e;
+  --tinta-suave: #515c6e;
+
+  /* Azul de cúpula */
+  --cupula: #1f4a96;
+  --cupula-hondo: #173872;
   --sobre-cupula: #ffffff;
-  --tarjeta: #24589a;
-  --tarjeta-hondo: #1b4378;
-  --tomebamba: #3f7d62;
+  --muro: #1d4489;
+  --muro-hondo: #142f66;
+  /* El letrero es cerámica: blanco esmaltado y letra cobalto, de día y de noche. */
+  --esmalte: #fcfcf9;
+  --cobalto: #1b3f86;
+
+  /* Colores con significado */
   --funda-negra: #24272c;
   --funda-celeste: #8ccbea;
-  --aviso: #d9961a;
-  --aviso-fondo: #fbf1dd;
-  --linea: #d5ddda;
+  --tomebamba: #2e7a57;
+  --tranvia: #b3262b;
+  --ladrillo: #a8452c;
+  --aviso: #b97a12;
+  --aviso-fondo: #fbf4e4;
+  --c-basura: var(--cupula);
+  --c-luz: var(--aviso);
+  --c-farmacias: var(--tomebamba);
+  --c-buses: var(--tinta);
 
-  --letra: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
-  /* Escala de 1,25 sobre 16 px. */
-  --t-0: 0.8rem;
-  --t-1: 1rem;
-  --t-2: 1.25rem;
-  --t-3: 1.5625rem;
-  --t-4: 1.953rem;
-  --t-5: 2.441rem;
-  --t-6: 3.052rem;
+  /* Alegreya y Alegreya Sans: una sola familia, dibujada en Argentina para leer español.
+     La Sans es estrecha y de ojo pequeño, así que el texto va un punto más grande. */
+  --letra: "Alegreya Sans", "Segoe UI", system-ui, sans-serif;
+  --serif: "Alegreya", Georgia, "Times New Roman", serif;
+  --t-0: 0.9375rem;
+  --t-1: 1.0625rem;
+  --t-2: 1.3rem;
+  --t-3: 1.6rem;
+  --t-4: 2.1rem;
 
   --radio-control: 10px;
-  --radio-tarjeta: 18px;
-  --radio-azulejo: 7px;
+  --radio-azulejo: 6px;
+  --margen: 1.125rem;
+  --alto-barra: 3.5rem;
+  --sombra-tarjeta: 0 1px 2px rgb(16 32 64 / 0.08), 0 12px 32px rgb(16 32 64 / 0.14);
+  --patron-azulejo: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='52' height='52' viewBox='0 0 44 44'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.09' stroke-width='1.1'%3E%3Cpath d='M22 4c5 6 5 12 0 18-5-6-5-12 0-18zM22 40c5-6 5-12 0-18-5 6-5 12 0 18zM4 22c6-5 12-5 18 0-6 5-12 5-18 0zM40 22c-6-5-12-5-18 0 6 5 12 5 18 0z'/%3E%3Cpath d='M0 0h44v44H0z'/%3E%3C/g%3E%3C/svg%3E");
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --cal: #10171e;
-    --cal-hondo: #18222c;
-    --superficie: #151e27;
-    --tinta: #e8eeec;
-    --tinta-suave: #a7b4bf;
-    --cupula: #6d9fe0;
-    --cupula-hondo: #9cc0ef;
-    --sobre-cupula: #0f1720;
-    --tarjeta: #1d4a85;
-    --tarjeta-hondo: #163866;
+    --superficie: #0e1524;
+    --cal: #151e31;
+    --cal-hondo: #1c2740;
+    --linea: #29354d;
+    --tinta: #e9edf5;
+    --tinta-suave: #a7b2c6;
+    --cupula: #93b8f3;
+    --cupula-hondo: #bbd3f8;
+    --sobre-cupula: #0e1524;
+    --muro: #183a78;
+    --muro-hondo: #0f2552;
+    --funda-negra: #05070a;
     --tomebamba: #6fb593;
-    --funda-negra: #0b0d10;
+    --tranvia: #e8777b;
+    --ladrillo: #e79b82;
     --aviso: #f0b546;
-    --aviso-fondo: #2b2416;
-    --linea: #29363f;
+    --aviso-fondo: #2a2314;
+    --sombra-tarjeta: 0 1px 2px rgb(0 0 0 / 0.4), 0 12px 32px rgb(0 0 0 / 0.45);
   }
 }
 :root[data-theme="dark"] {
-  --cal: #10171e;
-  --cal-hondo: #18222c;
-  --superficie: #151e27;
-  --tinta: #e8eeec;
-  --tinta-suave: #a7b4bf;
-  --cupula: #6d9fe0;
-  --cupula-hondo: #9cc0ef;
-  --sobre-cupula: #0f1720;
-  --tarjeta: #1d4a85;
-  --tarjeta-hondo: #163866;
+  --superficie: #0e1524;
+  --cal: #151e31;
+  --cal-hondo: #1c2740;
+  --linea: #29354d;
+  --tinta: #e9edf5;
+  --tinta-suave: #a7b2c6;
+  --cupula: #93b8f3;
+  --cupula-hondo: #bbd3f8;
+  --sobre-cupula: #0e1524;
+  --muro: #183a78;
+  --muro-hondo: #0f2552;
+  --funda-negra: #05070a;
   --tomebamba: #6fb593;
-  --funda-negra: #0b0d10;
+  --tranvia: #e8777b;
+  --ladrillo: #e79b82;
   --aviso: #f0b546;
-  --aviso-fondo: #2b2416;
-  --linea: #29363f;
+  --aviso-fondo: #2a2314;
+  --sombra-tarjeta: 0 1px 2px rgb(0 0 0 / 0.4), 0 12px 32px rgb(0 0 0 / 0.45);
+}
+
+@media (min-width: 900px) {
+  :root {
+    --margen: 2.5rem;
+  }
 }
 
 *,
@@ -83,16 +115,22 @@ html {
 
 body {
   margin: 0;
-  background: var(--cal);
+  background: var(--superficie);
   color: var(--tinta);
   font-family: var(--letra);
   font-size: var(--t-1);
-  line-height: 1.5;
+  line-height: 1.45;
+  font-variant-numeric: lining-nums;
 }
 
 a {
   color: var(--cupula);
-  text-underline-offset: 0.18em;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
 }
 
 :focus-visible {
@@ -102,6 +140,7 @@ a {
 
 h1,
 h2,
+h3,
 p {
   margin: 0;
 }
@@ -119,61 +158,226 @@ p {
   flex: none;
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.8;
+  stroke-width: 1.7;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
-/* ---------- Barra superior ---------- */
+.servicio-basura { --c: var(--c-basura); }
+.servicio-luz { --c: var(--c-luz); }
+.servicio-farmacias { --c: var(--c-farmacias); }
+.servicio-buses { --c: var(--c-buses); }
+
+/* ---------- Botones y campos ---------- */
+
+button {
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  border-radius: var(--radio-control);
+  padding: 0.6rem 1.15rem;
+  border: 1.5px solid var(--cupula);
+  background: var(--cupula);
+  color: var(--sobre-cupula);
+}
+
+button:hover {
+  background: var(--cupula-hondo);
+  border-color: var(--cupula-hondo);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+button.secundario {
+  padding: 0.45rem 0.9rem;
+  border-color: var(--linea);
+  background: transparent;
+  color: var(--cupula);
+}
+
+button.secundario:hover {
+  border-color: var(--cupula);
+  background: transparent;
+}
+
+/* Botones sobre el muro azul. */
+button.en-muro,
+.muro button.lugar {
+  border-color: rgb(255 255 255 / 0.4);
+  background: rgb(255 255 255 / 0.1);
+  color: #fff;
+}
+
+button.en-muro:hover,
+.muro button.lugar:hover {
+  border-color: #fff;
+  background: rgb(255 255 255 / 0.2);
+}
+
+.campo {
+  position: relative;
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.3rem;
+  border: 1.5px solid var(--linea);
+  border-radius: calc(var(--radio-control) + 3px);
+  background: var(--superficie);
+}
+
+.campo:focus-within {
+  border-color: var(--cupula);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cupula) 22%, transparent);
+}
+
+input[type="search"] {
+  flex: 1;
+  min-width: 0;
+  padding: 0.55rem 0.65rem;
+  border: 0;
+  border-radius: var(--radio-control);
+  background: transparent;
+  color: var(--tinta);
+  font: inherit;
+  font-size: 1.125rem;
+}
+
+input[type="search"]::placeholder {
+  color: var(--tinta-suave);
+  opacity: 0.85;
+}
+
+input[type="search"]:focus {
+  outline: none;
+}
+
+/* Sugerencias de calles bajo el campo. */
+.sugerencias {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 6px);
+  left: -2px;
+  right: -2px;
+  max-height: 18rem;
+  overflow-y: auto;
+  list-style: none;
+  margin: 0;
+  padding: 0.3rem;
+  border: 1px solid var(--linea);
+  border-radius: calc(var(--radio-control) + 3px);
+  background: var(--superficie);
+  box-shadow: var(--sombra-tarjeta);
+}
+
+.sugerencias li {
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--radio-control);
+  color: var(--tinta);
+  cursor: pointer;
+}
+
+.sugerencias li:hover,
+.sugerencias li[aria-selected="true"] {
+  background: var(--cal);
+  color: var(--cupula);
+}
+
+.mensaje {
+  margin-top: 0.75rem;
+  color: var(--tinta-suave);
+}
+
+.mensaje:empty {
+  display: none;
+}
+
+.mensaje.error {
+  padding: 0.75rem 0.9rem;
+  border-left: 3px solid var(--ladrillo);
+  border-radius: 0 var(--radio-control) var(--radio-control) 0;
+  background: var(--cal);
+  color: var(--tinta);
+}
+
+.detalle {
+  margin-top: 0.65rem;
+  font-size: var(--t-0);
+  color: var(--tinta-suave);
+  max-width: 62ch;
+}
+
+.aviso {
+  margin-top: 0.85rem;
+  padding: 0.8rem 1rem;
+  border-left: 3px solid var(--aviso);
+  border-radius: 0 var(--radio-control) var(--radio-control) 0;
+  background: var(--aviso-fondo);
+  max-width: 62ch;
+}
+
+/* ---------- Barra superior: del mismo azul que el muro ---------- */
 
 .barra {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.7rem 1rem;
-  background: var(--superficie);
-  border-bottom: 1px solid var(--linea);
+  min-height: var(--alto-barra);
+  padding: 0.5rem var(--margen);
+  background: var(--muro);
+  color: #fff;
 }
 
 .marca {
   display: inline-flex;
   align-items: center;
-  gap: 0.55rem;
-  color: var(--tinta);
-  font-size: var(--t-2);
+  gap: 0.6rem;
+  color: #fff;
+  font-family: var(--serif);
+  font-size: 1.5rem;
   font-weight: 700;
-  letter-spacing: -0.01em;
+  line-height: 1;
   text-decoration: none;
+}
+
+.marca img {
+  border-radius: 7px;
+  box-shadow: 0 0 0 1.5px rgb(255 255 255 / 0.35);
 }
 
 .barra-acciones {
   display: flex;
   align-items: center;
-  gap: 0.9rem;
+  gap: 1rem;
 }
 
 .enlace-datos {
+  color: #fff;
   font-size: var(--t-0);
 }
 
-/* Cambio de idioma: discreto, en la barra. */
+/* Idioma e instalar: discretos, en la barra. */
 button.idioma {
-  padding: 0.3rem 0.75rem;
-  border: 1.5px solid var(--linea);
-  border-radius: 999px;
+  padding: 0.42rem 0.85rem;
+  border-color: rgb(255 255 255 / 0.4);
   background: transparent;
-  color: var(--tinta);
+  color: #fff;
   font-size: var(--t-0);
 }
 
 button.idioma:hover {
-  border-color: var(--cupula);
-  background: transparent;
-  color: var(--cupula);
+  border-color: #fff;
+  background: rgb(255 255 255 / 0.14);
 }
 
-@media (max-width: 420px) {
+.barra :focus-visible,
+.muro :focus-visible {
+  outline-color: #fff;
+}
+
+@media (max-width: 460px) {
   .enlace-datos {
     display: none;
   }
@@ -181,7 +385,7 @@ button.idioma:hover {
 
 .sin-conexion {
   margin: 0;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem var(--margen);
   background: var(--aviso-fondo);
   border-bottom: 1px solid var(--aviso);
   font-size: var(--t-0);
@@ -204,13 +408,7 @@ button.idioma:hover {
 
 .consulta {
   order: 1;
-  padding: 1.25rem 1rem 0;
   min-width: 0;
-}
-
-.consulta > *,
-.pie > * {
-  max-width: 34rem;
 }
 
 .mapa-contenedor {
@@ -218,12 +416,12 @@ button.idioma:hover {
   position: relative;
   display: flex;
   flex-direction: column;
-  margin-top: 2rem;
+  margin-top: 2.5rem;
   border-top: 1px solid var(--linea);
 }
 
 .mapa {
-  height: 60vh;
+  height: 62vh;
   min-height: 320px;
   background: var(--cal-hondo);
 }
@@ -231,16 +429,15 @@ button.idioma:hover {
 @media (min-width: 900px) {
   .disposicion {
     display: grid;
-    grid-template-columns: minmax(24rem, 33rem) 1fr;
-    height: calc(100dvh - 3.7rem);
+    grid-template-columns: minmax(25rem, 35rem) 1fr;
+    height: calc(100dvh - var(--alto-barra));
   }
   .columna {
     display: block;
     overflow-y: auto;
     min-width: 0;
-  }
-  .consulta {
-    padding: 1.75rem 2.25rem 0;
+    scrollbar-width: thin;
+    scrollbar-color: var(--linea) transparent;
   }
   .mapa-contenedor {
     margin-top: 0;
@@ -253,191 +450,331 @@ button.idioma:hover {
   }
 }
 
-/* ---------- Portada: las cúpulas y el título ---------- */
+/* ---------- El muro: portada, buscador y letrero ---------- */
 
-.cupulas {
-  display: block;
-  width: min(15rem, 70%);
-  height: auto;
-  margin-bottom: 0.75rem;
-}
-
-/* Los colores de cada pieza van en el propio SVG: las copias hechas con <use>
-   no reciben los selectores de esta hoja. */
-.cupulas .nave {
-  fill: var(--superficie);
-  stroke: var(--tinta-suave);
-  stroke-width: 1.5;
-}
-.cupulas .suelo {
-  fill: var(--tinta-suave);
-  opacity: 0.35;
-}
-
-h1 {
-  font-size: var(--t-5);
-  line-height: 1.05;
-  letter-spacing: -0.025em;
-  max-width: 12ch;
+.muro {
+  padding: 1.5rem var(--margen) 1.75rem;
+  color: #fff;
+  background-color: var(--muro);
+  background-image:
+    linear-gradient(175deg, transparent 30%, var(--muro-hondo) 100%),
+    var(--patron-azulejo);
 }
 
 @media (min-width: 900px) {
-  h1 {
-    font-size: var(--t-6);
+  .muro {
+    padding-top: 2rem;
+    padding-bottom: 2.25rem;
   }
 }
 
-.entrada {
-  margin-top: 0.8rem;
-  color: var(--tinta-suave);
-  font-size: 1.075rem;
-  max-width: 36ch;
+/* Las cúpulas toman estos colores sobre el azul. Sus piezas llevan el color en el
+   propio SVG: las copias hechas con <use> no reciben los selectores de esta hoja. */
+.portada {
+  --superficie: rgb(255 255 255 / 0.13);
+  --tinta-suave: rgb(255 255 255 / 0.72);
+  --cupula: #8ccbea;
+  --cupula-hondo: #ffffff;
+  --funda-celeste: #ffffff;
 }
 
-/* ---------- Búsqueda ---------- */
+.cupulas {
+  display: block;
+  width: min(13.5rem, 62%);
+  height: auto;
+  margin-bottom: 1.1rem;
+}
+
+.cupulas .nave {
+  fill: rgb(255 255 255 / 0.13);
+  stroke: rgb(255 255 255 / 0.72);
+  stroke-width: 1.5;
+}
+
+.cupulas .suelo {
+  fill: #fff;
+  opacity: 0.4;
+}
+
+h1 {
+  max-width: 13ch;
+  font-family: var(--serif);
+  font-size: clamp(2.3rem, 9vw, 3.1rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.entrada {
+  margin-top: 0.9rem;
+  max-width: 38ch;
+  color: rgb(255 255 255 / 0.88);
+  font-size: 1.2rem;
+  line-height: 1.35;
+}
 
 .buscar {
-  margin-top: 1.6rem;
+  margin-top: 1.5rem;
 }
 
 .buscar label {
   display: block;
-  font-weight: 700;
   margin-bottom: 0.45rem;
-}
-
-.campo {
-  display: flex;
-  gap: 0.5rem;
-  padding: 0.35rem;
-  border: 2px solid var(--linea);
-  border-radius: calc(var(--radio-control) + 4px);
-  background: var(--superficie);
-}
-
-.campo:focus-within {
-  border-color: var(--cupula);
-}
-
-/* Sugerencias de calles bajo el campo. */
-.campo {
-  position: relative;
-}
-
-.sugerencias {
-  position: absolute;
-  z-index: 30;
-  top: calc(100% + 6px);
-  left: -2px;
-  right: -2px;
-  max-height: 18rem;
-  overflow-y: auto;
-  list-style: none;
-  margin: 0;
-  padding: 0.35rem;
-  border: 1px solid var(--linea);
-  border-radius: var(--radio-tarjeta);
-  background: var(--superficie);
-  box-shadow: var(--sombra-tarjeta);
-}
-
-.sugerencias li {
-  padding: 0.6rem 0.75rem;
-  border-radius: var(--radio-control);
-  color: var(--tinta);
-  cursor: pointer;
-}
-
-.sugerencias li:hover,
-.sugerencias li[aria-selected="true"] {
-  background: var(--cal-hondo);
-  color: var(--cupula);
-}
-
-input[type="search"] {
-  flex: 1;
-  min-width: 0;
-  padding: 0.55rem 0.6rem;
-  border: 0;
-  border-radius: var(--radio-control);
-  background: transparent;
-  color: var(--tinta);
-  font: inherit;
-  font-size: 1.075rem;
-}
-
-input[type="search"]:focus {
-  outline: none;
-}
-
-button {
-  font: inherit;
   font-weight: 700;
-  cursor: pointer;
-  border-radius: var(--radio-control);
-  padding: 0.6rem 1.15rem;
-  border: 2px solid var(--cupula);
-  background: var(--cupula);
-  color: var(--sobre-cupula);
 }
 
-button:hover {
-  background: var(--cupula-hondo);
-  border-color: var(--cupula-hondo);
+.muro .campo {
+  border-color: transparent;
+  background: #fff;
+  box-shadow: 0 1px 0 rgb(0 0 0 / 0.18), 0 10px 24px rgb(6 18 48 / 0.28);
+  --tinta: #141d2e;
+  --tinta-suave: #515c6e;
+  --superficie: #ffffff;
+  --cal: #f4f6f9;
+  --linea: #d8dee7;
+  --cupula: #1f4a96;
+  --cupula-hondo: #173872;
+  --sobre-cupula: #ffffff;
 }
 
-button:disabled {
-  opacity: 0.6;
-  cursor: progress;
-}
-
-button.secundario {
-  background: transparent;
-  color: var(--cupula);
-  padding: 0.4rem 0.8rem;
-}
-
-button.secundario:hover {
-  background: var(--cal-hondo);
+.muro .campo:focus-within {
+  box-shadow: 0 0 0 3px rgb(140 203 234 / 0.75), 0 10px 24px rgb(6 18 48 / 0.28);
 }
 
 .otras-formas {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem 0.75rem;
-  margin-top: 0.75rem;
-  color: var(--tinta-suave);
+  gap: 0.5rem 0.8rem;
+  margin-top: 0.85rem;
+  color: rgb(255 255 255 / 0.82);
+  font-size: var(--t-0);
 }
 
-.mensaje {
-  margin-top: 0.75rem;
-  color: var(--tinta-suave);
+/* "Usar mi ubicación": la forma más rápida, bien a la vista. */
+button.ubicarme {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 0.95rem 0.5rem 0.75rem;
+  font-size: var(--t-1);
 }
 
-.mensaje:empty {
+.ubicarme .icono {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+/* Tus lugares (Casa, Trabajo), junto al buscador. */
+.mis-lugares {
+  margin-top: 1.1rem;
+}
+
+.mis-lugares p {
+  margin-bottom: 0.4rem;
+  color: rgb(255 255 255 / 0.82);
+  font-size: var(--t-0);
+}
+
+.mis-lugares ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.mis-lugares li {
+  min-width: 0;
+  max-width: 100%;
+}
+
+button.lugar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  max-width: 100%;
+  padding: 0.4rem 0.85rem 0.4rem 0.65rem;
+  text-align: left;
+}
+
+button.lugar .icono {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.lugar-nombre {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 400;
+  color: rgb(255 255 255 / 0.82);
+}
+
+.muro .mensaje {
+  color: rgb(255 255 255 / 0.92);
+}
+
+.muro .mensaje.error {
+  border-left-color: #f0b546;
+  background: #fff;
+  color: #141d2e;
+}
+
+.muro .mensaje.error a {
+  color: #1f4a96;
+}
+
+/* Con respuesta, el muro deja solo el letrero; el buscador vuelve con "Cambiar de lugar". */
+.con-respuesta .portada,
+.con-respuesta:not(.cambiando) .buscar,
+.cambiando #cambiar-punto,
+.consulta:not(.con-respuesta) .tu-punto {
   display: none;
 }
 
-.mensaje.error {
-  color: var(--tinta);
+.con-respuesta .buscar {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+}
+
+.con-respuesta .mensaje {
+  margin: 0 0 1rem;
+}
+
+/* El letrero: blanco esmaltado con doble filete cobalto, como los de las esquinas
+   del Centro Histórico. */
+.tu-punto {
+  scroll-margin-top: 1.5rem;
+}
+
+.letrero {
+  padding: 1.35rem 1.5rem 1.45rem;
+  border-radius: var(--radio-azulejo);
+  background: var(--esmalte);
+  color: var(--cobalto);
+  text-align: center;
+  box-shadow:
+    inset 0 0 0 4px var(--esmalte),
+    inset 0 0 0 6px var(--cobalto),
+    inset 0 0 0 9px var(--esmalte),
+    inset 0 0 0 10px var(--cobalto),
+    0 2px 0 rgb(0 0 0 / 0.22),
+    0 14px 30px rgb(6 18 48 / 0.35);
+}
+
+.con-respuesta .letrero {
+  animation: asentar 0.4s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+
+/* Solo se mueve: si el navegador pausa la animación, el letrero se sigue leyendo. */
+@keyframes asentar {
+  from {
+    transform: translateY(8px);
+  }
+}
+
+.tu-punto-etiqueta {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.punto-nombre {
+  font-family: var(--serif);
+  font-size: clamp(1.7rem, 6.6vw, 2.15rem);
   font-weight: 700;
-  padding: 0.75rem 0.9rem;
-  border-left: 4px solid var(--cupula);
-  background: var(--cal-hondo);
-  border-radius: 0 var(--radio-control) var(--radio-control) 0;
+  line-height: 1.08;
+  font-variant-numeric: lining-nums;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+/* "Casa" o "Trabajo", sobre el nombre de la calle. */
+.punto-lugar {
+  display: block;
+  margin-bottom: 0.15rem;
+  font-family: var(--letra);
+  font-size: var(--t-0);
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.punto-zona {
+  margin-top: 0.9rem;
+  color: rgb(255 255 255 / 0.86);
+  text-align: center;
+}
+
+.punto-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem 1.25rem;
+  margin-top: 0.9rem;
+}
+
+#cambiar-punto {
+  padding: 0.45rem 0.95rem;
+}
+
+/* Guardar como Casa / Trabajo. */
+.guardar-lugar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.5rem;
+  color: rgb(255 255 255 / 0.82);
+  font-size: var(--t-0);
+}
+
+button.lugar-boton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.8rem 0.45rem 0.6rem;
+  font-size: var(--t-0);
+}
+
+button.lugar-boton[aria-pressed="true"] {
+  border-color: #fff;
+  background: #fff;
+  color: var(--cobalto);
+}
+
+.lugar-boton .icono {
+  width: 1rem;
+  height: 1rem;
 }
 
 /* ---------- Estado inicial: ejemplos y lo que vas a saber ---------- */
 
+.inicio,
+.respuesta {
+  padding: 0 var(--margen);
+}
+
+.inicio > *,
+.respuesta > *,
+.pie > * {
+  max-width: 34rem;
+}
+
 .inicio {
-  margin-top: 1.75rem;
+  margin-top: 1.5rem;
 }
 
 .ejemplos p {
-  font-size: var(--t-0);
-  color: var(--tinta-suave);
   margin-bottom: 0.5rem;
+  color: var(--tinta-suave);
+  font-size: var(--t-0);
 }
 
 .ejemplos ul {
@@ -450,9 +787,8 @@ button.secundario:hover {
 }
 
 button.ejemplo {
-  padding: 0.35rem 0.8rem;
-  border: 1.5px solid var(--linea);
-  border-radius: 999px;
+  padding: 0.38rem 0.8rem;
+  border-color: var(--linea);
   background: var(--superficie);
   color: var(--tinta);
   font-weight: 400;
@@ -464,90 +800,218 @@ button.ejemplo:hover {
   color: var(--cupula);
 }
 
-.avance {
+.servicios {
   list-style: none;
   padding: 0;
-  margin: 2rem 0 0;
+  margin: 1.75rem 0 0;
 }
 
-.avance li {
-  display: flex;
-  gap: 0.85rem;
-  align-items: flex-start;
-  padding: 0.9rem 0;
+.servicio {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.9rem;
+  align-items: start;
+  padding: 0.95rem 0;
   border-top: 1px solid var(--linea);
   color: var(--tinta-suave);
 }
 
-.avance .icono {
-  color: var(--cupula);
+.servicio .icono {
   margin-top: 0.1rem;
+  color: var(--c, var(--cupula));
 }
 
-.avance strong {
+.servicio strong {
+  display: block;
   color: var(--tinta);
+  font-family: var(--serif);
+  font-size: var(--t-2);
+  line-height: 1.25;
 }
 
-/* ---------- Respuesta ---------- */
+/* ---------- Hoy en tu calle ---------- */
 
-.respuesta {
-  margin-top: 1.5rem;
-}
-
-/* Lo memorable: la recolección como un azulejo azul, con un patrón suave de
-   baldosas y los días de la semana como fichas. */
-.basura {
-  position: relative;
-  padding: 1.35rem 1.35rem 1.25rem;
-  border-radius: var(--radio-tarjeta);
-  color: #fff;
-  background-color: var(--tarjeta);
-  background-image:
-    linear-gradient(160deg, transparent 40%, var(--tarjeta-hondo) 100%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.09' stroke-width='1.5'%3E%3Cpath d='M22 4c5 6 5 12 0 18-5-6-5-12 0-18zM22 40c5-6 5-12 0-18-5 6-5 12 0 18zM4 22c6-5 12-5 18 0-6 5-12 5-18 0zM40 22c-6-5-12-5-18 0 6 5 12 5 18 0z'/%3E%3Cpath d='M0 0h44v44H0z'/%3E%3C/g%3E%3C/svg%3E");
-}
-
-.basura h2 {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: var(--t-1);
-  font-weight: 700;
-  color: rgb(255 255 255 / 0.82);
-}
-
-.cuando {
-  margin-top: 0.6rem;
+.titulo-hoy {
+  margin-top: 1.9rem;
+  font-family: var(--serif);
   font-size: var(--t-4);
   font-weight: 700;
-  line-height: 1.12;
-  letter-spacing: -0.015em;
+  line-height: 1.1;
 }
 
-@media (min-width: 900px) {
-  .cuando {
-    font-size: var(--t-5);
-  }
+.resumen {
+  list-style: none;
+  padding: 0;
+  margin: 0.9rem 0 0;
+  border-bottom: 1px solid var(--linea);
+}
+
+/* Cada servicio en un renglón: tocarlo lleva a su sección. */
+a.ficha {
+  display: grid;
+  grid-template-columns: 7.25rem minmax(0, 1fr);
+  column-gap: 1rem;
+  padding: 0.8rem 0;
+  border-top: 1px solid var(--linea);
+  color: var(--tinta);
+  text-decoration: none;
+}
+
+.ficha-cabecera {
+  grid-row: 1 / span 2;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  color: var(--tinta-suave);
+}
+
+.ficha .icono {
+  margin-top: 0.08rem;
+  color: var(--c, var(--cupula));
+}
+
+.ficha-valor,
+.ficha-detalle {
+  grid-column: 2;
+}
+
+.ficha-valor {
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+a.ficha:hover .ficha-valor {
+  color: var(--cupula);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.ficha-detalle {
+  color: var(--tinta-suave);
+  font-size: var(--t-0);
+}
+
+.ficha-detalle:empty {
+  display: none;
+}
+
+a.ficha.con-aviso .ficha-valor {
+  color: var(--ladrillo);
+}
+
+/* La luz, en una línea, cuando Centro Sur no tiene datos al día. */
+.resumen-nota {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-top: 0.8rem;
+  color: var(--tinta-suave);
+  font-size: var(--t-0);
+}
+
+.resumen-nota .icono {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-top: 0.1rem;
+  color: var(--c-luz);
+}
+
+/* ---------- Navegación por secciones ---------- */
+
+.secciones {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  gap: 1.4rem;
+  margin: 1.5rem calc(-1 * var(--margen)) 0;
+  padding: 0 var(--margen);
+  max-width: none;
+  overflow-x: auto;
+  scrollbar-width: none;
+  background: var(--superficie);
+  border-bottom: 1px solid var(--linea);
+}
+
+.secciones a {
+  flex: none;
+  padding: 0.75rem 0 0.65rem;
+  border-bottom: 2px solid transparent;
+  color: var(--tinta-suave);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.secciones a:hover {
+  border-bottom-color: var(--cupula);
+  color: var(--cupula);
+}
+
+/* ---------- Secciones de la respuesta ---------- */
+
+.respuesta > section {
+  padding: 2rem 0 2.25rem;
+  scroll-margin-top: 3rem;
+}
+
+.respuesta > section + section {
+  border-top: 1px solid var(--linea);
+}
+
+.respuesta > section > h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--serif);
+  font-size: var(--t-3);
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.respuesta > section > h2 .icono {
+  color: var(--c, var(--cupula));
+}
+
+.subtitulo {
+  margin-top: 1.9rem;
+  font-size: var(--t-1);
+  font-weight: 700;
+}
+
+/* ---------- Basura ---------- */
+
+.cuando {
+  margin-top: 0.7rem;
+  color: var(--cupula);
+  font-family: var(--serif);
+  font-size: clamp(2rem, 8vw, 2.6rem);
+  font-weight: 700;
+  font-variant-numeric: lining-nums;
+  line-height: 1.04;
+  letter-spacing: -0.005em;
+  text-wrap: balance;
 }
 
 .cuando.ahora::before {
   content: "";
   display: inline-block;
-  width: 0.45em;
-  height: 0.45em;
-  margin-right: 0.4em;
-  vertical-align: 0.15em;
+  width: 0.36em;
+  height: 0.36em;
+  margin-right: 0.35em;
+  vertical-align: 0.16em;
   border-radius: 50%;
-  background: var(--funda-celeste);
-  box-shadow: 0 0 0 0.18em rgb(140 203 234 / 0.3);
+  background: var(--tomebamba);
+  box-shadow: 0 0 0 0.16em color-mix(in srgb, var(--tomebamba) 30%, transparent);
 }
 
+/* La semana, en siete azulejos: cobalto los días que pasa el recolector. */
 .semana {
   list-style: none;
   padding: 0;
-  margin: 1.15rem 0 0;
+  margin: 1.25rem 0 0;
   display: grid;
-  grid-template-columns: repeat(7, minmax(0, 3.1rem));
+  grid-template-columns: repeat(7, minmax(0, 3rem));
   gap: 0.4rem;
 }
 
@@ -557,16 +1021,19 @@ button.ejemplo:hover {
   display: grid;
   place-items: center;
   border-radius: var(--radio-azulejo);
-  border: 1.5px solid rgb(255 255 255 / 0.3);
-  color: rgb(255 255 255 / 0.75);
+  border: 1.5px solid var(--linea);
+  background: var(--cal);
+  color: var(--tinta-suave);
   font-weight: 700;
   overflow: hidden;
 }
 
 .azulejo.toca {
-  background: #fff;
-  border-color: #fff;
-  color: var(--tarjeta);
+  border-color: var(--muro);
+  background: var(--muro);
+  color: #fff;
+  font-weight: 700;
+  box-shadow: inset 0 0 0 2.5px var(--muro), inset 0 0 0 3.5px rgb(255 255 255 / 0.28);
 }
 
 /* El día de la funda celeste lleva una franja celeste abajo. */
@@ -574,18 +1041,22 @@ button.ejemplo:hover {
   content: "";
   position: absolute;
   inset: auto 0 0 0;
-  height: 28%;
+  height: 24%;
   background: var(--funda-celeste);
 }
 
+.azulejo.reciclaje span {
+  transform: translateY(-10%);
+}
+
 .azulejo.hoy {
-  outline: 2.5px solid var(--funda-celeste);
+  outline: 2px solid var(--tinta);
   outline-offset: 2px;
 }
 
 .fundas {
-  margin-top: 1.1rem;
-  max-width: 46ch;
+  margin-top: 1.35rem;
+  max-width: 58ch;
 }
 
 .funda-linea {
@@ -593,40 +1064,35 @@ button.ejemplo:hover {
 }
 
 .funda-linea + .funda-linea {
-  margin-top: 0.45rem;
+  margin-top: 0.5rem;
 }
 
 .funda {
   display: inline-block;
   width: 0.85em;
   height: 1em;
-  margin-right: 0.3em;
+  margin-right: 0.4em;
   vertical-align: -0.1em;
   border-radius: 0.2em 0.2em 0.35em 0.35em;
 }
 
 .funda.negra {
   background: var(--funda-negra);
-  box-shadow: 0 0 0 1.5px rgb(255 255 255 / 0.7);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--tinta) 45%, transparent);
 }
 
 .funda.celeste {
   background: var(--funda-celeste);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--cobalto) 35%, transparent);
 }
 
-.basura .detalle {
-  color: rgb(255 255 255 / 0.75);
-}
-
-/* Suscripción al calendario, dentro de la tarjeta azul. */
+/* Suscripción al calendario. */
 .calendario:empty {
   display: none;
 }
 
 .calendario {
-  margin-top: 1.1rem;
-  padding-top: 1rem;
-  border-top: 1px solid rgb(255 255 255 / 0.22);
+  margin-top: 1.5rem;
 }
 
 .calendario-titulo {
@@ -637,72 +1103,36 @@ button.ejemplo:hover {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem 0.75rem;
+  gap: 0.5rem 0.9rem;
   margin-top: 0.6rem;
 }
 
 .boton-claro {
   display: inline-block;
-  padding: 0.45rem 0.85rem;
-  border-radius: 999px;
-  background: #fff;
-  color: var(--tarjeta);
+  padding: 0.45rem 0.9rem;
+  border: 1.5px solid var(--cupula);
+  border-radius: var(--radio-control);
+  color: var(--cupula);
   font-weight: 700;
   text-decoration: none;
 }
 
 .boton-claro:hover {
-  background: var(--funda-celeste);
-  color: var(--tarjeta-hondo);
+  background: var(--cupula);
+  color: var(--sobre-cupula);
 }
 
-.enlace-claro {
-  color: #fff;
-}
-
-.basura :focus-visible {
-  outline-color: #fff;
-}
-
-.detalle {
-  margin-top: 0.65rem;
-  font-size: var(--t-0);
-  color: var(--tinta-suave);
-}
-
-.bloque {
-  padding-top: 1.4rem;
-  margin-top: 1.4rem;
-  border-top: 1px solid var(--linea);
-}
-
-.bloque h2 {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: var(--t-1);
-  font-weight: 700;
-}
-
-.bloque h2 .icono {
-  color: var(--cupula);
-}
-
-/* ---------- Luz ---------- */
-
-.aviso {
-  margin-top: 0.65rem;
-  padding: 0.85rem 1rem;
-  border-left: 4px solid var(--aviso);
-  background: var(--aviso-fondo);
-  border-radius: 0 var(--radio-control) var(--radio-control) 0;
-  max-width: 46ch;
-}
+/* ---------- Luz y farmacias ---------- */
 
 .luz-resumen {
-  margin-top: 0.5rem;
-  font-size: var(--t-2);
+  margin-top: 0.7rem;
+  max-width: 30ch;
+  font-family: var(--serif);
+  font-size: 1.4rem;
   font-weight: 700;
+  font-variant-numeric: lining-nums;
+  line-height: 1.22;
+  text-wrap: pretty;
 }
 
 .cortes {
@@ -712,7 +1142,7 @@ button.ejemplo:hover {
 }
 
 .cortes li {
-  padding: 0.6rem 0;
+  padding: 0.65rem 0;
   border-bottom: 1px solid var(--linea);
 }
 
@@ -722,22 +1152,144 @@ button.ejemplo:hover {
 }
 
 .filtro-cortes {
-  margin-top: 0.75rem;
+  margin-top: 1rem;
 }
 
 .filtro-cortes input {
   width: 100%;
-  border: 2px solid var(--linea);
+  border: 1.5px solid var(--linea);
   background: var(--superficie);
 }
 
-/* ---------- Líneas de bus ---------- */
+.filtro-cortes input:focus {
+  border-color: var(--cupula);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cupula) 22%, transparent);
+}
 
-.subtitulo {
-  margin: 1.1rem 0 0;
+.farmacias-lista {
+  list-style: none;
+  padding: 0;
+  margin: 0.75rem 0 0;
+}
+
+.farmacias-lista > li {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--linea);
+}
+
+.farmacias-lista > li.ver-mas-fila {
+  border-bottom: 0;
+}
+
+.farmacia-texto {
+  display: grid;
+  min-width: 0;
+}
+
+/* El teléfono como botón: en el móvil, un toque llama. */
+.llamar {
+  flex: none;
+  padding: 0.5rem 0.8rem;
+  border: 1.5px solid var(--linea);
+  border-radius: var(--radio-control);
   font-size: var(--t-0);
   font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.llamar:hover {
+  border-color: var(--cupula);
+}
+
+/* ---------- Buses ---------- */
+
+.ruta {
+  margin-top: 0.6rem;
+}
+
+.ruta label {
+  display: block;
+  margin-bottom: 0.45rem;
   color: var(--tinta-suave);
+  font-size: var(--t-0);
+}
+
+.ruta-opciones {
+  list-style: none;
+  padding: 0;
+  margin: 0.6rem 0 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.ruta-opciones:empty {
+  display: none;
+}
+
+button.opcion-ruta {
+  display: grid;
+  gap: 0.4rem;
+  width: 100%;
+  padding: 0.8rem 0.9rem;
+  border: 1.5px solid var(--linea);
+  background: var(--superficie);
+  color: var(--tinta);
+  font-weight: 400;
+  text-align: left;
+}
+
+button.opcion-ruta:hover {
+  border-color: var(--cupula);
+  background: var(--superficie);
+}
+
+button.opcion-ruta[aria-pressed="true"] {
+  border-color: var(--cupula);
+  background: var(--cal);
+  box-shadow: inset 3px 0 0 var(--cupula);
+}
+
+.opcion-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.6rem;
+}
+
+.opcion-minutos {
+  font-family: var(--serif);
+  font-size: 1.35rem;
+  font-variant-numeric: lining-nums;
+  line-height: 1.1;
+}
+
+.opcion-insignias {
+  display: inline-flex;
+  gap: 0.3rem;
+}
+
+.opcion-pasos {
+  margin: 0;
+  padding-left: 1.2rem;
+  color: var(--tinta-suave);
+  font-size: var(--t-0);
+}
+
+.opcion-pasos li + li {
+  margin-top: 0.15rem;
+}
+
+.pasaje p {
+  margin-top: 0.45rem;
+  max-width: 62ch;
+  color: var(--tinta-suave);
+  font-size: var(--t-0);
 }
 
 .lineas {
@@ -751,10 +1303,11 @@ button.ejemplo:hover {
 }
 
 .lineas .ver-mas-fila {
-  padding: 0.6rem 0 0.2rem;
+  padding: 0.75rem 0 0.2rem;
 }
 
-.lineas .sin-lineas {
+.lineas .sin-lineas,
+.farmacias-lista .sin-lineas {
   padding: 0.6rem 0;
   color: var(--tinta-suave);
 }
@@ -763,12 +1316,11 @@ button.linea {
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.6rem 0.4rem;
-  margin: 0 -0.4rem;
-  width: calc(100% + 0.8rem);
+  gap: 0.8rem;
+  padding: 0.7rem 0.5rem;
+  margin: 0 -0.5rem;
+  width: calc(100% + 1rem);
   border: 0;
-  border-radius: var(--radio-control);
   background: transparent;
   color: var(--tinta);
   font-weight: 400;
@@ -776,32 +1328,48 @@ button.linea {
 }
 
 button.linea:hover {
-  background: var(--cal-hondo);
+  background: var(--cal);
   border: 0;
 }
 
 button.linea[aria-pressed="true"] {
-  background: var(--cal-hondo);
-  box-shadow: inset 3px 0 0 var(--tinta);
+  background: var(--cal);
+  box-shadow: inset 3px 0 0 var(--cupula);
 }
 
 /* El número de línea como el letrero de un bus. */
 .numero-linea {
   display: grid;
   place-items: center;
-  min-width: 2.4rem;
+  min-width: 2.5rem;
   height: 2.1rem;
   padding: 0 0.45rem;
-  border-radius: 7px;
+  border-radius: var(--radio-azulejo);
   background: var(--tinta);
-  color: var(--cal);
+  color: var(--superficie);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 
 .numero-linea.tranvia {
-  background: var(--tomebamba);
+  background: var(--tranvia);
   color: #fff;
+}
+
+.opcion-insignias .numero-linea {
+  min-width: 2rem;
+  height: 1.7rem;
+  font-size: var(--t-0);
+}
+
+.opcion-insignias .numero-linea.pie {
+  min-width: 0;
+  height: auto;
+  padding: 0.15rem 0.55rem;
+  border: 1.5px solid var(--tinta-suave);
+  background: transparent;
+  color: var(--tinta);
+  white-space: nowrap;
 }
 
 .linea-texto {
@@ -819,171 +1387,32 @@ button.linea[aria-pressed="true"] {
   color: var(--tinta-suave);
 }
 
-button.linea .metros {
+.metros {
   color: var(--tinta-suave);
   font-size: var(--t-0);
   font-variant-numeric: tabular-nums;
 }
 
-/* ---------- ¿Qué bus me lleva? ---------- */
-
-.ruta {
-  margin-top: 0.5rem;
-}
-
-.ruta label {
+/* Cambio reciente de una línea, bajo su frecuencia. */
+.aviso-linea {
   display: block;
-  margin-bottom: 0.4rem;
-  font-size: var(--t-0);
-  color: var(--tinta-suave);
-}
-
-.ruta-opciones {
-  list-style: none;
-  padding: 0;
-  margin: 0.5rem 0 0;
-  display: grid;
-  gap: 0.5rem;
-}
-
-button.opcion-ruta {
-  display: grid;
-  gap: 0.4rem;
-  width: 100%;
-  padding: 0.75rem 0.85rem;
-  border: 1.5px solid var(--linea);
-  border-radius: var(--radio-control);
-  background: var(--superficie);
+  margin-top: 0.35rem;
+  padding-left: 0.6rem;
+  border-left: 2px solid var(--ladrillo);
   color: var(--tinta);
+  font-size: var(--t-0);
   font-weight: 400;
-  text-align: left;
+  white-space: normal;
 }
 
-button.opcion-ruta:hover {
-  border-color: var(--cupula);
-  background: var(--superficie);
+.aviso-linea strong {
+  color: var(--ladrillo);
 }
-
-button.opcion-ruta[aria-pressed="true"] {
-  border-color: var(--cupula);
-  box-shadow: inset 4px 0 0 var(--cupula);
-}
-
-.opcion-cabecera {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.4rem 0.6rem;
-}
-
-.opcion-minutos {
-  font-size: var(--t-2);
-}
-
-.opcion-insignias {
-  display: inline-flex;
-  gap: 0.3rem;
-}
-
-.opcion-insignias .numero-linea {
-  min-width: 2rem;
-  height: 1.7rem;
-  font-size: var(--t-0);
-}
-
-.opcion-insignias .numero-linea.pie {
-  min-width: 0;
-  height: auto;
-  padding: 0.15rem 0.55rem;
-  background: transparent;
-  color: var(--tinta);
-  border: 1.5px solid var(--tinta-suave);
-  white-space: nowrap;
-}
-
-.opcion-pasos {
-  margin: 0;
-  padding-left: 1.2rem;
-  font-size: var(--t-0);
-  color: var(--tinta-suave);
-}
-
-.opcion-pasos li + li {
-  margin-top: 0.15rem;
-}
-
-.etiqueta-ruta {
-  display: grid;
-  place-items: center;
-  height: 22px;
-  min-width: 28px;
-  padding: 0 0.3rem;
-  border-radius: 6px;
-  background: var(--cupula-hondo);
-  color: var(--sobre-cupula);
-  border: 2px solid #fff;
-  font: 700 0.75rem/1 var(--letra);
-}
-
-.punto-destino {
-  display: block;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: var(--aviso);
-  border: 3px solid #fff;
-  box-shadow: 0 1px 5px rgb(0 0 0 / 0.35);
-}
-
-/* ---------- Farmacias ---------- */
-
-.farmacias-lista {
-  list-style: none;
-  padding: 0;
-  margin: 0.75rem 0 0;
-}
-
-.farmacias-lista > li {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 0.75rem;
-  padding: 0.65rem 0;
-  border-bottom: 1px solid var(--linea);
-}
-
-.farmacias-lista > li.ver-mas-fila {
-  border-bottom: 0;
-}
-
-.farmacia-texto {
-  display: grid;
-  min-width: 0;
-}
-
-/* El teléfono como botón: en el móvil, un toque llama. */
-.llamar {
-  flex: none;
-  padding: 0.35rem 0.7rem;
-  border: 1.5px solid var(--cupula);
-  border-radius: 999px;
-  font-size: var(--t-0);
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-.llamar:hover {
-  background: var(--cal-hondo);
-}
-
-/* ---------- Paradas ---------- */
 
 .paradas {
   list-style: none;
   padding: 0;
-  margin: 0.6rem 0 0;
+  margin: 0.5rem 0 0;
   counter-reset: parada;
 }
 
@@ -992,7 +1421,7 @@ button.opcion-ruta[aria-pressed="true"] {
   grid-template-columns: auto 1fr auto;
   align-items: baseline;
   gap: 0.75rem;
-  padding: 0.6rem 0;
+  padding: 0.65rem 0;
   border-bottom: 1px solid var(--linea);
   counter-increment: parada;
 }
@@ -1005,7 +1434,7 @@ button.opcion-ruta[aria-pressed="true"] {
   width: 1.5rem;
   height: 1.5rem;
   border-radius: 50%;
-  border: 2px solid var(--tinta);
+  border: 1.5px solid var(--tinta);
   font-size: var(--t-0);
   font-weight: 700;
 }
@@ -1013,38 +1442,81 @@ button.opcion-ruta[aria-pressed="true"] {
 .paradas li.sin-numero {
   display: block;
   counter-increment: none;
+  color: var(--tinta-suave);
 }
 
 .paradas li.sin-numero::before {
   content: none;
 }
 
-.paradas .metros {
+.bici-cercana {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.5rem 0 0;
+  padding: 0.5rem 0;
+}
+
+.bici-cercana > span:last-child {
+  display: grid;
+}
+
+/* Sobre estos datos: las fuentes y sus límites, en un solo sitio. */
+.sobre-datos {
+  padding: 1.1rem 0;
+  border-top: 1px solid var(--linea);
+  border-bottom: 1px solid var(--linea);
   color: var(--tinta-suave);
-  font-variant-numeric: tabular-nums;
+  font-size: var(--t-0);
+}
+
+.sobre-datos summary {
+  cursor: pointer;
+  color: var(--tinta);
+  font-size: var(--t-1);
+  font-weight: 700;
+}
+
+.sobre-datos[open] summary {
+  margin-bottom: 0.6rem;
+}
+
+.sobre-datos ul {
+  margin: 0.6rem 0 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.sobre-datos strong {
+  color: var(--tinta);
 }
 
 /* ---------- Mapa ---------- */
 
 .leyenda {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem 1.25rem;
-  padding: 0.6rem 1rem;
-  font-size: var(--t-0);
-  color: var(--tinta-suave);
+  position: absolute;
+  left: 0.75rem;
+  bottom: 0.75rem;
+  z-index: 500;
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radio-control);
   background: var(--superficie);
-  border-top: 1px solid var(--linea);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.22);
+  color: var(--tinta);
+  font-size: var(--t-0);
+  pointer-events: none;
 }
 
 .muestra {
   display: inline-block;
-  width: 0.9rem;
-  height: 0.9rem;
-  margin-right: 0.4rem;
-  vertical-align: -0.12em;
+  width: 0.85rem;
+  height: 0.85rem;
+  margin-right: 0.45rem;
+  vertical-align: -0.1em;
   border-radius: 3px;
-  opacity: 0.8;
 }
 
 .muestra.lmv {
@@ -1060,9 +1532,15 @@ button.opcion-ruta[aria-pressed="true"] {
   font-size: var(--t-0);
 }
 
+.leaflet-bar,
+.leaflet-control-layers {
+  border: 0 !important;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.22) !important;
+}
+
 /* El mapa de OpenStreetMap atenuado a grises, para que las zonas sean lo que destaca. */
 .leaflet-tile-pane {
-  filter: grayscale(1) contrast(0.92) brightness(1.04);
+  filter: grayscale(1) contrast(0.9) brightness(1.05);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -1074,18 +1552,18 @@ button.opcion-ruta[aria-pressed="true"] {
   filter: grayscale(1) invert(1) brightness(0.82) contrast(0.95);
 }
 
-/* Número de zona sobre el mapa, como una ficha pequeña. */
+/* Número de zona sobre el mapa, como un azulejo pequeño. */
 .etiqueta-zona {
   display: grid;
   place-items: center;
   width: 30px;
   height: 30px;
-  border-radius: 8px;
+  border-radius: var(--radio-azulejo);
   background: var(--superficie);
   color: var(--tinta);
   border: 2px solid currentColor;
-  font: 700 0.85rem/1 var(--letra);
-  box-shadow: 0 1px 4px rgb(0 0 0 / 0.18);
+  font: 700 1rem/1 var(--letra);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.2);
 }
 
 .etiqueta-zona.lmv {
@@ -1104,7 +1582,7 @@ button.opcion-ruta[aria-pressed="true"] {
   background: var(--cupula);
   border: 3px solid #fff;
   box-shadow:
-    0 0 0 6px rgb(45 99 168 / 0.25),
+    0 0 0 6px color-mix(in srgb, var(--cupula) 28%, transparent),
     0 2px 6px rgb(0 0 0 / 0.3);
 }
 
@@ -1117,7 +1595,30 @@ button.opcion-ruta[aria-pressed="true"] {
   background: var(--superficie);
   color: var(--tinta);
   border: 2px solid var(--tinta);
-  font: 700 0.72rem/1 var(--letra);
+  font: 700 0.8rem/1 var(--letra);
+}
+
+.etiqueta-ruta {
+  display: grid;
+  place-items: center;
+  height: 22px;
+  min-width: 28px;
+  padding: 0 0.3rem;
+  border-radius: 6px;
+  background: var(--cupula-hondo);
+  color: var(--sobre-cupula);
+  border: 2px solid #fff;
+  font: 700 0.85rem/1 var(--letra);
+}
+
+.punto-destino {
+  display: block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--ladrillo);
+  border: 3px solid #fff;
+  box-shadow: 0 1px 5px rgb(0 0 0 / 0.35);
 }
 
 /* Capas de movilidad: marcas en el mapa, muestras en el selector y la estación cercana. */
@@ -1138,7 +1639,7 @@ button.opcion-ruta[aria-pressed="true"] {
 
 .marca-capa.carga {
   background: var(--aviso);
-  color: #1c2733;
+  color: #141d2e;
 }
 
 .muestra-capa {
@@ -1180,625 +1681,22 @@ button.opcion-ruta[aria-pressed="true"] {
   padding: 0.2rem 0;
 }
 
-.bici-cercana {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin: 0.5rem 0 0;
-  padding: 0.5rem 0;
-}
-
-.bici-cercana > span:last-child {
-  display: grid;
-}
-
 /* ---------- Pie ---------- */
 
 .pie {
   order: 3;
-  margin: 2.5rem 1rem 0;
-  padding: 1.25rem 0 1.75rem;
-  border-top: 1px solid var(--linea);
-  font-size: var(--t-0);
+  padding: 1.75rem var(--margen) 2rem;
   color: var(--tinta-suave);
-}
-
-@media (min-width: 900px) {
-  .pie {
-    margin: 2.5rem 2.25rem 0;
-  }
+  font-size: var(--t-0);
 }
 
 .pie p + p {
-  margin-top: 0.45rem;
+  margin-top: 0.5rem;
 }
 
 @media (prefers-reduced-motion: reduce) {
   * {
     transition: none !important;
     animation: none !important;
-  }
-}
-
-/* =====================================================================
-   Rediseño: banda de azulejo, buscador elevado, fichas por servicio y
-   tarjetas de sección. Cada servicio tiene su color:
-   basura (azul cúpula), luz (ámbar), farmacias (rojo), buses (pizarra).
-   ===================================================================== */
-
-:root {
-  --c-basura: var(--cupula);
-  --c-luz: #c98a10;
-  --c-farmacias: #c23b45;
-  --c-buses: #3d4d5f;
-  --sombra-tarjeta: 0 1px 2px rgb(20 40 70 / 0.06), 0 8px 24px rgb(20 40 70 / 0.08);
-  --patron-azulejo: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.1' stroke-width='1.5'%3E%3Cpath d='M22 4c5 6 5 12 0 18-5-6-5-12 0-18zM22 40c5-6 5-12 0-18-5 6-5 12 0 18zM4 22c6-5 12-5 18 0-6 5-12 5-18 0zM40 22c-6-5-12-5-18 0 6 5 12 5 18 0z'/%3E%3Cpath d='M0 0h44v44H0z'/%3E%3C/g%3E%3C/svg%3E");
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --c-luz: #f0b546;
-    --c-farmacias: #f07a83;
-    --c-buses: #a9b8c8;
-    --sombra-tarjeta: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px rgb(0 0 0 / 0.25);
-  }
-}
-:root[data-theme="dark"] {
-  --c-luz: #f0b546;
-  --c-farmacias: #f07a83;
-  --c-buses: #a9b8c8;
-  --sombra-tarjeta: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px rgb(0 0 0 / 0.25);
-}
-
-.servicio-basura { --c: var(--c-basura); }
-.servicio-luz { --c: var(--c-luz); }
-.servicio-farmacias { --c: var(--c-farmacias); }
-.servicio-buses { --c: var(--c-buses); }
-
-/* ---------- Banda de la portada ---------- */
-
-.consulta > .banda {
-  max-width: none;
-}
-
-.banda {
-  margin: -1.25rem -1rem 0;
-  padding: 1.75rem 1.25rem 4rem;
-  color: #fff;
-  background-color: var(--tarjeta);
-  background-image:
-    linear-gradient(170deg, transparent 35%, var(--tarjeta-hondo) 100%),
-    var(--patron-azulejo);
-  /* Las cúpulas toman estos colores sobre el azul. */
-  --superficie: rgb(255 255 255 / 0.14);
-  --tinta-suave: rgb(255 255 255 / 0.75);
-  --cupula: #8ccbea;
-  --cupula-hondo: #ffffff;
-  --funda-celeste: #ffffff;
-}
-
-@media (min-width: 900px) {
-  .banda {
-    margin: -1.75rem -2.25rem 0;
-    padding: 2.25rem 2.25rem 4.5rem;
-  }
-}
-
-.banda .cupulas {
-  width: min(17rem, 78%);
-  margin-bottom: 1rem;
-}
-
-.banda .cupulas .nave {
-  fill: rgb(255 255 255 / 0.14);
-  stroke: rgb(255 255 255 / 0.75);
-}
-
-.banda .cupulas .suelo {
-  fill: #fff;
-  opacity: 0.45;
-}
-
-.banda h1 {
-  color: #fff;
-  max-width: 13ch;
-}
-
-.banda .entrada {
-  color: rgb(255 255 255 / 0.85);
-}
-
-/* Con respuesta, la banda se reduce a una franja tras el buscador. */
-.con-respuesta .banda {
-  padding-top: 0.75rem;
-  padding-bottom: 3.25rem;
-}
-
-.con-respuesta .portada {
-  display: none;
-}
-
-/* ---------- Buscador elevado ---------- */
-
-.tarjeta-busqueda {
-  position: relative;
-  margin-top: -2.75rem;
-  padding: 1rem 1rem 0.85rem;
-  border-radius: var(--radio-tarjeta);
-  background: var(--superficie);
-  box-shadow: var(--sombra-tarjeta);
-}
-
-.tarjeta-busqueda .campo {
-  background: var(--cal);
-}
-
-.tarjeta-busqueda .otras-formas {
-  font-size: var(--t-0);
-}
-
-/* "Usar mi ubicación": la forma más rápida, bien a la vista. */
-button.ubicarme {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.5rem 0.95rem 0.5rem 0.75rem;
-  border-color: transparent;
-  background: color-mix(in srgb, var(--cupula) 11%, var(--superficie));
-  color: var(--cupula);
-  font-size: var(--t-1);
-}
-
-button.ubicarme:hover {
-  border-color: transparent;
-  background: color-mix(in srgb, var(--cupula) 20%, var(--superficie));
-}
-
-.ubicarme .icono {
-  width: 1.2rem;
-  height: 1.2rem;
-}
-
-/* Tus lugares (Casa, Trabajo), junto al buscador. */
-.mis-lugares {
-  margin-top: 0.85rem;
-  padding-top: 0.75rem;
-  border-top: 1px dashed var(--linea);
-}
-
-.mis-lugares p {
-  font-size: var(--t-0);
-  color: var(--tinta-suave);
-  margin-bottom: 0.4rem;
-}
-
-.mis-lugares ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-}
-
-.mis-lugares li {
-  min-width: 0;
-  max-width: 100%;
-}
-
-button.lugar {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  max-width: 100%;
-  padding: 0.4rem 0.85rem 0.4rem 0.6rem;
-  border: 1.5px solid var(--linea);
-  border-radius: 999px;
-  background: var(--superficie);
-  color: var(--tinta);
-  text-align: left;
-}
-
-button.lugar:hover {
-  border-color: var(--cupula);
-  background: var(--superficie);
-  color: var(--cupula);
-}
-
-button.lugar .icono {
-  width: 1.1rem;
-  height: 1.1rem;
-  color: var(--cupula);
-}
-
-.lugar-nombre {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-weight: 400;
-  color: var(--tinta-suave);
-}
-
-/* ---------- Lo que vas a saber ---------- */
-
-.servicios {
-  list-style: none;
-  padding: 0;
-  margin: 1.75rem 0 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(13.5rem, 1fr));
-  gap: 0.65rem;
-}
-
-.servicio {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 0.75rem;
-  align-items: start;
-  padding: 0.9rem;
-  border: 1px solid var(--linea);
-  border-radius: 14px;
-  background: var(--superficie);
-  color: var(--tinta-suave);
-  font-size: var(--t-0);
-}
-
-.servicio strong {
-  display: block;
-  margin-bottom: 0.15rem;
-  color: var(--tinta);
-  font-size: var(--t-1);
-}
-
-/* El icono de cada servicio, en un círculo de su color. */
-.servicio .icono,
-.ficha .icono,
-.tarjeta-seccion h2 .icono,
-.tu-punto .icono {
-  box-sizing: content-box;
-  width: 1.15rem;
-  height: 1.15rem;
-  padding: 0.45rem;
-  border-radius: 50%;
-  color: var(--c, var(--cupula));
-  background: color-mix(in srgb, var(--c, var(--cupula)) 14%, transparent);
-}
-
-/* ---------- Tu punto ---------- */
-
-.respuesta {
-  margin-top: 1.25rem;
-  scroll-margin-top: 0.75rem;
-}
-
-.tu-punto {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 0.9rem;
-  border-radius: 14px;
-  background: var(--superficie);
-  border: 1px solid var(--linea);
-}
-
-.tu-punto .icono {
-  --c: var(--aviso);
-  fill: none;
-}
-
-.tu-punto-texto {
-  flex: 1;
-  min-width: 0;
-}
-
-.tu-punto-etiqueta {
-  font-size: var(--t-0);
-  color: var(--tinta-suave);
-}
-
-.punto-nombre {
-  font-weight: 700;
-  overflow-wrap: anywhere;
-}
-
-.punto-lugar {
-  display: inline-block;
-  margin-right: 0.4rem;
-  padding: 0.05rem 0.5rem;
-  border-radius: 999px;
-  background: var(--cupula);
-  color: var(--sobre-cupula);
-  font-size: var(--t-0);
-  vertical-align: 0.1em;
-}
-
-/* Guardar como Casa / Trabajo. */
-.guardar-lugar {
-  flex-basis: 100%;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.4rem 0.5rem;
-  padding-top: 0.65rem;
-  border-top: 1px solid var(--linea);
-  font-size: var(--t-0);
-  color: var(--tinta-suave);
-}
-
-button.lugar-boton {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.3rem 0.75rem 0.3rem 0.55rem;
-  border: 1.5px solid var(--linea);
-  border-radius: 999px;
-  background: transparent;
-  color: var(--tinta);
-  font-size: var(--t-0);
-}
-
-button.lugar-boton:hover {
-  border-color: var(--cupula);
-  background: transparent;
-  color: var(--cupula);
-}
-
-button.lugar-boton[aria-pressed="true"] {
-  border-color: var(--cupula);
-  background: var(--cupula);
-  color: var(--sobre-cupula);
-}
-
-.tu-punto .lugar-boton .icono {
-  width: 1rem;
-  height: 1rem;
-  padding: 0;
-  background: none;
-  color: inherit;
-}
-
-.punto-zona {
-  display: block;
-  font-weight: 400;
-  font-size: var(--t-0);
-  color: var(--tinta-suave);
-}
-
-/* ---------- Hoy en tu calle ---------- */
-
-.titulo-hoy {
-  margin-top: 1.5rem;
-  font-size: var(--t-3);
-  letter-spacing: -0.01em;
-}
-
-.resumen {
-  list-style: none;
-  padding: 0;
-  margin: 0.75rem 0 0;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.6rem;
-}
-
-a.ficha {
-  display: grid;
-  gap: 0.35rem;
-  height: 100%;
-  padding: 0.85rem;
-  border-radius: 14px;
-  border: 1px solid color-mix(in srgb, var(--c) 28%, var(--linea));
-  background: color-mix(in srgb, var(--c) 7%, var(--superficie));
-  color: var(--tinta);
-  text-decoration: none;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-a.ficha:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--sombra-tarjeta);
-}
-
-a.ficha.con-aviso {
-  border-color: var(--c-luz);
-}
-
-.ficha-cabecera {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: var(--t-0);
-  font-weight: 700;
-  color: var(--tinta-suave);
-}
-
-.ficha .icono {
-  width: 0.95rem;
-  height: 0.95rem;
-  padding: 0.35rem;
-}
-
-.ficha-valor {
-  font-size: 1.075rem;
-  line-height: 1.25;
-}
-
-.ficha-detalle {
-  font-size: var(--t-0);
-  color: var(--tinta-suave);
-}
-
-.ficha-detalle:empty {
-  display: none;
-}
-
-.resumen > .ficha-ancha {
-  grid-column: 1 / -1;
-}
-
-/* La luz, en una línea, cuando Centro Sur no tiene datos al día. */
-.resumen-nota {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-  margin-top: 0.65rem;
-  font-size: var(--t-0);
-  color: var(--tinta-suave);
-}
-
-.resumen-nota .icono {
-  width: 1rem;
-  height: 1rem;
-  margin-top: 0.1rem;
-  color: var(--c-luz);
-}
-
-/* Cambio reciente de una línea, bajo su frecuencia. */
-.aviso-linea {
-  display: block;
-  margin-top: 0.3rem;
-  padding: 0.3rem 0.5rem;
-  border-left: 3px solid var(--aviso);
-  border-radius: 0 6px 6px 0;
-  background: var(--aviso-fondo);
-  color: var(--tinta);
-  font-size: var(--t-0);
-  font-weight: 400;
-  white-space: normal;
-}
-
-.pasaje p {
-  margin-top: 0.4rem;
-  font-size: var(--t-0);
-  color: var(--tinta-suave);
-}
-
-/* Sobre estos datos: las fuentes y sus límites, en un solo sitio. */
-.sobre-datos {
-  margin-top: 1.25rem;
-  padding: 0.85rem 1rem;
-  border: 1px solid var(--linea);
-  border-radius: 14px;
-  background: var(--superficie);
-  font-size: var(--t-0);
-  color: var(--tinta-suave);
-}
-
-.sobre-datos summary {
-  cursor: pointer;
-  font-size: var(--t-1);
-  font-weight: 700;
-  color: var(--tinta);
-}
-
-.sobre-datos[open] summary {
-  margin-bottom: 0.5rem;
-}
-
-.sobre-datos ul {
-  margin: 0.6rem 0 0;
-  padding-left: 1.1rem;
-  display: grid;
-  gap: 0.5rem;
-}
-
-.sobre-datos strong {
-  color: var(--tinta);
-}
-
-/* ---------- Navegación por secciones ---------- */
-
-.secciones {
-  position: sticky;
-  top: 0;
-  z-index: 5;
-  display: flex;
-  gap: 0.4rem;
-  margin: 1.25rem -0.25rem 0;
-  padding: 0.6rem 0.25rem;
-  overflow-x: auto;
-  scrollbar-width: none;
-  background: var(--cal);
-  border-bottom: 1px solid var(--linea);
-}
-
-.secciones a {
-  flex: none;
-  padding: 0.35rem 0.8rem;
-  border-radius: 999px;
-  border: 1.5px solid color-mix(in srgb, var(--c) 40%, var(--linea));
-  color: var(--tinta);
-  font-size: var(--t-0);
-  font-weight: 700;
-  text-decoration: none;
-}
-
-.secciones a:hover {
-  background: color-mix(in srgb, var(--c) 12%, transparent);
-}
-
-/* Las secciones quedan visibles bajo la navegación fija al saltar a ellas. */
-#s-basura,
-.tarjeta-seccion {
-  scroll-margin-top: 3.75rem;
-}
-
-/* ---------- Tarjetas de sección ---------- */
-
-.respuesta .basura {
-  margin-top: 1rem;
-}
-
-.tarjeta-seccion {
-  margin-top: 1rem;
-  padding: 1.15rem 1.15rem 1.25rem;
-  border-radius: var(--radio-tarjeta);
-  border: 1px solid var(--linea);
-  border-top: 4px solid var(--c);
-  background: var(--superficie);
-  box-shadow: var(--sombra-tarjeta);
-}
-
-.tarjeta-seccion h2 {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  font-size: var(--t-2);
-}
-
-.tarjeta-seccion .aviso {
-  background: color-mix(in srgb, var(--c-luz) 12%, var(--superficie));
-  border-left-color: var(--c-luz);
-}
-
-.tarjeta-seccion input[type="search"] {
-  background: var(--cal);
-}
-
-.pie {
-  margin-top: 1.75rem;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  a.ficha:hover {
-    transform: none;
-  }
-}
-
-/* El título de la banda, más contenido para que el buscador quede a la vista. */
-.banda h1 {
-  font-size: var(--t-5);
-  max-width: 15ch;
-}
-
-.banda .cupulas {
-  width: min(15rem, 70%);
-}
-
-@media (min-width: 900px) {
-  .banda h1 {
-    font-size: 2.6rem;
   }
 }

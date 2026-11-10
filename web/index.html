@@ -9,7 +9,7 @@
       content="Cuándo pasa el recolector de basura, si hay cortes de luz programados y qué paradas de bus tienes cerca, en Cuenca, Ecuador."
     />
     <meta name="color-scheme" content="light dark" />
-    <meta name="theme-color" content="#2d63a8" />
+    <meta name="theme-color" content="#1d4489" />
     <!-- Vista previa al compartir el enlace (WhatsApp, Facebook, X, Telegram). -->
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="es_EC" />
@@ -36,7 +36,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Alegreya:wght@500..800&family=Alegreya+Sans:wght@400;500;700&display=swap"
       crossorigin="anonymous"
     />
     <link
@@ -96,7 +96,7 @@
     <main class="disposicion">
       <div class="columna">
         <section class="consulta" aria-labelledby="titulo">
-          <div class="banda">
+          <div class="muro">
           <div class="portada">
             <!-- Las tres cúpulas de la Catedral Nueva de Cuenca. -->
             <svg class="cupulas" viewBox="0 0 320 100" aria-hidden="true" focusable="false">
@@ -123,9 +123,8 @@
               cerca, en Cuenca.
             </p>
           </div>
-          </div>
 
-          <form id="buscar" class="buscar tarjeta-busqueda" role="search">
+          <form id="buscar" class="buscar" role="search">
             <label for="direccion" data-t="etiquetaBusqueda">Tu esquina o un lugar conocido</label>
             <div class="campo">
               <input
@@ -144,7 +143,7 @@
               <ul id="sug-direccion" class="sugerencias" role="listbox" hidden data-t-aria-label="sugerenciasCalles" aria-label="Calles sugeridas"></ul>
             </div>
             <div class="otras-formas">
-              <button type="button" id="ubicarme" class="ubicarme">
+              <button type="button" id="ubicarme" class="ubicarme en-muro">
                 <svg class="icono" aria-hidden="true"><use href="#i-ubicar" /></svg>
                 <span data-t="ubicarme">Usar mi ubicación</span>
               </button>
@@ -154,8 +153,32 @@
               <p id="t-mis-lugares" data-t="tusLugares">Tus lugares</p>
               <ul aria-labelledby="t-mis-lugares"></ul>
             </div>
-            <p id="mensaje" class="mensaje" role="status" aria-live="polite"></p>
           </form>
+          <p id="mensaje" class="mensaje" role="status" aria-live="polite"></p>
+
+          <!-- Tu calle, en un letrero de cerámica como los del Centro Histórico. -->
+          <div id="tu-punto" class="tu-punto">
+            <div class="letrero">
+              <p class="tu-punto-etiqueta" data-t="tuPunto">Tu punto</p>
+              <p id="punto-nombre" class="punto-nombre" aria-live="polite"></p>
+            </div>
+            <p id="punto-zona" class="punto-zona"></p>
+            <div class="punto-acciones">
+              <button type="button" id="cambiar-punto" class="en-muro" data-t="cambiarPunto">Cambiar de lugar</button>
+              <div class="guardar-lugar" role="group" aria-labelledby="t-guardar-como">
+                <span id="t-guardar-como" data-t="guardarComo">Guardar como</span>
+                <button type="button" class="lugar-boton en-muro" data-lugar="casa" aria-pressed="false">
+                  <svg class="icono" aria-hidden="true"><use href="#i-casa" /></svg>
+                  <span data-t="lugarCasa">Casa</span>
+                </button>
+                <button type="button" class="lugar-boton en-muro" data-lugar="trabajo" aria-pressed="false">
+                  <svg class="icono" aria-hidden="true"><use href="#i-maletin" /></svg>
+                  <span data-t="lugarTrabajo">Trabajo</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          </div>
 
           <div id="inicio" class="inicio">
             <div class="ejemplos">
@@ -188,26 +211,6 @@
           </div>
 
           <div id="respuesta" class="respuesta" hidden>
-            <div class="tu-punto">
-              <svg class="icono" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0C18.5 15.4 12 21 12 21z" /><circle cx="12" cy="10" r="2.3" /></svg>
-              <div class="tu-punto-texto">
-                <p class="tu-punto-etiqueta" data-t="tuPunto">Tu punto</p>
-                <p id="punto-nombre" class="punto-nombre" aria-live="polite"></p>
-              </div>
-              <button type="button" id="cambiar-punto" class="secundario" data-t="cambiarPunto">Cambiar</button>
-              <div class="guardar-lugar" role="group" aria-labelledby="t-guardar-como">
-                <span id="t-guardar-como" data-t="guardarComo">Guardar como</span>
-                <button type="button" class="lugar-boton" data-lugar="casa" aria-pressed="false">
-                  <svg class="icono" aria-hidden="true"><use href="#i-casa" /></svg>
-                  <span data-t="lugarCasa">Casa</span>
-                </button>
-                <button type="button" class="lugar-boton" data-lugar="trabajo" aria-pressed="false">
-                  <svg class="icono" aria-hidden="true"><use href="#i-maletin" /></svg>
-                  <span data-t="lugarTrabajo">Trabajo</span>
-                </button>
-              </div>
-            </div>
-
             <h2 class="titulo-hoy" data-t="hoyEnTuCalle">Hoy en tu calle</h2>
             <ul id="resumen" class="resumen"></ul>
             <p id="resumen-nota" class="resumen-nota" hidden></p>

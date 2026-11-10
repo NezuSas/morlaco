@@ -31,7 +31,7 @@ const TEXTOS = {
     avanceFarmacias:
       "<strong>Farmacias de turno.</strong> Las que abren las 24 horas esta semana, la más cercana primero.",
     tuPunto: "Tu punto",
-    cambiarPunto: "Cambiar",
+    cambiarPunto: "Cambiar de lugar",
     hoyEnTuCalle: "Hoy en tu calle",
     seccionesAria: "Secciones de la respuesta",
     navBasura: "Basura",
@@ -272,7 +272,7 @@ const TEXTOS = {
     avanceFarmacias:
       "<strong>Pharmacies on duty.</strong> Those open 24 hours this week, closest first.",
     tuPunto: "Your spot",
-    cambiarPunto: "Change",
+    cambiarPunto: "Change place",
     hoyEnTuCalle: "Today on your street",
     seccionesAria: "Answer sections",
     navBasura: "Garbage",
