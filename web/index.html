@@ -42,14 +42,14 @@
         </p>
 
         <form id="buscar" class="buscar" role="search">
-          <label for="direccion">Tu dirección o barrio</label>
+          <label for="direccion">Tu esquina o un lugar conocido</label>
           <div class="campo">
             <input
               id="direccion"
               name="direccion"
               type="search"
               autocomplete="street-address"
-              placeholder="Av. Solano y Remigio Crespo"
+              placeholder="Sucre y Borrero"
               required
             />
             <button type="submit">Buscar</button>
@@ -96,12 +96,14 @@
       <p>
         Datos de <a href="https://emac.gob.ec/mapa-zonas-de-recoleccion/">EMAC EP</a>,
         <a href="https://www.centrosur.gob.ec/suspensiones-programadas/">Centro Sur</a> y el portal
-        <a href="https://cuencaendatos.cuenca.gob.ec">Cuenca en Datos</a> del GAD Municipal.
+        <a href="https://cuencaendatos.cuenca.gob.ec">Cuenca en Datos</a> del GAD Municipal. Calles:
+        © colaboradores de <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> (ODbL).
         <span id="actualizado"></span>
       </p>
       <p>
-        Morlaco no es un servicio oficial. Ante cualquier duda, consulta la fuente. Las direcciones
-        que buscas se envían a OpenStreetMap (Nominatim) para ubicarlas en el mapa.
+        Morlaco no es un servicio oficial. Ante cualquier duda, consulta la fuente. Las calles se
+        buscan en esta página; solo cuando buscas un lugar (como un parque o un centro comercial), el
+        texto se envía a OpenStreetMap (Nominatim) para ubicarlo.
       </p>
     </footer>
 

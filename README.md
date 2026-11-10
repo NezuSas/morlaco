@@ -22,6 +22,7 @@ mira cuándo pasa el recolector, si hay cortes de luz programados y qué paradas
 | [`datos/buses/rutas.json`](datos/buses/rutas.json) | Líneas de bus con compañía, origen, destino, horario e intervalo entre buses (lunes a viernes, sábados, domingos) | [Cuenca en Datos](https://cuencaendatos.cuenca.gob.ec/dataset/f15c8808-0d12-4f97-bfd4-3b2f85ea84d1) |
 | [`datos/buses/recorridos.json`](datos/buses/recorridos.json) | Puntos por los que pasa cada línea, en orden, de ida y de retorno | [Cuenca en Datos](https://cuencaendatos.cuenca.gob.ec/dataset/4c727738-890e-445c-9b20-32df271db766) |
 | [`datos/buses/paradas.geojson`](datos/buses/paradas.geojson) | Paradas de bus con coordenadas corregidas y si tienen señal (paleta) | [Cuenca en Datos](https://cuencaendatos.cuenca.gob.ec/dataset/d98292ca-7c70-422a-ac6f-1b43194ff5ba) |
+| [`datos/calles/calles.geojson`](datos/calles/calles.geojson) | Las calles de Cuenca con nombre (unas 2.800), con su trazado simplificado y sus nombres alternativos, para buscar direcciones e intersecciones | [OpenStreetMap](https://www.openstreetmap.org) |
 | [`datos/estado.json`](datos/estado.json) | Cuándo se actualizó cada fuente por última vez y si hubo errores | — |
 
 Todos los archivos se pueden descargar directamente desde
@@ -55,6 +56,9 @@ Parque Calderón está en la zona 4.
 - **Buses (municipio).** Se toma siempre el CSV más reciente del portal. En el CSV de paradas las coordenadas
   vienen mal formateadas (`-2.895.956` en vez de `-2.895956`); Morlaco las corrige y descarta las que caen
   fuera de Cuenca (`metadata.descartadas`). No hay posiciones de buses en tiempo real: no son públicas.
+- **Calles (OpenStreetMap).** Se descargan con la API Overpass todas las vías con nombre de la ciudad, se
+  agrupan por nombre y se simplifica su trazado con 4 m de tolerancia. Overpass a veces está saturado; si
+  falla, basta con volver a correr `morlaco actualizar calles`.
 - **Cortes de agua (ETAPA).** Todavía no están. ETAPA los anuncia en redes sociales y en prensa, no en un
   formato que se pueda leer de forma fiable.
 
@@ -66,6 +70,13 @@ el mapa, y te dice cuándo pasa el recolector (y si toca funda celeste), si hay 
 qué paradas de bus tienes cerca. El punto elegido queda en la dirección de la página
 (`web/#-2.89733,-79.00454`), así que se puede compartir.
 
+Las direcciones se escriben como se dan en Cuenca, con dos calles que se cruzan: "Sucre y Borrero",
+"Av. Solano y Remigio Crespo", "Bolívar esquina Benigno Malo". La búsqueda se hace dentro de la página con el
+índice de calles: no importan las tildes ni las mayúsculas, tolera una letra de más o de menos y entre calles
+con nombre parecido elige la que de verdad cruza a la otra. Si escribes una sola calle larga, la marca en el
+mapa y te pide la calle que la cruza. Solo cuando lo escrito no es una calle (un parque, un centro
+comercial) se pregunta a Nominatim de OpenStreetMap.
+
 Para verla en tu computadora, sirve la carpeta del proyecto (no solo `web/`, porque lee los datos de
 `datos/`) y abre <http://127.0.0.1:8765/web/>:
 
@@ -73,9 +84,9 @@ Para verla en tu computadora, sirve la carpeta del proyecto (no solo `web/`, por
 .venv/Scripts/python -m http.server 8765 --bind 127.0.0.1
 ```
 
-Usa [Leaflet](https://leafletjs.com) y los mapas de OpenStreetMap. Las direcciones se ubican con
-[Nominatim](https://nominatim.org) de OpenStreetMap, limitado a la ciudad de Cuenca; la página lo avisa al
-pie. No usa cookies ni analítica: solo recuerda en el navegador el último punto elegido.
+Usa [Leaflet](https://leafletjs.com) y los mapas de OpenStreetMap. Los lugares que no son calles se ubican
+con [Nominatim](https://nominatim.org), limitado a la ciudad de Cuenca; la página lo avisa al pie. No usa
+cookies ni analítica: solo recuerda en el navegador el último punto elegido.
 
 ## Uso
 
@@ -92,7 +103,7 @@ Actualizar todos los datos (escribe en `datos/`):
 .venv/Scripts/python -m morlaco actualizar
 ```
 
-O solo algunas fuentes: `recoleccion`, `luz`, `buses`.
+O solo algunas fuentes: `recoleccion`, `luz`, `buses`, `calles`.
 
 ```bash
 .venv/Scripts/python -m morlaco actualizar recoleccion buses
@@ -112,8 +123,8 @@ node --test "tests/web/*.test.mjs"
 ```
 
 Las pruebas no usan la red: el parseo de cada fuente son funciones puras que se prueban con ejemplos (el PDF
-de Centro Sur de `tests/fixtures` es uno real). En la web pasa lo mismo: `web/logica.js` no toca el DOM ni la
-red, y sus pruebas corren con Node 20 o superior.
+de Centro Sur de `tests/fixtures` es uno real). En la web pasa lo mismo: `web/logica.js` y `web/calles.js` no
+tocan el DOM ni la red, y sus pruebas corren con Node 20 o superior.
 
 ```
 src/morlaco/
@@ -125,9 +136,11 @@ src/morlaco/
     emac.py           zonas de recolección (KML)
     centrosur.py      suspensiones de luz (PDF)
     buses.py          rutas, recorridos y paradas (API CKAN del portal municipal)
+    calles.py         índice de calles (API Overpass de OpenStreetMap)
 web/
   index.html          la página
   logica.js           zonas, próxima recolección, cortes de hoy, paradas cercanas (sin DOM)
+  calles.js           búsqueda de calles e intersecciones (sin DOM)
   app.js              mapa, búsqueda y pintado de la respuesta
   estilos.css
 ```
@@ -149,3 +162,7 @@ Los datos mantienen la licencia de su fuente. Los conjuntos del portal Cuenca en
 paradas y el mapa de zonas de recolección) están publicados bajo **Creative Commons No Comercial**: se
 pueden usar y compartir citando la fuente, pero no con fines comerciales. Los PDF de Centro Sur son
 información pública de su web.
+
+El índice de calles (`datos/calles/`) es una base de datos derivada de OpenStreetMap y se distribuye bajo la
+[Open Database License (ODbL) 1.0](https://opendatacommons.org/licenses/odbl/): © colaboradores de
+OpenStreetMap. Quien lo reutilice debe citar a OpenStreetMap y compartir sus mejoras bajo la misma licencia.

@@ -14,7 +14,7 @@ USER_AGENT = f"Morlaco/{__version__} (datos abiertos de Cuenca)"
 Descargador = Callable[[str], bytes]
 
 
-def descargar(url: str, *, timeout: float = 30, intentos: int = 3) -> bytes:
+def descargar(url: str, *, timeout: float = 180, intentos: int = 3) -> bytes:
     """Descarga una URL y devuelve su contenido.
 
     Reintenta ante fallos de red o errores 5xx; un error 4xx se lanza enseguida.

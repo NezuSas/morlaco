@@ -11,7 +11,7 @@ from pathlib import Path
 
 from morlaco import red
 from morlaco.comun import Resultado
-from morlaco.fuentes import buses, centrosur, emac
+from morlaco.fuentes import buses, calles, centrosur, emac
 from morlaco.salida import escribir_json
 
 Fuente = Callable[[red.Descargador], Resultado]
@@ -20,6 +20,7 @@ FUENTES: dict[str, Fuente] = {
     "recoleccion": emac.obtener,
     "luz": centrosur.obtener,
     "buses": buses.obtener,
+    "calles": calles.obtener,
 }
 
 

@@ -15,6 +15,14 @@ import {
   puntoDesdeHash,
   zonaDe,
 } from "./logica.js";
+import {
+  buscarCalles,
+  cruceDeCalles,
+  interpretarBusqueda,
+  longitudMetros,
+  prepararIndice,
+  puntoMedio,
+} from "./calles.js";
 
 const DATOS = "../datos/";
 const NOMINATIM = "https://nominatim.openstreetmap.org/search";
@@ -105,10 +113,26 @@ function crearMapa(zonas, alElegir) {
   mapa.on("click", (evento) => alElegir({ lat: evento.latlng.lat, lon: evento.latlng.lng }));
 
   let marcador = null;
-  let marcasParadas = L.layerGroup().addTo(mapa);
+  const marcasParadas = L.layerGroup().addTo(mapa);
+  const callesResaltadas = L.layerGroup().addTo(mapa);
 
   return {
+    /** Dibuja una o varias calles y encuadra el mapa en ellas. */
+    resaltar(calles) {
+      callesResaltadas.clearLayers();
+      marcasParadas.clearLayers();
+      if (marcador) {
+        marcador.remove();
+        marcador = null;
+      }
+      const capa = L.geoJSON(
+        { type: "FeatureCollection", features: calles },
+        { style: { color: color("--cupula-hondo"), weight: 6, opacity: 0.85 }, interactive: false },
+      ).addTo(callesResaltadas);
+      mapa.fitBounds(capa.getBounds(), { padding: [30, 30], animate: !SIN_MOVIMIENTO });
+    },
     mostrar(punto, zona, paradas) {
+      callesResaltadas.clearLayers();
       for (const { zona: z, capa } of capas.values()) {
         capa.setStyle(estilo(z, zona && z.properties.zona === zona.properties.zona));
       }
@@ -298,6 +322,72 @@ function pintarParadas(cercanas) {
 
 // ---------- Ubicar al usuario ----------
 
+// El índice de calles pesa unos cientos de KB: se descarga la primera vez que se busca.
+let indiceCalles = null;
+function cargarIndiceCalles() {
+  indiceCalles ??= cargarJson("calles/calles.geojson")
+    .then(prepararIndice)
+    .catch((error) => {
+      indiceCalles = null;
+      throw error;
+    });
+  return indiceCalles;
+}
+
+const LARGO_MAXIMO_SIN_CRUCE = 600;
+
+/**
+ * Convierte lo escrito en un punto. Primero busca en el índice local de calles
+ * (intersecciones o calles cortas); si no encuentra ninguna calle, prueba con
+ * Nominatim, que conoce lugares como "Mall del Río" o "Parque Calderón".
+ * Devuelve { punto, texto } o { error, resaltar? }.
+ */
+async function ubicarTexto(texto) {
+  const { calles, tieneNumero } = interpretarBusqueda(texto);
+  let indice = null;
+  try {
+    indice = await cargarIndiceCalles();
+  } catch {
+    // Sin índice, queda Nominatim.
+  }
+
+  if (indice && calles.length === 2) {
+    const [a, b] = calles.map((c) => buscarCalles(c, indice));
+    const falta = !a.length ? calles[0] : !b.length ? calles[1] : null;
+    if (falta) return { error: `No encontré la calle “${falta}” en Cuenca. Revisa cómo está escrita.` };
+    const cruce = cruceDeCalles(a, b);
+    if (!cruce) {
+      return {
+        error: `Según el mapa, ${a[0].nombre} y ${b[0].nombre} no se cruzan. Revisa los nombres o toca el mapa.`,
+        resaltar: [a[0].feature, b[0].feature],
+      };
+    }
+    return { punto: cruce.punto, texto: `${cruce.a.nombre} y ${cruce.b.nombre}` };
+  }
+
+  if (indice && calles.length === 1) {
+    const [calle] = buscarCalles(calles[0], indice);
+    if (calle) {
+      if (longitudMetros(calle.feature) <= LARGO_MAXIMO_SIN_CRUCE && !tieneNumero) {
+        return { punto: puntoMedio(calle.feature), texto: calle.nombre };
+      }
+      const motivo = tieneNumero
+        ? "Los números de casa no están en el mapa."
+        : `La ${calle.nombre} es larga y cruza varias zonas.`;
+      return {
+        error: `${motivo} Escribe también una calle que la cruce, por ejemplo “${calles[0]} y …”, o toca el punto exacto en el mapa.`,
+        resaltar: [calle.feature],
+      };
+    }
+  }
+
+  const lugar = await buscarDireccion(texto);
+  if (!lugar) {
+    return { error: "No encontré ese lugar en Cuenca. Prueba con dos calles que se crucen, como “Sucre y Borrero”, o toca el mapa." };
+  }
+  return { punto: lugar, texto: lugar.nombre.split(",").slice(0, 3).join(",") };
+}
+
 async function buscarDireccion(texto) {
   const parametros = new URLSearchParams({
     format: "jsonv2",
@@ -387,12 +477,15 @@ async function iniciar() {
     if (boton) boton.disabled = true;
     mensaje("Buscando…");
     try {
-      const lugar = await buscarDireccion(texto);
-      if (!lugar) {
-        mensaje("No encontré esa dirección en Cuenca. Prueba con una calle cercana o toca el mapa.", true);
+      const resultado = await ubicarTexto(texto);
+      if (resultado.error) {
+        // La respuesta anterior era de otro lugar: se oculta para no confundir.
+        $("respuesta").hidden = true;
+        if (resultado.resaltar) mapa.resaltar(resultado.resaltar);
+        mensaje(resultado.error, true);
         return;
       }
-      elegir(lugar, `Encontrado: ${lugar.nombre.split(",").slice(0, 3).join(",")}.`);
+      elegir(resultado.punto, `Encontrado: ${resultado.texto}.`);
     } catch {
       mensaje("La búsqueda de direcciones no respondió. Prueba de nuevo o toca el mapa.", true);
     } finally {

@@ -15,6 +15,17 @@
       "paradas_descartadas": 1
     }
   },
+  "calles": {
+    "ok": true,
+    "actualizado": "2026-11-10T01:27:14+00:00",
+    "archivos": [
+      "calles/calles.geojson"
+    ],
+    "resumen": {
+      "calles": 2838,
+      "tramos": 6776
+    }
+  },
   "luz": {
     "ok": true,
     "actualizado": "2026-11-10T01:00:58+00:00",
