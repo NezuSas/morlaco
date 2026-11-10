@@ -20,7 +20,7 @@ import re
 from typing import Any
 from urllib.parse import urlencode
 
-from morlaco import red
+from morlaco import gtfs, red
 from morlaco.comun import Resultado, decodificar, hora, limpiar
 from morlaco.fuentes import trazados
 
@@ -208,12 +208,15 @@ def obtener(descargar: red.Descargador = red.descargar) -> Resultado:
     meta_paradas["descartadas"] = descartadas
     paradas = {"type": "FeatureCollection", "metadata": meta_paradas, **paradas}
 
+    archivos_gtfs, resumen_gtfs = gtfs.construir(rutas, lineas["features"], paradas["features"])
+
     return Resultado(
         archivos={
             "buses/rutas.json": {"metadata": meta_rutas, "rutas": rutas},
             "buses/recorridos.json": {"metadata": meta_recorridos, "recorridos": recorridos},
             "buses/paradas.geojson": paradas,
             "buses/lineas.geojson": lineas,
+            "gtfs/cuenca-buses.zip": gtfs.a_zip(archivos_gtfs),
         },
         resumen={
             "trazados": len(lineas["features"]),
@@ -222,5 +225,6 @@ def obtener(descargar: red.Descargador = red.descargar) -> Resultado:
             "lineas_con_recorrido": len(recorridos),
             "paradas": len(paradas["features"]),
             "paradas_descartadas": descartadas,
+            "gtfs": resumen_gtfs,
         },
     )

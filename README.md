@@ -50,6 +50,7 @@ una app o un análisis.
 | [`datos/buses/rutas.json`](datos/buses/rutas.json) | Líneas de bus con compañía, origen, destino, horario e intervalo entre buses (lunes a viernes, sábados, domingos) | [Cuenca en Datos](https://cuencaendatos.cuenca.gob.ec/dataset/f15c8808-0d12-4f97-bfd4-3b2f85ea84d1) |
 | [`datos/buses/recorridos.json`](datos/buses/recorridos.json) | Puntos por los que pasa cada línea, en orden, de ida y de retorno | [Cuenca en Datos](https://cuencaendatos.cuenca.gob.ec/dataset/4c727738-890e-445c-9b20-32df271db766) |
 | [`datos/buses/lineas.geojson`](datos/buses/lineas.geojson) | Recorrido de las 38 líneas de bus, los alimentadores y el tranvía en cada sentido, con sus alargues | [Cuenca en Datos](https://cuencaendatos.cuenca.gob.ec/dataset/f15c8808-0d12-4f97-bfd4-3b2f85ea84d1) |
+| [`datos/gtfs/cuenca-buses.zip`](datos/gtfs/cuenca-buses.zip) | **Feed GTFS** de los buses urbanos (38 líneas, frecuencias de lunes a viernes, sábados y domingos), validado sin errores con el validador oficial de MobilityData | Generado a partir de los datos del municipio |
 | [`datos/buses/paradas.geojson`](datos/buses/paradas.geojson) | Paradas de bus con coordenadas corregidas y si tienen señal (paleta) | [Cuenca en Datos](https://cuencaendatos.cuenca.gob.ec/dataset/d98292ca-7c70-422a-ac6f-1b43194ff5ba) |
 | [`datos/calles/calles.geojson`](datos/calles/calles.geojson) | Las calles de Cuenca con nombre (unas 2.800), con su trazado simplificado y sus nombres alternativos, para buscar direcciones e intersecciones | [OpenStreetMap](https://www.openstreetmap.org) |
 | [`datos/estado.json`](datos/estado.json) | Cuándo se actualizó cada fuente por última vez y si hubo errores | — |
@@ -95,6 +96,28 @@ Parque Calderón está en la zona 4.
   falla, basta con volver a correr `morlaco actualizar calles`.
 - **Cortes de agua (ETAPA).** Todavía no están. ETAPA los anuncia en redes sociales y en prensa, no en un
   formato que se pueda leer de forma fiable.
+
+## Buses en formato GTFS
+
+[`datos/gtfs/cuenca-buses.zip`](https://nezusas.github.io/morlaco/datos/gtfs/cuenca-buses.zip) es un feed
+[GTFS](https://gtfs.org/es/), el formato estándar de horarios que usan las apps de transporte, con las 38 líneas
+de bus urbano de Cuenca. Pasa el [validador oficial de MobilityData](https://gtfs-validator.mobilitydata.org/)
+sin errores ni avisos.
+
+Cómo está hecho, con lo que publica el municipio:
+
+- **Rutas, sentidos y frecuencias** ("cada 9 min de 05:50 a 21:15"), del CSV de rutas (2025). Es un feed de
+  frecuencias (`frequencies.txt`): el municipio no publica horarios exactos por parada.
+- **Recorridos** (`shapes.txt`), del shapefile de rutas (septiembre de 2022).
+- **Paradas**: las terminales de cada recorrido y las paradas registradas por el municipio que quedan a menos
+  de 25 m del recorrido, en orden.
+- **Tiempos entre paradas**: estimados a 15 km/h de media, porque no hay tiempos de viaje publicados.
+
+No incluye el tranvía, los alimentadores ni los alargues, que no tienen horarios en el CSV. Los nombres de las
+empresas vienen del CSV; como `agency_url` se usa la web de la EMOV, que regula el transporte.
+
+Para que estas rutas aparezcan en Google Maps, Google pide que el feed lo envíe el operador o la autoridad de
+transporte: este archivo puede servir de base para proponérselo a la EMOV o al municipio.
 
 ## La página web
 
@@ -167,6 +190,7 @@ src/morlaco/
   comun.py            texto, horas, días y meses
   salida.py           escritura de JSON, GeoJSON y texto
   calendario.py       calendarios .ics de recolección por zona
+  gtfs.py             feed GTFS de los buses (rutas, frecuencias, paradas y recorridos)
   geo.py              conversión de UTM a latitud y longitud
   cli.py              comando "morlaco actualizar"
   fuentes/
@@ -189,8 +213,7 @@ regístrala en `FUENTES` de `cli.py` y añade sus pruebas.
 
 ## Próximos pasos
 
-- Publicar las rutas de bus en formato GTFS (el estándar de las apps de transporte) y responder
-  "¿qué bus me lleva de aquí a allá?".
+- Responder "¿qué bus me lleva de aquí a allá?" con el GTFS.
 - Versión en inglés para la comunidad extranjera de Cuenca.
 - Instalar la página en el móvil y usarla sin conexión.
 - Capas del portal municipal: BiciPública, ciclovías y carga de autos eléctricos.

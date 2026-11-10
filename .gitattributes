@@ -5,3 +5,4 @@
 *.ics -text
 
 *.pdf binary
+*.zip binary

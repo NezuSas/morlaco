@@ -163,7 +163,10 @@ def test_obtener_consulta_la_api_de_ckan():
         "lineas_con_recorrido": 3,
         "paradas": 2,
         "paradas_descartadas": 2,
+        "gtfs": resultado.resumen["gtfs"],
     }
+    assert resultado.resumen["gtfs"]["rutas"] == 1
+    assert resultado.archivos["gtfs/cuenca-buses.zip"][:2] == b"PK"
     paradas = resultado.archivos["buses/paradas.geojson"]
     assert paradas["metadata"]["licencia"].startswith("Creative Commons Non-Commercial")
     lineas = resultado.archivos["buses/lineas.geojson"]

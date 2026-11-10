@@ -1,12 +1,13 @@
 {
   "buses": {
     "ok": true,
-    "actualizado": "2026-11-10T03:04:00+00:00",
+    "actualizado": "2026-11-10T03:18:34+00:00",
     "archivos": [
       "buses/lineas.geojson",
       "buses/paradas.geojson",
       "buses/recorridos.json",
-      "buses/rutas.json"
+      "buses/rutas.json",
+      "gtfs/cuenca-buses.zip"
     ],
     "resumen": {
       "trazados": 184,
@@ -14,7 +15,15 @@
       "lineas": 38,
       "lineas_con_recorrido": 37,
       "paradas": 382,
-      "paradas_descartadas": 1
+      "paradas_descartadas": 1,
+      "gtfs": {
+        "rutas": 38,
+        "viajes": 220,
+        "paradas": 420,
+        "paradas_registradas": 331,
+        "sin_trazado": [],
+        "version": "dd68e23dcde2"
+      }
     }
   },
   "calles": {
