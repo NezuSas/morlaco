@@ -214,6 +214,7 @@ p {
 .servicio-farmacias { --c: var(--c-farmacias); }
 .servicio-buses { --c: var(--c-buses); }
 .servicio-aire { --c: var(--cupula); }
+.servicio-agua { --c: var(--cupula); }
 
 /* ---------- Botones y campos ---------- */
 
@@ -1231,6 +1232,11 @@ a.ficha.con-aviso .ficha-valor {
   font-weight: 700;
 }
 
+.cortes .frecuencia {
+  display: block;
+  margin-top: 0.15rem;
+}
+
 .filtro-cortes {
   margin-top: 1rem;
 }
@@ -1905,6 +1911,7 @@ button.con-icono {
   .calendario,
   .imprimir,
   #s-luz,
+  #s-agua,
   #s-buses,
   #s-aire,
   .sobre-datos,

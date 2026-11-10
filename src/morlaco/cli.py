@@ -11,7 +11,7 @@ from pathlib import Path
 
 from morlaco import cambios, red
 from morlaco.comun import Resultado
-from morlaco.fuentes import buses, calles, centrosur, emac, farmacias, movilidad, tranvia
+from morlaco.fuentes import agua, buses, calles, centrosur, emac, farmacias, movilidad, tranvia
 from morlaco.salida import escribir, escribir_json
 
 # Cuenca está en UTC-5 todo el año (Ecuador no cambia la hora).
@@ -27,6 +27,7 @@ FUENTES: dict[str, Fuente] = {
     "movilidad": movilidad.obtener,
     "farmacias": farmacias.obtener,
     "tranvia": tranvia.obtener,
+    "agua": agua.obtener,
 }
 
 
@@ -82,6 +83,15 @@ def actualizar(
     return 1 if fallos else 0
 
 
+def avisos_de_agua(datos: Path) -> int:
+    """Imprime, una por línea en JSON, las notas de cortes de agua que falta revisar."""
+    avisos = _leer_estado(datos / "agua" / "avisos.json")
+    confirmados = _leer_estado(datos / "manual" / "agua.json")
+    for aviso in agua.pendientes(avisos, confirmados):
+        print(json.dumps(aviso, ensure_ascii=False))
+    return 0
+
+
 def revisar_cambios(datos: Path, siempre: bool = False, mensaje: Path | None = None) -> int:
     archivos = cambios.archivos_cambiados(datos)
     estado = _leer_estado(datos / "estado.json")
@@ -116,7 +126,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         "--siempre", action="store_true", help="Publicar aunque los datos no hayan cambiado."
     )
     rev.add_argument("--mensaje", type=Path, help="Archivo donde escribir el mensaje del commit.")
+    pend = sub.add_parser(
+        "avisos-agua",
+        help="Lista las notas de cortes de agua que falta revisar (una por línea, JSON).",
+    )
+    pend.add_argument("--datos", type=Path, default=Path("datos"), help="Carpeta de datos.")
     args = parser.parse_args(argv)
+    if args.comando == "avisos-agua":
+        return avisos_de_agua(args.datos)
     if args.comando == "cambios":
         return revisar_cambios(args.datos, args.siempre, args.mensaje)
     desconocidas = [f for f in args.fuentes if f not in FUENTES]

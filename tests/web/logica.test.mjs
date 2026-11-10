@@ -7,6 +7,7 @@ import {
   direccionLegible,
   horaLegible,
   nombreParada,
+  cortesAgua,
   enlaceCorreoAviso,
   enlaceReporteDireccion,
   enlaceWhatsApp,
@@ -200,6 +201,16 @@ test("enlacesCalendario apunta al .ics de la zona y lo ofrece por webcal y Googl
   );
   // El parámetro de versión se mantiene dentro del cid y no rompe la dirección de Google.
   assert.ok(enlaces.google.includes("zona-4.ics%3Fv%3D"));
+});
+
+test("cortesAgua: los de hoy hasta su hora de fin y los próximos, en orden", () => {
+  const corte = (fecha, desde, hasta) => ({ fecha, desde, hasta, es: { sectores: fecha }, fuente: {} });
+  const datos = { cortes: [corte("2026-11-12", "09:00", "17:00"), corte("2026-11-10", "08:00", "12:00"), corte("2026-11-09", "09:00", "17:00"), corte("2026-11-10", "13:00", "18:00")] };
+  const a_las_10 = new Date("2026-11-10T10:00:00-05:00");
+  assert.deepEqual(cortesAgua(datos, a_las_10).map((c) => `${c.fecha} ${c.desde}`), ["2026-11-10 08:00", "2026-11-10 13:00", "2026-11-12 09:00"]);
+  const a_las_14 = new Date("2026-11-10T14:00:00-05:00");
+  assert.deepEqual(cortesAgua(datos, a_las_14).map((c) => `${c.fecha} ${c.desde}`), ["2026-11-10 13:00", "2026-11-12 09:00"]);
+  assert.deepEqual(cortesAgua(null), []);
 });
 
 test("enlaceCorreoAviso abre un correo con el asunto y el cuerpo ya escritos", () => {

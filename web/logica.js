@@ -320,6 +320,17 @@ export function turnoActual(turnos, fecha = new Date()) {
   return (turnos ?? []).find((t) => `${t.inicio}T06:00` <= ahora && ahora < `${t.fin}T06:00`) ?? null;
 }
 
+/**
+ * Los cortes de agua confirmados (datos/manual/agua.json) que aún no terminan, del más
+ * próximo al más lejano. Uno de hoy deja de contar cuando pasa su hora de fin.
+ */
+export function cortesAgua(datos, fecha = new Date()) {
+  const { fecha: hoy, minutos } = horaCuenca(fecha);
+  return (datos?.cortes ?? [])
+    .filter((c) => c.fecha > hoy || (c.fecha === hoy && (!c.hasta || minutos < aMinutos(c.hasta))))
+    .sort((a, b) => (a.fecha + (a.desde ?? "")).localeCompare(b.fecha + (b.desde ?? "")));
+}
+
 /** Farmacias cuyo nombre o dirección contiene el texto, sin importar tildes ni mayúsculas. */
 export function filtrarFarmacias(farmacias, texto) {
   const buscado = normalizar(texto);

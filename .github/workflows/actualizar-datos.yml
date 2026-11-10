@@ -1,10 +1,13 @@
 # Mantiene los datos al día sin que nadie tenga que acordarse.
 #
 # Todos los días a las 06:00 de Cuenca revisa las fuentes que cambian seguido
-# (basura, luz, farmacias y tranvía); los lunes, todas. Pasa las pruebas con los
+# (basura, luz, farmacias, tranvía y avisos de agua); los lunes, todas. Pasa las pruebas con los
 # datos nuevos y, solo si algo cambió y las pruebas pasan, los publica en main.
 # Si una fuente falla, publica el resto y la ejecución queda en rojo: GitHub
 # avisa por correo y en datos/estado.json queda el error.
+#
+# Si la prensa anuncia un corte de agua en Cuenca, abre un aviso (issue) para que
+# una persona lo lea y, si es real, lo copie a datos/manual/agua.json.
 name: Actualizar datos
 
 on:
@@ -20,6 +23,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 concurrency:
   group: actualizar-datos
@@ -51,7 +55,7 @@ jobs:
           PEDIDAS: ${{ inputs.fuentes }}
         run: |
           if [ "$PROGRAMA" = "0 11 * * *" ]; then
-            echo "fuentes=recoleccion luz farmacias tranvia" >> "$GITHUB_OUTPUT"
+            echo "fuentes=recoleccion luz farmacias tranvia agua" >> "$GITHUB_OUTPUT"
             echo "siempre=" >> "$GITHUB_OUTPUT"
           elif [ "$PROGRAMA" = "30 11 * * 1" ]; then
             echo "fuentes=" >> "$GITHUB_OUTPUT"
@@ -94,6 +98,39 @@ jobs:
           git commit -q -F "$RUNNER_TEMP/mensaje.txt"
           git pull -q --rebase origin main
           git push -q origin HEAD:main
+
+      - name: Avisar de cortes de agua por revisar
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          morlaco avisos-agua > "$RUNNER_TEMP/agua.jsonl"
+          if [ ! -s "$RUNNER_TEMP/agua.jsonl" ]; then
+            echo "Ningún corte de agua por revisar."
+            exit 0
+          fi
+          gh label create corte-agua --color 1f4a96 --description "Corte de agua por revisar" --force
+          gh issue list --label corte-agua --state all --limit 200 --json body --jq '.[].body' > "$RUNNER_TEMP/abiertos.txt"
+          python - <<'EOF'
+          import json, os, subprocess
+          tmp = os.environ["RUNNER_TEMP"]
+          abiertos = open(f"{tmp}/abiertos.txt", encoding="utf-8").read()
+          for linea in open(f"{tmp}/agua.jsonl", encoding="utf-8"):
+              aviso = json.loads(linea)
+              if aviso["enlace"] in abiertos:
+                  continue
+              cuerpo = (
+                  f"El Mercurio publicó el {aviso['publicado']} una nota que parece anunciar un corte de agua:\n\n"
+                  f"**{aviso['titulo']}**\n\n{aviso['resumen']}\n\n{aviso['enlace']}\n\n"
+                  "Para publicarlo, lee la nota y copia el corte (fecha, horario, sectores y fuente) a "
+                  "`datos/manual/agua.json`. Si no es un corte de ETAPA en Cuenca, añade el enlace a "
+                  "`descartados`. Luego cierra este aviso."
+              )
+              subprocess.run(
+                  ["gh", "issue", "create", "--label", "corte-agua",
+                   "--title", f"Corte de agua por revisar: {aviso['titulo']}"[:250], "--body", cuerpo],
+                  check=True,
+              )
+          EOF
 
       - name: Avisar si alguna fuente falló
         if: steps.descargar.outputs.fallo == 'si'

@@ -83,6 +83,16 @@ const TEXTOS = {
     semanaAria: "Días de recolección en tu zona",
     tituloLuz: "Cortes de luz programados",
     tituloBuses: "Buses cerca de ti",
+    navAgua: "Agua",
+    tituloAgua: "Cortes de agua",
+    aguaSinCortes: "No hay cortes de agua anunciados para los próximos días.",
+    aguaSinCortesNota:
+      "ETAPA EP anuncia sus cortes en redes sociales y en su línea 188; Morlaco los toma de la prensa, así que puede haber cortes que no estén aquí.",
+    aguaResumen: ({ n }) => (n === 1 ? "Hay un corte de agua anunciado." : `Hay ${n} cortes de agua anunciados.`),
+    aguaHorario: "{dia}, de {desde} a {hasta}",
+    aguaNota: "Cortes anunciados por ETAPA EP y publicados en prensa. Para confirmar, llama a la línea 188.",
+    aguaError: "No se pudieron cargar los cortes de agua. Consulta a",
+    fuente: "Fuente",
     navAire: "Aire",
     tituloAire: "Calidad del aire",
     aireNiveles: ["Buena", "Moderada", "Insalubre para grupos sensibles", "Insalubre", "Muy insalubre", "Peligrosa"],
@@ -257,6 +267,8 @@ const TEXTOS = {
     tranviaEstacion: "Estación {estacion} a {distancia} · cada {minutos} min hoy",
     tranviaCada: "Cada {minutos} min hoy",
     rutaTranviaCada: "Tranvía cada {minutos} min hoy",
+    sobreAgua:
+      "<strong>Agua.</strong> ETAPA EP anuncia sus cortes en redes sociales, no en su web. Morlaco los toma de las notas de El Mercurio que citan a ETAPA, después de que una persona las revisa.",
     sobreAire:
       '<strong>Aire.</strong> Índice de calidad del aire de la <a href="https://caire.emov.gob.ec/">Red de Monitoreo de la EMOV EP</a>, pedido en vivo a su web cada vez que abres la página. Se muestra la estación más cercana que mide partículas.',
     sobreTransporte: '<strong>Pasaje, cambios de líneas y tranvía.</strong> El pasaje y los cambios de líneas de 2026 salen de comunicados del municipio publicados en <a href="https://elmercurio.com.ec/cuenca/">El Mercurio</a>, y los revisamos a mano (última revisión: 10 de noviembre de 2026). Estaciones del tranvía: <a href="https://tranvia.cuenca.gob.ec/">Tranvía de Cuenca</a>; su frecuencia es la anunciada en octubre de 2025.',
@@ -380,6 +392,16 @@ const TEXTOS = {
     semanaAria: "Collection days in your zone",
     tituloLuz: "Scheduled power cuts",
     tituloBuses: "Buses near you",
+    navAgua: "Water",
+    tituloAgua: "Water cuts",
+    aguaSinCortes: "No water cuts announced for the coming days.",
+    aguaSinCortesNota:
+      "ETAPA EP announces its cuts on social media and on its 188 line; Morlaco takes them from the press, so there may be cuts that aren’t listed here.",
+    aguaResumen: ({ n }) => (n === 1 ? "One water cut has been announced." : `${n} water cuts have been announced.`),
+    aguaHorario: "{dia}, {desde} to {hasta}",
+    aguaNota: "Cuts announced by ETAPA EP and reported in the press. To confirm, call 188.",
+    aguaError: "Water cuts couldn’t be loaded. Check with",
+    fuente: "Source",
     navAire: "Air",
     tituloAire: "Air quality",
     aireNiveles: ["Good", "Moderate", "Unhealthy for sensitive groups", "Unhealthy", "Very unhealthy", "Hazardous"],
@@ -554,6 +576,8 @@ const TEXTOS = {
     tranviaEstacion: "{estacion} stop, {distancia} away · every {minutos} min today",
     tranviaCada: "Every {minutos} min today",
     rutaTranviaCada: "Tram every {minutos} min today",
+    sobreAgua:
+      "<strong>Water.</strong> ETAPA EP announces its cuts on social media, not on its website. Morlaco takes them from El Mercurio articles that quote ETAPA, after a person reviews them.",
     sobreAire:
       '<strong>Air.</strong> Air quality index from <a href="https://caire.emov.gob.ec/">EMOV EP’s monitoring network</a>, requested live from its site each time you open the page. It shows the nearest station that measures particulates.',
     sobreTransporte: '<strong>Fares, line changes and tram.</strong> Fares and the 2026 line changes come from city announcements published in <a href="https://elmercurio.com.ec/cuenca/">El Mercurio</a>, and we check them by hand (last check: 10 November 2026). Tram stops: <a href="https://tranvia.cuenca.gob.ec/">Tranvía de Cuenca</a>; its frequency is the one announced in October 2025.',

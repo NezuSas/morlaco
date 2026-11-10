@@ -23,7 +23,7 @@ Cómo leer las tablas:
 | Recolección rural | Texto general de EMAC EP | Sin detalle | No está |
 | Feriados y dónde llevar cada cosa | Páginas de EMAC y ETAPA, y El Mercurio | Al día | A mano |
 | Cortes de luz programados | Ninguna web publica los de Cuenca | Sin fuente regular | Automática, avisa del vacío |
-| Cortes de agua | El Mercurio | Al día | No está |
+| Cortes de agua | El Mercurio | Al día | Detectada a diario, confirmada a mano |
 | Farmacias de turno | PDF mensual de ARCSA | Al día | Automática, diaria |
 | Buses: horarios y recorridos | Cuenca en Datos (abril de 2026) | Atrasada | Automática, semanal |
 | Buses: cambios de 2026 y pasaje | El Mercurio | Al día | A mano |
@@ -77,9 +77,11 @@ Morlaco no dice "no hay cortes": dice desde cuándo Centro Sur no publica y remi
 | El Mercurio | Cada aviso con fecha, sectores, horario y motivo; de 1 a 3 al mes | Al día; el último, Turi, 13 de octubre de 2026 | A mano (o detectar avisos en su API) |
 | Redes de ETAPA y línea 188 | Canal original, según la prensa | Al día | No se puede leer automáticamente: remitir |
 
-**Para añadirlo a Morlaco** habría que vigilar la API de El Mercurio, leer cada aviso y confirmarlo antes de
-publicarlo, porque un corte de agua equivocado hace más daño que no tenerlo. No existe un canal oficial que
-se pueda leer automáticamente.
+**Cómo lo usa Morlaco:** el bot busca cada día en la API de El Mercurio las notas cuyo título anuncia un
+corte de agua en Cuenca y abre un aviso en GitHub (etiqueta `corte-agua`) por cada una. Una persona lee la
+nota y copia el corte a `datos/manual/agua.json`, o lo descarta. Nada se publica sin esa revisión, porque un
+corte de agua equivocado hace más daño que no tenerlo. No existe un canal oficial que se pueda leer
+automáticamente.
 
 ## Farmacias de turno (ARCSA)
 

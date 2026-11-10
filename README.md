@@ -23,6 +23,7 @@ Escribe tu esquina como se dan las direcciones en Cuenca ("Sucre y Borrero") y M
 - **Cuándo pasa el recolector** por tu calle, qué va en cada funda y qué día va la funda celeste. Con un toque
   te suscribes al **calendario de tu zona** y recibes un aviso antes de cada recolección. También qué pasa en
   **feriados** y **dónde llevar lo que no va en las fundas** (orgánicos, vidrio, escombros, pilas).
+- **Si hay cortes de agua anunciados** por ETAPA en los próximos días, con sus sectores y horario.
 - **Si hay cortes de luz programados** por Centro Sur para hoy, y si publicó cronogramas nuevos (y para qué
   provincias).
 - **Qué farmacias están de turno** esta semana (abiertas las 24 horas), ordenadas por cercanía y con su teléfono
@@ -70,6 +71,7 @@ una app o un análisis.
 | [`datos/buses/paradas.geojson`](datos/buses/paradas.geojson) | Paradas de bus con coordenadas corregidas y si tienen señal (paleta) | [Cuenca en Datos](https://cuencaendatos.cuenca.gob.ec/dataset/d98292ca-7c70-422a-ac6f-1b43194ff5ba) |
 | [`datos/buses/tranvia.geojson`](datos/buses/tranvia.geojson) | Las 20 estaciones del tranvía, con un punto por andén y el sentido en que para en cada una | [Tranvía de Cuenca](https://tranvia.cuenca.gob.ec/) |
 | [`datos/manual/transporte.json`](datos/manual/transporte.json) | **Mantenido a mano**: pasaje del bus y del tranvía, cambios de líneas de 2026 (con fecha de caducidad) y frecuencia del tranvía, cada dato con su fuente | Comunicados del municipio publicados en [El Mercurio](https://elmercurio.com.ec/cuenca/) |
+| [`datos/manual/agua.json`](datos/manual/agua.json) | **Mantenido a mano**: cortes de agua confirmados (fecha, horario, sectores y la nota de prensa que cita a ETAPA) y las notas descartadas | El Mercurio, a partir de [`datos/agua/avisos.json`](datos/agua/avisos.json) |
 | [`datos/manual/basura.json`](datos/manual/basura.json) | **Mantenido a mano**: qué pasa con la recolección en feriados, qué va en la funda celeste y dónde llevar orgánicos, vidrio, escombros, pilas y objetos grandes, cada dato con su fuente | Páginas de [EMAC EP](https://emac.gob.ec) y [ETAPA EP](https://www.etapa.net.ec) y comunicados en prensa |
 | [`datos/calles/calles.geojson`](datos/calles/calles.geojson) | Las calles de Cuenca con nombre (unas 2.800), con su trazado simplificado y sus nombres alternativos, para buscar direcciones e intersecciones | [OpenStreetMap](https://www.openstreetmap.org) |
 | [`datos/farmacias/turnos.json`](datos/farmacias/turnos.json) | Farmacias de turno de Cuenca por semana (de 06:00 a 06:00), con dirección legible y teléfono para llamar | [ARCSA, turnos de farmacias](https://www.controlsanitario.gob.ec/turnos-de-farmacias/) |
@@ -145,8 +147,13 @@ tan al día está, si se puede leer automáticamente y qué no tiene fuente.
   abierto). Se muestra la estación más cercana que mide partículas, con la hora del dato; si la EMOV no
   responde en 6 segundos o el dato tiene más de 4 horas, "Aire" no aparece. Su servidor envía el certificado
   sin el intermedio, así que algunos programas (Python, Node) no lo aceptan aunque los navegadores sí.
-- **Cortes de agua (ETAPA).** Todavía no están. ETAPA los anuncia en redes sociales y en prensa, no en un
-  formato que se pueda leer de forma fiable.
+- **Cortes de agua (ETAPA y prensa).** ETAPA los anuncia en redes sociales; su web no publica nada desde
+  febrero de 2025. El Mercurio sí publica cada aviso. Cada día, `morlaco actualizar agua` busca en su API las
+  notas cuyo título anuncia un corte de agua en Cuenca y las guarda en `datos/agua/avisos.json` **sin
+  mostrarlas**. Por cada nota nueva, el workflow abre un aviso en GitHub (etiqueta `corte-agua`), y GitHub lo
+  manda por correo. Una persona lee la nota y, si es un corte de ETAPA, lo copia a
+  [`datos/manual/agua.json`](datos/manual/agua.json) con fecha, horario, sectores y fuente; si no, añade el
+  enlace a `descartados`. Solo entonces aparece en la página, hasta que pasa su fecha.
 
 ## Buses en formato GTFS
 
@@ -248,7 +255,8 @@ Actualizar todos los datos (escribe en `datos/`):
 .venv/Scripts/python -m morlaco actualizar
 ```
 
-O solo algunas fuentes: `recoleccion`, `luz`, `buses`, `calles`, `movilidad`, `farmacias`, `tranvia`.
+O solo algunas fuentes: `recoleccion`, `luz`, `buses`, `calles`, `movilidad`, `farmacias`, `tranvia`,
+`agua`.
 
 ```bash
 .venv/Scripts/python -m morlaco actualizar recoleccion buses
@@ -301,6 +309,7 @@ src/morlaco/
     trazados.py       recorrido de las líneas (shapefile del municipio)
     movilidad.py      BiciPública, ciclovías y carga eléctrica (API Overpass)
     farmacias.py      farmacias de turno (PDF mensual de ARCSA)
+    agua.py           avisos de cortes de agua en la prensa, por confirmar (API de El Mercurio)
     tranvia.py        estaciones del tranvía (API de su web)
     calles.py         índice de calles (API Overpass de OpenStreetMap)
 web/

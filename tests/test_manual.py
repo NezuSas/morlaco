@@ -23,6 +23,19 @@ def _fecha(texto):
     return date.fromisoformat(texto)
 
 
+def test_cortes_de_agua_completos_y_con_fuente():
+    datos = json.loads((MANUAL / "agua.json").read_text(encoding="utf-8"))
+    assert isinstance(datos["cortes"], list) and isinstance(datos["descartados"], list)
+    for corte in datos["cortes"]:
+        _fecha(corte["fecha"])
+        assert corte["desde"] < corte["hasta"] or corte["hasta"] in ("24:00", "00:00")
+        for idioma in ("es", "en"):
+            assert corte[idioma]["sectores"].strip()
+        assert corte["fuente"]["nombre"] and corte["fuente"]["url"].startswith("https://")
+    for descartado in datos["descartados"]:
+        assert descartado["enlace"].startswith("https://") and descartado["motivo"].strip()
+
+
 def test_basura_feriados_con_fuente_y_caducidad(basura):
     feriados = basura["feriados"]
     assert feriados["es"].strip() and feriados["en"].strip()

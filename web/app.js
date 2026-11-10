@@ -8,6 +8,7 @@ import {
   horaLegible,
   nombreParada,
   CORREO_AVISOS,
+  cortesAgua,
   enlaceCorreoAviso,
   enlaceReporteDireccion,
   enlaceWhatsApp,
@@ -569,6 +570,54 @@ function pintarBasura(zona) {
   pintarCalendario(p.zona);
 }
 
+/** Los cortes de agua confirmados de hoy y de los próximos días, con su fuente. */
+function pintarAgua(datos) {
+  const caja = $("agua-estado");
+  const enlaceEtapa = () => elemento("a", { href: "https://www.etapa.net.ec/", target: "_blank", rel: "noopener" }, "ETAPA EP");
+  if (!datos) {
+    caja.replaceChildren(elemento("p", { class: "aviso" }, t("aguaError"), " ", enlaceEtapa(), "."));
+    return [];
+  }
+  const cortes = cortesAgua(datos);
+  if (!cortes.length) {
+    caja.replaceChildren(
+      elemento("p", { class: "luz-resumen" }, t("aguaSinCortes")),
+      elemento("p", { class: "detalle" }, t("aguaSinCortesNota")),
+    );
+    return [];
+  }
+  caja.replaceChildren(
+    elemento("p", { class: "luz-resumen" }, t("aguaResumen", { n: cortes.length })),
+    elemento(
+      "ul",
+      { class: "cortes" },
+      ...cortes.map((c) => {
+        const texto = c[idioma()] ?? c.es;
+        return elemento(
+          "li",
+          {},
+          elemento(
+            "span",
+            { class: "horario" },
+            t("aguaHorario", { dia: fechaDia(c.fecha), desde: c.desde, hasta: horaLegible(c.hasta) }),
+          ),
+          texto.sectores,
+          texto.motivo ? elemento("span", { class: "frecuencia" }, texto.motivo) : null,
+          elemento(
+            "span",
+            { class: "frecuencia" },
+            t("fuente"),
+            ": ",
+            elemento("a", { href: c.fuente.url, target: "_blank", rel: "noopener" }, c.fuente.nombre),
+          ),
+        );
+      }),
+    ),
+    elemento("p", { class: "detalle" }, t("aguaNota")),
+  );
+  return cortes;
+}
+
 /** Feriados y dónde llevar lo que no va en las fundas (datos/manual/basura.json). */
 function pintarBasuraManual(basura) {
   const feriados = basura?.feriados;
@@ -964,7 +1013,7 @@ function pintarLineas(cercanas, mapa, { punto, transporte, estaciones } = {}) {
 // ---------- Hoy en tu calle ----------
 
 const SVG_NS = "http://www.w3.org/2000/svg";
-const ICONO_SERVICIO = { basura: "#i-funda", luz: "#i-rayo", farmacias: "#i-cruz", buses: "#i-bus", aire: "#i-aire" };
+const ICONO_SERVICIO = { basura: "#i-funda", luz: "#i-rayo", agua: "#i-gota", farmacias: "#i-cruz", buses: "#i-bus", aire: "#i-aire" };
 
 /** Un icono del sprite de la página (#i-...). */
 function icono(href) {
@@ -1507,7 +1556,7 @@ async function iniciar() {
     mensaje(t("errorDatos"), true);
     return;
   }
-  const [suspensiones, paradas, estado, lineas, rutas, bicicletas, turnosFarmacias, transporte, estacionesTranvia, basura] = await Promise.all(
+  const [suspensiones, paradas, estado, lineas, rutas, bicicletas, turnosFarmacias, transporte, estacionesTranvia, basura, agua] = await Promise.all(
     [
       "luz/suspensiones.json",
       "buses/paradas.geojson",
@@ -1519,6 +1568,7 @@ async function iniciar() {
       "manual/transporte.json",
       "buses/tranvia.geojson",
       "manual/basura.json",
+      "manual/agua.json",
     ].map((r) =>
       cargarJson(r).catch(() => null),
     ),
@@ -1644,6 +1694,20 @@ async function iniciar() {
     pintarPasaje(transporte?.tarifas);
     const resumen = pintarResumen({ zona, suspensiones, turnos: turnosFarmacias, cercanas: cercanasLineas });
     pintarFarmacias(turnosFarmacias, punto, (f) => resumen.farmaciaCercana(f));
+    // Un corte de agua de hoy o de mañana sale también en el resumen.
+    const proximo = pintarAgua(agua)[0];
+    $("resumen").querySelector(".ficha-agua")?.remove();
+    if (proximo && proximo.fecha <= horaCuenca(new Date(Date.now() + 86_400_000)).fecha) {
+      const texto = proximo[idioma()] ?? proximo.es;
+      const { li } = ficha(
+        "agua",
+        t("aguaHorario", { dia: fechaDia(proximo.fecha), desde: proximo.desde, hasta: horaLegible(proximo.hasta) }),
+        texto.sectores,
+        { aviso: true },
+      );
+      li.classList.add("ficha-agua");
+      $("resumen").append(li);
+    }
     pintarAire(aireCercano(punto, estacionesAire));
     actualizarAire();
     pintarPunto();

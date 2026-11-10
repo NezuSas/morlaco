@@ -68,6 +68,9 @@
         <rect x="3.5" y="7.5" width="17" height="12" rx="2" />
         <path d="M9 7.5v-2A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5v2M3.5 12.5h17" />
       </symbol>
+      <symbol id="i-gota" viewBox="0 0 24 24">
+        <path d="M12 3.5c3.2 4.1 6 7.6 6 10.9a6 6 0 0 1-12 0c0-3.3 2.8-6.8 6-10.9z" />
+      </symbol>
       <symbol id="i-aire" viewBox="0 0 24 24">
         <path d="M3 9h10.5a2.5 2.5 0 1 0-2.4-3.2M3 13h15a2.5 2.5 0 1 1-2.4 3.2M3 17h7.5a2 2 0 1 1-1.9 2.6" />
       </symbol>
@@ -240,6 +243,7 @@
             <nav class="secciones" aria-label="Secciones de la respuesta" data-t-aria-label="seccionesAria">
               <a href="#s-basura" class="servicio-basura" data-t="navBasura">Basura</a>
               <a href="#s-luz" class="servicio-luz" data-t="navLuz">Luz</a>
+              <a href="#s-agua" class="servicio-agua" data-t="navAgua">Agua</a>
               <a href="#s-farmacias" class="servicio-farmacias" data-t="navFarmacias">Farmacias</a>
               <a href="#s-buses" class="servicio-buses" data-t="navBuses">Buses</a>
               <a id="nav-aire" href="#s-aire" class="servicio-aire" data-t="navAire" hidden>Aire</a>
@@ -277,6 +281,14 @@
                 <span data-t="tituloLuz">Cortes de luz programados</span>
               </h2>
               <div id="luz-estado"></div>
+            </section>
+
+            <section id="s-agua" class="servicio-agua" aria-labelledby="t-agua">
+              <h2 id="t-agua">
+                <svg class="icono" aria-hidden="true"><use href="#i-gota" /></svg>
+                <span data-t="tituloAgua">Cortes de agua</span>
+              </h2>
+              <div id="agua-estado"></div>
             </section>
 
             <section id="s-farmacias" class="tarjeta-seccion servicio-farmacias farmacias" aria-labelledby="t-farmacias">
@@ -341,6 +353,7 @@
                 <li data-t-html="sobreFarmacias"><strong>Farmacias de turno.</strong> La lista mensual de <a href="https://www.controlsanitario.gob.ec/turnos-de-farmacias/">ARCSA</a> para Azuay, que puede tener errores. La cercanía se calcula con la dirección que publica, así que es aproximada.</li>
                 <li data-t-html="sobreBuses"><strong>Buses.</strong> Trazados publicados por el municipio en 2022 y horarios de 2025, del portal <a href="https://cuencaendatos.cuenca.gob.ec">Cuenca en Datos</a>: algunas líneas pueden haber cambiado, confirma con el letrero del bus. Las paradas son las del registro municipal, que no incluye todas. Distancias en línea recta; tiempos estimados con la frecuencia del día, a 15 km/h en bus y 4,5 km/h a pie.</li>
                 <li data-t-html="sobreTransporte"><strong>Pasaje, cambios de líneas y tranvía.</strong> Comunicados del municipio publicados en prensa, revisados a mano.</li>
+                <li data-t-html="sobreAgua"><strong>Agua.</strong> ETAPA EP anuncia sus cortes en redes sociales, no en su web. Morlaco los toma de las notas de El Mercurio que citan a ETAPA, después de que una persona las revisa.</li>
                 <li data-t-html="sobreAire"><strong>Aire.</strong> Índice de calidad del aire de la <a href="https://caire.emov.gob.ec/">Red de Monitoreo de la EMOV EP</a>, pedido en vivo a su web cada vez que abres la página. Se muestra la estación más cercana que mide partículas.</li>
                 <li data-t-html="sobreCalles"><strong>Calles, BiciPública, ciclovías y carga eléctrica.</strong> © colaboradores de <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> (ODbL).</li>
               </ul>

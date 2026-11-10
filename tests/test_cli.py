@@ -53,7 +53,7 @@ def test_todo_bien_devuelve_cero(tmp_path):
 
 def test_fuente_desconocida_es_un_error_de_uso():
     with pytest.raises(SystemExit) as salida:
-        cli.main(["actualizar", "agua"])
+        cli.main(["actualizar", "inexistente"])
     assert salida.value.code == 2
 
 

@@ -1,0 +1,14 @@
+{
+  "metadata": {
+    "titulo": "Cortes de agua confirmados",
+    "nota": "Se mantiene a mano. Cada corte sale de una nota de prensa que cita a ETAPA EP: se copia aquí solo después de leerla. Los avisos por confirmar están en datos/agua/avisos.json y el bot abre un aviso en GitHub por cada uno. Un corte deja de mostrarse cuando pasa su fecha.",
+    "revisado": "2026-11-10"
+  },
+  "cortes": [],
+  "descartados": [
+    {
+      "enlace": "https://elmercurio.com.ec/cuenca/2026/09/24/sistemas-banos-nero-cortes-agua-lluvias/",
+      "motivo": "Sistemas comunitarios de Baños y Nero, no de ETAPA; ya pasó."
+    }
+  ]
+}
