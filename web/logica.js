@@ -193,12 +193,20 @@ export function direccionLegible(texto) {
     .join(" ");
 }
 
+export const VERSION_CALENDARIOS = 2;
+
 /**
  * Enlaces para suscribirse al calendario de recolección de una zona.
  * `base` es la dirección de la página; los .ics están en ../datos/ respecto a web/.
  */
 export function enlacesCalendario(zona, base) {
-  const archivo = new URL(`../datos/recoleccion/calendarios/zona-${zona}.ics`, base).href;
+  // Google Calendar guarda una copia de cada dirección durante horas. Al cambiar el
+  // aspecto de los calendarios se sube esta versión para que las suscripciones nuevas
+  // lean el archivo actual (GitHub Pages sirve el mismo archivo con o sin "?v=").
+  const archivo = new URL(
+    `../datos/recoleccion/calendarios/zona-${zona}.ics?v=${VERSION_CALENDARIOS}`,
+    base,
+  ).href;
   const webcal = archivo.replace(/^https?:/, "webcal:");
   return {
     archivo,

@@ -15,6 +15,7 @@ import {
   proximaRecoleccion,
   puntoDesdeHash,
   puntoEnGeometria,
+  VERSION_CALENDARIOS,
   zonaDe,
 } from "../../web/logica.js";
 
@@ -156,12 +157,15 @@ test("direccionLegible pasa de mayúsculas a nombre propio", () => {
 
 test("enlacesCalendario apunta al .ics de la zona y lo ofrece por webcal y Google", () => {
   const enlaces = enlacesCalendario(4, "https://nezusas.github.io/morlaco/web/#-2.9,-79.0");
-  assert.equal(enlaces.archivo, "https://nezusas.github.io/morlaco/datos/recoleccion/calendarios/zona-4.ics");
-  assert.equal(enlaces.webcal, "webcal://nezusas.github.io/morlaco/datos/recoleccion/calendarios/zona-4.ics");
+  const ruta = `nezusas.github.io/morlaco/datos/recoleccion/calendarios/zona-4.ics?v=${VERSION_CALENDARIOS}`;
+  assert.equal(enlaces.archivo, `https://${ruta}`);
+  assert.equal(enlaces.webcal, `webcal://${ruta}`);
   assert.equal(
     enlaces.google,
-    "https://calendar.google.com/calendar/render?cid=webcal%3A%2F%2Fnezusas.github.io%2Fmorlaco%2Fdatos%2Frecoleccion%2Fcalendarios%2Fzona-4.ics",
+    `https://calendar.google.com/calendar/render?cid=${encodeURIComponent(`webcal://${ruta}`)}`,
   );
+  // El parámetro de versión se mantiene dentro del cid y no rompe la dirección de Google.
+  assert.ok(enlaces.google.includes("zona-4.ics%3Fv%3D"));
 });
 
 test("formatoDistancia", () => {
