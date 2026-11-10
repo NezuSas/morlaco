@@ -13,6 +13,7 @@ import {
   paradasCercanas,
   proximaRecoleccion,
   puntoDesdeHash,
+  puntoEnGeometria,
   zonaDe,
 } from "./logica.js";
 import {
@@ -78,23 +79,52 @@ async function cargarJson(ruta) {
 
 // ---------- Mapa ----------
 
+const esLmv = (zona) => zona.properties.dias_iso.includes(1);
+
+/** Un punto dentro de la zona para poner su número (el centro de una zona cóncava puede caer fuera). */
+function puntoInterior(zona) {
+  const anillos =
+    zona.geometry.type === "Polygon"
+      ? [zona.geometry.coordinates[0]]
+      : zona.geometry.coordinates.map((p) => p[0]);
+  const anillo = anillos.reduce((a, b) => (b.length > a.length ? b : a));
+  const lons = anillo.map((p) => p[0]);
+  const lats = anillo.map((p) => p[1]);
+  const media = { lon: lons.reduce((s, v) => s + v, 0) / lons.length, lat: lats.reduce((s, v) => s + v, 0) / lats.length };
+  if (puntoEnGeometria(media.lon, media.lat, zona.geometry)) return media;
+  // Si no, el punto interior de una rejilla que quede más cerca de la media.
+  const [oeste, este, sur, norte] = [Math.min(...lons), Math.max(...lons), Math.min(...lats), Math.max(...lats)];
+  let mejor = null;
+  for (let i = 1; i < 24; i++) {
+    for (let j = 1; j < 24; j++) {
+      const p = { lon: oeste + ((este - oeste) * i) / 24, lat: sur + ((norte - sur) * j) / 24 };
+      if (!puntoEnGeometria(p.lon, p.lat, zona.geometry)) continue;
+      const d = (p.lon - media.lon) ** 2 + (p.lat - media.lat) ** 2;
+      if (!mejor || d < mejor.d) mejor = { ...p, d };
+    }
+  }
+  return mejor ?? media;
+}
+
 function crearMapa(zonas, alElegir) {
   const mapa = L.map("mapa", { zoomControl: true }).setView(
     [CENTRO_CUENCA.lat, CENTRO_CUENCA.lon],
     13,
   );
+  // Mapa de OpenStreetMap; la hoja de estilos lo pasa a grises (y lo invierte en modo oscuro).
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
   }).addTo(mapa);
 
-  const estilo = (zona, elegida = false) => {
-    const tono = zona.properties.dias_iso.includes(1) ? color("--cupula") : color("--tomebamba");
+  const estilo = (zona, elegida = false, hayElegida = false) => {
+    const tono = esLmv(zona) ? color("--cupula") : color("--tomebamba");
     return {
       color: tono,
-      weight: elegida ? 3 : 1,
+      weight: elegida ? 3 : 1.5,
+      opacity: hayElegida && !elegida ? 0.5 : 0.9,
       fillColor: tono,
-      fillOpacity: elegida ? 0.32 : 0.12,
+      fillOpacity: elegida ? 0.3 : hayElegida ? 0.07 : 0.16,
     };
   };
 
@@ -109,6 +139,20 @@ function crearMapa(zonas, alElegir) {
       capas.set(p.zona, { zona, capa });
     },
   }).addTo(mapa);
+
+  for (const zona of zonas.features) {
+    const { lat, lon } = puntoInterior(zona);
+    L.marker([lat, lon], {
+      interactive: false,
+      keyboard: false,
+      icon: L.divIcon({
+        className: "",
+        html: `<span class="etiqueta-zona ${esLmv(zona) ? "lmv" : "mjs"}">${zona.properties.zona}</span>`,
+        iconSize: [30, 30],
+        iconAnchor: [15, 15],
+      }),
+    }).addTo(mapa);
+  }
 
   mapa.on("click", (evento) => alElegir({ lat: evento.latlng.lat, lon: evento.latlng.lng }));
 
@@ -134,27 +178,33 @@ function crearMapa(zonas, alElegir) {
     mostrar(punto, zona, paradas) {
       callesResaltadas.clearLayers();
       for (const { zona: z, capa } of capas.values()) {
-        capa.setStyle(estilo(z, zona && z.properties.zona === zona.properties.zona));
+        capa.setStyle(estilo(z, zona && z.properties.zona === zona.properties.zona, Boolean(zona)));
       }
       marcasParadas.clearLayers();
-      for (const parada of paradas) {
-        L.circleMarker([parada.lat, parada.lon], {
-          radius: 5,
-          color: color("--tinta"),
-          weight: 2,
-          fillColor: "#fff",
-          fillOpacity: 1,
+      paradas.forEach((parada, i) => {
+        L.marker([parada.lat, parada.lon], {
+          icon: L.divIcon({
+            className: "",
+            html: `<span class="etiqueta-parada">${i + 1}</span>`,
+            iconSize: [22, 22],
+            iconAnchor: [11, 11],
+          }),
         })
           .bindTooltip(direccionLegible(parada.ubicacion))
           .addTo(marcasParadas);
-      }
+      });
       if (!marcador) {
-        marcador = L.circleMarker([punto.lat, punto.lon], {
-          radius: 9,
-          color: "#fff",
-          weight: 3,
-          fillColor: color("--cupula"),
-          fillOpacity: 1,
+        // Por encima de las paradas, para que no lo tapen.
+        marcador = L.marker([punto.lat, punto.lon], {
+          interactive: false,
+          keyboard: false,
+          zIndexOffset: 1000,
+          icon: L.divIcon({
+            className: "",
+            html: '<span class="punto-elegido"></span>',
+            iconSize: [22, 22],
+            iconAnchor: [11, 11],
+          }),
         }).addTo(mapa);
       } else {
         marcador.setLatLng([punto.lat, punto.lon]);
@@ -303,7 +353,9 @@ function pintarParadas(cercanas) {
   const lista = $("paradas");
   const nota = $("paradas-nota");
   if (!cercanas.length) {
-    lista.replaceChildren(elemento("li", {}, "No hay paradas registradas a menos de 1,5 km."));
+    lista.replaceChildren(
+      elemento("li", { class: "sin-numero" }, "No hay paradas registradas a menos de 1,5 km."),
+    );
   } else {
     lista.replaceChildren(
       ...cercanas.map((p) =>
@@ -458,13 +510,18 @@ async function iniciar() {
     const zona = zonaDe(punto.lon, punto.lat, zonas);
     const cercanas = paradas ? paradasCercanas(punto, paradas) : [];
     $("respuesta").hidden = false;
+    $("inicio").hidden = true;
     pintarBasura(zona);
     pintarLuz(suspensiones);
     pintarParadas(cercanas);
     mapa.mostrar(punto, zona, cercanas);
     history.replaceState(null, "", hashDesdePunto(punto));
     guardar(CLAVE_ULTIMO_PUNTO, hashDesdePunto(punto));
-    if (origen) mensaje(origen);
+    if (origen) {
+      mensaje(origen);
+      // Tras una acción de la persona, lleva la vista a la respuesta (queda bajo la portada).
+      $("mensaje").scrollIntoView({ behavior: SIN_MOVIMIENTO ? "auto" : "smooth", block: "start" });
+    }
   };
 
   const mapa = crearMapa(zonas, (punto) => elegir(punto, "Punto elegido en el mapa."));
@@ -481,6 +538,7 @@ async function iniciar() {
       if (resultado.error) {
         // La respuesta anterior era de otro lugar: se oculta para no confundir.
         $("respuesta").hidden = true;
+        $("inicio").hidden = false;
         if (resultado.resaltar) mapa.resaltar(resultado.resaltar);
         mensaje(resultado.error, true);
         return;
@@ -504,6 +562,20 @@ async function iniciar() {
     } finally {
       boton.disabled = false;
     }
+  });
+
+  // Los ejemplos rellenan la búsqueda y la lanzan.
+  for (const boton of document.querySelectorAll(".ejemplo")) {
+    boton.addEventListener("click", () => {
+      $("direccion").value = boton.dataset.busqueda;
+      $("buscar").requestSubmit();
+    });
+  }
+
+  // Un enlace compartido (#lat,lon) abierto con la página ya cargada.
+  window.addEventListener("hashchange", () => {
+    const punto = puntoDesdeHash(location.hash);
+    if (punto) elegir(punto);
   });
 
   const inicial = puntoDesdeHash(location.hash) ?? puntoDesdeHash(leer(CLAVE_ULTIMO_PUNTO));

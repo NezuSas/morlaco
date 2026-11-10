@@ -4,17 +4,20 @@
 :root {
   --cal: #f6f8f7;
   --cal-hondo: #e9eeec;
+  --superficie: #ffffff;
   --tinta: #1c2733;
   --tinta-suave: #4b5866;
   --cupula: #2d63a8;
   --cupula-hondo: #1f4a82;
   --sobre-cupula: #ffffff;
+  --tarjeta: #24589a;
+  --tarjeta-hondo: #1b4378;
   --tomebamba: #3f7d62;
   --funda-negra: #24272c;
   --funda-celeste: #8ccbea;
   --aviso: #d9961a;
   --aviso-fondo: #fbf1dd;
-  --linea: #cfd8d5;
+  --linea: #d5ddda;
 
   --letra: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
   /* Escala de 1,25 sobre 16 px. */
@@ -24,40 +27,48 @@
   --t-3: 1.5625rem;
   --t-4: 1.953rem;
   --t-5: 2.441rem;
+  --t-6: 3.052rem;
 
   --radio-control: 10px;
-  --radio-azulejo: 6px;
+  --radio-tarjeta: 18px;
+  --radio-azulejo: 7px;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --cal: #121a22;
-    --cal-hondo: #1b2631;
+    --cal: #10171e;
+    --cal-hondo: #18222c;
+    --superficie: #151e27;
     --tinta: #e8eeec;
     --tinta-suave: #a7b4bf;
     --cupula: #6d9fe0;
     --cupula-hondo: #9cc0ef;
     --sobre-cupula: #0f1720;
+    --tarjeta: #1d4a85;
+    --tarjeta-hondo: #163866;
     --tomebamba: #6fb593;
     --funda-negra: #0b0d10;
     --aviso: #f0b546;
-    --aviso-fondo: #2e2615;
-    --linea: #2c3a46;
+    --aviso-fondo: #2b2416;
+    --linea: #29363f;
   }
 }
 :root[data-theme="dark"] {
-  --cal: #121a22;
-  --cal-hondo: #1b2631;
+  --cal: #10171e;
+  --cal-hondo: #18222c;
+  --superficie: #151e27;
   --tinta: #e8eeec;
   --tinta-suave: #a7b4bf;
   --cupula: #6d9fe0;
   --cupula-hondo: #9cc0ef;
   --sobre-cupula: #0f1720;
+  --tarjeta: #1d4a85;
+  --tarjeta-hondo: #163866;
   --tomebamba: #6fb593;
   --funda-negra: #0b0d10;
   --aviso: #f0b546;
-  --aviso-fondo: #2e2615;
-  --linea: #2c3a46;
+  --aviso-fondo: #2b2416;
+  --linea: #29363f;
 }
 
 *,
@@ -95,24 +106,44 @@ p {
   margin: 0;
 }
 
-/* Barra superior */
+.oculto {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.icono {
+  width: 1.35em;
+  height: 1.35em;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---------- Barra superior ---------- */
 
 .barra {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.75rem 1rem;
+  padding: 0.7rem 1rem;
+  background: var(--superficie);
   border-bottom: 1px solid var(--linea);
 }
 
 .marca {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.55rem;
   color: var(--tinta);
   font-size: var(--t-2);
   font-weight: 700;
+  letter-spacing: -0.01em;
   text-decoration: none;
 }
 
@@ -120,23 +151,37 @@ p {
   font-size: var(--t-0);
 }
 
-/* Disposición: en el móvil, todo en columna; en pantallas anchas, respuesta y mapa
-   lado a lado, con el mapa ocupando el alto de la ventana. */
+/* ---------- Disposición ----------
+   Móvil: todo en columna. Pantallas anchas: la consulta a la izquierda (con su
+   propio desplazamiento) y el mapa a la derecha, ocupando el alto de la ventana. */
 
 .disposicion {
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
+}
+
+/* En el móvil la columna se "disuelve" para poder ordenar: consulta, mapa, pie. */
+.columna {
+  display: contents;
 }
 
 .consulta {
-  padding: 1.75rem 1rem 2rem;
+  order: 1;
+  padding: 1.25rem 1rem 0;
+  min-width: 0;
+}
+
+.consulta > *,
+.pie > * {
   max-width: 34rem;
 }
 
 .mapa-contenedor {
+  order: 2;
   position: relative;
   display: flex;
   flex-direction: column;
+  margin-top: 2rem;
   border-top: 1px solid var(--linea);
 }
 
@@ -148,14 +193,20 @@ p {
 
 @media (min-width: 900px) {
   .disposicion {
-    grid-template-columns: minmax(22rem, 32rem) 1fr;
-    height: calc(100dvh - 3.6rem);
+    display: grid;
+    grid-template-columns: minmax(24rem, 33rem) 1fr;
+    height: calc(100dvh - 3.7rem);
+  }
+  .columna {
+    display: block;
+    overflow-y: auto;
+    min-width: 0;
   }
   .consulta {
-    overflow-y: auto;
-    padding: 2.5rem 2rem 3rem;
+    padding: 1.75rem 2.25rem 0;
   }
   .mapa-contenedor {
+    margin-top: 0;
     border-top: 0;
     border-left: 1px solid var(--linea);
   }
@@ -165,55 +216,85 @@ p {
   }
 }
 
-/* Consulta */
+/* ---------- Portada: las cúpulas y el título ---------- */
+
+.cupulas {
+  display: block;
+  width: min(15rem, 70%);
+  height: auto;
+  margin-bottom: 0.75rem;
+}
+
+/* Los colores de cada pieza van en el propio SVG: las copias hechas con <use>
+   no reciben los selectores de esta hoja. */
+.cupulas .nave {
+  fill: var(--superficie);
+  stroke: var(--tinta-suave);
+  stroke-width: 1.5;
+}
+.cupulas .suelo {
+  fill: var(--tinta-suave);
+  opacity: 0.35;
+}
 
 h1 {
-  font-size: var(--t-4);
-  line-height: 1.12;
-  letter-spacing: -0.01em;
-  max-width: 14ch;
+  font-size: var(--t-5);
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  max-width: 12ch;
 }
 
 @media (min-width: 900px) {
   h1 {
-    font-size: var(--t-5);
+    font-size: var(--t-6);
   }
 }
 
 .entrada {
-  margin-top: 0.75rem;
+  margin-top: 0.8rem;
   color: var(--tinta-suave);
-  max-width: 38ch;
+  font-size: 1.075rem;
+  max-width: 36ch;
 }
 
+/* ---------- Búsqueda ---------- */
+
 .buscar {
-  margin-top: 1.75rem;
+  margin-top: 1.6rem;
 }
 
 .buscar label {
   display: block;
   font-weight: 700;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.45rem;
 }
 
 .campo {
   display: flex;
   gap: 0.5rem;
+  padding: 0.35rem;
+  border: 2px solid var(--linea);
+  border-radius: calc(var(--radio-control) + 4px);
+  background: var(--superficie);
+}
+
+.campo:focus-within {
+  border-color: var(--cupula);
 }
 
 input[type="search"] {
   flex: 1;
   min-width: 0;
-  padding: 0.7rem 0.85rem;
-  border: 2px solid var(--linea);
+  padding: 0.55rem 0.6rem;
+  border: 0;
   border-radius: var(--radio-control);
-  background: var(--cal);
+  background: transparent;
   color: var(--tinta);
   font: inherit;
+  font-size: 1.075rem;
 }
 
 input[type="search"]:focus {
-  border-color: var(--cupula);
   outline: none;
 }
 
@@ -222,7 +303,7 @@ button {
   font-weight: 700;
   cursor: pointer;
   border-radius: var(--radio-control);
-  padding: 0.7rem 1.1rem;
+  padding: 0.6rem 1.15rem;
   border: 2px solid var(--cupula);
   background: var(--cupula);
   color: var(--sobre-cupula);
@@ -241,7 +322,7 @@ button:disabled {
 button.secundario {
   background: transparent;
   color: var(--cupula);
-  padding: 0.45rem 0.8rem;
+  padding: 0.4rem 0.8rem;
 }
 
 button.secundario:hover {
@@ -259,54 +340,143 @@ button.secundario:hover {
 
 .mensaje {
   margin-top: 0.75rem;
-  min-height: 1.5em;
   color: var(--tinta-suave);
+}
+
+.mensaje:empty {
+  display: none;
 }
 
 .mensaje.error {
   color: var(--tinta);
   font-weight: 700;
+  padding: 0.75rem 0.9rem;
+  border-left: 4px solid var(--cupula);
+  background: var(--cal-hondo);
+  border-radius: 0 var(--radio-control) var(--radio-control) 0;
 }
 
-/* Respuesta */
+/* ---------- Estado inicial: ejemplos y lo que vas a saber ---------- */
+
+.inicio {
+  margin-top: 1.75rem;
+}
+
+.ejemplos p {
+  font-size: var(--t-0);
+  color: var(--tinta-suave);
+  margin-bottom: 0.5rem;
+}
+
+.ejemplos ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+button.ejemplo {
+  padding: 0.35rem 0.8rem;
+  border: 1.5px solid var(--linea);
+  border-radius: 999px;
+  background: var(--superficie);
+  color: var(--tinta);
+  font-weight: 400;
+}
+
+button.ejemplo:hover {
+  border-color: var(--cupula);
+  background: var(--superficie);
+  color: var(--cupula);
+}
+
+.avance {
+  list-style: none;
+  padding: 0;
+  margin: 2rem 0 0;
+}
+
+.avance li {
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+  padding: 0.9rem 0;
+  border-top: 1px solid var(--linea);
+  color: var(--tinta-suave);
+}
+
+.avance .icono {
+  color: var(--cupula);
+  margin-top: 0.1rem;
+}
+
+.avance strong {
+  color: var(--tinta);
+}
+
+/* ---------- Respuesta ---------- */
 
 .respuesta {
   margin-top: 1.5rem;
 }
 
-.bloque {
-  padding-top: 1.5rem;
-  margin-top: 1.5rem;
-  border-top: 1px solid var(--linea);
+/* Lo memorable: la recolección como un azulejo azul, con un patrón suave de
+   baldosas y los días de la semana como fichas. */
+.basura {
+  position: relative;
+  padding: 1.35rem 1.35rem 1.25rem;
+  border-radius: var(--radio-tarjeta);
+  color: #fff;
+  background-color: var(--tarjeta);
+  background-image:
+    linear-gradient(160deg, transparent 40%, var(--tarjeta-hondo) 100%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.09' stroke-width='1.5'%3E%3Cpath d='M22 4c5 6 5 12 0 18-5-6-5-12 0-18zM22 40c5-6 5-12 0-18-5 6-5 12 0 18zM4 22c6-5 12-5 18 0-6 5-12 5-18 0zM40 22c-6-5-12-5-18 0 6 5 12 5 18 0z'/%3E%3Cpath d='M0 0h44v44H0z'/%3E%3C/g%3E%3C/svg%3E");
 }
 
-.bloque h2 {
+.basura h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   font-size: var(--t-1);
-  color: var(--tinta-suave);
   font-weight: 700;
+  color: rgb(255 255 255 / 0.82);
 }
-
-/* Lo memorable de la página: la respuesta en grande y la semana como azulejos. */
 
 .cuando {
-  margin-top: 0.35rem;
+  margin-top: 0.6rem;
   font-size: var(--t-4);
   font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: -0.01em;
+  line-height: 1.12;
+  letter-spacing: -0.015em;
 }
 
-.cuando.ahora {
-  color: var(--cupula);
+@media (min-width: 900px) {
+  .cuando {
+    font-size: var(--t-5);
+  }
+}
+
+.cuando.ahora::before {
+  content: "";
+  display: inline-block;
+  width: 0.45em;
+  height: 0.45em;
+  margin-right: 0.4em;
+  vertical-align: 0.15em;
+  border-radius: 50%;
+  background: var(--funda-celeste);
+  box-shadow: 0 0 0 0.18em rgb(140 203 234 / 0.3);
 }
 
 .semana {
   list-style: none;
   padding: 0;
-  margin: 1.1rem 0 0;
+  margin: 1.15rem 0 0;
   display: grid;
-  grid-template-columns: repeat(7, minmax(0, 3rem));
-  gap: 0.35rem;
+  grid-template-columns: repeat(7, minmax(0, 3.1rem));
+  gap: 0.4rem;
 }
 
 .azulejo {
@@ -315,16 +485,16 @@ button.secundario:hover {
   display: grid;
   place-items: center;
   border-radius: var(--radio-azulejo);
-  border: 2px solid var(--linea);
-  color: var(--tinta-suave);
+  border: 1.5px solid rgb(255 255 255 / 0.3);
+  color: rgb(255 255 255 / 0.75);
   font-weight: 700;
   overflow: hidden;
 }
 
 .azulejo.toca {
-  background: var(--cupula);
-  border-color: var(--cupula);
-  color: var(--sobre-cupula);
+  background: #fff;
+  border-color: #fff;
+  color: var(--tarjeta);
 }
 
 /* El día de la funda celeste lleva una franja celeste abajo. */
@@ -337,12 +507,12 @@ button.secundario:hover {
 }
 
 .azulejo.hoy {
-  outline: 3px solid var(--tinta);
+  outline: 2.5px solid var(--funda-celeste);
   outline-offset: 2px;
 }
 
 .fundas {
-  margin-top: 1rem;
+  margin-top: 1.1rem;
   max-width: 40ch;
 }
 
@@ -357,32 +527,54 @@ button.secundario:hover {
 
 .funda.negra {
   background: var(--funda-negra);
-  box-shadow: inset 0 0 0 1px var(--linea);
+  box-shadow: 0 0 0 1.5px rgb(255 255 255 / 0.7);
 }
 
 .funda.celeste {
   background: var(--funda-celeste);
 }
 
+.basura .detalle {
+  color: rgb(255 255 255 / 0.75);
+}
+
 .detalle {
-  margin-top: 0.6rem;
+  margin-top: 0.65rem;
   font-size: var(--t-0);
   color: var(--tinta-suave);
 }
 
-/* Luz */
+.bloque {
+  padding-top: 1.4rem;
+  margin-top: 1.4rem;
+  border-top: 1px solid var(--linea);
+}
+
+.bloque h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--t-1);
+  font-weight: 700;
+}
+
+.bloque h2 .icono {
+  color: var(--cupula);
+}
+
+/* ---------- Luz ---------- */
 
 .aviso {
-  margin-top: 0.5rem;
+  margin-top: 0.65rem;
   padding: 0.85rem 1rem;
   border-left: 4px solid var(--aviso);
   background: var(--aviso-fondo);
   border-radius: 0 var(--radio-control) var(--radio-control) 0;
-  max-width: 44ch;
+  max-width: 46ch;
 }
 
 .luz-resumen {
-  margin-top: 0.4rem;
+  margin-top: 0.5rem;
   font-size: var(--t-2);
   font-weight: 700;
 }
@@ -409,30 +601,57 @@ button.secundario:hover {
 
 .filtro-cortes input {
   width: 100%;
+  border: 2px solid var(--linea);
+  background: var(--superficie);
 }
 
-/* Paradas */
+/* ---------- Paradas ---------- */
 
 .paradas {
   list-style: none;
   padding: 0;
-  margin: 0.5rem 0 0;
+  margin: 0.6rem 0 0;
+  counter-reset: parada;
 }
 
 .paradas li {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.55rem 0;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
   border-bottom: 1px solid var(--linea);
+  counter-increment: parada;
+}
+
+/* El número coincide con el del mapa. */
+.paradas li::before {
+  content: counter(parada);
+  display: inline-grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  border: 2px solid var(--tinta);
+  font-size: var(--t-0);
+  font-weight: 700;
+}
+
+.paradas li.sin-numero {
+  display: block;
+  counter-increment: none;
+}
+
+.paradas li.sin-numero::before {
+  content: none;
 }
 
 .paradas .metros {
-  flex: none;
   color: var(--tinta-suave);
+  font-variant-numeric: tabular-nums;
 }
 
-/* Mapa */
+/* ---------- Mapa ---------- */
 
 .leyenda {
   display: flex;
@@ -441,6 +660,7 @@ button.secundario:hover {
   padding: 0.6rem 1rem;
   font-size: var(--t-0);
   color: var(--tinta-suave);
+  background: var(--superficie);
   border-top: 1px solid var(--linea);
 }
 
@@ -451,7 +671,7 @@ button.secundario:hover {
   margin-right: 0.4rem;
   vertical-align: -0.12em;
   border-radius: 3px;
-  opacity: 0.75;
+  opacity: 0.8;
 }
 
 .muestra.lmv {
@@ -467,27 +687,85 @@ button.secundario:hover {
   font-size: var(--t-0);
 }
 
-/* Pie */
+/* El mapa de OpenStreetMap atenuado a grises, para que las zonas sean lo que destaca. */
+.leaflet-tile-pane {
+  filter: grayscale(1) contrast(0.92) brightness(1.04);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .leaflet-tile-pane {
+    filter: grayscale(1) invert(1) brightness(0.82) contrast(0.95);
+  }
+}
+:root[data-theme="dark"] .leaflet-tile-pane {
+  filter: grayscale(1) invert(1) brightness(0.82) contrast(0.95);
+}
+
+/* Número de zona sobre el mapa, como una ficha pequeña. */
+.etiqueta-zona {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--superficie);
+  color: var(--tinta);
+  border: 2px solid currentColor;
+  font: 700 0.85rem/1 var(--letra);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.18);
+}
+
+.etiqueta-zona.lmv {
+  color: var(--cupula);
+}
+
+.etiqueta-zona.mjs {
+  color: var(--tomebamba);
+}
+
+.punto-elegido {
+  display: block;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--cupula);
+  border: 3px solid #fff;
+  box-shadow:
+    0 0 0 6px rgb(45 99 168 / 0.25),
+    0 2px 6px rgb(0 0 0 / 0.3);
+}
+
+.etiqueta-parada {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--superficie);
+  color: var(--tinta);
+  border: 2px solid var(--tinta);
+  font: 700 0.72rem/1 var(--letra);
+}
+
+/* ---------- Pie ---------- */
 
 .pie {
-  padding: 1.5rem 1rem 2rem;
+  order: 3;
+  margin: 2.5rem 1rem 0;
+  padding: 1.25rem 0 1.75rem;
   border-top: 1px solid var(--linea);
   font-size: var(--t-0);
   color: var(--tinta-suave);
 }
 
-.pie p {
-  max-width: 75ch;
+@media (min-width: 900px) {
+  .pie {
+    margin: 2.5rem 2.25rem 0;
+  }
 }
 
 .pie p + p {
-  margin-top: 0.4rem;
-}
-
-@media (min-width: 900px) {
-  .pie {
-    padding: 1rem 2rem;
-  }
+  margin-top: 0.45rem;
 }
 
 @media (prefers-reduced-motion: reduce) {
