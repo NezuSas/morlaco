@@ -1,0 +1,1836 @@
+{
+  "metadata": {
+    "titulo": "Rutas de transporte público",
+    "fuente": "GAD Municipal del cantón Cuenca, portal Cuenca en Datos",
+    "pagina": "https://cuencaendatos.cuenca.gob.ec/dataset/rutas-de-transporte-publico",
+    "datos": "https://cuencaendatos.cuenca.gob.ec/dataset/f15c8808-0d12-4f97-bfd4-3b2f85ea84d1/resource/e55af215-4648-4e3b-84c9-d7e929435008/download/gadcuenca_rutastransporte_2025marzo1.csv",
+    "archivo": "GADCuenca_RutasTransporte_2025Marzo.csv",
+    "licencia": "Creative Commons Non-Commercial (Cualquiera)"
+  },
+  "rutas": [
+    {
+      "linea": "1",
+      "compania": "SIT",
+      "sentido": "ida",
+      "origen": "LIRIO",
+      "destino": "KENNEDY",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "05:50",
+          "fin": "21:15",
+          "intervalo_min": 9
+        },
+        "sabados": {
+          "inicio": "05:50",
+          "fin": "20:30",
+          "intervalo_min": 12
+        },
+        "domingos": {
+          "inicio": "06:00",
+          "fin": "20:00",
+          "intervalo_min": 15
+        }
+      }
+    },
+    {
+      "linea": "1",
+      "compania": "SIT",
+      "sentido": "retorno",
+      "origen": "KENNEDY",
+      "destino": "LIRIO",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:00",
+          "fin": "21:30",
+          "intervalo_min": 9
+        },
+        "sabados": {
+          "inicio": "06:00",
+          "fin": "21:15",
+          "intervalo_min": 12
+        },
+        "domingos": {
+          "inicio": "06:00",
+          "fin": "20:15",
+          "intervalo_min": 15
+        }
+      }
+    },
+    {
+      "linea": "2",
+      "compania": "TURISMO BANIOS",
+      "sentido": "ida",
+      "origen": "PARQUE ALTIPLANO",
+      "destino": "MISICATA ALTO",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:00",
+          "fin": "20:20",
+          "intervalo_min": 15
+        },
+        "sabados": {
+          "inicio": "06:15",
+          "fin": "18:45",
+          "intervalo_min": 20
+        },
+        "domingos": {
+          "inicio": "06:30",
+          "fin": "17:40",
+          "intervalo_min": 25
+        }
+      }
+    },
+    {
+      "linea": "2",
+      "compania": "TURISMO BANIOS",
+      "sentido": "retorno",
+      "origen": "MISICATA ALTO",
+      "destino": "PARQUE ALTIPLANO",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:14",
+          "fin": "21:00",
+          "intervalo_min": 15
+        },
+        "sabados": {
+          "inicio": "06:35",
+          "fin": "19:20",
+          "intervalo_min": 20
+        },
+        "domingos": {
+          "inicio": "07:00",
+          "fin": "18:50",
+          "intervalo_min": 25
+        }
+      }
+    },
+    {
+      "linea": "3",
+      "compania": "CONCUETU",
+      "sentido": "ida",
+      "origen": "SAYAUSI",
+      "destino": "KENNEDY",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "05:50",
+          "fin": "21:15",
+          "intervalo_min": 7
+        },
+        "sabados": {
+          "inicio": "06:00",
+          "fin": "20:15",
+          "intervalo_min": 10
+        },
+        "domingos": {
+          "inicio": "06:10",
+          "fin": "20:00",
+          "intervalo_min": 12
+        }
+      }
+    },
+    {
+      "linea": "3",
+      "compania": "CONCUETU",
+      "sentido": "retorno",
+      "origen": "KENNEDY",
+      "destino": "SAYAUSI",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:00",
+          "fin": "21:15",
+          "intervalo_min": 7
+        },
+        "sabados": {
+          "inicio": "06:00",
+          "fin": "21:00",
+          "intervalo_min": 10
+        },
+        "domingos": {
+          "inicio": "06:15",
+          "fin": "20:30",
+          "intervalo_min": 12
+        }
+      }
+    },
+    {
+      "linea": "4",
+      "compania": "SIT",
+      "sentido": "ida",
+      "origen": "PLATAFORMA DE NARANCAY",
+      "destino": "FERIA LIBRE",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "05:45",
+          "fin": "20:00",
+          "intervalo_min": 15
+        },
+        "sabados": {
+          "inicio": "06:00",
+          "fin": "19:45",
+          "intervalo_min": 25
+        },
+        "domingos": {
+          "inicio": "06:30",
+          "fin": "19:00",
+          "intervalo_min": 30
+        }
+      }
+    },
+    {
+      "linea": "4",
+      "compania": "SIT",
+      "sentido": "retorno",
+      "origen": "FERIA LIBRE",
+      "destino": "PLATAFORMA DE NARANCAY",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:20",
+          "fin": "20:45",
+          "intervalo_min": 15
+        },
+        "sabados": {
+          "inicio": "06:30",
+          "fin": "20:20",
+          "intervalo_min": 25
+        },
+        "domingos": {
+          "inicio": "07:00",
+          "fin": "19:30",
+          "intervalo_min": 30
+        }
+      }
+    },
+    {
+      "linea": "5",
+      "compania": "LANCOMTRI",
+      "sentido": "ida",
+      "origen": "COMPLEJO TOTORACOCHA",
+      "destino": "SUBCENTRO DE SALUD YANUNCAY",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:00",
+          "fin": "21:00",
+          "intervalo_min": 8
+        },
+        "sabados": {
+          "inicio": "06:05",
+          "fin": "19:30",
+          "intervalo_min": 12
+        },
+        "domingos": {
+          "inicio": "06:15",
+          "fin": "19:20",
+          "intervalo_min": 15
+        }
+      }
+    },
+    {
+      "linea": "5",
+      "compania": "LANCOMTRI",
+      "sentido": "retorno",
+      "origen": "SUBCENTRO DE SALUD YANUNCAY",
+      "destino": "COMPLEJO TOTORACOCHA",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:00",
+          "fin": "21:15",
+          "intervalo_min": 8
+        },
+        "sabados": {
+          "inicio": "06:05",
+          "fin": "20:15",
+          "intervalo_min": 12
+        },
+        "domingos": {
+          "inicio": "06:20",
+          "fin": "19:20",
+          "intervalo_min": 15
+        }
+      }
+    },
+    {
+      "linea": "6",
+      "compania": "URBA10",
+      "sentido": "ida",
+      "origen": "MAYANCELA",
+      "destino": "TOMAS ORDONIEZ",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "05:55",
+          "fin": "18:25",
+          "intervalo_min": 25
+        },
+        "sabados": {
+          "inicio": "06:00",
+          "fin": "18:00",
+          "intervalo_min": 30
+        },
+        "domingos": {
+          "inicio": "06:00",
+          "fin": "16:00",
+          "intervalo_min": 30
+        }
+      }
+    },
+    {
+      "linea": "6",
+      "compania": "URBA10",
+      "sentido": "retorno",
+      "origen": "TOMAS ORDONIEZ",
+      "destino": "MAYANCELA",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:25",
+          "fin": "19:30",
+          "intervalo_min": 25
+        },
+        "sabados": {
+          "inicio": "06:40",
+          "fin": "18:30",
+          "intervalo_min": 30
+        },
+        "domingos": {
+          "inicio": "06:40",
+          "fin": "16:30",
+          "intervalo_min": 30
+        }
+      }
+    },
+    {
+      "linea": "7",
+      "compania": "UNCOMETRO",
+      "sentido": "ida",
+      "origen": "TRIGALES ALTOS",
+      "destino": "MALL DEL RIO",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "05:40",
+          "fin": "21:20",
+          "intervalo_min": 8
+        },
+        "sabados": {
+          "inicio": "06:00",
+          "fin": "20:45",
+          "intervalo_min": 10
+        },
+        "domingos": {
+          "inicio": "06:20",
+          "fin": "20:00",
+          "intervalo_min": 15
+        }
+      }
+    },
+    {
+      "linea": "7",
+      "compania": "UNCOMETRO",
+      "sentido": "retorno",
+      "origen": "MALL DEL RIO",
+      "destino": "TRIGALES ALTOS",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "05:50",
+          "fin": "22:20",
+          "intervalo_min": 8
+        },
+        "sabados": {
+          "inicio": "06:00",
+          "fin": "21:30",
+          "intervalo_min": 10
+        },
+        "domingos": {
+          "inicio": "06:30",
+          "fin": "21:00",
+          "intervalo_min": 15
+        }
+      }
+    },
+    {
+      "linea": "8",
+      "compania": "CONCUETU",
+      "sentido": "ida",
+      "origen": "TRIGALES ALTOS",
+      "destino": "SAN JOAQUIN",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "05:50",
+          "fin": "21:00",
+          "intervalo_min": 10
+        },
+        "sabados": {
+          "inicio": "06:00",
+          "fin": "20:15",
+          "intervalo_min": 15
+        },
+        "domingos": {
+          "inicio": "06:15",
+          "fin": "19:45",
+          "intervalo_min": 15
+        }
+      }
+    },
+    {
+      "linea": "8",
+      "compania": "CONCUETU",
+      "sentido": "retorno",
+      "origen": "SAN JOAQUIN",
+      "destino": "TRIGALES ALTOS",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:00",
+          "fin": "21:15",
+          "intervalo_min": 10
+        },
+        "sabados": {
+          "inicio": "06:00",
+          "fin": "20:30",
+          "intervalo_min": 15
+        },
+        "domingos": {
+          "inicio": "06:20",
+          "fin": "20:20",
+          "intervalo_min": 15
+        }
+      }
+    },
+    {
+      "linea": "9",
+      "compania": "TURISMO BANIOS",
+      "sentido": "ida",
+      "origen": "CARMEN DE SININCAY",
+      "destino": "MARIA AUXILIADORA",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "05:45",
+          "fin": "20:00",
+          "intervalo_min": 30
+        },
+        "sabados": {
+          "inicio": "06:00",
+          "fin": "15:45",
+          "intervalo_min": 30
+        },
+        "domingos": {
+          "inicio": "06:15",
+          "fin": "15:00",
+          "intervalo_min": 30
+        }
+      }
+    },
+    {
+      "linea": "9",
+      "compania": "TURISMO BANIOS",
+      "sentido": "retorno",
+      "origen": "MARIA AUXILIADORA",
+      "destino": "CARMEN DE SININCAY",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:15",
+          "fin": "21:40",
+          "intervalo_min": 30
+        },
+        "sabados": {
+          "inicio": "06:35",
+          "fin": "16:30",
+          "intervalo_min": 30
+        },
+        "domingos": {
+          "inicio": "06:45",
+          "fin": "16:00",
+          "intervalo_min": 30
+        }
+      }
+    },
+    {
+      "linea": "10",
+      "compania": "UNCOMETRO",
+      "sentido": "ida",
+      "origen": "PALUNCAY",
+      "destino": "FLORIDA",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "05:40",
+          "fin": "20:30",
+          "intervalo_min": 12
+        },
+        "sabados": {
+          "inicio": "06:00",
+          "fin": "19:00",
+          "intervalo_min": 18
+        },
+        "domingos": {
+          "inicio": "06:30",
+          "fin": "19:00",
+          "intervalo_min": 20
+        }
+      }
+    },
+    {
+      "linea": "10",
+      "compania": "UNCOMETRO",
+      "sentido": "retorno",
+      "origen": "FLORIDA",
+      "destino": "PALUNCAY",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:20",
+          "fin": "21:20",
+          "intervalo_min": 12
+        },
+        "sabados": {
+          "inicio": "06:00",
+          "fin": "20:00",
+          "intervalo_min": 18
+        },
+        "domingos": {
+          "inicio": "06:30",
+          "fin": "19:30",
+          "intervalo_min": 20
+        }
+      }
+    },
+    {
+      "linea": "11",
+      "compania": "COMTRANUTOME",
+      "sentido": "ida",
+      "origen": "CARCEL",
+      "destino": "CENTENARIO",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:00",
+          "fin": "19:10",
+          "intervalo_min": 25
+        },
+        "sabados": {
+          "inicio": "06:10",
+          "fin": "18:10",
+          "intervalo_min": 30
+        },
+        "domingos": {
+          "inicio": "06:10",
+          "fin": "18:00",
+          "intervalo_min": 30
+        }
+      }
+    },
+    {
+      "linea": "11",
+      "compania": "COMTRANUTOME",
+      "sentido": "retorno",
+      "origen": "CENTENARIO",
+      "destino": "CARCEL",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:30",
+          "fin": "20:25",
+          "intervalo_min": 25
+        },
+        "sabados": {
+          "inicio": "06:40",
+          "fin": "19:10",
+          "intervalo_min": 30
+        },
+        "domingos": {
+          "inicio": "06:40",
+          "fin": "18:50",
+          "intervalo_min": 30
+        }
+      }
+    },
+    {
+      "linea": "11B",
+      "compania": "COMTRANUTOME",
+      "sentido": "ida",
+      "origen": "SAN PEDRO",
+      "destino": "CENTENARIO",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "05:50",
+          "fin": "19:00",
+          "intervalo_min": 25
+        },
+        "sabados": {
+          "inicio": "06:00",
+          "fin": "18:00",
+          "intervalo_min": 30
+        },
+        "domingos": {
+          "inicio": "06:00",
+          "fin": "17:50",
+          "intervalo_min": 30
+        }
+      }
+    },
+    {
+      "linea": "11B",
+      "compania": "COMTRANUTOME",
+      "sentido": "retorno",
+      "origen": "CENTENARIO",
+      "destino": "SAN PEDRO",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:20",
+          "fin": "20:15",
+          "intervalo_min": 25
+        },
+        "sabados": {
+          "inicio": "06:30",
+          "fin": "19:00",
+          "intervalo_min": 30
+        },
+        "domingos": {
+          "inicio": "06:30",
+          "fin": "18:40",
+          "intervalo_min": 30
+        }
+      }
+    },
+    {
+      "linea": "12",
+      "compania": "RICAURTESA",
+      "sentido": "ida",
+      "origen": "",
+      "destino": "PLATAFORMA ITINERANTE QUINTA CHICA",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "05:50",
+          "fin": "21:45",
+          "intervalo_min": 8
+        },
+        "sabados": {
+          "inicio": "06:00",
+          "fin": "20:45",
+          "intervalo_min": 12
+        },
+        "domingos": {
+          "inicio": "06:00",
+          "fin": "20:00",
+          "intervalo_min": 15
+        }
+      }
+    },
+    {
+      "linea": "12",
+      "compania": "RICAURTESA",
+      "sentido": "retorno",
+      "origen": "PLATAFORMA ITINERANTE QUINTA CHICA",
+      "destino": "",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "05:50",
+          "fin": "22:00",
+          "intervalo_min": 8
+        },
+        "sabados": {
+          "inicio": "06:00",
+          "fin": "21:00",
+          "intervalo_min": 12
+        },
+        "domingos": {
+          "inicio": "06:00",
+          "fin": "20:00",
+          "intervalo_min": 15
+        }
+      }
+    },
+    {
+      "linea": "13",
+      "compania": "COMTRANUTOME",
+      "sentido": "ida",
+      "origen": "TEJAR",
+      "destino": "IESS",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:08",
+          "fin": "20:50",
+          "intervalo_min": 16
+        },
+        "sabados": {
+          "inicio": "06:08",
+          "fin": "19:52",
+          "intervalo_min": 24
+        },
+        "domingos": {
+          "inicio": "06:08",
+          "fin": "17:52",
+          "intervalo_min": 30
+        }
+      }
+    },
+    {
+      "linea": "13",
+      "compania": "COMTRANUTOME",
+      "sentido": "retorno",
+      "origen": "IESS",
+      "destino": "TEJAR",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:08",
+          "fin": "21:52",
+          "intervalo_min": 16
+        },
+        "sabados": {
+          "inicio": "06:08",
+          "fin": "20:37",
+          "intervalo_min": 24
+        },
+        "domingos": {
+          "inicio": "06:08",
+          "fin": "18:52",
+          "intervalo_min": 30
+        }
+      }
+    },
+    {
+      "linea": "13B",
+      "compania": "COMTRANUTOME",
+      "sentido": "ida",
+      "origen": "MALL DEL RIO",
+      "destino": "IESS",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:00",
+          "fin": "21:00",
+          "intervalo_min": 16
+        },
+        "sabados": {
+          "inicio": "06:00",
+          "fin": "20:00",
+          "intervalo_min": 24
+        },
+        "domingos": {
+          "inicio": "06:00",
+          "fin": "18:00",
+          "intervalo_min": 30
+        }
+      }
+    },
+    {
+      "linea": "13B",
+      "compania": "COMTRANUTOME",
+      "sentido": "retorno",
+      "origen": "IESS",
+      "destino": "MALL DEL RIO",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:00",
+          "fin": "22:00",
+          "intervalo_min": 16
+        },
+        "sabados": {
+          "inicio": "06:00",
+          "fin": "20:45",
+          "intervalo_min": 24
+        },
+        "domingos": {
+          "inicio": "06:00",
+          "fin": "19:00",
+          "intervalo_min": 30
+        }
+      }
+    },
+    {
+      "linea": "14",
+      "compania": "CONCUETU",
+      "sentido": "ida",
+      "origen": "VALLE",
+      "destino": "FERIA LIBRE",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "05:40",
+          "fin": "20:30",
+          "intervalo_min": 7
+        },
+        "sabados": {
+          "inicio": "05:50",
+          "fin": "19:05",
+          "intervalo_min": 10
+        },
+        "domingos": {
+          "inicio": "06:00",
+          "fin": "18:20",
+          "intervalo_min": 12
+        }
+      }
+    },
+    {
+      "linea": "14",
+      "compania": "CONCUETU",
+      "sentido": "retorno",
+      "origen": "FERIA LIBRE",
+      "destino": "VALLE",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:15",
+          "fin": "21:15",
+          "intervalo_min": 7
+        },
+        "sabados": {
+          "inicio": "06:25",
+          "fin": "20:00",
+          "intervalo_min": 10
+        },
+        "domingos": {
+          "inicio": "06:35",
+          "fin": "19:15",
+          "intervalo_min": 12
+        }
+      }
+    },
+    {
+      "linea": "15",
+      "compania": "COMTRANUTOME",
+      "sentido": "ida",
+      "origen": "BAGUANCHI",
+      "destino": "FERIA LIBRE",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:00",
+          "fin": "20:00",
+          "intervalo_min": 12
+        },
+        "sabados": {
+          "inicio": "06:00",
+          "fin": "19:00",
+          "intervalo_min": 15
+        },
+        "domingos": {
+          "inicio": "06:00",
+          "fin": "17:48",
+          "intervalo_min": 18
+        }
+      }
+    },
+    {
+      "linea": "15",
+      "compania": "COMTRANUTOME",
+      "sentido": "retorno",
+      "origen": "FERIA LIBRE",
+      "destino": "BAGUANCHI",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:00",
+          "fin": "20:45",
+          "intervalo_min": 12
+        },
+        "sabados": {
+          "inicio": "06:00",
+          "fin": "20:00",
+          "intervalo_min": 15
+        },
+        "domingos": {
+          "inicio": "06:00",
+          "fin": "18:30",
+          "intervalo_min": 18
+        }
+      }
+    },
+    {
+      "linea": "16",
+      "compania": "LANCOMTRI",
+      "sentido": "ida",
+      "origen": "RACAR",
+      "destino": "HOSPITAL DEL RIO",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "05:45",
+          "fin": "21:00",
+          "intervalo_min": 8
+        },
+        "sabados": {
+          "inicio": "06:00",
+          "fin": "20:00",
+          "intervalo_min": 12
+        },
+        "domingos": {
+          "inicio": "06:00",
+          "fin": "19:00",
+          "intervalo_min": 15
+        }
+      }
+    },
+    {
+      "linea": "16",
+      "compania": "LANCOMTRI",
+      "sentido": "retorno",
+      "origen": "HOSPITAL DEL RIO",
+      "destino": "RACAR",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:00",
+          "fin": "21:30",
+          "intervalo_min": 8
+        },
+        "sabados": {
+          "inicio": "06:00",
+          "fin": "21:00",
+          "intervalo_min": 12
+        },
+        "domingos": {
+          "inicio": "06:00",
+          "fin": "20:30",
+          "intervalo_min": 15
+        }
+      }
+    },
+    {
+      "linea": "17",
+      "compania": "URBA10",
+      "sentido": "ida",
+      "origen": "GUZHO",
+      "destino": "YANATURO",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:00",
+          "fin": "19:30",
+          "intervalo_min": 15
+        },
+        "sabados": {
+          "inicio": "06:05",
+          "fin": "18:20",
+          "intervalo_min": 20
+        },
+        "domingos": {
+          "inicio": "06:15",
+          "fin": "16:30",
+          "intervalo_min": 30
+        }
+      }
+    },
+    {
+      "linea": "17",
+      "compania": "URBA10",
+      "sentido": "retorno",
+      "origen": "YANATURO",
+      "destino": "GUZHO",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:00",
+          "fin": "20:30",
+          "intervalo_min": 15
+        },
+        "sabados": {
+          "inicio": "06:35",
+          "fin": "19:20",
+          "intervalo_min": 20
+        },
+        "domingos": {
+          "inicio": "06:35",
+          "fin": "17:30",
+          "intervalo_min": 30
+        }
+      }
+    },
+    {
+      "linea": "18",
+      "compania": "URBA10",
+      "sentido": "ida",
+      "origen": "ZHUCAY",
+      "destino": "UNIVERSIDAD POLITECNICA SALESIANA",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "05:45",
+          "fin": "20:00",
+          "intervalo_min": 8
+        },
+        "sabados": {
+          "inicio": "05:50",
+          "fin": "19:40",
+          "intervalo_min": 12
+        },
+        "domingos": {
+          "inicio": "06:00",
+          "fin": "19:00",
+          "intervalo_min": 15
+        }
+      }
+    },
+    {
+      "linea": "18",
+      "compania": "URBA10",
+      "sentido": "retorno",
+      "origen": "UNIVERSIDAD POLITECNICA SALESIANA",
+      "destino": "ZHUCAY",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:05",
+          "fin": "21:00",
+          "intervalo_min": 8
+        },
+        "sabados": {
+          "inicio": "05:50",
+          "fin": "19:40",
+          "intervalo_min": 12
+        },
+        "domingos": {
+          "inicio": "06:15",
+          "fin": "19:00",
+          "intervalo_min": 15
+        }
+      }
+    },
+    {
+      "linea": "19",
+      "compania": "COMTRANUTOME",
+      "sentido": "ida",
+      "origen": "ORQUIDEAS",
+      "destino": "TENNIS CLUB",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "05:50",
+          "fin": "20:00",
+          "intervalo_min": 12
+        },
+        "sabados": {
+          "inicio": "06:00",
+          "fin": "19:00",
+          "intervalo_min": 15
+        },
+        "domingos": {
+          "inicio": "06:15",
+          "fin": "17:50",
+          "intervalo_min": 18
+        }
+      }
+    },
+    {
+      "linea": "19",
+      "compania": "COMTRANUTOME",
+      "sentido": "retorno",
+      "origen": "TENNIS CLUB",
+      "destino": "ORQUIDEAS",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:00",
+          "fin": "20:45",
+          "intervalo_min": 12
+        },
+        "sabados": {
+          "inicio": "06:10",
+          "fin": "20:00",
+          "intervalo_min": 15
+        },
+        "domingos": {
+          "inicio": "06:15",
+          "fin": "18:30",
+          "intervalo_min": 18
+        }
+      }
+    },
+    {
+      "linea": "20",
+      "compania": "LANCOMTRI",
+      "sentido": "ida",
+      "origen": "RACAR",
+      "destino": "RICAURTE",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "05:45",
+          "fin": "21:40",
+          "intervalo_min": 10
+        },
+        "sabados": {
+          "inicio": "05:45",
+          "fin": "20:00",
+          "intervalo_min": 12
+        },
+        "domingos": {
+          "inicio": "05:55",
+          "fin": "18:30",
+          "intervalo_min": 15
+        }
+      }
+    },
+    {
+      "linea": "20",
+      "compania": "LANCOMTRI",
+      "sentido": "retorno",
+      "origen": "RICAURTE",
+      "destino": "RACAR",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "05:40",
+          "fin": "21:40",
+          "intervalo_min": 10
+        },
+        "sabados": {
+          "inicio": "05:40",
+          "fin": "20:00",
+          "intervalo_min": 12
+        },
+        "domingos": {
+          "inicio": "05:45",
+          "fin": "18:00",
+          "intervalo_min": 15
+        }
+      }
+    },
+    {
+      "linea": "21",
+      "compania": "URBA10",
+      "sentido": "ida",
+      "origen": "TARQUI",
+      "destino": "VADO",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "05:40",
+          "fin": "19:40",
+          "intervalo_min": 30
+        },
+        "sabados": {
+          "inicio": "00:00",
+          "fin": "00:00",
+          "intervalo_min": 0
+        },
+        "domingos": {
+          "inicio": "00:00",
+          "fin": "00:00",
+          "intervalo_min": 0
+        }
+      }
+    },
+    {
+      "linea": "21",
+      "compania": "URBA10",
+      "sentido": "retorno",
+      "origen": "FERIA LIBRE",
+      "destino": "TARQUI",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:05",
+          "fin": "19:55",
+          "intervalo_min": 30
+        },
+        "sabados": {
+          "inicio": "00:00",
+          "fin": "00:00",
+          "intervalo_min": 0
+        },
+        "domingos": {
+          "inicio": "00:00",
+          "fin": "00:00",
+          "intervalo_min": 0
+        }
+      }
+    },
+    {
+      "linea": "22",
+      "compania": "COMTRANUTOME",
+      "sentido": "ida",
+      "origen": "",
+      "destino": "UNIVERSIDAD DEL AZUAY",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "05:50",
+          "fin": "21:20",
+          "intervalo_min": 9
+        },
+        "sabados": {
+          "inicio": "06:00",
+          "fin": "20:00",
+          "intervalo_min": 12
+        },
+        "domingos": {
+          "inicio": "06:15",
+          "fin": "18:30",
+          "intervalo_min": 15
+        }
+      }
+    },
+    {
+      "linea": "22",
+      "compania": "COMTRANUTOME",
+      "sentido": "retorno",
+      "origen": "UNIVERSIDAD DEL AZUAY",
+      "destino": "",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:00",
+          "fin": "21:40",
+          "intervalo_min": 9
+        },
+        "sabados": {
+          "inicio": "06:00",
+          "fin": "20:45",
+          "intervalo_min": 12
+        },
+        "domingos": {
+          "inicio": "06:15",
+          "fin": "19:00",
+          "intervalo_min": 15
+        }
+      }
+    },
+    {
+      "linea": "23",
+      "compania": "COMTRANUTOME",
+      "sentido": "ida",
+      "origen": "RAYOLOMA",
+      "destino": "CEMENTERIO",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:00",
+          "fin": "18:00",
+          "intervalo_min": 30
+        },
+        "sabados": {
+          "inicio": "00:00",
+          "fin": "00:00",
+          "intervalo_min": 0
+        },
+        "domingos": {
+          "inicio": "00:00",
+          "fin": "00:00",
+          "intervalo_min": 0
+        }
+      }
+    },
+    {
+      "linea": "23",
+      "compania": "COMTRANUTOME",
+      "sentido": "retorno",
+      "origen": "CEMENTERIO",
+      "destino": "RAYOLOMA",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:30",
+          "fin": "19:00",
+          "intervalo_min": 30
+        },
+        "sabados": {
+          "inicio": "00:00",
+          "fin": "00:00",
+          "intervalo_min": 0
+        },
+        "domingos": {
+          "inicio": "00:00",
+          "fin": "00:00",
+          "intervalo_min": 0
+        }
+      }
+    },
+    {
+      "linea": "24",
+      "compania": "CONCUETU",
+      "sentido": "ida",
+      "origen": "AUQUILULA",
+      "destino": "MIRAFLORES",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "05:45",
+          "fin": "20:30",
+          "intervalo_min": 9
+        },
+        "sabados": {
+          "inicio": "05:50",
+          "fin": "20:30",
+          "intervalo_min": 12
+        },
+        "domingos": {
+          "inicio": "06:00",
+          "fin": "19:15",
+          "intervalo_min": 15
+        }
+      }
+    },
+    {
+      "linea": "24",
+      "compania": "CONCUETU",
+      "sentido": "retorno",
+      "origen": "MIRAFLORES",
+      "destino": "AUQUILULA",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:00",
+          "fin": "21:15",
+          "intervalo_min": 9
+        },
+        "sabados": {
+          "inicio": "06:00",
+          "fin": "21:00",
+          "intervalo_min": 12
+        },
+        "domingos": {
+          "inicio": "06:00",
+          "fin": "20:00",
+          "intervalo_min": 15
+        }
+      }
+    },
+    {
+      "linea": "25",
+      "compania": "TURISMO BANIOS",
+      "sentido": "ida",
+      "origen": "JAIME ROLDOS",
+      "destino": "STA. MARIA DEL VERGEL",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:05",
+          "fin": "20:30",
+          "intervalo_min": 15
+        },
+        "sabados": {
+          "inicio": "06:15",
+          "fin": "18:45",
+          "intervalo_min": 20
+        },
+        "domingos": {
+          "inicio": "06:15",
+          "fin": "17:40",
+          "intervalo_min": 25
+        }
+      }
+    },
+    {
+      "linea": "25",
+      "compania": "TURISMO BANIOS",
+      "sentido": "retorno",
+      "origen": "STA. MARIA DEL VERGEL",
+      "destino": "JAIME ROLDOS",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:05",
+          "fin": "21:45",
+          "intervalo_min": 15
+        },
+        "sabados": {
+          "inicio": "06:30",
+          "fin": "19:45",
+          "intervalo_min": 20
+        },
+        "domingos": {
+          "inicio": "06:30",
+          "fin": "18:50",
+          "intervalo_min": 25
+        }
+      }
+    },
+    {
+      "linea": "26",
+      "compania": "UNCOMETRO",
+      "sentido": "ida",
+      "origen": "CHECA",
+      "destino": "MERCADO 27 DE FEBRERO",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "05:35",
+          "fin": "20:05",
+          "intervalo_min": 12
+        },
+        "sabados": {
+          "inicio": "05:55",
+          "fin": "18:00",
+          "intervalo_min": 15
+        },
+        "domingos": {
+          "inicio": "06:00",
+          "fin": "17:30",
+          "intervalo_min": 15
+        }
+      }
+    },
+    {
+      "linea": "26",
+      "compania": "UNCOMETRO",
+      "sentido": "retorno",
+      "origen": "MERCADO 27 DE FEBRERO",
+      "destino": "CHECA",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:00",
+          "fin": "21:00",
+          "intervalo_min": 12
+        },
+        "sabados": {
+          "inicio": "06:20",
+          "fin": "19:00",
+          "intervalo_min": 15
+        },
+        "domingos": {
+          "inicio": "06:30",
+          "fin": "18:30",
+          "intervalo_min": 15
+        }
+      }
+    },
+    {
+      "linea": "27",
+      "compania": "TURISMO BANIOS",
+      "sentido": "ida",
+      "origen": "",
+      "destino": "COCHAS SININCAY",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "05:35",
+          "fin": "20:45",
+          "intervalo_min": 7
+        },
+        "sabados": {
+          "inicio": "05:50",
+          "fin": "19:40",
+          "intervalo_min": 9
+        },
+        "domingos": {
+          "inicio": "06:00",
+          "fin": "19:00",
+          "intervalo_min": 12
+        }
+      }
+    },
+    {
+      "linea": "27",
+      "compania": "TURISMO BANIOS",
+      "sentido": "retorno",
+      "origen": "COCHAS SININCAY",
+      "destino": "",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:00",
+          "fin": "21:45",
+          "intervalo_min": 7
+        },
+        "sabados": {
+          "inicio": "06:00",
+          "fin": "20:45",
+          "intervalo_min": 9
+        },
+        "domingos": {
+          "inicio": "06:15",
+          "fin": "20:10",
+          "intervalo_min": 12
+        }
+      }
+    },
+    {
+      "linea": "28",
+      "compania": "COMTRANUTOME",
+      "sentido": "ida",
+      "origen": "GUANGARCUCHO",
+      "destino": "FERIA LIBRE",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "05:40",
+          "fin": "20:30",
+          "intervalo_min": 8
+        },
+        "sabados": {
+          "inicio": "06:00",
+          "fin": "20:00",
+          "intervalo_min": 10
+        },
+        "domingos": {
+          "inicio": "06:00",
+          "fin": "18:45",
+          "intervalo_min": 15
+        }
+      }
+    },
+    {
+      "linea": "28",
+      "compania": "COMTRANUTOME",
+      "sentido": "retorno",
+      "origen": "FERIA LIBRE",
+      "destino": "GUANGARCUCHO",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:00",
+          "fin": "21:15",
+          "intervalo_min": 8
+        },
+        "sabados": {
+          "inicio": "06:00",
+          "fin": "20:45",
+          "intervalo_min": 10
+        },
+        "domingos": {
+          "inicio": "06:15",
+          "fin": "19:45",
+          "intervalo_min": 15
+        }
+      }
+    },
+    {
+      "linea": "29",
+      "compania": "COMTRANUTOME",
+      "sentido": "ida",
+      "origen": "PACCHA",
+      "destino": "TOMAS ORDONIEZ",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "05:50",
+          "fin": "19:30",
+          "intervalo_min": 30
+        },
+        "sabados": {
+          "inicio": "06:00",
+          "fin": "18:00",
+          "intervalo_min": 30
+        },
+        "domingos": {
+          "inicio": "06:00",
+          "fin": "17:45",
+          "intervalo_min": 30
+        }
+      }
+    },
+    {
+      "linea": "29",
+      "compania": "COMTRANUTOME",
+      "sentido": "retorno",
+      "origen": "CEMENTERIO",
+      "destino": "PACCHA",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:20",
+          "fin": "20:15",
+          "intervalo_min": 30
+        },
+        "sabados": {
+          "inicio": "06:30",
+          "fin": "19:00",
+          "intervalo_min": 30
+        },
+        "domingos": {
+          "inicio": "06:30",
+          "fin": "18:30",
+          "intervalo_min": 30
+        }
+      }
+    },
+    {
+      "linea": "30",
+      "compania": "RICAURTESA",
+      "sentido": "ida",
+      "origen": "OCTAVIO CORDERO",
+      "destino": "CEMENTERIO",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "05:50",
+          "fin": "19:30",
+          "intervalo_min": 20
+        },
+        "sabados": {
+          "inicio": "06:00",
+          "fin": "18:00",
+          "intervalo_min": 30
+        },
+        "domingos": {
+          "inicio": "06:00",
+          "fin": "17:00",
+          "intervalo_min": 30
+        }
+      }
+    },
+    {
+      "linea": "30",
+      "compania": "RICAURTESA",
+      "sentido": "retorno",
+      "origen": "CEMENTERIO",
+      "destino": "OCTAVIO CORDERO",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:30",
+          "fin": "20:10",
+          "intervalo_min": 20
+        },
+        "sabados": {
+          "inicio": "06:20",
+          "fin": "18:40",
+          "intervalo_min": 30
+        },
+        "domingos": {
+          "inicio": "06:30",
+          "fin": "18:00",
+          "intervalo_min": 30
+        }
+      }
+    },
+    {
+      "linea": "31",
+      "compania": "RICAURTESA",
+      "sentido": "ida",
+      "origen": "LLACAO",
+      "destino": "CEMENTERIO",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:30",
+          "fin": "18:00",
+          "intervalo_min": 30
+        },
+        "sabados": {
+          "inicio": "06:30",
+          "fin": "16:00",
+          "intervalo_min": 30
+        },
+        "domingos": {
+          "inicio": "06:30",
+          "fin": "15:30",
+          "intervalo_min": 30
+        }
+      }
+    },
+    {
+      "linea": "31",
+      "compania": "RICAURTESA",
+      "sentido": "retorno",
+      "origen": "CEMENTERIO",
+      "destino": "LLACAO",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "07:20",
+          "fin": "19:00",
+          "intervalo_min": 30
+        },
+        "sabados": {
+          "inicio": "07:20",
+          "fin": "17:00",
+          "intervalo_min": 30
+        },
+        "domingos": {
+          "inicio": "07:20",
+          "fin": "16:30",
+          "intervalo_min": 30
+        }
+      }
+    },
+    {
+      "linea": "32",
+      "compania": "CONCUETU",
+      "sentido": "ida",
+      "origen": "SIDCAY EL GUABO",
+      "destino": "CEMENTERIO",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "05:50",
+          "fin": "20:00",
+          "intervalo_min": 30
+        },
+        "sabados": {
+          "inicio": "06:00",
+          "fin": "19:00",
+          "intervalo_min": 30
+        },
+        "domingos": {
+          "inicio": "06:00",
+          "fin": "17:45",
+          "intervalo_min": 30
+        }
+      }
+    },
+    {
+      "linea": "32",
+      "compania": "CONCUETU",
+      "sentido": "retorno",
+      "origen": "CEMENTERIO",
+      "destino": "SIDCAY EL GUABO",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:30",
+          "fin": "21:00",
+          "intervalo_min": 30
+        },
+        "sabados": {
+          "inicio": "06:40",
+          "fin": "19:45",
+          "intervalo_min": 30
+        },
+        "domingos": {
+          "inicio": "06:40",
+          "fin": "18:30",
+          "intervalo_min": 30
+        }
+      }
+    },
+    {
+      "linea": "33",
+      "compania": "RICAURTESA",
+      "sentido": "ida",
+      "origen": "LA RAYA",
+      "destino": "CEMENTERIO",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:30",
+          "fin": "18:00",
+          "intervalo_min": 30
+        },
+        "sabados": {
+          "inicio": "06:30",
+          "fin": "18:00",
+          "intervalo_min": 30
+        },
+        "domingos": {
+          "inicio": "06:30",
+          "fin": "15:30",
+          "intervalo_min": 30
+        }
+      }
+    },
+    {
+      "linea": "33",
+      "compania": "RICAURTESA",
+      "sentido": "retorno",
+      "origen": "CEMENTERIO",
+      "destino": "LA RAYA",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "07:10",
+          "fin": "19:00",
+          "intervalo_min": 30
+        },
+        "sabados": {
+          "inicio": "07:20",
+          "fin": "19:00",
+          "intervalo_min": 30
+        },
+        "domingos": {
+          "inicio": "07:20",
+          "fin": "16:30",
+          "intervalo_min": 30
+        }
+      }
+    },
+    {
+      "linea": "34",
+      "compania": "LANCOMTRI",
+      "sentido": "ida",
+      "origen": "NULTI",
+      "destino": "CEMENTERIO",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "05:40",
+          "fin": "19:00",
+          "intervalo_min": 30
+        },
+        "sabados": {
+          "inicio": "06:10",
+          "fin": "18:30",
+          "intervalo_min": 30
+        },
+        "domingos": {
+          "inicio": "06:10",
+          "fin": "18:20",
+          "intervalo_min": 30
+        }
+      }
+    },
+    {
+      "linea": "34",
+      "compania": "LANCOMTRI",
+      "sentido": "retorno",
+      "origen": "CEMENTERIO",
+      "destino": "NULTI",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:10",
+          "fin": "19:45",
+          "intervalo_min": 30
+        },
+        "sabados": {
+          "inicio": "06:40",
+          "fin": "19:10",
+          "intervalo_min": 30
+        },
+        "domingos": {
+          "inicio": "06:40",
+          "fin": "19:00",
+          "intervalo_min": 30
+        }
+      }
+    },
+    {
+      "linea": "50",
+      "compania": "RICAURTESA",
+      "sentido": "ida",
+      "origen": "SAN JOSE DE BLAZAY",
+      "destino": "HOSPITAL DEL RIO",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "05:55",
+          "fin": "20:00",
+          "intervalo_min": 15
+        },
+        "sabados": {
+          "inicio": "06:00",
+          "fin": "18:45",
+          "intervalo_min": 20
+        },
+        "domingos": {
+          "inicio": "06:00",
+          "fin": "17:20",
+          "intervalo_min": 25
+        }
+      }
+    },
+    {
+      "linea": "50",
+      "compania": "RICAURTESA",
+      "sentido": "retorno",
+      "origen": "HOSPITAL DEL RIO",
+      "destino": "SAN JOSE DE BALZAY",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "06:10",
+          "fin": "21:00",
+          "intervalo_min": 15
+        },
+        "sabados": {
+          "inicio": "06:15",
+          "fin": "19:30",
+          "intervalo_min": 20
+        },
+        "domingos": {
+          "inicio": "06:15",
+          "fin": "18:15",
+          "intervalo_min": 25
+        }
+      }
+    },
+    {
+      "linea": "100",
+      "compania": "SIT",
+      "sentido": "ida",
+      "origen": "RICAURTE",
+      "destino": "",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "05:50",
+          "fin": "21:50",
+          "intervalo_min": 6
+        },
+        "sabados": {
+          "inicio": "06:00",
+          "fin": "21:00",
+          "intervalo_min": 8
+        },
+        "domingos": {
+          "inicio": "06:00",
+          "fin": "20:45",
+          "intervalo_min": 8
+        }
+      }
+    },
+    {
+      "linea": "100",
+      "compania": "SIT",
+      "sentido": "retorno",
+      "origen": "",
+      "destino": "RICAURTE",
+      "horarios": {
+        "lunes_viernes": {
+          "inicio": "05:50",
+          "fin": "22:00",
+          "intervalo_min": 6
+        },
+        "sabados": {
+          "inicio": "06:00",
+          "fin": "21:30",
+          "intervalo_min": 8
+        },
+        "domingos": {
+          "inicio": "06:00",
+          "fin": "21:15",
+          "intervalo_min": 8
+        }
+      }
+    }
+  ]
+}

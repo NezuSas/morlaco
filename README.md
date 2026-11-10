@@ -1,0 +1,119 @@
+# Morlaco
+
+**Datos abiertos de los servicios públicos de Cuenca, Ecuador, en un solo lugar y en formatos fáciles de usar.**
+
+¿A qué hora pasa el recolector por mi casa? ¿Hay corte de luz programado en mi sector? ¿Cada cuánto pasa
+la línea 7? La información existe, pero está repartida entre la web de cada empresa, mapas de Google, PDFs
+y hojas de cálculo. Morlaco la recoge de las fuentes oficiales, la limpia y la publica como JSON y GeoJSON
+para que cualquiera pueda construir encima: una web, un bot, una app o un análisis.
+
+> Morlaco **no es un servicio oficial** ni está afiliado a EMAC EP, Centro Sur, ETAPA EP ni al GAD
+> Municipal de Cuenca. Cada archivo indica de dónde salió. Ante cualquier duda, manda la fuente oficial.
+
+## Qué datos hay
+
+| Archivo | Qué contiene | Fuente |
+|---|---|---|
+| [`datos/recoleccion/zonas.geojson`](datos/recoleccion/zonas.geojson) | Las 8 zonas de recolección de basura (polígonos) con sus días, horario y día de recolección de reciclables | [EMAC EP, mapa de zonas](https://emac.gob.ec/mapa-zonas-de-recoleccion/) |
+| [`datos/luz/suspensiones.json`](datos/luz/suspensiones.json) | Suspensiones programadas del servicio eléctrico: alimentador, dirección, hora de inicio y de fin, trabajo | [Centro Sur, suspensiones programadas](https://www.centrosur.gob.ec/suspensiones-programadas/) |
+| [`datos/buses/rutas.json`](datos/buses/rutas.json) | Líneas de bus con compañía, origen, destino, horario e intervalo entre buses (lunes a viernes, sábados, domingos) | [Cuenca en Datos](https://cuencaendatos.cuenca.gob.ec/dataset/f15c8808-0d12-4f97-bfd4-3b2f85ea84d1) |
+| [`datos/buses/recorridos.json`](datos/buses/recorridos.json) | Puntos por los que pasa cada línea, en orden, de ida y de retorno | [Cuenca en Datos](https://cuencaendatos.cuenca.gob.ec/dataset/4c727738-890e-445c-9b20-32df271db766) |
+| [`datos/buses/paradas.geojson`](datos/buses/paradas.geojson) | Paradas de bus con coordenadas corregidas y si tienen señal (paleta) | [Cuenca en Datos](https://cuencaendatos.cuenca.gob.ec/dataset/d98292ca-7c70-422a-ac6f-1b43194ff5ba) |
+| [`datos/estado.json`](datos/estado.json) | Cuándo se actualizó cada fuente por última vez y si hubo errores | — |
+
+### Ejemplo: una zona de recolección
+
+```json
+{
+  "zona": 4,
+  "nombre": "Zona 4",
+  "dias": ["lunes", "miércoles", "viernes"],
+  "dias_iso": [1, 3, 5],
+  "desde": "20:00",
+  "hasta": "24:00",
+  "dia_reciclaje": "miércoles"
+}
+```
+
+Para saber la zona de una dirección, basta con comprobar en qué polígono cae su coordenada. Por ejemplo, el
+Parque Calderón está en la zona 4.
+
+### Lo que hay que saber de cada fuente
+
+- **Recolección (EMAC).** Viene del mapa de Google que EMAC publica en su web. Según EMAC, la funda
+  celeste (reciclables) se recoge los miércoles o los jueves; `dia_reciclaje` indica cuál toca en cada zona.
+- **Cortes de luz (Centro Sur).** Se leen de los PDF diarios que Centro Sur publica. Las direcciones son texto
+  tal como lo escribe Centro Sur, sin coordenadas. **En noviembre de 2026 la página no se actualizaba desde
+  julio**: revisa `metadata.ultima_publicacion` antes de fiarte de estos datos.
+- **Buses (municipio).** Se toma siempre el CSV más reciente del portal. En el CSV de paradas las coordenadas
+  vienen mal formateadas (`-2.895.956` en vez de `-2.895956`); Morlaco las corrige y descarta las que caen
+  fuera de Cuenca (`metadata.descartadas`). No hay posiciones de buses en tiempo real: no son públicas.
+- **Cortes de agua (ETAPA).** Todavía no están. ETAPA los anuncia en redes sociales y en prensa, no en un
+  formato que se pueda leer de forma fiable.
+
+## Uso
+
+Requiere Python 3.10 o superior.
+
+```bash
+python -m venv .venv
+.venv/Scripts/python -m pip install -e ".[dev]"     # en Linux o macOS: .venv/bin/python
+```
+
+Actualizar todos los datos (escribe en `datos/`):
+
+```bash
+.venv/Scripts/python -m morlaco actualizar
+```
+
+O solo algunas fuentes: `recoleccion`, `luz`, `buses`.
+
+```bash
+.venv/Scripts/python -m morlaco actualizar recoleccion buses
+```
+
+Si una fuente falla, las demás se actualizan igual, el comando termina con código 1 y el error queda en
+`datos/estado.json` junto con la fecha de la última actualización buena. Los archivos de datos no llevan la
+fecha de generación, así que solo cambian cuando cambia la fuente.
+
+## Desarrollo
+
+```bash
+.venv/Scripts/python -m pytest
+.venv/Scripts/python -m ruff check .
+.venv/Scripts/python -m ruff format --check .
+```
+
+Las pruebas no usan la red: el parseo de cada fuente son funciones puras que se prueban con ejemplos (el PDF
+de Centro Sur de `tests/fixtures` es uno real).
+
+```
+src/morlaco/
+  red.py              descargas HTTP con reintentos (lo único que toca la red)
+  comun.py            texto, horas, días y meses
+  salida.py           escritura de JSON y GeoJSON
+  cli.py              comando "morlaco actualizar"
+  fuentes/
+    emac.py           zonas de recolección (KML)
+    centrosur.py      suspensiones de luz (PDF)
+    buses.py          rutas, recorridos y paradas (API CKAN del portal municipal)
+```
+
+Para añadir una fuente: crea un módulo en `fuentes/` con una función `obtener(descargar) -> Resultado`,
+regístrala en `FUENTES` de `cli.py` y añade sus pruebas.
+
+## Próximos pasos
+
+- Una página web con mapa: escribes tu dirección y te dice cuándo pasa la basura y si hay corte de luz.
+- Un bot de Telegram con los mismos datos.
+- Convertir las rutas de bus al formato GTFS para que puedan usarlas las apps de transporte.
+- Cortes de agua de ETAPA.
+
+## Licencia de los datos
+
+El código es software libre bajo la [licencia MIT](LICENSE).
+
+Los datos mantienen la licencia de su fuente. Los conjuntos del portal Cuenca en Datos (rutas, recorridos,
+paradas y el mapa de zonas de recolección) están publicados bajo **Creative Commons No Comercial**: se
+pueden usar y compartir citando la fuente, pero no con fines comerciales. Los PDF de Centro Sur son
+información pública de su web.

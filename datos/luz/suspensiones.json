@@ -1,0 +1,277 @@
+{
+  "metadata": {
+    "titulo": "Suspensiones programadas del servicio eléctrico",
+    "fuente": "Centro Sur C.A.",
+    "pagina": "https://www.centrosur.gob.ec/suspensiones-programadas/",
+    "ultima_publicacion": "2026-07-08",
+    "nota": "Las direcciones son texto tal como lo publica Centro Sur; no traen coordenadas. Revise ultima_publicacion: la página no siempre se actualiza.",
+    "pdfs_no_disponibles": [
+      "https://www.centrosur.gob.ec/wp-content/uploads/documentospdf/SuspensionesProgramadas/2026_marzo_22PF.pdf"
+    ]
+  },
+  "publicaciones": [
+    {
+      "pdf": "https://www.centrosur.gob.ec/wp-content/uploads/documentospdf/SuspensionesProgramadas/2026_julio_06PF.pdf",
+      "fecha": "2026-07-06",
+      "cortes": [
+        {
+          "alimentador": "1221",
+          "direccion": "LLATCÓN NULTI",
+          "desde": "09:00",
+          "hasta": "15:00",
+          "trabajo": "Cambio de red de mv monofásico a trifásico, modificación de redes de bv por cambio de postes"
+        },
+        {
+          "alimentador": "1723",
+          "direccion": "CALLE DEL SARAR Y DEL CHAGUARQUERO",
+          "desde": "10:00",
+          "hasta": "14:00",
+          "trabajo": "Carpeta g1783, adecuación en el transformador"
+        },
+        {
+          "alimentador": "1723",
+          "direccion": "CALLE DEL SARAR Y DEL CHAGUARQUERO",
+          "desde": "10:00",
+          "hasta": "14:00",
+          "trabajo": "Carpeta g1783, recalibrado de red de mv."
+        },
+        {
+          "alimentador": "1423",
+          "direccion": "VIA GIRON SAN FERNANDO - ENTRADA A BESTIÓN",
+          "desde": "10:00",
+          "hasta": "11:00",
+          "trabajo": "Retiro de redes existentes"
+        },
+        {
+          "alimentador": "5015",
+          "direccion": "LA TRONCAL, SECTOR EL RUIDSO, VIA V. DE DIOS COLONIA 10 DE AGOSTO.",
+          "desde": "13:00",
+          "hasta": "15:00",
+          "trabajo": "Proyecto particular, interconexion de red mv"
+        },
+        {
+          "alimentador": "0723",
+          "direccion": "LA CALDERA, SIDCAY",
+          "desde": "14:00",
+          "hasta": "18:00",
+          "trabajo": "Recalibrado de redes de mv y bv, aplomado de poste"
+        },
+        {
+          "alimentador": "2128",
+          "direccion": "VIA TUNDAYME",
+          "desde": "14:00",
+          "hasta": "16:00",
+          "trabajo": "Remplazo de pararrayo en estado critico"
+        }
+      ]
+    },
+    {
+      "pdf": "https://www.centrosur.gob.ec/wp-content/uploads/documentospdf/SuspensionesProgramadas/2026_julio_07PF.pdf",
+      "fecha": "2026-07-07",
+      "cortes": [
+        {
+          "alimentador": "1423",
+          "direccion": "GIRÓN - SECTOR MOISEN - LENTAG",
+          "desde": "10:00",
+          "hasta": "12:00",
+          "trabajo": "Enlace nueva red de mv y retiro de redes existentes"
+        },
+        {
+          "alimentador": "1323",
+          "direccion": "VÍA CUENCA GIRON - PASAJE Y VIA BELLAVISTA - SHISHO",
+          "desde": "09:00",
+          "hasta": "13:00",
+          "trabajo": "Montaje de poste de ha de 12 metros junto a la línea de fabrica, entre los postes de #418533r1 y #384064, para reubicación de red de mv"
+        },
+        {
+          "alimentador": "1323",
+          "direccion": "PANAMERICANA SUR Y VIA CLEMENTE BALLEN - CUMBE",
+          "desde": "13:00",
+          "hasta": "16:00",
+          "trabajo": "Remplazo de poste de ha #210368r1 y recalibrado de redes de mv y bv."
+        },
+        {
+          "alimentador": "0723",
+          "direccion": "MARIA AUXILIADORA, RICAURTE",
+          "desde": "09:00",
+          "hasta": "13:00",
+          "trabajo": "Cerrar puentes en mv para energizar trafo nuevo."
+        },
+        {
+          "alimentador": "0723",
+          "direccion": "MARIA AUXILIADORA, RICAURTE",
+          "desde": "09:00",
+          "hasta": "13:00",
+          "trabajo": "Reubicación de redes de bv e instalacion de transformador."
+        },
+        {
+          "alimentador": "1721",
+          "direccion": "DEL CULANTRO Y CALLE SIN NOMBRE",
+          "desde": "09:00",
+          "hasta": "13:00",
+          "trabajo": "Reubicación del poste 381783r1"
+        },
+        {
+          "alimentador": "0723",
+          "direccion": "CHINE - EL ROCÍO",
+          "desde": "09:00",
+          "hasta": "13:00",
+          "trabajo": "Retiro de redes para el ingreso de equipo del proyecto planta modular de tratamiento de agua de la junta administradora de agua potable y saneamiento regional Jaapysr de Chini"
+        },
+        {
+          "alimentador": "1523",
+          "direccion": "ZHORDAN",
+          "desde": "09:00",
+          "hasta": "11:00",
+          "trabajo": "Construcción fase adicional desde p#225631 hasta p#232402"
+        },
+        {
+          "alimentador": "1521",
+          "direccion": "GUIÑADEL",
+          "desde": "13:00",
+          "hasta": "15:00",
+          "trabajo": "Construir fase adicional en el tramo p#297914 hasta p#298778"
+        },
+        {
+          "alimentador": "1221",
+          "direccion": "LLATCÓN - NULTI",
+          "desde": "09:00",
+          "hasta": "15:00",
+          "trabajo": "Cambio de red de mv monofásica a trifásica, modificación de red de bv debido a cambio de postería"
+        },
+        {
+          "alimentador": "1724",
+          "direccion": "CALLE DE LAS TOTORAS",
+          "desde": "13:30",
+          "hasta": "17:30",
+          "trabajo": "Adecuación de la red de bv en la calle de las totoras"
+        },
+        {
+          "alimentador": "5014",
+          "direccion": "SECTOR 12 DE OCTUBRE SECTOR ANA LUISA TRAFO.COD.(31196 - 22141) _",
+          "desde": "09:00",
+          "hasta": "12:00",
+          "trabajo": "Mejorar puesta a tierra cambio de bajantes revision de medidores otros."
+        },
+        {
+          "alimentador": "1425",
+          "direccion": "RIRCAY",
+          "desde": "10:00",
+          "hasta": "14:00",
+          "trabajo": "Cambio de estructuras en mal estado"
+        },
+        {
+          "alimentador": "5014",
+          "direccion": "SECTOR 12 DE OCTUBRE SECTOR ANA LUISA TRAFO.COD.( 22141) _",
+          "desde": "13:00",
+          "hasta": "15:30",
+          "trabajo": "Mejorar puesta a tierra cambio de bajantes revision de medidores otros."
+        },
+        {
+          "alimentador": "0423",
+          "direccion": "VÍA TIXÁN",
+          "desde": "09:00",
+          "hasta": "12:00",
+          "trabajo": "Revisión y mantenimiento de estación de transformación"
+        },
+        {
+          "alimentador": "0427",
+          "direccion": "OCHOA LEÓN",
+          "desde": "12:30",
+          "hasta": "15:30",
+          "trabajo": "Revisión y mantenimiento de estación de transformación"
+        },
+        {
+          "alimentador": "1421",
+          "direccion": "SECTOR UCHUCAY PARROQUIA SAN SEBASTIÁN DE YULUC",
+          "desde": "10:00",
+          "hasta": "14:00",
+          "trabajo": "Trabajos relacionados a la carpeta. sgp - j202"
+        }
+      ]
+    },
+    {
+      "pdf": "https://www.centrosur.gob.ec/wp-content/uploads/documentospdf/SuspensionesProgramadas/2026_julio_08PF.pdf",
+      "fecha": "2026-07-08",
+      "cortes": [
+        {
+          "alimentador": "1423",
+          "direccion": "SANTA MARIANITA",
+          "desde": "10:00",
+          "hasta": "13:00",
+          "trabajo": "Gestion de vegetacion y recalibrado"
+        },
+        {
+          "alimentador": "0527",
+          "direccion": "AV. ENRIQUE ARÍZAGA Y CALLE SIN NOMBRE",
+          "desde": "09:00",
+          "hasta": "13:00",
+          "trabajo": "Carpeta e14175, adecuaciones en la red de mv"
+        },
+        {
+          "alimentador": "1523",
+          "direccion": "AV. IGNACIO JARAMILLO",
+          "desde": "09:00",
+          "hasta": "11:00",
+          "trabajo": "Mantenimiento conforme a la disposición de reposte del alimentador 1523, correspondiente a la regularización mediante termografía."
+        },
+        {
+          "alimentador": "1522",
+          "direccion": "C. 25 DE JUNIO",
+          "desde": "12:30",
+          "hasta": "15:30",
+          "trabajo": "Mantenimiento trafo14297 - bases conectores y vegetación"
+        },
+        {
+          "alimentador": "0323",
+          "direccion": "AV 10 DE AGOSTO Y FRANCISCO ESTRELLA",
+          "desde": "09:00",
+          "hasta": "13:00",
+          "trabajo": "Cambio de trafo, por mantenimiento"
+        },
+        {
+          "alimentador": "5014",
+          "direccion": "SECTOR 12 DE OCTUBRE SECTOR ANA LUISA TRAFO.COD.(22142) _",
+          "desde": "09:00",
+          "hasta": "12:00",
+          "trabajo": "Mejorar puesta a tierra cambio de bajantes revision de medidores otros."
+        },
+        {
+          "alimentador": "5014",
+          "direccion": "SECTOR 12 DE OCTUBRE SECTOR ANA LUISA TRAFO.COD.(22105) _",
+          "desde": "13:00",
+          "hasta": "15:30",
+          "trabajo": "Mejorar puesta a tierra cambio de bajantes revision de medidores otros."
+        },
+        {
+          "alimentador": "0423",
+          "direccion": "AV. DE LAS AMÉRICAS Y NICANOR MERCHÁN",
+          "desde": "09:00",
+          "hasta": "12:00",
+          "trabajo": "Revisión y mantenimiento de estación de transformación"
+        },
+        {
+          "alimentador": "1421",
+          "direccion": "UCHUCAY PARROQUIA SAN SEBASTIAN DE YULUC, SARAGURO, LOJA",
+          "desde": "09:00",
+          "hasta": "13:00",
+          "trabajo": "Trabajos relacionados a la carpeta. sgp - 202"
+        },
+        {
+          "alimentador": "1422",
+          "direccion": "OÑAZHAPA",
+          "desde": "09:30",
+          "hasta": "13:30",
+          "trabajo": "Mantenimiento preventivo del transformador"
+        },
+        {
+          "alimentador": "1221",
+          "direccion": "CANGUIR-SAN CRISTÓBAL",
+          "desde": "09:00",
+          "hasta": "12:00",
+          "trabajo": "Correcciones en construcción de obra particular de código p6571. montaje seccionador en pn°662461"
+        }
+      ]
+    }
+  ]
+}

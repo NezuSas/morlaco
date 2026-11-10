@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "morlaco"
+version = "0.1.0"
+description = "Datos abiertos de servicios públicos de Cuenca, Ecuador: recolección de basura, cortes de luz y buses."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.10"
+dependencies = ["pymupdf>=1.24"]
+
+[project.optional-dependencies]
+# pytest 9.2 falla al arrancar en Python 3.10.0; se fija la serie 8.
+dev = ["pytest>=8,<9", "ruff>=0.5"]
+
+[project.scripts]
+morlaco = "morlaco.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]

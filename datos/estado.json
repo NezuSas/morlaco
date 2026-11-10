@@ -1,0 +1,51 @@
+{
+  "buses": {
+    "ok": true,
+    "actualizado": "2026-11-10T01:00:59+00:00",
+    "archivos": [
+      "buses/paradas.geojson",
+      "buses/recorridos.json",
+      "buses/rutas.json"
+    ],
+    "resumen": {
+      "rutas": 76,
+      "lineas": 38,
+      "lineas_con_recorrido": 37,
+      "paradas": 382,
+      "paradas_descartadas": 1
+    }
+  },
+  "luz": {
+    "ok": true,
+    "actualizado": "2026-11-10T01:00:58+00:00",
+    "archivos": [
+      "luz/suspensiones.json"
+    ],
+    "resumen": {
+      "publicaciones": 3,
+      "cortes": 35,
+      "ultima_publicacion": "2026-07-08",
+      "pdfs_no_disponibles": 1
+    }
+  },
+  "recoleccion": {
+    "ok": true,
+    "actualizado": "2026-11-10T01:02:09+00:00",
+    "archivos": [
+      "recoleccion/zonas.geojson"
+    ],
+    "resumen": {
+      "zonas": 8,
+      "numeros": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ]
+    }
+  }
+}
