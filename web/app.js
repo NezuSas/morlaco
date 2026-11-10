@@ -1778,17 +1778,15 @@ async function iniciar() {
   // Compartir tu calle: el menú del teléfono (WhatsApp, etc.) o, si no hay, copiar el enlace.
   $("compartir").addEventListener("click", async () => {
     const nombre = nombreProvisional ? null : nombreActual;
-    const datos = {
-      title: "Morlaco",
-      text: nombre ? t("compartirTexto", { calle: nombre }) : t("compartirTextoSinCalle"),
-      url: location.href,
-    };
+    const texto = nombre ? t("compartirTexto", { calle: nombre }) : t("compartirTextoSinCalle");
     try {
       if (navigator.share) {
-        await navigator.share(datos);
+        // Solo el enlace: si se manda con un texto, WhatsApp lo envía como mensaje normal
+        // y no muestra la tarjeta con la imagen.
+        await navigator.share({ title: nombre ? `Morlaco: ${nombre}` : "Morlaco", url: location.href });
         return;
       }
-      await navigator.clipboard.writeText(`${datos.text} ${datos.url}`);
+      await navigator.clipboard.writeText(`${texto} ${location.href}`);
       mensaje(t("compartirCopiado"));
     } catch (error) {
       // Cerrar el menú de compartir no es un error.

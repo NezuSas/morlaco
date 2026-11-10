@@ -6,7 +6,7 @@
 //   desde la caché, porque no cambian.
 // - La búsqueda de lugares (Nominatim) nunca se guarda.
 
-const CACHE_PAGINA = "morlaco-pagina-v8";
+const CACHE_PAGINA = "morlaco-pagina-v9";
 const CACHE_EXTERNOS = "morlaco-externos-v1";
 const CACHE_MAPA = "morlaco-mapa-v2";
 const CACHES = [CACHE_PAGINA, CACHE_EXTERNOS, CACHE_MAPA];
