@@ -14,7 +14,7 @@
 
 <p align="center">
   <a href="https://nezusas.github.io/morlaco/web/">
-    <img src="docs/imagenes/busqueda.gif" alt="Se escribe «Calle Larga y Her» en Morlaco, se elige la sugerencia «Hermano Miguel» y aparece cuándo pasa el recolector, la semana de recolección y las paradas cercanas en el mapa" width="880">
+    <img src="docs/imagenes/busqueda.gif" alt="Se escribe «Calle Larga y Her» en Morlaco, se elige la sugerencia «Hermano Miguel» y aparece el letrero de la esquina, el resumen de hoy, cuándo pasa el recolector, las farmacias de turno y los buses, con el mapa al lado" width="880">
   </a>
 </p>
 
@@ -40,8 +40,8 @@ una app o un análisis.
 
 <table>
   <tr>
-    <td width="68%"><img src="docs/imagenes/escritorio.webp" alt="Morlaco en el escritorio: tarjeta azul con la recolección de basura de la zona 4 y el mapa de zonas de Cuenca"></td>
-    <td width="32%"><img src="docs/imagenes/movil-oscuro.webp" alt="Morlaco en el móvil con el modo oscuro: recolección de basura y suscripción al calendario"></td>
+    <td width="68%"><img src="docs/imagenes/escritorio.webp" alt="Morlaco en el escritorio: la esquina Mariscal Sucre y Presidente Borrero en un letrero de cerámica sobre un muro de azulejo azul, el resumen «Hoy en tu calle» y el mapa de la zona 4 de recolección"></td>
+    <td width="32%"><img src="docs/imagenes/movil-oscuro.webp" alt="Morlaco en el móvil con el modo oscuro: el letrero de la esquina y el resumen de basura, farmacias y buses"></td>
   </tr>
 </table>
 
