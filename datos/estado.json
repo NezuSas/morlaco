@@ -1,7 +1,7 @@
 {
   "buses": {
     "ok": true,
-    "actualizado": "2026-11-10T04:49:03+00:00",
+    "actualizado": "2026-11-10T12:37:59+00:00",
     "archivos": [
       "buses/lineas.geojson",
       "buses/paradas.geojson",
@@ -28,7 +28,7 @@
   },
   "calles": {
     "ok": true,
-    "actualizado": "2026-11-10T01:27:14+00:00",
+    "actualizado": "2026-11-10T12:38:37+00:00",
     "archivos": [
       "calles/calles.geojson"
     ],
@@ -39,7 +39,7 @@
   },
   "farmacias": {
     "ok": true,
-    "actualizado": "2026-11-10T05:11:08+00:00",
+    "actualizado": "2026-11-10T12:39:18+00:00",
     "archivos": [
       "farmacias/turnos.json"
     ],
@@ -51,7 +51,7 @@
   },
   "luz": {
     "ok": true,
-    "actualizado": "2026-11-10T05:34:53+00:00",
+    "actualizado": "2026-11-10T12:37:52+00:00",
     "archivos": [
       "luz/suspensiones.json"
     ],
@@ -66,7 +66,7 @@
   },
   "movilidad": {
     "ok": true,
-    "actualizado": "2026-11-10T03:51:17+00:00",
+    "actualizado": "2026-11-10T12:39:15+00:00",
     "archivos": [
       "movilidad/bicicletas.geojson",
       "movilidad/carga.geojson",
@@ -80,7 +80,7 @@
   },
   "recoleccion": {
     "ok": true,
-    "actualizado": "2026-11-10T05:11:02+00:00",
+    "actualizado": "2026-11-10T12:37:41+00:00",
     "archivos": [
       "recoleccion/calendarios/zona-1.ics",
       "recoleccion/calendarios/zona-2.ics",
@@ -109,7 +109,7 @@
   },
   "tranvia": {
     "ok": true,
-    "actualizado": "2026-11-10T05:38:06+00:00",
+    "actualizado": "2026-11-10T12:39:19+00:00",
     "archivos": [
       "buses/tranvia.geojson"
     ],
