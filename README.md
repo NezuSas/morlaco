@@ -23,6 +23,8 @@ Escribe tu esquina como se dan las direcciones en Cuenca ("Sucre y Borrero") y M
 - **Cuándo pasa el recolector** por tu calle, qué funda sacar y qué día va la funda celeste. Con un toque te
   suscribes al **calendario de tu zona** y recibes un aviso antes de cada recolección.
 - **Si hay cortes de luz programados** por Centro Sur para hoy.
+- **Qué farmacias están de turno** esta semana (abiertas las 24 horas), ordenadas por cercanía y con su teléfono
+  para llamar.
 - **Qué líneas de bus pasan cerca**, cada cuánto pasan hoy y su recorrido en el mapa, y las paradas más
   cercanas.
 - **Dónde está la BiciPública más cercana**, y en el mapa las ciclovías y los puntos de carga para autos
@@ -55,6 +57,7 @@ una app o un análisis.
 | [`datos/gtfs/cuenca-buses.zip`](datos/gtfs/cuenca-buses.zip) | **Feed GTFS** de los buses urbanos (38 líneas, frecuencias de lunes a viernes, sábados y domingos), validado sin errores con el validador oficial de MobilityData | Generado a partir de los datos del municipio |
 | [`datos/buses/paradas.geojson`](datos/buses/paradas.geojson) | Paradas de bus con coordenadas corregidas y si tienen señal (paleta) | [Cuenca en Datos](https://cuencaendatos.cuenca.gob.ec/dataset/d98292ca-7c70-422a-ac6f-1b43194ff5ba) |
 | [`datos/calles/calles.geojson`](datos/calles/calles.geojson) | Las calles de Cuenca con nombre (unas 2.800), con su trazado simplificado y sus nombres alternativos, para buscar direcciones e intersecciones | [OpenStreetMap](https://www.openstreetmap.org) |
+| [`datos/farmacias/turnos.json`](datos/farmacias/turnos.json) | Farmacias de turno de Cuenca por semana (de 06:00 a 06:00), con dirección legible y teléfono para llamar | [ARCSA, turnos de farmacias](https://www.controlsanitario.gob.ec/turnos-de-farmacias/) |
 | [`datos/movilidad/`](datos/movilidad/) | Estaciones de BiciPública (BiciCuenca) con su capacidad, ciclovías (separadas o carriles pintados) y puntos de carga para autos eléctricos (públicos, para clientes o privados) | [OpenStreetMap](https://www.openstreetmap.org) |
 | [`datos/estado.json`](datos/estado.json) | Cuándo se actualizó cada fuente por última vez y si hubo errores | — |
 
@@ -100,6 +103,11 @@ Parque Calderón está en la zona 4.
 - **BiciPública, ciclovías y carga eléctrica (OpenStreetMap).** El portal municipal también las publica, pero sus
   versiones actuales vienen en archivos RAR (que necesitan un programa aparte) y los puntos de carga solo como
   enlace a un mapa externo. OpenStreetMap las tiene en un formato abierto y al día.
+- **Farmacias de turno (ARCSA).** Se leen del PDF mensual de Azuay. La tabla tiene celdas combinadas y textos
+  partidos que Morlaco reconstruye, y **errores de la propia fuente**: años mal escritos (que se corrigen),
+  farmacias de otros cantones listadas como de Cuenca (se descartan las que nombran otro cantón) y teléfonos
+  de otras provincias o de relleno. La página pide **llamar antes de ir** y enlaza el PDF oficial. Las
+  direcciones de esquina se ubican con el índice de calles para ordenar por cercanía.
 - **Cortes de agua (ETAPA).** Todavía no están. ETAPA los anuncia en redes sociales y en prensa, no en un
   formato que se pueda leer de forma fiable.
 
@@ -176,7 +184,7 @@ Actualizar todos los datos (escribe en `datos/`):
 .venv/Scripts/python -m morlaco actualizar
 ```
 
-O solo algunas fuentes: `recoleccion`, `luz`, `buses`, `calles`, `movilidad`.
+O solo algunas fuentes: `recoleccion`, `luz`, `buses`, `calles`, `movilidad`, `farmacias`.
 
 ```bash
 .venv/Scripts/python -m morlaco actualizar recoleccion buses
@@ -214,6 +222,7 @@ src/morlaco/
     buses.py          rutas, recorridos y paradas (API CKAN del portal municipal)
     trazados.py       recorrido de las líneas (shapefile del municipio)
     movilidad.py      BiciPública, ciclovías y carga eléctrica (API Overpass)
+    farmacias.py      farmacias de turno (PDF mensual de ARCSA)
     calles.py         índice de calles (API Overpass de OpenStreetMap)
 web/
   index.html          la página
@@ -233,7 +242,6 @@ regístrala en `FUENTES` de `cli.py` y añade sus pruebas.
 ## Próximos pasos
 
 - Responder "¿qué bus me lleva de aquí a allá?" con el GTFS.
-- Farmacias de turno, si hay una fuente pública fiable.
 - Cortes de agua de ETAPA y un bot de Telegram.
 
 ## Colaborar

@@ -32,3 +32,7 @@ target-version = "py310"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP"]
+
+[tool.ruff.lint.per-file-ignores]
+# Filas de ejemplo copiadas de las tablas de ARCSA: se dejan en una línea para que se lean como la tabla.
+"tests/test_farmacias.py" = ["E501"]

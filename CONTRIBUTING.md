@@ -59,7 +59,8 @@ Para ver la página en tu computadora, sirve la carpeta del proyecto y abre <htt
 - **Mejorar OpenStreetMap en Cuenca**: si falta una ciclovía, una estación de BiciPública o un punto de carga,
   añádelo en [openstreetmap.org](https://www.openstreetmap.org) y Morlaco lo recogerá en la siguiente
   actualización.
-- **Buscar una fuente pública de farmacias de turno** y, si existe, escribir su lector en `fuentes/`.
+- **Revisar las farmacias de turno de tu barrio**: si una dirección o un teléfono está mal en la página, avisa;
+  si el error viene del PDF de ARCSA, también conviene reportárselo a ARCSA.
 - **Probar la búsqueda con esquinas de tu barrio** y añadir a `tests/web/calles.test.mjs` las que fallen.
 
 ### Estilo

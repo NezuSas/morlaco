@@ -251,3 +251,20 @@ export function puntoDesdeHash(hash) {
 export function hashDesdePunto({ lat, lon }) {
   return `#${lat.toFixed(5)},${lon.toFixed(5)}`;
 }
+
+/**
+ * El turno de farmacias vigente: cada turno va de las 06:00 del día de inicio a las
+ * 06:00 del día final, en hora de Cuenca. Devuelve null si no hay ninguno publicado.
+ */
+export function turnoActual(turnos, fecha = new Date()) {
+  const { fecha: hoy, minutos } = horaCuenca(fecha);
+  const ahora = `${hoy}T${String(Math.floor(minutos / 60)).padStart(2, "0")}:${String(minutos % 60).padStart(2, "0")}`;
+  return (turnos ?? []).find((t) => `${t.inicio}T06:00` <= ahora && ahora < `${t.fin}T06:00`) ?? null;
+}
+
+/** Farmacias cuyo nombre o dirección contiene el texto, sin importar tildes ni mayúsculas. */
+export function filtrarFarmacias(farmacias, texto) {
+  const buscado = normalizar(texto);
+  if (!buscado) return farmacias;
+  return farmacias.filter((f) => normalizar(`${f.nombre} ${f.direccion}`).includes(buscado));
+}

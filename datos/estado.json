@@ -37,6 +37,18 @@
       "tramos": 6776
     }
   },
+  "farmacias": {
+    "ok": true,
+    "actualizado": "2026-11-10T04:09:24+00:00",
+    "archivos": [
+      "farmacias/turnos.json"
+    ],
+    "resumen": {
+      "semanas": 4,
+      "farmacias": 52,
+      "descartadas": 2
+    }
+  },
   "luz": {
     "ok": true,
     "actualizado": "2026-11-10T01:00:58+00:00",

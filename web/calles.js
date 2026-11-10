@@ -271,3 +271,14 @@ export function puntoMedio(feature) {
   }
   return aGrados(mejor.puntos.at(-1));
 }
+
+/**
+ * Ubica una dirección escrita como esquina ("Vega Muñoz 6-72 y Borrero") en el índice
+ * de calles. Devuelve {lat, lon} o null si no es una esquina reconocible.
+ */
+export function ubicarEsquina(texto, indice) {
+  const { calles } = interpretarBusqueda(texto);
+  if (calles.length !== 2) return null;
+  const cruce = cruceDeCalles(buscarCalles(calles[0], indice), buscarCalles(calles[1], indice));
+  return cruce ? cruce.punto : null;
+}

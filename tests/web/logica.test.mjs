@@ -12,6 +12,8 @@ import {
   formatoDistancia,
   hashDesdePunto,
   masCercano,
+  filtrarFarmacias,
+  turnoActual,
   horaCuenca,
   paradasCercanas,
   proximaRecoleccion,
@@ -198,4 +200,27 @@ test("hash de la URL ida y vuelta", () => {
   assert.deepEqual(puntoDesdeHash(hashDesdePunto(punto)), punto);
   assert.equal(puntoDesdeHash("#hola"), null);
   assert.equal(puntoDesdeHash("#100,0"), null);
+});
+
+test("turnoActual cambia a las 06:00 de Cuenca", () => {
+  const turnos = [
+    { inicio: "2026-11-07", fin: "2026-11-14", farmacias: ["a"] },
+    { inicio: "2026-11-14", fin: "2026-11-21", farmacias: ["b"] },
+  ];
+  const enCuencaHora = (iso) => new Date(`${iso}-05:00`);
+  assert.equal(turnoActual(turnos, enCuencaHora("2026-11-09T22:00")).farmacias[0], "a");
+  assert.equal(turnoActual(turnos, enCuencaHora("2026-11-14T05:59")).farmacias[0], "a");
+  assert.equal(turnoActual(turnos, enCuencaHora("2026-11-14T06:00")).farmacias[0], "b");
+  assert.equal(turnoActual(turnos, enCuencaHora("2026-11-21T07:00")), null);
+  assert.equal(turnoActual(null), null);
+});
+
+test("filtrarFarmacias busca en el nombre y la dirección", () => {
+  const lista = [
+    { nombre: "Farmacia Rey David", direccion: "Av. Ordóñez Lazo 4-113" },
+    { nombre: "Soy Formulador", direccion: "Vega Muñoz 6-72 y Borrero" },
+  ];
+  assert.equal(filtrarFarmacias(lista, "ordonez").length, 1);
+  assert.equal(filtrarFarmacias(lista, "MUNOZ")[0].nombre, "Soy Formulador");
+  assert.equal(filtrarFarmacias(lista, "").length, 2);
 });

@@ -95,6 +95,21 @@ const TEXTOS = {
     luzResumen: ({ n }) =>
       `Hoy hay ${n} ${n === 1 ? "corte programado" : "cortes programados"} en la zona de Centro Sur.`,
     luzSinCoordenadas: "Centro Sur no publica coordenadas: busca tu calle o sector en la lista.",
+    tituloFarmacias: "Farmacias de turno",
+    farmaciasResumen: ({ n, fecha }) =>
+      `Hasta el ${fecha} a las 06:00, ${n === 1 ? "está de turno 1 farmacia" : `están de turno ${n} farmacias`} en Cuenca, abiertas las 24 horas.`,
+    farmaciasAviso: "Datos de ARCSA, que pueden tener errores: llama antes de ir.",
+    farmaciasSinTurno: "ARCSA no ha publicado los turnos de esta semana. Consulta su ",
+    farmaciasError: "No se pudieron cargar las farmacias de turno.",
+    farmaciasFiltro: "Filtra por nombre, calle o barrio",
+    farmaciasFiltroAria: "Filtrar farmacias por nombre, calle o barrio",
+    farmaciasNinguna: "Ninguna farmacia de turno coincide con eso.",
+    farmaciasPdf: "PDF oficial de ARCSA",
+    farmaciasOrden: "Ordenadas por cercanía aproximada a tu punto, según la dirección que publica ARCSA.",
+    farmaciasFuente: "Fuente: ",
+    llamar: "Llamar al {telefono}",
+    aproximado: "a unos {distancia}",
+    verMasFarmacias: ({ n }) => `Ver ${n} ${n === 1 ? "farmacia más" : "farmacias más"}`,
 
     paradasNinguna: "No hay paradas registradas a menos de 1,5 km.",
     paradasNota: "Según el registro de paradas del municipio, que no incluye todas. Las distancias son en línea recta.",
@@ -224,6 +239,21 @@ const TEXTOS = {
     luzResumen: ({ n }) =>
       `Today there ${n === 1 ? "is 1 scheduled outage" : `are ${n} scheduled outages`} in Centro Sur’s area.`,
     luzSinCoordenadas: "Centro Sur doesn’t publish coordinates: look for your street or area in the list.",
+    tituloFarmacias: "Pharmacies on duty",
+    farmaciasResumen: ({ n, fecha }) =>
+      `Until ${fecha} at 06:00, ${n === 1 ? "1 pharmacy is" : `${n} pharmacies are`} on duty in Cuenca, open 24 hours.`,
+    farmaciasAviso: "Data from ARCSA, which may contain errors: call before you go.",
+    farmaciasSinTurno: "ARCSA hasn’t published this week’s rota. Check their ",
+    farmaciasError: "Pharmacies on duty couldn’t be loaded.",
+    farmaciasFiltro: "Filter by name, street or neighborhood",
+    farmaciasFiltroAria: "Filter pharmacies by name, street or neighborhood",
+    farmaciasNinguna: "No pharmacy on duty matches that.",
+    farmaciasPdf: "official ARCSA PDF",
+    farmaciasOrden: "Sorted by approximate distance from your point, based on the address ARCSA publishes.",
+    farmaciasFuente: "Source: ",
+    llamar: "Call {telefono}",
+    aproximado: "about {distancia} away",
+    verMasFarmacias: ({ n }) => `Show ${n} more ${n === 1 ? "pharmacy" : "pharmacies"}`,
 
     paradasNinguna: "There are no registered stops within 1.5 km.",
     paradasNota: "From the city’s register of stops, which doesn’t include all of them. Distances are in a straight line.",

@@ -11,6 +11,7 @@ import {
   palabras,
   prepararIndice,
   puntoMedio,
+  ubicarEsquina,
 } from "../../web/calles.js";
 
 const calle = (nombre, rango, lineas, otros = []) => ({
@@ -142,4 +143,11 @@ test("con las calles reales de Cuenca", (t) => {
   assert.equal(sucre.b.nombre, "Presidente Borrero");
   assert.ok(Math.abs(sucre.punto.lat - -2.898) < 0.002 && Math.abs(sucre.punto.lon - -79.003) < 0.002);
   assert.equal(buscarCalles("Ordoñez Lasso", real)[0].nombre, "Avenida Ordoñez Lasso");
+});
+
+test("ubicarEsquina ubica direcciones de esquina y descarta las demás", () => {
+  const punto = ubicarEsquina("Simón Bolívar 9-77 y Benigno Malo", indice);
+  assert.ok(Math.abs(punto.lat - -2.897) < 1e-6 && Math.abs(punto.lon - -79.0045) < 1e-6);
+  assert.equal(ubicarEsquina("Vía a San Fermín km 5", indice), null);
+  assert.equal(ubicarEsquina("Ordóñez Lasso y Benigno Malo", indice), null); // no se cruzan
 });

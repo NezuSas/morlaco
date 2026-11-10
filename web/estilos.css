@@ -782,6 +782,49 @@ button.linea .metros {
   font-variant-numeric: tabular-nums;
 }
 
+/* ---------- Farmacias ---------- */
+
+.farmacias-lista {
+  list-style: none;
+  padding: 0;
+  margin: 0.75rem 0 0;
+}
+
+.farmacias-lista > li {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--linea);
+}
+
+.farmacias-lista > li.ver-mas-fila {
+  border-bottom: 0;
+}
+
+.farmacia-texto {
+  display: grid;
+  min-width: 0;
+}
+
+/* El teléfono como botón: en el móvil, un toque llama. */
+.llamar {
+  flex: none;
+  padding: 0.35rem 0.7rem;
+  border: 1.5px solid var(--cupula);
+  border-radius: 999px;
+  font-size: var(--t-0);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.llamar:hover {
+  background: var(--cal-hondo);
+}
+
 /* ---------- Paradas ---------- */
 
 .paradas {

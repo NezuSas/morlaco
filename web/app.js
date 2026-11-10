@@ -3,6 +3,7 @@
 import {
   CENTRO_CUENCA,
   describirRecoleccion,
+  distanciaMetros,
   direccionLegible,
   enlaceReporteDireccion,
   enlacesCalendario,
@@ -11,7 +12,9 @@ import {
   formatoDistancia,
   hashDesdePunto,
   horaCuenca,
+  filtrarFarmacias,
   masCercano,
+  turnoActual,
   nombreDia,
   paradasCercanas,
   proximaRecoleccion,
@@ -26,6 +29,7 @@ import {
   longitudMetros,
   prepararIndice,
   puntoMedio,
+  ubicarEsquina,
 } from "./calles.js";
 import { describirDestinos, describirFrecuencia, lineasCercanas } from "./buses.js";
 import { etiquetaIdioma, idioma, idiomaInicial, listar, t, usarIdioma } from "./textos.js";
@@ -532,6 +536,103 @@ function pintarLuz(suspensiones) {
   );
 }
 
+/**
+ * Farmacias de turno de esta semana. Si el índice de calles ya está cargado (o se carga),
+ * las que tienen dirección de esquina se ordenan por cercanía aproximada al punto.
+ */
+function pintarFarmacias(datos, punto) {
+  const caja = $("farmacias-estado");
+  if (!datos) {
+    caja.replaceChildren(elemento("p", { class: "aviso" }, t("farmaciasError")));
+    return;
+  }
+  const pdf = datos.metadata?.pdfs?.at(-1) ?? datos.metadata?.pagina;
+  const enlacePdf = elemento("a", { href: pdf, target: "_blank", rel: "noopener" }, t("farmaciasPdf"));
+  const turno = turnoActual(datos.turnos);
+  if (!turno) {
+    caja.replaceChildren(elemento("p", { class: "aviso" }, t("farmaciasSinTurno"), enlacePdf, "."));
+    return;
+  }
+
+  let lista = turno.farmacias.map((f) => ({ ...f, metros: null }));
+  const contenedor = elemento("ul", { class: "farmacias-lista" });
+  const orden = elemento("p", { class: "detalle", hidden: "" }, t("farmaciasOrden"));
+  const filtro = elemento("input", {
+    type: "search",
+    placeholder: t("farmaciasFiltro"),
+    "aria-label": t("farmaciasFiltroAria"),
+  });
+
+  const pintarLista = () => {
+    const visibles = filtrarFarmacias(lista, filtro.value);
+    if (!visibles.length) {
+      contenedor.replaceChildren(elemento("li", { class: "sin-lineas" }, t("farmaciasNinguna")));
+      return;
+    }
+    const filas = visibles.map((f) =>
+      elemento(
+        "li",
+        {},
+        elemento(
+          "div",
+          { class: "farmacia-texto" },
+          elemento("strong", {}, f.nombre),
+          elemento("span", {}, f.direccion),
+          f.metros !== null
+            ? elemento("span", { class: "frecuencia" }, t("aproximado", { distancia: formatoDistancia(f.metros) }))
+            : null,
+        ),
+        f.tel
+          ? elemento("a", { class: "llamar", href: `tel:${f.tel}`, "aria-label": t("llamar", { telefono: f.telefono }) }, f.telefono)
+          : null,
+      ),
+    );
+    contenedor.replaceChildren(...filas);
+    // Las más cercanas primero; el resto, a un toque (salvo al filtrar).
+    const VISIBLES = 6;
+    const ocultas = filtro.value ? [] : filas.slice(VISIBLES);
+    if (ocultas.length) {
+      for (const li of ocultas) li.hidden = true;
+      const ver = elemento("button", { type: "button", class: "secundario ver-mas" }, t("verMasFarmacias", { n: ocultas.length }));
+      ver.addEventListener("click", () => {
+        for (const li of ocultas) li.hidden = false;
+        ver.parentElement.remove();
+      });
+      contenedor.append(elemento("li", { class: "ver-mas-fila" }, ver));
+    }
+  };
+  filtro.addEventListener("input", pintarLista);
+  pintarLista();
+
+  const fin = new Date(`${turno.fin}T12:00:00Z`);
+  const fecha = new Intl.DateTimeFormat(etiquetaIdioma(), { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" }).format(fin);
+  caja.replaceChildren(
+    elemento("p", { class: "luz-resumen" }, t("farmaciasResumen", { n: turno.farmacias.length, fecha })),
+    elemento("p", { class: "aviso" }, t("farmaciasAviso"), " ", t("farmaciasFuente"), enlacePdf, "."),
+    elemento("div", { class: "filtro-cortes" }, filtro),
+    orden,
+    contenedor,
+  );
+
+  // Orden por cercanía: necesita el índice de calles (se descarga una vez y queda guardado).
+  if (punto) {
+    cargarIndiceCalles()
+      .then((indice) => {
+        lista = lista
+          .map((f) => {
+            const lugar = ubicarEsquina(f.direccion, indice);
+            return { ...f, metros: lugar ? Math.round(distanciaMetros(punto, lugar)) : null };
+          })
+          .sort((a, b) => (a.metros ?? Infinity) - (b.metros ?? Infinity));
+        if (lista.some((f) => f.metros !== null)) orden.hidden = false;
+        pintarLista();
+      })
+      .catch(() => {
+        // Sin índice de calles, la lista queda en el orden de ARCSA.
+      });
+  }
+}
+
 function pintarParadas(cercanas) {
   const lista = $("paradas");
   const nota = $("paradas-nota");
@@ -742,7 +843,7 @@ async function iniciar() {
     mensaje(t("errorDatos"), true);
     return;
   }
-  const [suspensiones, paradas, estado, lineas, rutas, bicicletas] = await Promise.all(
+  const [suspensiones, paradas, estado, lineas, rutas, bicicletas, turnosFarmacias] = await Promise.all(
     [
       "luz/suspensiones.json",
       "buses/paradas.geojson",
@@ -750,6 +851,7 @@ async function iniciar() {
       "buses/lineas.geojson",
       "buses/rutas.json",
       "movilidad/bicicletas.geojson",
+      "farmacias/turnos.json",
     ].map((r) =>
       cargarJson(r).catch(() => null),
     ),
@@ -775,6 +877,7 @@ async function iniciar() {
     $("inicio").hidden = true;
     pintarBasura(zona);
     pintarLuz(suspensiones);
+    pintarFarmacias(turnosFarmacias, punto);
     pintarParadas(cercanas);
     pintarLineas(lineas ? lineasCercanas(punto, lineas, rutas?.rutas ?? []) : null, mapa);
     pintarBici(masCercano(punto, bicicletas));
