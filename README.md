@@ -7,6 +7,9 @@ la línea 7? La información existe, pero está repartida entre la web de cada e
 y hojas de cálculo. Morlaco la recoge de las fuentes oficiales, la limpia y la publica como JSON y GeoJSON
 para que cualquiera pueda construir encima: una web, un bot, una app o un análisis.
 
+**Pruébalo: [nezusas.github.io/morlaco/web](https://nezusas.github.io/morlaco/web/)**: escribe tu dirección y
+mira cuándo pasa el recolector, si hay cortes de luz programados y qué paradas de bus tienes cerca.
+
 > Morlaco **no es un servicio oficial** ni está afiliado a EMAC EP, Centro Sur, ETAPA EP ni al GAD
 > Municipal de Cuenca. Cada archivo indica de dónde salió. Ante cualquier duda, manda la fuente oficial.
 
@@ -20,6 +23,10 @@ para que cualquiera pueda construir encima: una web, un bot, una app o un análi
 | [`datos/buses/recorridos.json`](datos/buses/recorridos.json) | Puntos por los que pasa cada línea, en orden, de ida y de retorno | [Cuenca en Datos](https://cuencaendatos.cuenca.gob.ec/dataset/4c727738-890e-445c-9b20-32df271db766) |
 | [`datos/buses/paradas.geojson`](datos/buses/paradas.geojson) | Paradas de bus con coordenadas corregidas y si tienen señal (paleta) | [Cuenca en Datos](https://cuencaendatos.cuenca.gob.ec/dataset/d98292ca-7c70-422a-ac6f-1b43194ff5ba) |
 | [`datos/estado.json`](datos/estado.json) | Cuándo se actualizó cada fuente por última vez y si hubo errores | — |
+
+Todos los archivos se pueden descargar directamente desde
+`https://nezusas.github.io/morlaco/datos/...`, por ejemplo
+<https://nezusas.github.io/morlaco/datos/recoleccion/zonas.geojson>.
 
 ### Ejemplo: una zona de recolección
 
@@ -53,7 +60,8 @@ Parque Calderón está en la zona 4.
 
 ## La página web
 
-En [`web/`](web/) hay una página que usa estos datos: escribes tu dirección, compartes tu ubicación o tocas
+En [`web/`](web/) hay una página que usa estos datos, publicada en
+<https://nezusas.github.io/morlaco/web/>: escribes tu dirección, compartes tu ubicación o tocas
 el mapa, y te dice cuándo pasa el recolector (y si toca funda celeste), si hay cortes de luz programados y
 qué paradas de bus tienes cerca. El punto elegido queda en la dirección de la página
 (`web/#-2.89733,-79.00454`), así que se puede compartir.
@@ -129,7 +137,6 @@ regístrala en `FUENTES` de `cli.py` y añade sus pruebas.
 
 ## Próximos pasos
 
-- Publicar la página web para que se pueda abrir sin instalar nada.
 - Un bot de Telegram con los mismos datos.
 - Convertir las rutas de bus al formato GTFS para que puedan usarlas las apps de transporte.
 - Cortes de agua de ETAPA.
