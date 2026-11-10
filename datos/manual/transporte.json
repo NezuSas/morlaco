@@ -1,0 +1,107 @@
+{
+  "metadata": {
+    "titulo": "Pasaje y cambios recientes del transporte público de Cuenca",
+    "nota": "Este archivo se mantiene a mano (no lo genera morlaco actualizar). Recoge lo que todavía no está en los datos abiertos del municipio: el pasaje vigente y los cambios de líneas anunciados en 2026. Cada dato lleva su fuente; los avisos dejan de mostrarse después de su fecha 'hasta'.",
+    "revisado": "2026-11-10"
+  },
+  "tarifas": {
+    "bus": {
+      "personalizada": 0.3,
+      "personalizada_preferencial": 0.15,
+      "sin_subsidio": 0.4,
+      "sin_subsidio_preferencial": 0.2,
+      "tarjeta": "Movilízate",
+      "costo_tarjeta": 1.8,
+      "desde": "2026-08-16",
+      "nota": "El subsidio municipal (0,10 o 0,05) solo se aplica con la tarjeta personalizada y en la primera marcación en cada bus; una segunda marcación en el mismo bus, antes de 10 minutos, paga la tarifa sin subsidio. Preferencial: estudiantes y adultos mayores.",
+      "fuente": "https://elmercurio.com.ec/cuenca/2026/08/18/subsidio-pasaje-urbano-cuenca-accion-proteccion/"
+    },
+    "tranvia": {
+      "normal": 0.35,
+      "descuento_preferencial": 0.5,
+      "nota": "Tarifa diferenciada con el 50 % de descuento para estudiantes, personas con discapacidad y adultos mayores. Se paga con la tarjeta del tranvía, distinta de la del bus.",
+      "fuente": "https://elmercurio.com.ec/cuenca/2026/08/20/se-reanuda-la-venta-de-tarjetas-para-el-tranvia-de-cuenca/"
+    }
+  },
+  "avisos": [
+    {
+      "lineas": ["1"],
+      "desde": "2026-09-01",
+      "hasta": "2027-03-31",
+      "es": "Desde el 1 de septiembre llega hasta el ingreso a Llacao (Cuartel Dávalos).",
+      "en": "Since 1 September it goes on to the Llacao turnoff (Cuartel Dávalos).",
+      "fuente": "https://elmercurio.com.ec/cuenca/2026/08/20/buses-urbanos-recorridos-cuenca/"
+    },
+    {
+      "lineas": ["5"],
+      "desde": "2026-09-01",
+      "hasta": "2027-03-31",
+      "es": "Desde el 1 de septiembre llega hasta el parque Altiplano.",
+      "en": "Since 1 September it goes on to Altiplano park.",
+      "fuente": "https://elmercurio.com.ec/cuenca/2026/08/20/buses-urbanos-recorridos-cuenca/"
+    },
+    {
+      "lineas": ["10"],
+      "desde": "2026-09-01",
+      "hasta": "2027-03-31",
+      "es": "Desde el 1 de septiembre sigue del Puente Ochoa León a Bibín (2 salidas al día) y del Puente Paluncay al ingreso a Checa (6 al día).",
+      "en": "Since 1 September it continues from Puente Ochoa León to Bibín (2 runs a day) and from Puente Paluncay to the Checa turnoff (6 a day).",
+      "fuente": "https://elmercurio.com.ec/cuenca/2026/08/20/buses-urbanos-recorridos-cuenca/"
+    },
+    {
+      "lineas": ["13"],
+      "desde": "2026-09-01",
+      "hasta": "2027-03-31",
+      "es": "Desde el 1 de septiembre llega hasta la iglesia Santísima Trinidad de Racar.",
+      "en": "Since 1 September it goes on to the Santísima Trinidad church in Racar.",
+      "fuente": "https://elmercurio.com.ec/cuenca/2026/08/20/buses-urbanos-recorridos-cuenca/"
+    },
+    {
+      "lineas": ["14"],
+      "desde": "2026-08-20",
+      "hasta": "2027-03-31",
+      "es": "Ahora llega hasta el nuevo hospital municipal de El Valle.",
+      "en": "It now goes on to the new municipal hospital in El Valle.",
+      "fuente": "https://elmercurio.com.ec/cuenca/2026/08/20/buses-urbanos-recorridos-cuenca/"
+    },
+    {
+      "lineas": ["23"],
+      "desde": "2026-09-01",
+      "hasta": "2027-03-31",
+      "es": "Desde el 1 de septiembre sigue de Rayoloma a Cabullín (5 salidas al día).",
+      "en": "Since 1 September it continues from Rayoloma to Cabullín (5 runs a day).",
+      "fuente": "https://elmercurio.com.ec/cuenca/2026/08/20/buses-urbanos-recorridos-cuenca/"
+    },
+    {
+      "lineas": ["26"],
+      "desde": "2026-09-01",
+      "hasta": "2027-03-31",
+      "es": "Sigue del Puente Ochoa León a Tixán (2 salidas al día, permanente desde el 19 de octubre) y de Jatumpamba al ingreso a Santa Rosa (3 al día).",
+      "en": "It continues from Puente Ochoa León to Tixán (2 runs a day, permanent since 19 October) and from Jatumpamba to the Santa Rosa turnoff (3 a day).",
+      "fuente": "https://elmercurio.com.ec/cuenca/2026/10/19/cuenca-registra-cambios-rutas-frecuencias-transporte-publico/"
+    },
+    {
+      "lineas": ["11", "11B"],
+      "desde": "2026-10-19",
+      "hasta": "2026-11-25",
+      "es": "Desvío temporal por el socavón del Camino a Turi (unos 30 días desde mediados de octubre): entra por la Av. 12 de Octubre hasta la vía Turi-Tarqui.",
+      "en": "Temporary detour because of the sinkhole on Camino a Turi (about 30 days from mid-October): it goes along Av. 12 de Octubre to the Turi-Tarqui road.",
+      "fuente": "https://elmercurio.com.ec/cuenca/2026/10/19/cuenca-registra-cambios-rutas-frecuencias-transporte-publico/"
+    },
+    {
+      "lineas": ["16"],
+      "desde": "2026-10-19",
+      "hasta": "2027-03-31",
+      "es": "Nueva parada en el Hospital del IESS: Av. 24 de Mayo, a la altura de la calle Rayoloma.",
+      "en": "New stop at the IESS Hospital: Av. 24 de Mayo, at Rayoloma street.",
+      "fuente": "https://elmercurio.com.ec/cuenca/2026/10/19/cuenca-registra-cambios-rutas-frecuencias-transporte-publico/"
+    }
+  ],
+  "tranvia": {
+    "frecuencia_min": { "lunes_viernes": 8, "fin_de_semana": 15 },
+    "horas_pico": ["06:00-09:00", "12:00-19:00"],
+    "desde": "2025-10-15",
+    "fuente": "https://elmercurio.com.ec/cuenca/2025/10/07/tranvia-cuenca-servicios-cambios/",
+    "pagina": "https://tranvia.cuenca.gob.ec/itinerarios/#/itinerarios"
+  }
+}

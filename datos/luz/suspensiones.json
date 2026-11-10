@@ -7,7 +7,9 @@
     "nota": "Las direcciones son texto tal como lo publica Centro Sur; no traen coordenadas. Revise ultima_publicacion: la página no siempre se actualiza.",
     "pdfs_no_disponibles": [
       "https://www.centrosur.gob.ec/wp-content/uploads/documentospdf/SuspensionesProgramadas/2026_marzo_22PF.pdf"
-    ]
+    ],
+    "programacion": "https://www.centrosur.gob.ec/intermedia-programacion/",
+    "otras_publicaciones_error": null
   },
   "publicaciones": [
     {
@@ -272,6 +274,24 @@
           "trabajo": "Correcciones en construcción de obra particular de código p6571. montaje seccionador en pn°662461"
         }
       ]
+    }
+  ],
+  "otras_publicaciones": [
+    {
+      "pdf": "https://www.centrosur.gob.ec/wp-content/uploads/2026/10/Mesa-de-trabajo-1.pdf",
+      "fecha": "2026-10-28",
+      "provincias": [
+        "Morona Santiago"
+      ],
+      "menciona_cuenca": false
+    },
+    {
+      "pdf": "https://www.centrosur.gob.ec/wp-content/uploads/2026/10/Mantenimientos-17-de-octubre.pdf",
+      "fecha": "2026-10-17",
+      "provincias": [
+        "Morona Santiago"
+      ],
+      "menciona_cuenca": false
     }
   ]
 }

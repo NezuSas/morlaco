@@ -127,12 +127,18 @@ export function estadoLuz(suspensiones, fecha = new Date()) {
   const hoy = horaCuenca(fecha).fecha;
   const ultima = suspensiones?.metadata?.ultima_publicacion ?? null;
   const publicacionHoy = (suspensiones?.publicaciones ?? []).find((p) => p.fecha === hoy);
+  // Cronogramas sueltos (carteles en PDF), del más nuevo al más viejo.
+  const otras = (suspensiones?.otras_publicaciones ?? []).filter((o) => o.fecha);
   return {
     hoy,
     ultima,
     diasSinPublicar: ultima ? diasEntre(ultima, hoy) : null,
     publicadoHoy: Boolean(publicacionHoy),
     cortesHoy: publicacionHoy?.cortes ?? [],
+    // Un cronograma de hoy o de los próximos días que menciona Cuenca.
+    cronograma: otras.find((o) => o.menciona_cuenca && o.fecha >= hoy) ?? null,
+    otraReciente: otras[0] ?? null,
+    programacion: suspensiones?.metadata?.programacion ?? null,
   };
 }
 

@@ -3,7 +3,12 @@ import { readFileSync } from "node:fs";
 import { test } from "node:test";
 
 import {
+  avisosDeLinea,
   describirDestinos,
+  dolares,
+  estacionCercana,
+  frecuenciaTranvia,
+  pasajeDeOpcion,
   describirFrecuencia,
   horarioDeHoy,
   lineasCercanas,
@@ -90,4 +95,47 @@ test("con los trazados reales: por el Parque Calderón pasan varias líneas", (t
   const cercanas = lineasCercanas({ lat: -2.89733, lon: -79.00454 }, datos, [], { fecha: lunes10h });
   assert.ok(cercanas.length >= 3, `solo ${cercanas.length} líneas`);
   assert.ok(cercanas.every((l) => l.metros <= 350));
+});
+
+test("avisosDeLinea muestra los vigentes y oculta los vencidos", () => {
+  const avisos = [
+    { lineas: ["14"], desde: "2026-08-20", hasta: "2027-03-31", es: "Hasta el hospital" },
+    { lineas: ["11", "11B"], desde: "2026-10-19", hasta: "2026-11-25", es: "Desvío" },
+  ];
+  assert.deepEqual(avisosDeLinea(avisos, "14", lunes10h).map((a) => a.es), ["Hasta el hospital"]);
+  assert.equal(avisosDeLinea(avisos, "11B", lunes10h).length, 1);
+  assert.equal(avisosDeLinea(avisos, "11B", enCuenca("2026-11-26T08:00")).length, 0);
+  assert.deepEqual(avisosDeLinea(avisos, "7", lunes10h), []);
+  assert.deepEqual(avisosDeLinea(undefined, "7", lunes10h), []);
+});
+
+test("frecuenciaTranvia: 8 min entre semana y 15 el fin de semana", () => {
+  const tranvia = { frecuencia_min: { lunes_viernes: 8, fin_de_semana: 15 } };
+  assert.equal(frecuenciaTranvia(tranvia, lunes10h), 8);
+  assert.equal(frecuenciaTranvia(tranvia, enCuenca("2026-11-14T10:00")), 15); // sábado
+  assert.equal(frecuenciaTranvia(null, lunes10h), null);
+});
+
+test("pasajeDeOpcion suma cada bus y el tranvía", () => {
+  const tarifas = { bus: { personalizada: 0.3 }, tranvia: { normal: 0.35 } };
+  const opcion = (...tipos) => ({
+    tramos: [{ modo: "pie" }, ...tipos.map((tipo) => ({ modo: "bus", tipo })), { modo: "pie" }],
+  });
+  assert.equal(pasajeDeOpcion(opcion("linea"), tarifas), 0.3);
+  assert.equal(pasajeDeOpcion(opcion("linea", "tranvia"), tarifas), 0.65);
+  assert.equal(pasajeDeOpcion(opcion("linea", "linea"), tarifas), 0.6);
+  assert.equal(pasajeDeOpcion(opcion(), tarifas), null); // a pie
+  assert.equal(pasajeDeOpcion(opcion("linea"), null), null);
+  assert.equal(dolares(0.3), "$0,30");
+});
+
+test("estacionCercana usa las estaciones del tranvía", () => {
+  const estaciones = {
+    features: [
+      { properties: { nombre: "Padre Aguirre" }, geometry: { coordinates: [-79.00599, -2.89442] } },
+      { properties: { nombre: "Aeropuerto" }, geometry: { coordinates: [-78.98774, -2.8895] } },
+    ],
+  };
+  assert.equal(estacionCercana({ lat: -2.8955, lon: -79.0055 }, estaciones).nombre, "Padre Aguirre");
+  assert.equal(estacionCercana({ lat: -2.95, lon: -79.05 }, estaciones), null);
 });

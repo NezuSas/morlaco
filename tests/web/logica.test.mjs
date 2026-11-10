@@ -130,6 +130,21 @@ test("estadoLuz informa cuántos días lleva Centro Sur sin publicar", () => {
   assert.equal(estadoLuz(null, lunes10h).ultima, null);
 });
 
+test("estadoLuz distingue los cronogramas sueltos que mencionan Cuenca", () => {
+  const morona = { pdf: "m.pdf", fecha: "2026-10-28", provincias: ["Morona Santiago"], menciona_cuenca: false };
+  const pasado = { pdf: "p.pdf", fecha: "2026-11-02", provincias: ["Azuay"], menciona_cuenca: true };
+  const proximo = { pdf: "c.pdf", fecha: "2026-11-12", provincias: ["Azuay"], menciona_cuenca: true };
+  const base = { metadata: { ultima_publicacion: "2026-07-08", programacion: "prog" }, publicaciones: [] };
+
+  const soloMorona = estadoLuz({ ...base, otras_publicaciones: [morona] }, lunes10h);
+  assert.equal(soloMorona.cronograma, null);
+  assert.equal(soloMorona.otraReciente, morona);
+  assert.equal(soloMorona.programacion, "prog");
+  // Uno que ya pasó no cuenta; uno de los próximos días, sí.
+  assert.equal(estadoLuz({ ...base, otras_publicaciones: [pasado, morona] }, lunes10h).cronograma, null);
+  assert.equal(estadoLuz({ ...base, otras_publicaciones: [proximo, pasado] }, lunes10h).cronograma, proximo);
+});
+
 test("filtrarCortes ignora tildes y mayúsculas", () => {
   const cortes = [{ direccion: "AV. DE LAS AMÉRICAS Y NICANOR MERCHÁN" }, { direccion: "SANTA MARIANITA" }];
   assert.equal(filtrarCortes(cortes, "americas").length, 1);

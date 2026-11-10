@@ -22,11 +22,13 @@ Escribe tu esquina como se dan las direcciones en Cuenca ("Sucre y Borrero") y M
 
 - **Cuándo pasa el recolector** por tu calle, qué funda sacar y qué día va la funda celeste. Con un toque te
   suscribes al **calendario de tu zona** y recibes un aviso antes de cada recolección.
-- **Si hay cortes de luz programados** por Centro Sur para hoy.
+- **Si hay cortes de luz programados** por Centro Sur para hoy, y si publicó cronogramas nuevos (y para qué
+  provincias).
 - **Qué farmacias están de turno** esta semana (abiertas las 24 horas), ordenadas por cercanía y con su teléfono
   para llamar.
-- **Qué líneas de bus pasan cerca**, cada cuánto pasan hoy y su recorrido en el mapa, y las paradas más
-  cercanas.
+- **Qué líneas de bus pasan cerca**, cada cuánto pasan hoy, su recorrido en el mapa y sus **cambios
+  recientes**; las paradas más cercanas, la estación del tranvía más cercana y cada cuánto pasa, y el
+  **pasaje** vigente.
 - **Qué bus te lleva a donde vas**: escribe el destino y te propone líneas directas, con un transbordo o ir a
   pie, con los pasos y el tiempo estimado, y la dibuja en el mapa.
 - **Dónde está la BiciPública más cercana**, y en el mapa las ciclovías y los puntos de carga para autos
@@ -52,12 +54,14 @@ una app o un análisis.
 |---|---|---|
 | [`datos/recoleccion/zonas.geojson`](datos/recoleccion/zonas.geojson) | Las 8 zonas de recolección de basura (polígonos) con sus días, horario y día de recolección de reciclables | [EMAC EP, mapa de zonas](https://emac.gob.ec/mapa-zonas-de-recoleccion/) |
 | [`datos/recoleccion/calendarios/zona-N.ics`](datos/recoleccion/calendarios/) | Un calendario por zona (iCalendar) con los días de recolección, el día de la funda celeste y un aviso una hora antes, para suscribirse desde Google Calendar, el iPhone u Outlook | Generado a partir de las zonas de EMAC EP |
-| [`datos/luz/suspensiones.json`](datos/luz/suspensiones.json) | Suspensiones programadas del servicio eléctrico: alimentador, dirección, hora de inicio y de fin, trabajo | [Centro Sur, suspensiones programadas](https://www.centrosur.gob.ec/suspensiones-programadas/) |
+| [`datos/luz/suspensiones.json`](datos/luz/suspensiones.json) | Suspensiones programadas del servicio eléctrico: alimentador, dirección, hora de inicio y de fin, trabajo. En `otras_publicaciones`, los cronogramas sueltos recientes: fecha, provincias y si mencionan Cuenca | [Centro Sur, suspensiones programadas](https://www.centrosur.gob.ec/suspensiones-programadas/) y [programación de cortes](https://www.centrosur.gob.ec/intermedia-programacion/) |
 | [`datos/buses/rutas.json`](datos/buses/rutas.json) | Líneas de bus con compañía, origen, destino, horario e intervalo entre buses (lunes a viernes, sábados, domingos) | [Cuenca en Datos](https://cuencaendatos.cuenca.gob.ec/dataset/f15c8808-0d12-4f97-bfd4-3b2f85ea84d1) |
 | [`datos/buses/recorridos.json`](datos/buses/recorridos.json) | Puntos por los que pasa cada línea, en orden, de ida y de retorno | [Cuenca en Datos](https://cuencaendatos.cuenca.gob.ec/dataset/4c727738-890e-445c-9b20-32df271db766) |
 | [`datos/buses/lineas.geojson`](datos/buses/lineas.geojson) | Recorrido de las 38 líneas de bus, los alimentadores y el tranvía en cada sentido, con sus alargues | [Cuenca en Datos](https://cuencaendatos.cuenca.gob.ec/dataset/f15c8808-0d12-4f97-bfd4-3b2f85ea84d1) |
 | [`datos/gtfs/cuenca-buses.zip`](datos/gtfs/cuenca-buses.zip) | **Feed GTFS** de los buses urbanos (38 líneas, frecuencias de lunes a viernes, sábados y domingos), validado sin errores con el validador oficial de MobilityData | Generado a partir de los datos del municipio |
 | [`datos/buses/paradas.geojson`](datos/buses/paradas.geojson) | Paradas de bus con coordenadas corregidas y si tienen señal (paleta) | [Cuenca en Datos](https://cuencaendatos.cuenca.gob.ec/dataset/d98292ca-7c70-422a-ac6f-1b43194ff5ba) |
+| [`datos/buses/tranvia.geojson`](datos/buses/tranvia.geojson) | Las 20 estaciones del tranvía, con un punto por andén y el sentido en que para en cada una | [Tranvía de Cuenca](https://tranvia.cuenca.gob.ec/) |
+| [`datos/manual/transporte.json`](datos/manual/transporte.json) | **Mantenido a mano**: pasaje del bus y del tranvía, cambios de líneas de 2026 (con fecha de caducidad) y frecuencia del tranvía, cada dato con su fuente | Comunicados del municipio publicados en [El Mercurio](https://elmercurio.com.ec/cuenca/) |
 | [`datos/calles/calles.geojson`](datos/calles/calles.geojson) | Las calles de Cuenca con nombre (unas 2.800), con su trazado simplificado y sus nombres alternativos, para buscar direcciones e intersecciones | [OpenStreetMap](https://www.openstreetmap.org) |
 | [`datos/farmacias/turnos.json`](datos/farmacias/turnos.json) | Farmacias de turno de Cuenca por semana (de 06:00 a 06:00), con dirección legible y teléfono para llamar | [ARCSA, turnos de farmacias](https://www.controlsanitario.gob.ec/turnos-de-farmacias/) |
 | [`datos/movilidad/`](datos/movilidad/) | Estaciones de BiciPública (BiciCuenca) con su capacidad, ciclovías (separadas o carriles pintados) y puntos de carga para autos eléctricos (públicos, para clientes o privados) | [OpenStreetMap](https://www.openstreetmap.org) |
@@ -92,7 +96,17 @@ Parque Calderón está en la zona 4.
   sin hacer nada, porque su app vuelve a leer el archivo cada día.
 - **Cortes de luz (Centro Sur).** Se leen de los PDF diarios que Centro Sur publica. Las direcciones son texto
   tal como lo escribe Centro Sur, sin coordenadas. **En noviembre de 2026 la página no se actualizaba desde
-  julio**: revisa `metadata.ultima_publicacion` antes de fiarte de estos datos.
+  julio**: revisa `metadata.ultima_publicacion` antes de fiarte de estos datos. Desde octubre de 2026 Centro
+  Sur publica además cronogramas sueltos (carteles en PDF, sin tabla) en su página "Programación de cortes";
+  Morlaco los busca allí y en la biblioteca de medios del sitio (API de WordPress) y anota de qué día son, de
+  qué provincias hablan y si mencionan Cuenca. Si uno menciona Cuenca, la página lo avisa y enlaza el PDF.
+- **Tranvía.** Las estaciones salen de la API pública que usa su web. El horario en vivo de la web llega por un
+  canal no documentado y no se usa; se muestra la frecuencia publicada (cada 8 minutos entre semana y 15 los
+  fines de semana, desde octubre de 2025).
+- **Pasaje y cambios de líneas (a mano).** El municipio no publica en datos abiertos el pasaje ni las
+  ampliaciones de rutas de 2026, así que [`datos/manual/transporte.json`](datos/manual/transporte.json) se
+  edita a mano a partir de comunicados publicados en prensa. Cada aviso tiene fecha `hasta` y deja de mostrarse
+  después; `tests/test_manual.py` comprueba que el archivo esté completo antes de publicarlo.
 - **Buses (municipio).** Se toma siempre el CSV más reciente del portal. En el CSV de paradas las coordenadas
   vienen mal formateadas (`-2.895.956` en vez de `-2.895956`); Morlaco las corrige y descarta las que caen
   fuera de Cuenca (`metadata.descartadas`). No hay posiciones de buses en tiempo real: no son públicas.
@@ -206,7 +220,7 @@ Actualizar todos los datos (escribe en `datos/`):
 .venv/Scripts/python -m morlaco actualizar
 ```
 
-O solo algunas fuentes: `recoleccion`, `luz`, `buses`, `calles`, `movilidad`, `farmacias`.
+O solo algunas fuentes: `recoleccion`, `luz`, `buses`, `calles`, `movilidad`, `farmacias`, `tranvia`.
 
 ```bash
 .venv/Scripts/python -m morlaco actualizar recoleccion buses
@@ -240,11 +254,12 @@ src/morlaco/
   cli.py              comando "morlaco actualizar"
   fuentes/
     emac.py           zonas de recolección (KML)
-    centrosur.py      suspensiones de luz (PDF)
+    centrosur.py      suspensiones de luz (PDF) y cronogramas sueltos (API de WordPress)
     buses.py          rutas, recorridos y paradas (API CKAN del portal municipal)
     trazados.py       recorrido de las líneas (shapefile del municipio)
     movilidad.py      BiciPública, ciclovías y carga eléctrica (API Overpass)
     farmacias.py      farmacias de turno (PDF mensual de ARCSA)
+    tranvia.py        estaciones del tranvía (API de su web)
     calles.py         índice de calles (API Overpass de OpenStreetMap)
 web/
   index.html          la página

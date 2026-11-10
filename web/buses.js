@@ -1,8 +1,8 @@
 // Líneas de bus cercanas a un punto y su frecuencia del día. Sin DOM ni red.
 
 import { distanciaALinea } from "./calles.js";
-import { aMinutos, horaCuenca } from "./logica.js";
-import { t } from "./textos.js";
+import { aMinutos, horaCuenca, masCercano } from "./logica.js";
+import { etiquetaIdioma, t } from "./textos.js";
 
 /** Qué columna de horarios aplica: lunes a viernes, sábados o domingos (hora de Cuenca). */
 export function tipoDeDia(fecha = new Date()) {
@@ -68,6 +68,48 @@ export function lineasCercanas(punto, lineas, rutas = [], { maximoMetros = 350, 
       metros: Math.round(g.metros),
       horario: g.tipo === "tranvia" ? undefined : horarioDeHoy(g.linea, rutas, fecha),
     }));
+}
+
+/**
+ * Los avisos de cambios recientes de una línea (datos/manual/transporte.json) que
+ * siguen vigentes hoy: se dejan de mostrar después de su fecha "hasta".
+ */
+export function avisosDeLinea(avisos, linea, fecha = new Date()) {
+  const hoy = horaCuenca(fecha).fecha;
+  return (avisos ?? []).filter((a) => a.lineas.includes(linea) && hoy <= a.hasta);
+}
+
+/** Cada cuántos minutos pasa hoy el tranvía, según la frecuencia publicada. */
+export function frecuenciaTranvia(tranvia, fecha = new Date()) {
+  const frecuencia = tranvia?.frecuencia_min;
+  if (!frecuencia) return null;
+  return tipoDeDia(fecha) === "lunes_viernes" ? frecuencia.lunes_viernes : frecuencia.fin_de_semana;
+}
+
+/** La estación del tranvía más cercana (hasta 800 m), con su distancia. */
+export function estacionCercana(punto, estaciones) {
+  return masCercano(punto, estaciones, 800);
+}
+
+/**
+ * Lo que cuesta una opción de ruta con tarjeta personalizada: cada bus se paga
+ * (el subsidio vuelve a aplicarse al cambiar de bus) y el tranvía tiene su tarifa.
+ * null si no hay tarifas o si se va a pie.
+ */
+export function pasajeDeOpcion(opcion, tarifas) {
+  if (!tarifas?.bus || !tarifas?.tranvia) return null;
+  const tramos = opcion.tramos.filter((tramo) => tramo.modo === "bus");
+  if (!tramos.length) return null;
+  const total = tramos.reduce(
+    (suma, tramo) => suma + (tramo.tipo === "tranvia" ? tarifas.tranvia.normal : tarifas.bus.personalizada),
+    0,
+  );
+  return Math.round(total * 100) / 100;
+}
+
+/** "$0,30" en español, "$0.30" en inglés. */
+export function dolares(valor) {
+  return new Intl.NumberFormat(etiquetaIdioma(), { style: "currency", currency: "USD", currencyDisplay: "narrowSymbol" }).format(valor);
 }
 
 /** "Entre Mall del Rio y Trigales Altos" o, con un solo destino, "Hacia Banos". */

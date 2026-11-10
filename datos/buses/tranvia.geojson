@@ -1,0 +1,40 @@
+{
+  "type": "FeatureCollection",
+  "metadata": {
+    "titulo": "Estaciones del Tranvía de Cuenca",
+    "fuente": "Tranvía de Cuenca (GAD Municipal)",
+    "pagina": "https://tranvia.cuenca.gob.ec/",
+    "datos": "https://tranvia.cuenca.gob.ec/apishopping/api/estaciones?filter%5Border%5D=orden%20ASC",
+    "nota": "hacia indica en qué sentido para el tranvía en esa estación."
+  },
+  "features": [
+    {"type":"Feature","properties":{"id":"RTA","nombre":"Río Tarqui","hacia":["Parque Industrial"]},"geometry":{"type":"Point","coordinates":[-79.03882,-2.91965]}},
+    {"type":"Feature","properties":{"id":"PIN","nombre":"Parque Industrial","hacia":["Río Tarqui","Parque Industrial"]},"geometry":{"type":"Point","coordinates":[-78.97523,-2.88218]}},
+    {"type":"Feature","properties":{"id":"MIL","nombre":"Milchichig","hacia":["Río Tarqui","Parque Industrial"]},"geometry":{"type":"Point","coordinates":[-78.98346,-2.88596]}},
+    {"type":"Feature","properties":{"id":"ESA","nombre":"El Salado","hacia":["Parque Industrial","Río Tarqui"]},"geometry":{"type":"Point","coordinates":[-79.0375,-2.9144]}},
+    {"type":"Feature","properties":{"id":"AER","nombre":"Aeropuerto","hacia":["Río Tarqui","Parque Industrial"]},"geometry":{"type":"Point","coordinates":[-78.98774,-2.8895]}},
+    {"type":"Feature","properties":{"id":"MIS","nombre":"Misicata","hacia":["Parque Industrial","Río Tarqui"]},"geometry":{"type":"Point","coordinates":[-79.0353,-2.9104]}},
+    {"type":"Feature","properties":{"id":"TTE","nombre":"Terminal Terrestre","hacia":["Río Tarqui","Parque Industrial"]},"geometry":{"type":"Point","coordinates":[-78.99247,-2.89271]}},
+    {"type":"Feature","properties":{"id":"RYA","nombre":"Río Yanuncay","hacia":["Parque Industrial","Río Tarqui"]},"geometry":{"type":"Point","coordinates":[-79.0328,-2.9057]}},
+    {"type":"Feature","properties":{"id":"AMX","nombre":"Av. México","hacia":["Parque Industrial","Río Tarqui"]},"geometry":{"type":"Point","coordinates":[-79.0302,-2.9025]}},
+    {"type":"Feature","properties":{"id":"CCU","nombre":"Chola Cuencana","hacia":["Río Tarqui","Parque Industrial"]},"geometry":{"type":"Point","coordinates":[-78.99585,-2.89502]}},
+    {"type":"Feature","properties":{"id":"SAN","nombre":"Gaspar Sangurima","hacia":["Río Tarqui"]},"geometry":{"type":"Point","coordinates":[-78.99994,-2.89481]}},
+    {"type":"Feature","properties":{"id":"FLI","nombre":"El Arenal","hacia":["Parque Industrial","Río Tarqui"]},"geometry":{"type":"Point","coordinates":[-79.02625,-2.89832]}},
+    {"type":"Feature","properties":{"id":"RTO","nombre":"Río Tomebamba","hacia":["Parque Industrial","Río Tarqui"]},"geometry":{"type":"Point","coordinates":[-79.02493,-2.89508]}},
+    {"type":"Feature","properties":{"id":"ABO","nombre":"Antonio Borrero","hacia":["Río Tarqui"]},"geometry":{"type":"Point","coordinates":[-79.00295,-2.8952]}},
+    {"type":"Feature","properties":{"id":"PAG","nombre":"Padre Aguirre","hacia":["Río Tarqui"]},"geometry":{"type":"Point","coordinates":[-79.00599,-2.89442]}},
+    {"type":"Feature","properties":{"id":"GCO","nombre":"Gran Colombia","hacia":["Parque Industrial"]},"geometry":{"type":"Point","coordinates":[-79.02262,-2.89133]}},
+    {"type":"Feature","properties":{"id":"M3N","nombre":"M. 3 de Noviembre","hacia":["Río Tarqui"]},"geometry":{"type":"Point","coordinates":[-79.00991,-2.89335]}},
+    {"type":"Feature","properties":{"id":"UNA","nombre":"Unidad Nacional","hacia":["Parque Industrial"]},"geometry":{"type":"Point","coordinates":[-79.01935,-2.89192]}},
+    {"type":"Feature","properties":{"id":"C45","nombre":"Convención del 45","hacia":["Río Tarqui"]},"geometry":{"type":"Point","coordinates":[-79.01512,-2.89209]}},
+    {"type":"Feature","properties":{"id":"CJE","nombre":"Corazón de Jesús","hacia":["Parque Industrial"]},"geometry":{"type":"Point","coordinates":[-79.01502,-2.8931]}},
+    {"type":"Feature","properties":{"id":"SLC","nombre":"Sector la Cuadra","hacia":["Río Tarqui"]},"geometry":{"type":"Point","coordinates":[-79.01776,-2.89114]}},
+    {"type":"Feature","properties":{"id":"CTA","nombre":"Coronel Talbot","hacia":["Parque Industrial"]},"geometry":{"type":"Point","coordinates":[-79.0102,-2.89441]}},
+    {"type":"Feature","properties":{"id":"PMO","nombre":"Parque el Molinero","hacia":["Río Tarqui"]},"geometry":{"type":"Point","coordinates":[-79.02144,-2.88985]}},
+    {"type":"Feature","properties":{"id":"SDO","nombre":"Santo Domingo","hacia":["Parque Industrial"]},"geometry":{"type":"Point","coordinates":[-79.00624,-2.89536]}},
+    {"type":"Feature","properties":{"id":"OLA","nombre":"Ordóñez Lazo","hacia":["Río Tarqui"]},"geometry":{"type":"Point","coordinates":[-79.02465,-2.89173]}},
+    {"type":"Feature","properties":{"id":"HMI","nombre":"Hermano Miguel","hacia":["Parque Industrial"]},"geometry":{"type":"Point","coordinates":[-79.00233,-2.8964]}},
+    {"type":"Feature","properties":{"id":"TOR","nombre":"Huayna Cápac","hacia":["Parque Industrial"]},"geometry":{"type":"Point","coordinates":[-78.99714,-2.89771]}},
+    {"type":"Feature","properties":{"id":"RTA","nombre":"Río Tarqui","hacia":["Río Tarqui"]},"geometry":{"type":"Point","coordinates":[-79.039,-2.91965]}}
+  ]
+}

@@ -35,7 +35,16 @@ import {
   sugerirCalles,
   ubicarEsquina,
 } from "./calles.js";
-import { describirDestinos, describirFrecuencia, lineasCercanas } from "./buses.js";
+import {
+  avisosDeLinea,
+  describirDestinos,
+  describirFrecuencia,
+  dolares,
+  estacionCercana,
+  frecuenciaTranvia,
+  lineasCercanas,
+  pasajeDeOpcion,
+} from "./buses.js";
 import { planificar, prepararLineas } from "./rutas.js";
 import { LUGARES, cambiarLugar, leerLugar, leerLugares, lugarDe, textoDeLugar } from "./lugares.js";
 import { etiquetaIdioma, idioma, idiomaInicial, listar, t, usarIdioma } from "./textos.js";
@@ -54,6 +63,14 @@ const $ = (id) => document.getElementById(id);
 usarIdioma(idiomaInicial(leer(CLAVE_IDIOMA), navigator.languages ?? [navigator.language]));
 
 const fechaLarga = () => new Intl.DateTimeFormat(etiquetaIdioma(), { dateStyle: "long", timeZone: "UTC" });
+/** "2026-10-17" -> "sábado 17 de octubre". */
+const fechaDia = (iso) => {
+  const texto = new Intl.DateTimeFormat(etiquetaIdioma(), { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" }).format(
+    new Date(`${iso}T12:00:00Z`),
+  );
+  // En español se escribe "miércoles 28 de octubre", sin la coma que pone Intl.
+  return idioma() === "es" ? texto.replace(",", "") : texto;
+};
 
 /** Pone los textos del HTML en el idioma actual (atributos data-t*). */
 function aplicarTextos() {
@@ -548,14 +565,38 @@ function pintarLuz(suspensiones) {
     t("luzFuente"),
   );
 
+  if (estado.cronograma) {
+    // Centro Sur anunció cortes que mencionan Cuenca en un cartel (PDF sin tabla).
+    caja.replaceChildren(
+      elemento(
+        "p",
+        { class: "aviso" },
+        elemento("strong", {}, t("luzCronograma", { fecha: fechaDia(estado.cronograma.fecha) })),
+        " ",
+        elemento("a", { href: estado.cronograma.pdf }, t("luzVerCronograma")),
+        ".",
+      ),
+    );
+    return;
+  }
+
   if (!estado.publicadoHoy) {
+    const programacion = elemento(
+      "a",
+      { href: estado.programacion ?? "https://www.centrosur.gob.ec/intermedia-programacion/" },
+      t("luzPaginaProgramacion"),
+    );
+    const otra = estado.otraReciente;
     const partes =
       estado.diasSinPublicar !== null && estado.diasSinPublicar > 2
         ? [
-            elemento("strong", {}, t("luzSinPublicar", { fecha: fechaLarga().format(new Date(estado.ultima)) })),
-            t("luzSinPublicarResto"),
-            fuente,
-            ".",
+            elemento("strong", {}, t("luzSinPublicarCuenca", { fecha: fechaLarga().format(new Date(estado.ultima)) })),
+            otra?.provincias?.length
+              ? t("luzOtraZona", { fecha: fechaDia(otra.fecha), zonas: listar(otra.provincias) })
+              : "",
+            t("luzRevisa"),
+            programacion,
+            t("luzRevisaFin"),
           ]
         : [t("luzNoHayHoy"), fuente, "."];
     caja.replaceChildren(elemento("p", { class: "aviso" }, ...partes));
@@ -714,7 +755,7 @@ function pintarParadas(cercanas) {
 }
 
 /** Lista de líneas cercanas; al tocar una se resalta su recorrido en el mapa. */
-function pintarLineas(cercanas, mapa) {
+function pintarLineas(cercanas, mapa, { punto, transporte, estaciones } = {}) {
   const lista = $("lineas");
   const nota = $("lineas-nota");
   if (cercanas === null) {
@@ -731,7 +772,17 @@ function pintarLineas(cercanas, mapa) {
   lista.replaceChildren(
     ...cercanas.map((l) => {
       const esTranvia = l.tipo === "tranvia";
-      const detalle = esTranvia ? t("tranviaDetalle") : describirFrecuencia(l.horario);
+      let detalle = esTranvia ? t("tranviaDetalle") : describirFrecuencia(l.horario);
+      if (esTranvia) {
+        const minutos = frecuenciaTranvia(transporte?.tranvia);
+        const estacion = punto && estaciones ? estacionCercana(punto, estaciones) : null;
+        if (estacion && minutos) {
+          detalle = t("tranviaEstacion", { estacion: estacion.nombre, distancia: formatoDistancia(estacion.metros), minutos });
+        } else if (minutos) {
+          detalle = t("tranviaCada", { minutos });
+        }
+      }
+      const avisos = esTranvia ? [] : avisosDeLinea(transporte?.avisos, l.linea);
       const boton = elemento(
         "button",
         { type: "button", class: "linea", "aria-pressed": "false" },
@@ -741,6 +792,9 @@ function pintarLineas(cercanas, mapa) {
           { class: "linea-texto" },
           elemento("strong", {}, esTranvia ? t("tranvia") : t("linea", { linea: l.linea }), " ", elemento("span", { class: "destinos" }, describirDestinos(l.destinos))),
           elemento("span", { class: "frecuencia" }, detalle),
+          ...avisos.map((a) =>
+            elemento("span", { class: "aviso-linea" }, elemento("strong", {}, t("avisoLinea"), ": "), a[idioma()] ?? a.es),
+          ),
         ),
         elemento("span", { class: "metros" }, formatoDistancia(l.metros)),
       );
@@ -819,6 +873,7 @@ function pintarResumen({ zona, suspensiones, turnos, cercanas }) {
   const luz = suspensiones ? estadoLuz(suspensiones) : null;
   let notaLuz = null;
   if (!luz) notaLuz = t("resumenLuzNotaError");
+  else if (luz.cronograma) notaLuz = null;
   else if (!luz.publicadoHoy && luz.diasSinPublicar !== null && luz.diasSinPublicar > 2) {
     notaLuz = t("resumenLuzNota", { fecha: fechaLarga().format(new Date(luz.ultima)) });
   }
@@ -834,7 +889,9 @@ function pintarResumen({ zona, suspensiones, turnos, cercanas }) {
   );
 
   if (!notaLuz) {
-    if (luz.publicadoHoy) {
+    if (luz.cronograma) {
+      fichas.push(ficha("luz", t("resumenLuzCronograma"), fechaDia(luz.cronograma.fecha), { aviso: true }));
+    } else if (luz.publicadoHoy) {
       fichas.push(ficha("luz", t("resumenLuzHoy", { n: luz.cortesHoy.length }), t("resumenLuzFuente"), { aviso: luz.cortesHoy.length > 0 }));
     } else {
       fichas.push(ficha("luz", t("resumenLuzSinCortes"), t("resumenLuzFuente")));
@@ -925,7 +982,7 @@ function pasosDeOpcion(opcion, paradas) {
   return pasos;
 }
 
-function pintarOpciones(opciones, destino, mapa, paradas) {
+function pintarOpciones(opciones, destino, mapa, paradas, transporte) {
   const lista = $("ruta-opciones");
   const botones = [];
   lista.replaceChildren(
@@ -937,11 +994,14 @@ function pintarOpciones(opciones, destino, mapa, paradas) {
           )
         : [elemento("span", { class: "numero-linea pie", "aria-hidden": "true" }, t("rutaPie"))];
       const conTranvia = buses.some((b) => b.tipo === "tranvia");
+      const minutosTranvia = frecuenciaTranvia(transporte?.tranvia);
+      const pasaje = pasajeDeOpcion(opcion, transporte?.tarifas);
       const detalle = [
+        pasaje !== null ? t("rutaPasaje", { valor: dolares(pasaje) }) : null,
         buses.length > 1 ? t("rutaTransbordo") : null,
         opcion.fueraDeHorario ? t("rutaFueraHorario") : null,
-        // El municipio no publica el horario del tranvía: se remite a su web.
-        conTranvia ? t("rutaTranviaHorario") : null,
+        // Sin horario publicado del tranvía: su frecuencia, o se remite a su web.
+        conTranvia ? (minutosTranvia ? t("rutaTranviaCada", { minutos: minutosTranvia }) : t("rutaTranviaHorario")) : null,
       ]
         .filter(Boolean)
         .join(" · ");
@@ -968,6 +1028,28 @@ function pintarOpciones(opciones, destino, mapa, paradas) {
   );
   $("ruta-nota").hidden = !opciones.length;
   if (opciones.length) mapa.dibujarRuta(opciones[0], destino);
+}
+
+/** El pasaje vigente, bajo el buscador de rutas. */
+function pintarPasaje(tarifas) {
+  const caja = $("pasaje");
+  if (!tarifas?.bus || !tarifas?.tranvia) {
+    caja.hidden = true;
+    return;
+  }
+  const { bus, tranvia } = tarifas;
+  caja.replaceChildren(
+    elemento("h3", { class: "subtitulo" }, t("pasajeTitulo")),
+    elemento(
+      "p",
+      {},
+      t("pasajeBus", { personalizada: dolares(bus.personalizada), preferencial: dolares(bus.personalizada_preferencial) }),
+      " ",
+      t("pasajeBusSin", { sin: dolares(bus.sin_subsidio) }),
+    ),
+    elemento("p", {}, t("pasajeTranvia", { normal: dolares(tranvia.normal) })),
+  );
+  caja.hidden = false;
 }
 
 // ---------- Ubicar al usuario ----------
@@ -1206,7 +1288,7 @@ async function iniciar() {
     mensaje(t("errorDatos"), true);
     return;
   }
-  const [suspensiones, paradas, estado, lineas, rutas, bicicletas, turnosFarmacias] = await Promise.all(
+  const [suspensiones, paradas, estado, lineas, rutas, bicicletas, turnosFarmacias, transporte, estacionesTranvia] = await Promise.all(
     [
       "luz/suspensiones.json",
       "buses/paradas.geojson",
@@ -1215,6 +1297,8 @@ async function iniciar() {
       "buses/rutas.json",
       "movilidad/bicicletas.geojson",
       "farmacias/turnos.json",
+      "manual/transporte.json",
+      "buses/tranvia.geojson",
     ].map((r) =>
       cargarJson(r).catch(() => null),
     ),
@@ -1312,7 +1396,8 @@ async function iniciar() {
     pintarLuz(suspensiones);
     pintarParadas(cercanas);
     const cercanasLineas = lineas ? lineasCercanas(punto, lineas, rutas?.rutas ?? []) : null;
-    pintarLineas(cercanasLineas, mapa);
+    pintarLineas(cercanasLineas, mapa, { punto, transporte, estaciones: estacionesTranvia });
+    pintarPasaje(transporte?.tarifas);
     const resumen = pintarResumen({ zona, suspensiones, turnos: turnosFarmacias, cercanas: cercanasLineas });
     pintarFarmacias(turnosFarmacias, punto, (f) => resumen.farmaciaCercana(f));
     pintarPunto();
@@ -1407,7 +1492,7 @@ async function iniciar() {
         return;
       }
       aviso.textContent = t("rutaDestino", { texto: destino.texto });
-      pintarOpciones(opciones, destino.punto, mapa, paradas);
+      pintarOpciones(opciones, destino.punto, mapa, paradas, transporte);
     } catch {
       aviso.textContent = t("busquedaSinRespuesta");
       aviso.classList.add("error");

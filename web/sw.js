@@ -6,7 +6,7 @@
 //   desde la caché, porque no cambian.
 // - La búsqueda de lugares (Nominatim) nunca se guarda.
 
-const CACHE_PAGINA = "morlaco-pagina-v3";
+const CACHE_PAGINA = "morlaco-pagina-v4";
 const CACHE_EXTERNOS = "morlaco-externos-v1";
 const CACHE_MAPA = "morlaco-mapa-v2";
 const CACHES = [CACHE_PAGINA, CACHE_EXTERNOS, CACHE_MAPA];
@@ -35,6 +35,8 @@ const PRECARGA = [
   "../datos/estado.json",
   "../datos/movilidad/bicicletas.geojson",
   "../datos/farmacias/turnos.json",
+  "../datos/manual/transporte.json",
+  "../datos/buses/tranvia.geojson",
 ];
 const EXTERNOS = ["unpkg.com", "fonts.googleapis.com", "fonts.gstatic.com"];
 

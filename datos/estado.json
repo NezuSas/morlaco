@@ -39,7 +39,7 @@
   },
   "farmacias": {
     "ok": true,
-    "actualizado": "2026-11-10T04:49:06+00:00",
+    "actualizado": "2026-11-10T05:11:08+00:00",
     "archivos": [
       "farmacias/turnos.json"
     ],
@@ -51,7 +51,7 @@
   },
   "luz": {
     "ok": true,
-    "actualizado": "2026-11-10T01:00:58+00:00",
+    "actualizado": "2026-11-10T05:34:53+00:00",
     "archivos": [
       "luz/suspensiones.json"
     ],
@@ -59,7 +59,9 @@
       "publicaciones": 3,
       "cortes": 35,
       "ultima_publicacion": "2026-07-08",
-      "pdfs_no_disponibles": 1
+      "pdfs_no_disponibles": 1,
+      "otras_publicaciones": 2,
+      "otras_mencionan_cuenca": 0
     }
   },
   "movilidad": {
@@ -78,7 +80,7 @@
   },
   "recoleccion": {
     "ok": true,
-    "actualizado": "2026-11-10T02:10:58+00:00",
+    "actualizado": "2026-11-10T05:11:02+00:00",
     "archivos": [
       "recoleccion/calendarios/zona-1.ics",
       "recoleccion/calendarios/zona-2.ics",
@@ -103,6 +105,16 @@
         8
       ],
       "calendarios": 8
+    }
+  },
+  "tranvia": {
+    "ok": true,
+    "actualizado": "2026-11-10T05:38:06+00:00",
+    "archivos": [
+      "buses/tranvia.geojson"
+    ],
+    "resumen": {
+      "estaciones": 28
     }
   }
 }
