@@ -30,7 +30,9 @@ function actualizado(conjunto, estado) {
   if (!conjunto.fuente_morlaco) return conjunto.frecuencia === "a mano" ? "Se revisa a mano." : null;
   const e = estado?.[conjunto.fuente_morlaco];
   if (!e?.actualizado) return null;
-  const texto = `Actualizado el ${fecha.format(new Date(e.actualizado))}.`;
+  // "7:37 a. m." ya termina en punto: no se añade otro.
+  const cuando = fecha.format(new Date(e.actualizado));
+  const texto = `Actualizado el ${cuando}${cuando.endsWith(".") ? "" : "."}`;
   return e.ok ? texto : `${texto} El último intento falló: se muestran los datos anteriores.`;
 }
 
