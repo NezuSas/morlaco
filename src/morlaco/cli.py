@@ -6,13 +6,16 @@ import argparse
 import json
 import sys
 from collections.abc import Callable, Sequence
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from morlaco import red
+from morlaco import cambios, red
 from morlaco.comun import Resultado
 from morlaco.fuentes import buses, calles, centrosur, emac, farmacias, movilidad, tranvia
 from morlaco.salida import escribir, escribir_json
+
+# Cuenca está en UTC-5 todo el año (Ecuador no cambia la hora).
+ZONA_CUENCA = timezone(timedelta(hours=-5))
 
 Fuente = Callable[[red.Descargador], Resultado]
 
@@ -79,6 +82,17 @@ def actualizar(
     return 1 if fallos else 0
 
 
+def revisar_cambios(datos: Path, siempre: bool = False, mensaje: Path | None = None) -> int:
+    archivos = cambios.archivos_cambiados(datos)
+    estado = _leer_estado(datos / "estado.json")
+    publicar = cambios.hay_que_publicar(archivos, cambios.estado_en_git(datos), estado, siempre)
+    if publicar and mensaje:
+        hoy = datetime.now(timezone.utc).astimezone(ZONA_CUENCA).date()
+        mensaje.write_text(cambios.mensaje_commit(archivos, estado, hoy), encoding="utf-8")
+    print("si" if publicar else "no")
+    return 0
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="morlaco", description="Datos abiertos de servicios públicos de Cuenca, Ecuador."
@@ -93,7 +107,18 @@ def main(argv: Sequence[str] | None = None) -> int:
     act.add_argument(
         "--salida", type=Path, default=Path("datos"), help="Carpeta de salida (por defecto, datos)."
     )
+    rev = sub.add_parser(
+        "cambios",
+        help="Dice si hay algo que publicar tras actualizar (imprime si o no).",
+    )
+    rev.add_argument("--datos", type=Path, default=Path("datos"), help="Carpeta de datos.")
+    rev.add_argument(
+        "--siempre", action="store_true", help="Publicar aunque los datos no hayan cambiado."
+    )
+    rev.add_argument("--mensaje", type=Path, help="Archivo donde escribir el mensaje del commit.")
     args = parser.parse_args(argv)
+    if args.comando == "cambios":
+        return revisar_cambios(args.datos, args.siempre, args.mensaje)
     desconocidas = [f for f in args.fuentes if f not in FUENTES]
     if desconocidas:
         parser.error(

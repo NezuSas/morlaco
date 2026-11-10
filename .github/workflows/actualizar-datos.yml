@@ -1,0 +1,108 @@
+# Mantiene los datos al día sin que nadie tenga que acordarse.
+#
+# Todos los días a las 06:00 de Cuenca revisa las fuentes que cambian seguido
+# (basura, luz, farmacias y tranvía); los lunes, todas. Pasa las pruebas con los
+# datos nuevos y, solo si algo cambió y las pruebas pasan, los publica en main.
+# Si una fuente falla, publica el resto y la ejecución queda en rojo: GitHub
+# avisa por correo y en datos/estado.json queda el error.
+name: Actualizar datos
+
+on:
+  schedule:
+    - cron: "0 11 * * *" # 06:00 en Cuenca (UTC-5): fuentes que cambian seguido
+    - cron: "30 11 * * 1" # lunes 06:30: todas las fuentes
+  workflow_dispatch:
+    inputs:
+      fuentes:
+        description: "Fuentes separadas por espacios (vacío = todas)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+concurrency:
+  group: actualizar-datos
+  cancel-in-progress: false
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+
+      - name: Instalar
+        run: pip install -e ".[dev]"
+
+      - name: Elegir fuentes
+        id: plan
+        env:
+          PROGRAMA: ${{ github.event.schedule }}
+          PEDIDAS: ${{ inputs.fuentes }}
+        run: |
+          if [ "$PROGRAMA" = "0 11 * * *" ]; then
+            echo "fuentes=recoleccion luz farmacias tranvia" >> "$GITHUB_OUTPUT"
+            echo "siempre=" >> "$GITHUB_OUTPUT"
+          elif [ "$PROGRAMA" = "30 11 * * 1" ]; then
+            echo "fuentes=" >> "$GITHUB_OUTPUT"
+            echo "siempre=--siempre" >> "$GITHUB_OUTPUT"
+          else
+            echo "fuentes=$PEDIDAS" >> "$GITHUB_OUTPUT"
+            echo "siempre=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Descargar las fuentes
+        id: descargar
+        env:
+          FUENTES: ${{ steps.plan.outputs.fuentes }}
+        run: |
+          # Un fallo en una fuente no detiene las demás; se informa al final.
+          if morlaco actualizar $FUENTES; then
+            echo "fallo=no" >> "$GITHUB_OUTPUT"
+          else
+            echo "fallo=si" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Probar con los datos nuevos
+        run: |
+          python -m pytest -q
+          node --test "tests/web/*.test.mjs"
+
+      - name: Publicar si algo cambió
+        env:
+          SIEMPRE: ${{ steps.plan.outputs.siempre }}
+        run: |
+          publicar=$(morlaco cambios $SIEMPRE --mensaje "$RUNNER_TEMP/mensaje.txt")
+          echo "¿Publicar? $publicar"
+          if [ "$publicar" != "si" ]; then
+            exit 0
+          fi
+          cat "$RUNNER_TEMP/mensaje.txt"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add datos
+          git commit -q -F "$RUNNER_TEMP/mensaje.txt"
+          git pull -q --rebase origin main
+          git push -q origin HEAD:main
+
+      - name: Avisar si alguna fuente falló
+        if: steps.descargar.outputs.fallo == 'si'
+        run: |
+          python - <<'EOF'
+          import json
+          estado = json.load(open("datos/estado.json", encoding="utf-8"))
+          for nombre, e in estado.items():
+              if not e.get("ok"):
+                  print(f"::error title=Falló {nombre}::{e.get('error')}")
+          EOF
+          exit 1

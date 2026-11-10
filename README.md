@@ -230,6 +230,19 @@ Si una fuente falla, las demás se actualizan igual, el comando termina con cód
 `datos/estado.json` junto con la fecha de la última actualización buena. Los archivos de datos no llevan la
 fecha de generación, así que solo cambian cuando cambia la fuente.
 
+### Actualización automática
+
+El workflow [`actualizar-datos.yml`](.github/workflows/actualizar-datos.yml) lo hace solo en GitHub:
+
+- **Todos los días a las 06:00** de Cuenca revisa las fuentes que cambian seguido: `recoleccion`, `luz`,
+  `farmacias` y `tranvia`.
+- **Los lunes a las 06:30** revisa todas y publica aunque no haya cambios, para que conste la revisión.
+- Antes de publicar pasa todas las pruebas con los datos nuevos. Si alguna falla, no publica nada.
+- Publica en `main` solo si algún archivo de datos cambió o si una fuente empezó a fallar o se recuperó. Eso lo
+  decide `morlaco cambios`.
+- Si una fuente falla, publica el resto y la ejecución queda en rojo, así que GitHub avisa por correo.
+- También se puede lanzar a mano desde la pestaña *Actions*, con todas las fuentes o solo algunas.
+
 ## Desarrollo
 
 ```bash
@@ -251,7 +264,8 @@ src/morlaco/
   calendario.py       calendarios .ics de recolección por zona
   gtfs.py             feed GTFS de los buses (rutas, frecuencias, paradas y recorridos)
   geo.py              conversión de UTM a latitud y longitud
-  cli.py              comando "morlaco actualizar"
+  cli.py              comandos "morlaco actualizar" y "morlaco cambios"
+  cambios.py          decide si hay algo que publicar tras actualizar
   fuentes/
     emac.py           zonas de recolección (KML)
     centrosur.py      suspensiones de luz (PDF) y cronogramas sueltos (API de WordPress)
