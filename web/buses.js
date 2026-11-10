@@ -2,6 +2,7 @@
 
 import { distanciaALinea } from "./calles.js";
 import { aMinutos, horaCuenca } from "./logica.js";
+import { t } from "./textos.js";
 
 /** Qué columna de horarios aplica: lunes a viernes, sábados o domingos (hora de Cuenca). */
 export function tipoDeDia(fecha = new Date()) {
@@ -19,18 +20,19 @@ export function horarioDeHoy(linea, rutas, fecha = new Date()) {
 
 /**
  * Cómo leer la frecuencia de hoy: "Cada 9 min, de 05:50 a 21:15", o si ya no hay
- * servicio a esta hora, "Hoy, de 05:50 a 21:15 (ya no pasa)".
+ * servicio a esta hora, "Hoy de 05:50 a 21:15; a esta hora ya no pasa".
  */
 export function describirFrecuencia(horario, fecha = new Date()) {
-  if (horario === undefined) return "Sin horario publicado";
-  if (horario === null) return "Hoy no tiene servicio";
-  const franja = horario.inicio && horario.fin ? `de ${horario.inicio} a ${horario.fin}` : "";
+  if (horario === undefined) return t("frecuenciaSinHorario");
+  if (horario === null) return t("frecuenciaSinServicio");
+  const { inicio, fin } = horario;
+  const franja = inicio && fin ? t("frecuenciaFranja", { inicio, fin }) : "";
   const { minutos } = horaCuenca(fecha);
-  if (horario.inicio && horario.fin) {
-    if (minutos > aMinutos(horario.fin)) return `Hoy ${franja}; a esta hora ya no pasa`;
-    if (minutos < aMinutos(horario.inicio)) return `Empieza a las ${horario.inicio}; hoy ${franja}`;
+  if (inicio && fin) {
+    if (minutos > aMinutos(fin)) return t("frecuenciaYaNo", { franja });
+    if (minutos < aMinutos(inicio)) return t("frecuenciaEmpieza", { inicio, franja });
   }
-  const cada = horario.intervalo_min ? `Cada ${horario.intervalo_min} min` : "Pasa";
+  const cada = horario.intervalo_min ? t("frecuenciaCada", { minutos: horario.intervalo_min }) : t("frecuenciaPasa");
   return [cada, franja].filter(Boolean).join(", ");
 }
 
@@ -70,7 +72,7 @@ export function lineasCercanas(punto, lineas, rutas = [], { maximoMetros = 350, 
 
 /** "Entre Mall del Rio y Trigales Altos" o, con un solo destino, "Hacia Banos". */
 export function describirDestinos(destinos) {
-  if (destinos.length >= 2) return `Entre ${destinos[0]} y ${destinos[1]}`;
-  if (destinos.length === 1) return `Hacia ${destinos[0]}`;
+  if (destinos.length >= 2) return t("destinosEntre", { a: destinos[0], b: destinos[1] });
+  if (destinos.length === 1) return t("destinosHacia", { a: destinos[0] });
   return "";
 }

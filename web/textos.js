@@ -1,0 +1,280 @@
+// Textos de la interfaz en español e inglés. Sin DOM.
+//
+// Cada texto es una cadena con marcadores {variable} o una función para los que
+// cambian según el número. Lo que viene de las fuentes (nombres de calles,
+// paradas, destinos) no se traduce: se queda como se dice en Cuenca.
+
+export const IDIOMAS = ["es", "en"];
+
+const TEXTOS = {
+  es: {
+    titulo: "Morlaco: tu calle hoy en Cuenca",
+    cambiarIdioma: "English",
+    cambiarIdiomaAria: "Switch to English",
+    enlaceDatos: "Datos abiertos y código",
+    portadaTitulo: "¿Qué pasa hoy en tu calle?",
+    portadaEntrada:
+      "Cuándo pasa el recolector, si hay cortes de luz programados y qué paradas de bus tienes cerca, en Cuenca.",
+    etiquetaBusqueda: "Tu esquina o un lugar conocido",
+    buscar: "Buscar",
+    ubicarme: "Usar mi ubicación",
+    tocaMapa: "o toca tu calle en el mapa.",
+    pruebaCon: "Prueba con",
+    avanceBasura:
+      "<strong>Recolección de basura.</strong> Qué días y a qué hora pasa el recolector, y cuándo sacar la funda celeste.",
+    avanceLuz: "<strong>Cortes de luz.</strong> Los cortes que Centro Sur programó para hoy.",
+    avanceBuses:
+      "<strong>Buses.</strong> Las líneas que pasan cerca, cada cuánto pasan hoy y las paradas más cercanas.",
+    tituloBasura: "Recolección de basura",
+    semanaAria: "Días de recolección en tu zona",
+    tituloLuz: "Cortes de luz programados",
+    tituloBuses: "Buses cerca de ti",
+    subtituloLineas: "Líneas que pasan cerca",
+    subtituloParadas: "Paradas registradas más cerca",
+    mapaAria: "Mapa de zonas de recolección",
+    leyendaLmv: "Lunes, miércoles y viernes",
+    leyendaMjs: "Martes, jueves y sábado",
+    pieFuentes:
+      'Datos de <a href="https://emac.gob.ec/mapa-zonas-de-recoleccion/">EMAC EP</a>, <a href="https://www.centrosur.gob.ec/suspensiones-programadas/">Centro Sur</a> y el portal <a href="https://cuencaendatos.cuenca.gob.ec">Cuenca en Datos</a> del GAD Municipal. Calles: © colaboradores de <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> (ODbL).',
+    pieColaborar:
+      '¿Un dato está mal o no encuentra tu esquina? <a href="https://github.com/NezuSas/morlaco/issues/new/choose">Avísanos</a> (necesitas una cuenta de GitHub, es gratis). ¿Programas? <a href="https://github.com/NezuSas/morlaco/blob/main/CONTRIBUTING.md">Colabora con Morlaco</a>. Las rutas de bus también están en <a href="../datos/gtfs/cuenca-buses.zip">formato GTFS</a> para apps de transporte.',
+    pieAviso:
+      "Morlaco no es un servicio oficial. Ante cualquier duda, consulta la fuente. Las calles se buscan en esta página; solo cuando buscas un lugar (como un parque o un centro comercial), el texto se envía a OpenStreetMap (Nominatim) para ubicarlo.",
+    actualizado: "Datos actualizados el {fecha}.",
+
+    dias: ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"],
+    iniciales: ["L", "M", "M", "J", "V", "S", "D"],
+    y: "y",
+    hoy: "hoy",
+    recoleccionAhora: "Pasando ahora, hasta las {hasta}",
+    recoleccionHoy: "Hoy, de {desde} a {hasta}",
+    recoleccionManana: "Mañana, de {desde} a {hasta}",
+    recoleccionDia: "El {dia}, de {desde} a {hasta}",
+    diaConCeleste: "recolección, con funda celeste",
+    diaRecoleccion: "recolección",
+    diaSinRecoleccion: "sin recolección",
+    fueraZonas: "Fuera de las zonas urbanas",
+    fueraZonasDetalle:
+      "Ese punto no está en ninguna de las 8 zonas urbanas de EMAC. En el área rural la recolección tiene otros horarios: consulta con EMAC EP.",
+    fundasConCeleste: "Ese día saca la [negra]funda negra y también la [celeste]funda celeste con los reciclables.",
+    fundasNormal: "Saca la [negra]funda negra. La [celeste]funda celeste, con reciclables, va el {dia}.",
+    fundasSoloNegra: "Saca la [negra]funda negra antes de la hora.",
+    zonaDetalle: "Zona {zona} de EMAC. Deja las fundas antes de que empiece el horario.",
+    zonaTooltip: "Zona {zona}: {dias}, de {desde} a {hasta}",
+    calendarioTitulo: "Recibe un aviso antes de cada recolección",
+    calendarioApple: "iPhone, Mac u Outlook",
+    calendarioDescargar: "Descargar el archivo",
+    calendarioNota:
+      "El calendario se actualiza solo si EMAC cambia los horarios. En Google Calendar, abre la configuración de “Cuenca limpia” para elegirle un color (Google lo pone gris) y activar las notificaciones.",
+
+    luzError: "No se pudieron cargar los cortes de luz. Prueba de nuevo más tarde.",
+    luzFuente: "página de Centro Sur",
+    luzSinPublicar: "Centro Sur no publica cortes programados desde el {fecha}.",
+    luzSinPublicarResto:
+      " Puede que no haya cortes, o que no los esté anunciando en su web. Revisa también sus redes sociales o la ",
+    luzNoHayHoy: "No hay cortes programados publicados para hoy. Fuente: ",
+    corteHorario: "De {desde} a {hasta}",
+    cortesNinguno: "Ningún corte de hoy coincide con esa calle o sector.",
+    filtroCortes: "Filtra por calle o sector",
+    filtroCortesAria: "Filtrar cortes por calle o sector",
+    luzResumen: ({ n }) =>
+      `Hoy hay ${n} ${n === 1 ? "corte programado" : "cortes programados"} en la zona de Centro Sur.`,
+    luzSinCoordenadas: "Centro Sur no publica coordenadas: busca tu calle o sector en la lista.",
+
+    paradasNinguna: "No hay paradas registradas a menos de 1,5 km.",
+    paradasNota: "Según el registro de paradas del municipio, que no incluye todas. Las distancias son en línea recta.",
+    lineasError: "No se pudieron cargar las líneas de bus.",
+    lineasNinguna: "Ninguna línea pasa a menos de 350 m de este punto.",
+    lineasNota:
+      "Toca una línea para verla en el mapa. Trazados publicados por el municipio en 2022 y horarios de 2025: algunas líneas pueden haber cambiado.",
+    tranvia: "Tranvía",
+    tranviaDetalle: "Próximos trenes en tranvia.cuenca.gob.ec",
+    linea: "Línea {linea}",
+    verMas: ({ n }) => `Ver ${n} ${n === 1 ? "línea más" : "líneas más"}`,
+    frecuenciaCada: "Cada {minutos} min",
+    frecuenciaPasa: "Pasa",
+    frecuenciaFranja: "de {inicio} a {fin}",
+    frecuenciaYaNo: "Hoy {franja}; a esta hora ya no pasa",
+    frecuenciaEmpieza: "Empieza a las {inicio}; hoy {franja}",
+    frecuenciaSinServicio: "Hoy no tiene servicio",
+    frecuenciaSinHorario: "Sin horario publicado",
+    destinosEntre: "Entre {a} y {b}",
+    destinosHacia: "Hacia {a}",
+
+    buscando: "Buscando…",
+    encontrado: "Encontrado: {texto}.",
+    puntoMapa: "Punto elegido en el mapa.",
+    buscandoUbicacion: "Buscando tu ubicación…",
+    usandoUbicacion: "Usando tu ubicación actual.",
+    reportar: "¿Es un error? Avísanos",
+    busquedaSinRespuesta: "La búsqueda de direcciones no respondió. Prueba de nuevo o toca el mapa.",
+    errorDatos: "No se pudieron cargar los datos de Morlaco. Recarga la página para intentarlo de nuevo.",
+    noCalle: "No encontré la calle “{calle}” en Cuenca. Revisa cómo está escrita.",
+    noSeCruzan: "Según el mapa, {a} y {b} no se cruzan. Revisa los nombres o toca el mapa.",
+    numerosCasa: "Los números de casa no están en el mapa.",
+    calleLarga: "La {calle} es larga y cruza varias zonas.",
+    escribeCruce: "Escribe también una calle que la cruce, por ejemplo “{calle} y …”, o toca el punto exacto en el mapa.",
+    noLugar: "No encontré ese lugar en Cuenca. Prueba con dos calles que se crucen, como “Sucre y Borrero”, o toca el mapa.",
+    cruce: "{a} y {b}",
+    geoNoSoportado: "Este navegador no permite compartir la ubicación.",
+    geoSinPermiso: "El navegador no dio permiso para usar tu ubicación. Escribe tu dirección o toca el mapa.",
+    geoError: "No se pudo obtener tu ubicación. Escribe tu dirección o toca el mapa.",
+  },
+
+  en: {
+    titulo: "Morlaco: your street today in Cuenca",
+    cambiarIdioma: "Español",
+    cambiarIdiomaAria: "Cambiar a español",
+    enlaceDatos: "Open data and code",
+    portadaTitulo: "What’s happening on your street today?",
+    portadaEntrada:
+      "When the garbage truck comes, whether there are scheduled power cuts and which buses stop near you, in Cuenca.",
+    etiquetaBusqueda: "Your corner or a well-known place",
+    buscar: "Search",
+    ubicarme: "Use my location",
+    tocaMapa: "or tap your street on the map.",
+    pruebaCon: "Try",
+    avanceBasura:
+      "<strong>Garbage collection.</strong> Which days and at what time the truck comes, and when to put out the light-blue recycling bag.",
+    avanceLuz: "<strong>Power cuts.</strong> Outages Centro Sur has scheduled for today.",
+    avanceBuses:
+      "<strong>Buses.</strong> The lines that pass nearby, how often they run today and the closest stops.",
+    tituloBasura: "Garbage collection",
+    semanaAria: "Collection days in your zone",
+    tituloLuz: "Scheduled power cuts",
+    tituloBuses: "Buses near you",
+    subtituloLineas: "Lines that pass nearby",
+    subtituloParadas: "Closest registered stops",
+    mapaAria: "Map of garbage collection zones",
+    leyendaLmv: "Monday, Wednesday and Friday",
+    leyendaMjs: "Tuesday, Thursday and Saturday",
+    pieFuentes:
+      'Data from <a href="https://emac.gob.ec/mapa-zonas-de-recoleccion/">EMAC EP</a>, <a href="https://www.centrosur.gob.ec/suspensiones-programadas/">Centro Sur</a> and the city’s <a href="https://cuencaendatos.cuenca.gob.ec">Cuenca en Datos</a> portal. Streets: © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors (ODbL).',
+    pieColaborar:
+      'Is something wrong, or can’t it find your corner? <a href="https://github.com/NezuSas/morlaco/issues/new/choose">Let us know</a> (you need a free GitHub account). Do you code? <a href="https://github.com/NezuSas/morlaco/blob/main/CONTRIBUTING.md">Help build Morlaco</a>. Bus routes are also available in <a href="../datos/gtfs/cuenca-buses.zip">GTFS format</a> for transit apps.',
+    pieAviso:
+      "Morlaco is not an official service. If in doubt, check the source. Streets are searched on this page; only when you search for a place (like a park or a mall) is the text sent to OpenStreetMap (Nominatim) to find it.",
+    actualizado: "Data updated on {fecha}.",
+
+    dias: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+    iniciales: ["M", "T", "W", "T", "F", "S", "S"],
+    y: "and",
+    hoy: "today",
+    recoleccionAhora: "Passing now, until {hasta}",
+    recoleccionHoy: "Today, {desde} to {hasta}",
+    recoleccionManana: "Tomorrow, {desde} to {hasta}",
+    recoleccionDia: "On {dia}, {desde} to {hasta}",
+    diaConCeleste: "collection, with the light-blue bag",
+    diaRecoleccion: "collection",
+    diaSinRecoleccion: "no collection",
+    fueraZonas: "Outside the urban zones",
+    fueraZonasDetalle:
+      "That point isn’t in any of EMAC’s 8 urban zones. Rural areas have other collection times: check with EMAC EP.",
+    fundasConCeleste: "That day, put out the [negra]black bag and also the [celeste]light-blue bag with recyclables.",
+    fundasNormal: "Put out the [negra]black bag. The [celeste]light-blue bag, with recyclables, goes out on {dia}.",
+    fundasSoloNegra: "Put out the [negra]black bag before the collection time.",
+    zonaDetalle: "EMAC zone {zona}. Put the bags out before the collection window starts.",
+    zonaTooltip: "Zone {zona}: {dias}, {desde} to {hasta}",
+    calendarioTitulo: "Get a reminder before every collection",
+    calendarioApple: "iPhone, Mac or Outlook",
+    calendarioDescargar: "Download the file",
+    calendarioNota:
+      "The calendar updates by itself if EMAC changes the schedule. Event names are in Spanish. In Google Calendar, open the settings of “Cuenca limpia” to give it a color (Google makes it grey) and turn on notifications.",
+
+    luzError: "Power cut data couldn’t be loaded. Please try again later.",
+    luzFuente: "Centro Sur’s page",
+    luzSinPublicar: "Centro Sur hasn’t published scheduled outages since {fecha}.",
+    luzSinPublicarResto:
+      " There may be no outages, or they may not be announcing them on their website. Also check their social media or ",
+    luzNoHayHoy: "No scheduled outages have been published for today. Source: ",
+    corteHorario: "From {desde} to {hasta}",
+    cortesNinguno: "None of today’s outages match that street or area.",
+    filtroCortes: "Filter by street or area",
+    filtroCortesAria: "Filter outages by street or area",
+    luzResumen: ({ n }) =>
+      `Today there ${n === 1 ? "is 1 scheduled outage" : `are ${n} scheduled outages`} in Centro Sur’s area.`,
+    luzSinCoordenadas: "Centro Sur doesn’t publish coordinates: look for your street or area in the list.",
+
+    paradasNinguna: "There are no registered stops within 1.5 km.",
+    paradasNota: "From the city’s register of stops, which doesn’t include all of them. Distances are in a straight line.",
+    lineasError: "Bus lines couldn’t be loaded.",
+    lineasNinguna: "No line passes within 350 m of this point.",
+    lineasNota:
+      "Tap a line to see it on the map. Routes published by the city in 2022 and timetables from 2025: some lines may have changed.",
+    tranvia: "Tram",
+    tranviaDetalle: "Next trains at tranvia.cuenca.gob.ec",
+    linea: "Line {linea}",
+    verMas: ({ n }) => `Show ${n} more ${n === 1 ? "line" : "lines"}`,
+    frecuenciaCada: "Every {minutos} min",
+    frecuenciaPasa: "Runs",
+    frecuenciaFranja: "{inicio} to {fin}",
+    frecuenciaYaNo: "Today {franja}; no more buses at this hour",
+    frecuenciaEmpieza: "Starts at {inicio}; today {franja}",
+    frecuenciaSinServicio: "No service today",
+    frecuenciaSinHorario: "No published timetable",
+    destinosEntre: "Between {a} and {b}",
+    destinosHacia: "To {a}",
+
+    buscando: "Searching…",
+    encontrado: "Found: {texto}.",
+    puntoMapa: "Point chosen on the map.",
+    buscandoUbicacion: "Finding your location…",
+    usandoUbicacion: "Using your current location.",
+    reportar: "Is this wrong? Let us know",
+    busquedaSinRespuesta: "The address search didn’t respond. Try again or tap the map.",
+    errorDatos: "Morlaco’s data couldn’t be loaded. Reload the page to try again.",
+    noCalle: "I couldn’t find the street “{calle}” in Cuenca. Check the spelling.",
+    noSeCruzan: "According to the map, {a} and {b} don’t cross. Check the names or tap the map.",
+    numerosCasa: "House numbers aren’t on the map.",
+    calleLarga: "{calle} is long and crosses several zones.",
+    escribeCruce: "Add a street that crosses it, for example “{calle} y …”, or tap the exact spot on the map.",
+    noLugar: "I couldn’t find that place in Cuenca. Try two streets that cross, like “Sucre y Borrero”, or tap the map.",
+    cruce: "{a} and {b}",
+    geoNoSoportado: "This browser can’t share your location.",
+    geoSinPermiso: "The browser didn’t allow access to your location. Type your address or tap the map.",
+    geoError: "Your location couldn’t be found. Type your address or tap the map.",
+  },
+};
+
+let actual = "es";
+
+/** El idioma guardado si es válido; si no, inglés cuando el navegador está en inglés; si no, español. */
+export function idiomaInicial(guardado, delNavegador = []) {
+  if (IDIOMAS.includes(guardado)) return guardado;
+  const preferido = [delNavegador].flat().find((i) => /^(es|en)\b/i.test(i ?? ""));
+  return preferido?.slice(0, 2).toLowerCase() === "en" ? "en" : "es";
+}
+
+export function usarIdioma(idioma) {
+  actual = IDIOMAS.includes(idioma) ? idioma : "es";
+}
+
+export function idioma() {
+  return actual;
+}
+
+/** El texto de una clave en el idioma actual, con sus variables. */
+export function t(clave, variables = {}) {
+  const valor = TEXTOS[actual][clave] ?? TEXTOS.es[clave];
+  if (valor === undefined) throw new Error(`Falta el texto "${clave}"`);
+  if (typeof valor === "function") return valor(variables);
+  if (typeof valor !== "string") return valor;
+  return valor.replace(/\{(\w+)\}/g, (_, nombre) => String(variables[nombre] ?? ""));
+}
+
+/** "a, b y c" o "a, b and c". */
+export function listar(elementos) {
+  if (elementos.length <= 1) return elementos.join("");
+  return `${elementos.slice(0, -1).join(", ")} ${t("y")} ${elementos.at(-1)}`;
+}
+
+/** Las claves que faltan en algún idioma (para las pruebas). */
+export function clavesQueFaltan() {
+  const todas = new Set(IDIOMAS.flatMap((i) => Object.keys(TEXTOS[i])));
+  return IDIOMAS.flatMap((i) => [...todas].filter((c) => !(c in TEXTOS[i])).map((c) => `${i}:${c}`));
+}
+
+/** Código de idioma para Intl y el atributo lang. */
+export function etiquetaIdioma() {
+  return actual === "en" ? "en" : "es-EC";
+}

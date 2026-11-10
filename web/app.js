@@ -27,16 +27,43 @@ import {
   puntoMedio,
 } from "./calles.js";
 import { describirDestinos, describirFrecuencia, lineasCercanas } from "./buses.js";
+import { etiquetaIdioma, idioma, idiomaInicial, listar, t, usarIdioma } from "./textos.js";
 
 const DATOS = "../datos/";
 const NOMINATIM = "https://nominatim.openstreetmap.org/search";
 // Rectángulo de la ciudad para que la búsqueda no devuelva otra Cuenca.
 const CAJA_CUENCA = "-79.10,-2.82,-78.92,-2.98";
 const CLAVE_ULTIMO_PUNTO = "morlaco:ultimo-punto";
+const CLAVE_IDIOMA = "morlaco:idioma";
 const SIN_MOVIMIENTO = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const $ = (id) => document.getElementById(id);
-const fechaLarga = new Intl.DateTimeFormat("es-EC", { dateStyle: "long", timeZone: "UTC" });
+// El idioma se decide antes de pintar nada: lo guardado, o el del navegador.
+usarIdioma(idiomaInicial(leer(CLAVE_IDIOMA), navigator.languages ?? [navigator.language]));
+
+const fechaLarga = () => new Intl.DateTimeFormat(etiquetaIdioma(), { dateStyle: "long", timeZone: "UTC" });
+
+/** Pone los textos del HTML en el idioma actual (atributos data-t*). */
+function aplicarTextos() {
+  document.documentElement.lang = etiquetaIdioma();
+  document.title = t("titulo");
+  for (const nodo of document.querySelectorAll("[data-t]")) nodo.textContent = t(nodo.dataset.t);
+  for (const nodo of document.querySelectorAll("[data-t-html]")) nodo.innerHTML = t(nodo.dataset.tHtml);
+  for (const nodo of document.querySelectorAll("[data-t-placeholder]")) {
+    nodo.placeholder = t(nodo.dataset.tPlaceholder);
+  }
+  for (const nodo of document.querySelectorAll("[data-t-aria-label]")) {
+    nodo.setAttribute("aria-label", t(nodo.dataset.tAriaLabel));
+  }
+}
+
+/** Convierte "Saca la [negra]funda negra..." en nodos, con la muestra de color de cada funda. */
+function conFundas(texto, fundas) {
+  return texto
+    .split(/(\[negra\]|\[celeste\])/)
+    .filter(Boolean)
+    .map((parte) => (parte === "[negra]" ? fundas.negra : parte === "[celeste]" ? fundas.celeste : parte));
+}
 
 function color(nombre) {
   return getComputedStyle(document.documentElement).getPropertyValue(nombre).trim();
@@ -136,7 +163,8 @@ function crearMapa(zonas, alElegir) {
     style: (zona) => estilo(zona),
     onEachFeature: (zona, capa) => {
       const p = zona.properties;
-      capa.bindTooltip(`${p.nombre}: ${p.dias.join(", ")}, de ${p.desde} a ${p.hasta}`, {
+      const dias = listar(p.dias_iso.map(nombreDia));
+      capa.bindTooltip(t("zonaTooltip", { zona: p.zona, dias, desde: p.desde, hasta: p.hasta }), {
         sticky: true,
       });
       capas.set(p.zona, { zona, capa });
@@ -253,11 +281,9 @@ function pintarBasura(zona) {
   semana.replaceChildren();
 
   if (!zona) {
-    cuando.textContent = "Fuera de las zonas urbanas";
+    cuando.textContent = t("fueraZonas");
     cuando.classList.remove("ahora");
-    fundas.textContent =
-      "Ese punto no está en ninguna de las 8 zonas urbanas de EMAC. En el área rural la recolección " +
-      "tiene otros horarios: consulta con EMAC EP.";
+    fundas.textContent = t("fueraZonasDetalle");
     detalle.textContent = "";
     $("calendario").replaceChildren();
     return;
@@ -270,14 +296,14 @@ function pintarBasura(zona) {
 
   const hoy = horaCuenca().diaIso;
   const reciclaje = p.dia_reciclaje ? p.dias_iso[p.dias.indexOf(p.dia_reciclaje)] : null;
-  const iniciales = ["L", "M", "M", "J", "V", "S", "D"];
+  const iniciales = t("iniciales");
   for (let dia = 1; dia <= 7; dia++) {
     const toca = p.dias_iso.includes(dia);
     const clases = ["azulejo", toca && "toca", dia === reciclaje && "reciclaje", dia === hoy && "hoy"];
     const descripcion = [
       nombreDia(dia),
-      dia === hoy ? "hoy" : null,
-      toca ? (dia === reciclaje ? "recolección, con funda celeste" : "recolección") : "sin recolección",
+      dia === hoy ? t("hoy") : null,
+      toca ? (dia === reciclaje ? t("diaConCeleste") : t("diaRecoleccion")) : t("diaSinRecoleccion"),
     ]
       .filter(Boolean)
       .join(", ");
@@ -290,28 +316,17 @@ function pintarBasura(zona) {
     );
   }
 
-  const negra = elemento("i", { class: "funda negra", "aria-hidden": "true" });
-  const celeste = elemento("i", { class: "funda celeste", "aria-hidden": "true" });
-  if (proxima.conReciclaje) {
-    fundas.replaceChildren(
-      "Ese día saca la ",
-      negra,
-      "funda negra y también la ",
-      celeste,
-      "funda celeste con los reciclables.",
-    );
-  } else if (p.dia_reciclaje) {
-    fundas.replaceChildren(
-      "Saca la ",
-      negra,
-      `funda negra. La `,
-      celeste,
-      `funda celeste, con reciclables, va el ${p.dia_reciclaje}.`,
-    );
-  } else {
-    fundas.replaceChildren("Saca la ", negra, "funda negra antes de la hora.");
-  }
-  detalle.textContent = `Zona ${p.zona} de EMAC. Deja las fundas antes de que empiece el horario.`;
+  const muestras = {
+    negra: elemento("i", { class: "funda negra", "aria-hidden": "true" }),
+    celeste: elemento("i", { class: "funda celeste", "aria-hidden": "true" }),
+  };
+  const texto = proxima.conReciclaje
+    ? t("fundasConCeleste")
+    : reciclaje
+      ? t("fundasNormal", { dia: nombreDia(reciclaje) })
+      : t("fundasSoloNegra");
+  fundas.replaceChildren(...conFundas(texto, muestras));
+  detalle.textContent = t("zonaDetalle", { zona: p.zona });
   pintarCalendario(p.zona);
 }
 
@@ -320,19 +335,15 @@ function pintarCalendario(zona) {
   const enlaces = enlacesCalendario(zona, location.href);
   const externo = { target: "_blank", rel: "noopener" };
   $("calendario").replaceChildren(
-    elemento("p", { class: "calendario-titulo" }, "Recibe un aviso antes de cada recolección"),
+    elemento("p", { class: "calendario-titulo" }, t("calendarioTitulo")),
     elemento(
       "div",
       { class: "calendario-botones" },
       elemento("a", { class: "boton-claro", href: enlaces.google, ...externo }, "Google Calendar"),
-      elemento("a", { class: "boton-claro", href: enlaces.webcal }, "iPhone, Mac u Outlook"),
-      elemento("a", { class: "enlace-claro", href: enlaces.archivo, download: `basura-zona-${zona}.ics` }, "Descargar el archivo"),
+      elemento("a", { class: "boton-claro", href: enlaces.webcal }, t("calendarioApple")),
+      elemento("a", { class: "enlace-claro", href: enlaces.archivo, download: `basura-zona-${zona}.ics` }, t("calendarioDescargar")),
     ),
-    elemento(
-      "p",
-      { class: "detalle" },
-      "El calendario se actualiza solo si EMAC cambia los horarios. En Google Calendar, abre la configuración de “Cuenca limpia” para elegirle un color (Google lo pone gris) y activar las notificaciones.",
-    ),
+    elemento("p", { class: "detalle" }, t("calendarioNota")),
   );
 }
 
@@ -340,7 +351,7 @@ function pintarLuz(suspensiones) {
   const caja = $("luz-estado");
   if (!suspensiones) {
     caja.replaceChildren(
-      elemento("p", { class: "aviso" }, "No se pudieron cargar los cortes de luz. Prueba de nuevo más tarde."),
+      elemento("p", { class: "aviso" }, t("luzError")),
     );
     return;
   }
@@ -348,19 +359,19 @@ function pintarLuz(suspensiones) {
   const fuente = elemento(
     "a",
     { href: "https://www.centrosur.gob.ec/suspensiones-programadas/" },
-    "página de Centro Sur",
+    t("luzFuente"),
   );
 
   if (!estado.publicadoHoy) {
     const partes =
       estado.diasSinPublicar !== null && estado.diasSinPublicar > 2
         ? [
-            elemento("strong", {}, `Centro Sur no publica cortes programados desde el ${fechaLarga.format(new Date(estado.ultima))}.`),
-            " Puede que no haya cortes, o que no los esté anunciando en su web. Revisa también sus redes sociales o la ",
+            elemento("strong", {}, t("luzSinPublicar", { fecha: fechaLarga().format(new Date(estado.ultima)) })),
+            t("luzSinPublicarResto"),
             fuente,
             ".",
           ]
-        : ["No hay cortes programados publicados para hoy. Fuente: ", fuente, "."];
+        : [t("luzNoHayHoy"), fuente, "."];
     caja.replaceChildren(elemento("p", { class: "aviso" }, ...partes));
     return;
   }
@@ -375,24 +386,24 @@ function pintarLuz(suspensiones) {
             elemento(
               "li",
               {},
-              elemento("span", { class: "horario" }, `De ${c.desde} a ${c.hasta}`),
+              elemento("span", { class: "horario" }, t("corteHorario", { desde: c.desde, hasta: c.hasta })),
               direccionLegible(c.direccion),
             ),
           )
-        : [elemento("li", {}, "Ningún corte de hoy coincide con esa calle o sector.")]),
+        : [elemento("li", {}, t("cortesNinguno"))]),
     );
   };
   const filtro = elemento("input", {
     type: "search",
     id: "filtro-cortes",
-    placeholder: "Filtra por calle o sector",
-    "aria-label": "Filtrar cortes por calle o sector",
+    placeholder: t("filtroCortes"),
+    "aria-label": t("filtroCortesAria"),
   });
   filtro.addEventListener("input", () => pintarLista(filtro.value));
   pintarLista("");
   caja.replaceChildren(
-    elemento("p", { class: "luz-resumen" }, `Hoy hay ${cortes.length} ${cortes.length === 1 ? "corte programado" : "cortes programados"} en la zona de Centro Sur.`),
-    elemento("p", { class: "detalle" }, "Centro Sur no publica coordenadas: busca tu calle o sector en la lista."),
+    elemento("p", { class: "luz-resumen" }, t("luzResumen", { n: cortes.length })),
+    elemento("p", { class: "detalle" }, t("luzSinCoordenadas")),
     elemento("div", { class: "filtro-cortes" }, filtro),
     lista,
   );
@@ -403,7 +414,7 @@ function pintarParadas(cercanas) {
   const nota = $("paradas-nota");
   if (!cercanas.length) {
     lista.replaceChildren(
-      elemento("li", { class: "sin-numero" }, "No hay paradas registradas a menos de 1,5 km."),
+      elemento("li", { class: "sin-numero" }, t("paradasNinguna")),
     );
   } else {
     lista.replaceChildren(
@@ -417,8 +428,7 @@ function pintarParadas(cercanas) {
       ),
     );
   }
-  nota.textContent =
-    "Según el registro de paradas del municipio, que no incluye todas. Las distancias son en línea recta.";
+  nota.textContent = t("paradasNota");
 }
 
 /** Lista de líneas cercanas; al tocar una se resalta su recorrido en el mapa. */
@@ -426,12 +436,12 @@ function pintarLineas(cercanas, mapa) {
   const lista = $("lineas");
   const nota = $("lineas-nota");
   if (cercanas === null) {
-    lista.replaceChildren(elemento("li", { class: "sin-lineas" }, "No se pudieron cargar las líneas de bus."));
+    lista.replaceChildren(elemento("li", { class: "sin-lineas" }, t("lineasError")));
     nota.textContent = "";
     return;
   }
   if (!cercanas.length) {
-    lista.replaceChildren(elemento("li", { class: "sin-lineas" }, "Ninguna línea pasa a menos de 350 m de este punto."));
+    lista.replaceChildren(elemento("li", { class: "sin-lineas" }, t("lineasNinguna")));
     nota.textContent = "";
     return;
   }
@@ -439,9 +449,7 @@ function pintarLineas(cercanas, mapa) {
   lista.replaceChildren(
     ...cercanas.map((l) => {
       const esTranvia = l.tipo === "tranvia";
-      const detalle = esTranvia
-        ? "Próximos trenes en tranvia.cuenca.gob.ec"
-        : describirFrecuencia(l.horario);
+      const detalle = esTranvia ? t("tranviaDetalle") : describirFrecuencia(l.horario);
       const boton = elemento(
         "button",
         { type: "button", class: "linea", "aria-pressed": "false" },
@@ -449,7 +457,7 @@ function pintarLineas(cercanas, mapa) {
         elemento(
           "span",
           { class: "linea-texto" },
-          elemento("strong", {}, esTranvia ? "Tranvía" : `Línea ${l.linea}`, " ", elemento("span", { class: "destinos" }, describirDestinos(l.destinos))),
+          elemento("strong", {}, esTranvia ? t("tranvia") : t("linea", { linea: l.linea }), " ", elemento("span", { class: "destinos" }, describirDestinos(l.destinos))),
           elemento("span", { class: "frecuencia" }, detalle),
         ),
         elemento("span", { class: "metros" }, formatoDistancia(l.metros)),
@@ -476,7 +484,7 @@ function pintarLineas(cercanas, mapa) {
     const ver = elemento(
       "button",
       { type: "button", class: "secundario ver-mas" },
-      `Ver ${ocultas.length} ${ocultas.length === 1 ? "línea más" : "líneas más"}`,
+      t("verMas", { n: ocultas.length }),
     );
     ver.addEventListener("click", () => {
       for (const li of ocultas) li.hidden = false;
@@ -484,8 +492,7 @@ function pintarLineas(cercanas, mapa) {
     });
     lista.append(elemento("li", { class: "ver-mas-fila" }, ver));
   }
-  nota.textContent =
-    "Toca una línea para verla en el mapa. Trazados publicados por el municipio en 2022 y horarios de 2025: algunas líneas pueden haber cambiado.";
+  nota.textContent = t("lineasNota");
 }
 
 // ---------- Ubicar al usuario ----------
@@ -523,17 +530,17 @@ async function ubicarTexto(texto) {
     const [a, b] = calles.map((c) => buscarCalles(c, indice));
     const falta = !a.length ? calles[0] : !b.length ? calles[1] : null;
     if (falta) {
-      return { error: `No encontré la calle “${falta}” en Cuenca. Revisa cómo está escrita.`, reportable: true };
+      return { error: t("noCalle", { calle: falta }), reportable: true };
     }
     const cruce = cruceDeCalles(a, b);
     if (!cruce) {
       return {
-        error: `Según el mapa, ${a[0].nombre} y ${b[0].nombre} no se cruzan. Revisa los nombres o toca el mapa.`,
+        error: t("noSeCruzan", { a: a[0].nombre, b: b[0].nombre }),
         resaltar: [a[0].feature, b[0].feature],
         reportable: true,
       };
     }
-    return { punto: cruce.punto, texto: `${cruce.a.nombre} y ${cruce.b.nombre}` };
+    return { punto: cruce.punto, texto: t("cruce", { a: cruce.a.nombre, b: cruce.b.nombre }) };
   }
 
   if (indice && calles.length === 1) {
@@ -542,11 +549,9 @@ async function ubicarTexto(texto) {
       if (longitudMetros(calle.feature) <= LARGO_MAXIMO_SIN_CRUCE && !tieneNumero) {
         return { punto: puntoMedio(calle.feature), texto: calle.nombre };
       }
-      const motivo = tieneNumero
-        ? "Los números de casa no están en el mapa."
-        : `La ${calle.nombre} es larga y cruza varias zonas.`;
+      const motivo = tieneNumero ? t("numerosCasa") : t("calleLarga", { calle: calle.nombre });
       return {
-        error: `${motivo} Escribe también una calle que la cruce, por ejemplo “${calles[0]} y …”, o toca el punto exacto en el mapa.`,
+        error: `${motivo} ${t("escribeCruce", { calle: calles[0] })}`,
         resaltar: [calle.feature],
       };
     }
@@ -555,7 +560,7 @@ async function ubicarTexto(texto) {
   const lugar = await buscarDireccion(texto);
   if (!lugar) {
     return {
-      error: "No encontré ese lugar en Cuenca. Prueba con dos calles que se crucen, como “Sucre y Borrero”, o toca el mapa.",
+      error: t("noLugar"),
       reportable: true,
     };
   }
@@ -569,7 +574,7 @@ async function buscarDireccion(texto) {
     countrycodes: "ec",
     viewbox: CAJA_CUENCA,
     bounded: "1",
-    "accept-language": "es",
+    "accept-language": idioma(),
     q: texto,
   });
   const respuesta = await fetch(`${NOMINATIM}?${parametros}`);
@@ -581,7 +586,7 @@ async function buscarDireccion(texto) {
 function miUbicacion() {
   return new Promise((resolver, rechazar) => {
     if (!navigator.geolocation) {
-      rechazar(new Error("Este navegador no permite compartir la ubicación."));
+      rechazar(new Error(t("geoNoSoportado")));
       return;
     }
     navigator.geolocation.getCurrentPosition(
@@ -589,9 +594,7 @@ function miUbicacion() {
       (error) =>
         rechazar(
           new Error(
-            error.code === error.PERMISSION_DENIED
-              ? "El navegador no dio permiso para usar tu ubicación. Escribe tu dirección o toca el mapa."
-              : "No se pudo obtener tu ubicación. Escribe tu dirección o toca el mapa.",
+            error.code === error.PERMISSION_DENIED ? t("geoSinPermiso") : t("geoError"),
           ),
         ),
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 },
@@ -602,11 +605,18 @@ function miUbicacion() {
 // ---------- Arranque ----------
 
 async function iniciar() {
+  aplicarTextos();
+  // Cambiar de idioma recarga la página: el punto elegido sigue en la dirección (#lat,lon).
+  $("idioma").addEventListener("click", () => {
+    guardar(CLAVE_IDIOMA, idioma() === "en" ? "es" : "en");
+    location.reload();
+  });
+
   let zonas;
   try {
     zonas = await cargarJson("recoleccion/zonas.geojson");
   } catch {
-    mensaje("No se pudieron cargar los datos de Morlaco. Recarga la página para intentarlo de nuevo.", true);
+    mensaje(t("errorDatos"), true);
     return;
   }
   const [suspensiones, paradas, estado, lineas, rutas] = await Promise.all(
@@ -627,11 +637,11 @@ async function iniciar() {
     .sort();
   if (fechas.length) {
     // estado.json guarda la hora en UTC; se muestra la fecha de Cuenca.
-    const enCuenca = new Intl.DateTimeFormat("es-EC", {
+    const enCuenca = new Intl.DateTimeFormat(etiquetaIdioma(), {
       dateStyle: "long",
       timeZone: "America/Guayaquil",
     });
-    $("actualizado").textContent = `Datos actualizados el ${enCuenca.format(new Date(fechas.at(-1)))}.`;
+    $("actualizado").textContent = t("actualizado", { fecha: enCuenca.format(new Date(fechas.at(-1))) });
   }
 
   const elegir = (punto, origen) => {
@@ -653,7 +663,7 @@ async function iniciar() {
     }
   };
 
-  const mapa = crearMapa(zonas, (punto) => elegir(punto, "Punto elegido en el mapa."));
+  const mapa = crearMapa(zonas, (punto) => elegir(punto, t("puntoMapa")));
 
   $("buscar").addEventListener("submit", async (evento) => {
     evento.preventDefault();
@@ -661,7 +671,7 @@ async function iniciar() {
     if (!texto) return;
     const boton = evento.submitter;
     if (boton) boton.disabled = true;
-    mensaje("Buscando…");
+    mensaje(t("buscando"));
     try {
       const resultado = await ubicarTexto(texto);
       if (resultado.error) {
@@ -674,15 +684,15 @@ async function iniciar() {
           // Si la búsqueda falla con una dirección real, que la persona pueda avisar.
           $("mensaje").append(
             " ",
-            elemento("a", { href: enlaceReporteDireccion(texto), target: "_blank", rel: "noopener" }, "¿Es un error? Avísanos"),
+            elemento("a", { href: enlaceReporteDireccion(texto), target: "_blank", rel: "noopener" }, t("reportar")),
             ".",
           );
         }
         return;
       }
-      elegir(resultado.punto, `Encontrado: ${resultado.texto}.`);
+      elegir(resultado.punto, t("encontrado", { texto: resultado.texto }));
     } catch {
-      mensaje("La búsqueda de direcciones no respondió. Prueba de nuevo o toca el mapa.", true);
+      mensaje(t("busquedaSinRespuesta"), true);
     } finally {
       if (boton) boton.disabled = false;
     }
@@ -691,9 +701,9 @@ async function iniciar() {
   $("ubicarme").addEventListener("click", async () => {
     const boton = $("ubicarme");
     boton.disabled = true;
-    mensaje("Buscando tu ubicación…");
+    mensaje(t("buscandoUbicacion"));
     try {
-      elegir(await miUbicacion(), "Usando tu ubicación actual.");
+      elegir(await miUbicacion(), t("usandoUbicacion"));
     } catch (error) {
       mensaje(error.message, true);
     } finally {

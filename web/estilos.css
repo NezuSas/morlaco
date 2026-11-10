@@ -147,8 +147,36 @@ p {
   text-decoration: none;
 }
 
+.barra-acciones {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
 .enlace-datos {
   font-size: var(--t-0);
+}
+
+/* Cambio de idioma: discreto, en la barra. */
+button.idioma {
+  padding: 0.3rem 0.75rem;
+  border: 1.5px solid var(--linea);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--tinta);
+  font-size: var(--t-0);
+}
+
+button.idioma:hover {
+  border-color: var(--cupula);
+  background: transparent;
+  color: var(--cupula);
+}
+
+@media (max-width: 420px) {
+  .enlace-datos {
+    display: none;
+  }
 }
 
 /* ---------- Disposición ----------

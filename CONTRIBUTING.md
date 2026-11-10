@@ -54,7 +54,8 @@ Para ver la página en tu computadora, sirve la carpeta del proyecto y abre <htt
 
 ### Buenas primeras tareas
 
-- **Traducir la página al inglés**: Cuenca tiene una comunidad extranjera grande.
+- **Revisar o mejorar las traducciones** de `web/textos.js` (español e inglés), o añadir otro idioma: cada texto
+  tiene su clave y las pruebas avisan si falta alguna.
 - **Añadir capas del portal municipal** al mapa: BiciPública, ciclovías, puntos de carga de autos eléctricos.
 - **Buscar una fuente pública de farmacias de turno** y, si existe, escribir su lector en `fuentes/`.
 - **Probar la búsqueda con esquinas de tu barrio** y añadir a `tests/web/calles.test.mjs` las que fallen.

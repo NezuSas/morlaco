@@ -128,6 +128,9 @@ qué paradas de bus tienes cerca. El punto elegido queda en la dirección de la 
 (`web/#-2.89733,-79.00454`), así que se puede compartir. Desde la respuesta te puedes suscribir al
 calendario de recolección de tu zona.
 
+La página está en **español e inglés**: elige el idioma del navegador y tiene un botón para cambiarlo. Lo que
+viene de las fuentes (nombres de calles, paradas y destinos) se queda como se dice en Cuenca.
+
 Las direcciones se escriben como se dan en Cuenca, con dos calles que se cruzan: "Sucre y Borrero",
 "Av. Solano y Remigio Crespo", "Bolívar esquina Benigno Malo". La búsqueda se hace dentro de la página con el
 índice de calles: no importan las tildes ni las mayúsculas, tolera una letra de más o de menos y entre calles
@@ -202,6 +205,7 @@ src/morlaco/
 web/
   index.html          la página
   logica.js           zonas, próxima recolección, cortes de hoy, paradas cercanas (sin DOM)
+  textos.js           textos de la interfaz en español e inglés
   calles.js           búsqueda de calles e intersecciones (sin DOM)
   buses.js            líneas cercanas y su frecuencia del día (sin DOM)
   app.js              mapa, búsqueda y pintado de la respuesta
@@ -214,7 +218,6 @@ regístrala en `FUENTES` de `cli.py` y añade sus pruebas.
 ## Próximos pasos
 
 - Responder "¿qué bus me lleva de aquí a allá?" con el GTFS.
-- Versión en inglés para la comunidad extranjera de Cuenca.
 - Instalar la página en el móvil y usarla sin conexión.
 - Capas del portal municipal: BiciPública, ciclovías y carga de autos eléctricos.
 - Farmacias de turno, si hay una fuente pública fiable.

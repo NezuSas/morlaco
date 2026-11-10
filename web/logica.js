@@ -1,22 +1,16 @@
 // Lógica pura de la página: sin DOM ni red, para poder probarla con `node --test`.
 
+import { idioma, t } from "./textos.js";
+
 export const CENTRO_CUENCA = { lat: -2.8975, lon: -79.0045 };
 
-const NOMBRES_DIA = {
-  1: "lunes",
-  2: "martes",
-  3: "miércoles",
-  4: "jueves",
-  5: "viernes",
-  6: "sábado",
-  7: "domingo",
-};
 
 // Cuenca está en UTC-5 todo el año (Ecuador no cambia la hora).
 const DESFASE_CUENCA_MS = -5 * 60 * 60 * 1000;
 
+/** Nombre del día en el idioma actual (1 = lunes). */
 export function nombreDia(diaIso) {
-  return NOMBRES_DIA[diaIso];
+  return t("dias")[diaIso - 1];
 }
 
 /** Día de la semana (1 = lunes), minutos desde medianoche y fecha, en hora de Cuenca. */
@@ -97,11 +91,11 @@ export function proximaRecoleccion(zona, fecha = new Date()) {
 
 /** "Hoy, de 20:00 a 24:00", "Mañana, de 08:00 a 12:00", "El viernes, de ...". */
 export function describirRecoleccion(proxima) {
-  const franja = `de ${proxima.desde} a ${proxima.hasta}`;
-  if (proxima.estado === "ahora") return `Pasando ahora, hasta las ${proxima.hasta}`;
-  if (proxima.estado === "hoy") return `Hoy, ${franja}`;
-  if (proxima.enDias === 1) return `Mañana, ${franja}`;
-  return `El ${nombreDia(proxima.diaIso)}, ${franja}`;
+  const { desde, hasta } = proxima;
+  if (proxima.estado === "ahora") return t("recoleccionAhora", { hasta });
+  if (proxima.estado === "hoy") return t("recoleccionHoy", { desde, hasta });
+  if (proxima.enDias === 1) return t("recoleccionManana", { desde, hasta });
+  return t("recoleccionDia", { dia: nombreDia(proxima.diaIso), desde, hasta });
 }
 
 function normalizar(texto) {
@@ -224,10 +218,11 @@ export function enlacesCalendario(zona, base) {
   };
 }
 
-/** "350 m", "1,2 km". */
+/** "350 m", "1,2 km" (en inglés, "1.2 km"). */
 export function formatoDistancia(metros) {
   if (metros < 1000) return `${Math.round(metros / 10) * 10} m`;
-  return `${(metros / 1000).toFixed(1).replace(".", ",")} km`;
+  const km = (metros / 1000).toFixed(1);
+  return `${idioma() === "en" ? km : km.replace(".", ",")} km`;
 }
 
 /** Lee "#-2.89733,-79.00454" (lat,lon). Devuelve null si no es un punto válido. */

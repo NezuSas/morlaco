@@ -64,7 +64,10 @@
         <img src="icono.svg" alt="" width="30" height="30" />
         <span>Morlaco</span>
       </a>
-      <a class="enlace-datos" href="https://github.com/NezuSas/morlaco">Datos abiertos y código</a>
+      <div class="barra-acciones">
+        <button type="button" id="idioma" class="idioma" lang="en" data-t="cambiarIdioma" data-t-aria-label="cambiarIdiomaAria">English</button>
+        <a class="enlace-datos" href="https://github.com/NezuSas/morlaco" data-t="enlaceDatos">Datos abiertos y código</a>
+      </div>
     </header>
 
     <main class="disposicion">
@@ -90,15 +93,15 @@
               <use href="#cupula" />
               <rect class="suelo" x="0" y="84" width="320" height="3" rx="1.5" />
             </svg>
-            <h1 id="titulo">¿Qué pasa hoy en tu calle?</h1>
-            <p class="entrada">
+            <h1 id="titulo" data-t="portadaTitulo">¿Qué pasa hoy en tu calle?</h1>
+            <p class="entrada" data-t="portadaEntrada">
               Cuándo pasa el recolector, si hay cortes de luz programados y qué paradas de bus tienes
               cerca, en Cuenca.
             </p>
           </div>
 
           <form id="buscar" class="buscar" role="search">
-            <label for="direccion">Tu esquina o un lugar conocido</label>
+            <label for="direccion" data-t="etiquetaBusqueda">Tu esquina o un lugar conocido</label>
             <div class="campo">
               <input
                 id="direccion"
@@ -108,18 +111,18 @@
                 placeholder="Sucre y Borrero"
                 required
               />
-              <button type="submit">Buscar</button>
+              <button type="submit" data-t="buscar">Buscar</button>
             </div>
             <div class="otras-formas">
-              <button type="button" id="ubicarme" class="secundario">Usar mi ubicación</button>
-              <span>o toca tu calle en el mapa.</span>
+              <button type="button" id="ubicarme" class="secundario" data-t="ubicarme">Usar mi ubicación</button>
+              <span data-t="tocaMapa">o toca tu calle en el mapa.</span>
             </div>
             <p id="mensaje" class="mensaje" role="status" aria-live="polite"></p>
           </form>
 
           <div id="inicio" class="inicio">
             <div class="ejemplos">
-              <p id="t-ejemplos">Prueba con</p>
+              <p id="t-ejemplos" data-t="pruebaCon">Prueba con</p>
               <ul aria-labelledby="t-ejemplos">
                 <li><button type="button" class="ejemplo" data-busqueda="Sucre y Borrero">Sucre y Borrero</button></li>
                 <li><button type="button" class="ejemplo" data-busqueda="Av. Solano y 12 de Abril">Av. Solano y 12 de Abril</button></li>
@@ -130,15 +133,15 @@
             <ul class="avance">
               <li>
                 <svg class="icono" aria-hidden="true"><use href="#i-funda" /></svg>
-                <p><strong>Recolección de basura.</strong> Qué días y a qué hora pasa el recolector, y cuándo sacar la funda celeste.</p>
+                <p data-t-html="avanceBasura"><strong>Recolección de basura.</strong> Qué días y a qué hora pasa el recolector, y cuándo sacar la funda celeste.</p>
               </li>
               <li>
                 <svg class="icono" aria-hidden="true"><use href="#i-rayo" /></svg>
-                <p><strong>Cortes de luz.</strong> Los cortes que Centro Sur programó para hoy.</p>
+                <p data-t-html="avanceLuz"><strong>Cortes de luz.</strong> Los cortes que Centro Sur programó para hoy.</p>
               </li>
               <li>
                 <svg class="icono" aria-hidden="true"><use href="#i-bus" /></svg>
-                <p><strong>Buses.</strong> Las paradas más cercanas y a cuántos metros están.</p>
+                <p data-t-html="avanceBuses"><strong>Buses.</strong> Las líneas que pasan cerca, cada cuánto pasan hoy y las paradas más cercanas.</p>
               </li>
             </ul>
           </div>
@@ -147,10 +150,10 @@
             <section class="basura" aria-labelledby="t-basura">
               <h2 id="t-basura">
                 <svg class="icono" aria-hidden="true"><use href="#i-funda" /></svg>
-                Recolección de basura
+                <span data-t="tituloBasura">Recolección de basura</span>
               </h2>
               <p id="basura-cuando" class="cuando"></p>
-              <ol id="semana" class="semana" aria-label="Días de recolección en tu zona"></ol>
+              <ol id="semana" class="semana" aria-label="Días de recolección en tu zona" data-t-aria-label="semanaAria"></ol>
               <p id="basura-fundas" class="fundas"></p>
               <p id="basura-zona" class="detalle"></p>
               <div id="calendario" class="calendario"></div>
@@ -159,7 +162,7 @@
             <section class="bloque luz" aria-labelledby="t-luz">
               <h2 id="t-luz">
                 <svg class="icono" aria-hidden="true"><use href="#i-rayo" /></svg>
-                Cortes de luz programados
+                <span data-t="tituloLuz">Cortes de luz programados</span>
               </h2>
               <div id="luz-estado"></div>
             </section>
@@ -167,12 +170,12 @@
             <section class="bloque buses" aria-labelledby="t-buses">
               <h2 id="t-buses">
                 <svg class="icono" aria-hidden="true"><use href="#i-bus" /></svg>
-                Buses cerca de ti
+                <span data-t="tituloBuses">Buses cerca de ti</span>
               </h2>
-              <h3 class="subtitulo">Líneas que pasan cerca</h3>
+              <h3 class="subtitulo" data-t="subtituloLineas">Líneas que pasan cerca</h3>
               <ul id="lineas" class="lineas"></ul>
               <p id="lineas-nota" class="detalle"></p>
-              <h3 class="subtitulo">Paradas registradas más cerca</h3>
+              <h3 class="subtitulo" data-t="subtituloParadas">Paradas registradas más cerca</h3>
               <ol id="paradas" class="paradas"></ol>
               <p id="paradas-nota" class="detalle"></p>
             </section>
@@ -182,22 +185,22 @@
 
         <footer class="pie">
           <p>
-            Datos de <a href="https://emac.gob.ec/mapa-zonas-de-recoleccion/">EMAC EP</a>,
+            <span data-t-html="pieFuentes">Datos de <a href="https://emac.gob.ec/mapa-zonas-de-recoleccion/">EMAC EP</a>,
             <a href="https://www.centrosur.gob.ec/suspensiones-programadas/">Centro Sur</a> y el portal
             <a href="https://cuencaendatos.cuenca.gob.ec">Cuenca en Datos</a> del GAD Municipal.
             Calles: © colaboradores de
-            <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> (ODbL).
+            <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> (ODbL).</span>
             <span id="actualizado"></span>
           </p>
-          <p>
+          <p data-t-html="pieColaborar">
             ¿Un dato está mal o no encuentra tu esquina?
             <a href="https://github.com/NezuSas/morlaco/issues/new/choose">Avísanos</a> (necesitas una
             cuenta de GitHub, es gratis). ¿Programas?
             <a href="https://github.com/NezuSas/morlaco/blob/main/CONTRIBUTING.md">Colabora con Morlaco</a>.
-              Las rutas de bus también están en
-              <a href="../datos/gtfs/cuenca-buses.zip">formato GTFS</a> para apps de transporte.
+            Las rutas de bus también están en
+            <a href="../datos/gtfs/cuenca-buses.zip">formato GTFS</a> para apps de transporte.
           </p>
-          <p>
+          <p data-t="pieAviso">
             Morlaco no es un servicio oficial. Ante cualquier duda, consulta la fuente. Las calles se
             buscan en esta página; solo cuando buscas un lugar (como un parque o un centro comercial),
             el texto se envía a OpenStreetMap (Nominatim) para ubicarlo.
@@ -205,11 +208,11 @@
         </footer>
       </div>
 
-      <section class="mapa-contenedor" aria-label="Mapa de zonas de recolección">
+      <section class="mapa-contenedor" aria-label="Mapa de zonas de recolección" data-t-aria-label="mapaAria">
         <div id="mapa" class="mapa"></div>
         <div class="leyenda" aria-hidden="true">
-          <span><i class="muestra lmv"></i>Lunes, miércoles y viernes</span>
-          <span><i class="muestra mjs"></i>Martes, jueves y sábado</span>
+          <span><i class="muestra lmv"></i><span data-t="leyendaLmv">Lunes, miércoles y viernes</span></span>
+          <span><i class="muestra mjs"></i><span data-t="leyendaMjs">Martes, jueves y sábado</span></span>
         </div>
       </section>
     </main>
