@@ -3,6 +3,9 @@
 import { idioma, t } from "./textos.js";
 
 export const CENTRO_CUENCA = { lat: -2.8975, lon: -79.0045 };
+// Hasta dónde se mueve el mapa: la ciudad y sus parroquias, con margen alrededor de todos los
+// datos (zonas de EMAC, paradas y líneas de bus, lugares cercanos).
+export const LIMITES_CUENCA = { sur: -3.14, oeste: -79.22, norte: -2.72, este: -78.8 };
 
 
 // Cuenca está en UTC-5 todo el año (Ecuador no cambia la hora).

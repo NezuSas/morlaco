@@ -2,6 +2,7 @@
 
 import {
   CENTRO_CUENCA,
+  LIMITES_CUENCA,
   describirRecoleccion,
   distanciaMetros,
   direccionLegible,
@@ -168,7 +169,17 @@ function puntoInterior(zona) {
 }
 
 function crearMapa(zonas, alElegir) {
-  const mapa = L.map("mapa", { zoomControl: true }).setView(
+  // El mapa no sale de Cuenca: no se aleja más allá de la ciudad ni se arrastra fuera de ella.
+  const { sur, oeste, norte, este } = LIMITES_CUENCA;
+  const mapa = L.map("mapa", {
+    zoomControl: true,
+    minZoom: 11,
+    maxBounds: [
+      [sur, oeste],
+      [norte, este],
+    ],
+    maxBoundsViscosity: 1,
+  }).setView(
     [CENTRO_CUENCA.lat, CENTRO_CUENCA.lon],
     13,
   );

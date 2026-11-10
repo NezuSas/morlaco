@@ -322,3 +322,28 @@ test("revisarUbicacion descarta la ubicación por internet y la muy imprecisa", 
     metros: 5000,
   });
 });
+
+test("todos los datos del mapa caen dentro de los límites de Cuenca", async () => {
+  const { LIMITES_CUENCA: l } = await import("../../web/logica.js");
+  const archivos = [
+    "recoleccion/zonas.geojson",
+    "buses/paradas.geojson",
+    "buses/lineas.geojson",
+    "buses/tranvia.geojson",
+    "ciudad/cerca.geojson",
+    "movilidad/bicicletas.geojson",
+    "movilidad/ciclovias.geojson",
+    "movilidad/carga.geojson",
+  ];
+  const puntos = (c) => (typeof c[0] === "number" ? [c] : c.flatMap(puntos));
+  for (const archivo of archivos) {
+    const datos = JSON.parse(readFileSync(new URL(`../../datos/${archivo}`, import.meta.url), "utf8"));
+    for (const f of datos.features) {
+      if (!f.geometry) continue;
+      for (const [lon, lat] of puntos(f.geometry.coordinates)) {
+        assert.ok(lon > l.oeste && lon < l.este && lat > l.sur && lat < l.norte, `${archivo}: ${lon},${lat}`);
+      }
+    }
+  }
+  assert.ok(l.sur < -2.8975 && l.norte > -2.8975, "el centro queda dentro");
+});
