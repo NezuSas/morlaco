@@ -1,0 +1,22 @@
+{
+  "type": "FeatureCollection",
+  "metadata": {
+    "titulo": "Puntos de carga para autos eléctricos",
+    "fuente": "OpenStreetMap, vía la API Overpass",
+    "atribucion": "© colaboradores de OpenStreetMap",
+    "licencia": "Open Database License (ODbL) 1.0"
+  },
+  "features": [
+    {"type":"Feature","properties":{"id":"node/10022332618","nombre":"Electro linera Centro sur","operador":"Centro sur","acceso":"privado","conectores":[]},"geometry":{"type":"Point","coordinates":[-78.984063,-2.904195]}},
+    {"type":"Feature","properties":{"id":"node/13290683318","nombre":"Punto de carga","operador":null,"acceso":"publico","conectores":[]},"geometry":{"type":"Point","coordinates":[-79.004475,-2.905274]}},
+    {"type":"Feature","properties":{"id":"node/13480940838","nombre":"Condor Energy","operador":"Condor Energy","acceso":"publico","conectores":[]},"geometry":{"type":"Point","coordinates":[-78.989362,-2.913308]}},
+    {"type":"Feature","properties":{"id":"node/13610790392","nombre":"Universidad del Azuay","operador":"Universidad del Azuay","acceso":"privado","conectores":[]},"geometry":{"type":"Point","coordinates":[-79.001231,-2.919666]}},
+    {"type":"Feature","properties":{"id":"node/13610790393","nombre":"Mirasol Chevrolet","operador":"Mirasol Chevrolet","acceso":"clientes","conectores":[]},"geometry":{"type":"Point","coordinates":[-78.993698,-2.89382]}},
+    {"type":"Feature","properties":{"id":"node/13610821463","nombre":"BYD Cuenca","operador":"BYD Cuenca","acceso":"clientes","conectores":["type2_cable"]},"geometry":{"type":"Point","coordinates":[-78.994231,-2.894193]}},
+    {"type":"Feature","properties":{"id":"node/13610821464","nombre":"Portal Artesanal","operador":"Portal Artesanal","acceso":"clientes","conectores":[]},"geometry":{"type":"Point","coordinates":[-78.996962,-2.898375]}},
+    {"type":"Feature","properties":{"id":"node/13610821465","nombre":"centro comercial milenium plaza","operador":"centro comercial milenium plaza","acceso":"clientes","conectores":[]},"geometry":{"type":"Point","coordinates":[-79.00254,-2.906019]}},
+    {"type":"Feature","properties":{"id":"node/13610821466","nombre":"Parque de la madre","operador":"Parque de la madre","acceso":"publico","conectores":[]},"geometry":{"type":"Point","coordinates":[-79.004369,-2.904756]}},
+    {"type":"Feature","properties":{"id":"node/13610833005","nombre":"Mavesa Cuenca","operador":"Mavesa Cuenca","acceso":"clientes","conectores":[]},"geometry":{"type":"Point","coordinates":[-78.962349,-2.893407]}},
+    {"type":"Feature","properties":{"id":"node/13610833006","nombre":"Mavesa Ecuador","operador":"Mavesa Ecuador","acceso":"clientes","conectores":[]},"geometry":{"type":"Point","coordinates":[-78.963261,-2.895062]}}
+  ]
+}

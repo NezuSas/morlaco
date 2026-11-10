@@ -31,6 +31,7 @@ const PRECARGA = [
   "../datos/buses/lineas.geojson",
   "../datos/buses/rutas.json",
   "../datos/estado.json",
+  "../datos/movilidad/bicicletas.geojson",
 ];
 const EXTERNOS = ["unpkg.com", "fonts.googleapis.com", "fonts.gstatic.com"];
 

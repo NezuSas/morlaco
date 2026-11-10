@@ -144,6 +144,19 @@ export function distanciaMetros(a, b) {
   return 2 * radio * Math.asin(Math.sqrt(h));
 }
 
+/** El elemento (punto GeoJSON) más cercano, con su distancia en metros, o null si está a más de `maximoMetros`. */
+export function masCercano(punto, coleccion, maximoMetros = 1500) {
+  let mejor = null;
+  for (const f of coleccion?.features ?? []) {
+    const [lon, lat] = f.geometry.coordinates;
+    const metros = distanciaMetros(punto, { lat, lon });
+    if (metros <= maximoMetros && (!mejor || metros < mejor.metros)) {
+      mejor = { ...f.properties, lat, lon, metros: Math.round(metros) };
+    }
+  }
+  return mejor;
+}
+
 /**
  * Las paradas más cercanas a un punto, con su distancia en metros. Las paradas
  * con el mismo nombre (una a cada lado de la calle) cuentan una sola vez.

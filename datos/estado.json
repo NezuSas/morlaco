@@ -50,6 +50,20 @@
       "pdfs_no_disponibles": 1
     }
   },
+  "movilidad": {
+    "ok": true,
+    "actualizado": "2026-11-10T03:51:17+00:00",
+    "archivos": [
+      "movilidad/bicicletas.geojson",
+      "movilidad/carga.geojson",
+      "movilidad/ciclovias.geojson"
+    ],
+    "resumen": {
+      "bicicletas": 21,
+      "carga": 11,
+      "ciclovias": 173
+    }
+  },
   "recoleccion": {
     "ok": true,
     "actualizado": "2026-11-10T02:10:58+00:00",

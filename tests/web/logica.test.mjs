@@ -11,6 +11,7 @@ import {
   filtrarCortes,
   formatoDistancia,
   hashDesdePunto,
+  masCercano,
   horaCuenca,
   paradasCercanas,
   proximaRecoleccion,
@@ -175,6 +176,16 @@ test("enlaceReporteDireccion rellena la plantilla con lo escrito", () => {
   assert.equal(url.searchParams.get("template"), "direccion.yml");
   assert.equal(url.searchParams.get("escribi"), "Sucre y Borrero");
   assert.equal(url.searchParams.get("title"), "Dirección: Sucre y Borrero");
+});
+
+test("masCercano devuelve el punto más próximo dentro del límite", () => {
+  const punto = (nombre, lon, lat) => ({ properties: { nombre }, geometry: { coordinates: [lon, lat] } });
+  const estaciones = { features: [punto("Lejos", -79.05, -2.95), punto("Cerca", -79.0046, -2.8976)] };
+  const cercana = masCercano({ lat: -2.8975, lon: -79.0045 }, estaciones);
+  assert.equal(cercana.nombre, "Cerca");
+  assert.ok(cercana.metros < 30);
+  assert.equal(masCercano({ lat: -2.8, lon: -78.9 }, estaciones), null);
+  assert.equal(masCercano({ lat: -2.8, lon: -78.9 }, null), null);
 });
 
 test("formatoDistancia", () => {

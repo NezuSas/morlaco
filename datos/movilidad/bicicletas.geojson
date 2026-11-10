@@ -1,0 +1,32 @@
+{
+  "type": "FeatureCollection",
+  "metadata": {
+    "titulo": "Estaciones de bicicleta pública (BiciCuenca)",
+    "fuente": "OpenStreetMap, vía la API Overpass",
+    "atribucion": "© colaboradores de OpenStreetMap",
+    "licencia": "Open Database License (ODbL) 1.0"
+  },
+  "features": [
+    {"type":"Feature","properties":{"id":"node/10693993643","nombre":"Bici Cuenca","red":null,"capacidad":null},"geometry":{"type":"Point","coordinates":[-79.005101,-2.901819]}},
+    {"type":"Feature","properties":{"id":"node/6381441587","nombre":"13. El Centenario","red":"BiciCuenca","capacidad":21},"geometry":{"type":"Point","coordinates":[-79.005849,-2.902026]}},
+    {"type":"Feature","properties":{"id":"node/6382041202","nombre":"7. Parque Calderón","red":"BiciCuenca","capacidad":20},"geometry":{"type":"Point","coordinates":[-79.004122,-2.898291]}},
+    {"type":"Feature","properties":{"id":"node/6384025414","nombre":"16. Escuela Panamá","red":"BiciCuenca","capacidad":16},"geometry":{"type":"Point","coordinates":[-79.014979,-2.901759]}},
+    {"type":"Feature","properties":{"id":"node/6384042195","nombre":"14. El farol","red":"BiciCuenca","capacidad":16},"geometry":{"type":"Point","coordinates":[-79.01135,-2.898896]}},
+    {"type":"Feature","properties":{"id":"node/6384700492","nombre":"8. La Merced","red":"BiciCuenca","capacidad":16},"geometry":{"type":"Point","coordinates":[-79.003773,-2.901424]}},
+    {"type":"Feature","properties":{"id":"node/6412749889","nombre":"15. Universidad de Cuenca","red":"BiciCuenca","capacidad":20},"geometry":{"type":"Point","coordinates":[-79.009858,-2.902197]}},
+    {"type":"Feature","properties":{"id":"node/6412779518","nombre":"19. UE La Salle","red":"BiciCuenca","capacidad":20},"geometry":{"type":"Point","coordinates":[-79.007762,-2.909944]}},
+    {"type":"Feature","properties":{"id":"node/6540828997","nombre":"18. El Estadio","red":"BiciCuenca","capacidad":28},"geometry":{"type":"Point","coordinates":[-79.007246,-2.907342]}},
+    {"type":"Feature","properties":{"id":"node/6540828998","nombre":"12. Parque de la Madre. John Jarrín Díaz.","red":"BiciCuenca","capacidad":20},"geometry":{"type":"Point","coordinates":[-79.00364,-2.905313]}},
+    {"type":"Feature","properties":{"id":"node/6672747142","nombre":"17. La Concordia","red":"BiciCuenca","capacidad":20},"geometry":{"type":"Point","coordinates":[-79.012443,-2.904872]}},
+    {"type":"Feature","properties":{"id":"node/6818620244","nombre":"2. Parque de el Paraíso","red":"BiciCuenca","capacidad":14},"geometry":{"type":"Point","coordinates":[-78.991061,-2.911479]}},
+    {"type":"Feature","properties":{"id":"node/6818620245","nombre":"11. El Vergel","red":"BiciCuenca","capacidad":21},"geometry":{"type":"Point","coordinates":[-78.994871,-2.910296]}},
+    {"type":"Feature","properties":{"id":"node/7467900870","nombre":"20. Universidad del Azuay","red":"BiciCuenca","capacidad":28},"geometry":{"type":"Point","coordinates":[-79.000303,-2.917784]}},
+    {"type":"Feature","properties":{"id":"node/7467900871","nombre":"1. Terminal Terrestre","red":"BiciCuenca","capacidad":12},"geometry":{"type":"Point","coordinates":[-78.992764,-2.892696]}},
+    {"type":"Feature","properties":{"id":"node/7467900872","nombre":"3. Nueve de Octubre","red":"BiciCuenca","capacidad":20},"geometry":{"type":"Point","coordinates":[-79.000677,-2.894854]}},
+    {"type":"Feature","properties":{"id":"node/7467900873","nombre":"4. María Auxiliadora","red":"BiciCuenca","capacidad":21},"geometry":{"type":"Point","coordinates":[-79.005941,-2.89256]}},
+    {"type":"Feature","properties":{"id":"node/7467900874","nombre":"5. Santo Domingo. Cristina Farez.","red":"BiciCuenca","capacidad":20},"geometry":{"type":"Point","coordinates":[-79.005589,-2.895215]}},
+    {"type":"Feature","properties":{"id":"node/7467900875","nombre":"6. San Sebastián","red":"BiciCuenca","capacidad":21},"geometry":{"type":"Point","coordinates":[-79.010925,-2.895529]}},
+    {"type":"Feature","properties":{"id":"node/7467900876","nombre":"9. Víctor J. Cuesta","red":"BiciCuenca","capacidad":21},"geometry":{"type":"Point","coordinates":[-79.000176,-2.899868]}},
+    {"type":"Feature","properties":{"id":"node/7467900877","nombre":"10. Portal Artesanal","red":"BiciCuenca","capacidad":20},"geometry":{"type":"Point","coordinates":[-78.996784,-2.898971]}}
+  ]
+}

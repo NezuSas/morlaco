@@ -25,6 +25,8 @@ Escribe tu esquina como se dan las direcciones en Cuenca ("Sucre y Borrero") y M
 - **Si hay cortes de luz programados** por Centro Sur para hoy.
 - **Qué líneas de bus pasan cerca**, cada cuánto pasan hoy y su recorrido en el mapa, y las paradas más
   cercanas.
+- **Dónde está la BiciPública más cercana**, y en el mapa las ciclovías y los puntos de carga para autos
+  eléctricos.
 
 Todo sale de **fuentes oficiales y públicas** (EMAC EP, Centro Sur, el portal Cuenca en Datos del municipio y
 OpenStreetMap), y los datos limpios quedan aquí, abiertos, para que cualquiera construya encima: una web, un bot,
@@ -53,6 +55,7 @@ una app o un análisis.
 | [`datos/gtfs/cuenca-buses.zip`](datos/gtfs/cuenca-buses.zip) | **Feed GTFS** de los buses urbanos (38 líneas, frecuencias de lunes a viernes, sábados y domingos), validado sin errores con el validador oficial de MobilityData | Generado a partir de los datos del municipio |
 | [`datos/buses/paradas.geojson`](datos/buses/paradas.geojson) | Paradas de bus con coordenadas corregidas y si tienen señal (paleta) | [Cuenca en Datos](https://cuencaendatos.cuenca.gob.ec/dataset/d98292ca-7c70-422a-ac6f-1b43194ff5ba) |
 | [`datos/calles/calles.geojson`](datos/calles/calles.geojson) | Las calles de Cuenca con nombre (unas 2.800), con su trazado simplificado y sus nombres alternativos, para buscar direcciones e intersecciones | [OpenStreetMap](https://www.openstreetmap.org) |
+| [`datos/movilidad/`](datos/movilidad/) | Estaciones de BiciPública (BiciCuenca) con su capacidad, ciclovías (separadas o carriles pintados) y puntos de carga para autos eléctricos (públicos, para clientes o privados) | [OpenStreetMap](https://www.openstreetmap.org) |
 | [`datos/estado.json`](datos/estado.json) | Cuándo se actualizó cada fuente por última vez y si hubo errores | — |
 
 Todos los archivos se pueden descargar directamente desde
@@ -94,6 +97,9 @@ Parque Calderón está en la zona 4.
 - **Calles (OpenStreetMap).** Se descargan con la API Overpass todas las vías con nombre de la ciudad, se
   agrupan por nombre y se simplifica su trazado con 4 m de tolerancia. Overpass a veces está saturado; si
   falla, basta con volver a correr `morlaco actualizar calles`.
+- **BiciPública, ciclovías y carga eléctrica (OpenStreetMap).** El portal municipal también las publica, pero sus
+  versiones actuales vienen en archivos RAR (que necesitan un programa aparte) y los puntos de carga solo como
+  enlace a un mapa externo. OpenStreetMap las tiene en un formato abierto y al día.
 - **Cortes de agua (ETAPA).** Todavía no están. ETAPA los anuncia en redes sociales y en prensa, no en un
   formato que se pueda leer de forma fiable.
 
@@ -170,7 +176,7 @@ Actualizar todos los datos (escribe en `datos/`):
 .venv/Scripts/python -m morlaco actualizar
 ```
 
-O solo algunas fuentes: `recoleccion`, `luz`, `buses`, `calles`.
+O solo algunas fuentes: `recoleccion`, `luz`, `buses`, `calles`, `movilidad`.
 
 ```bash
 .venv/Scripts/python -m morlaco actualizar recoleccion buses
@@ -207,6 +213,7 @@ src/morlaco/
     centrosur.py      suspensiones de luz (PDF)
     buses.py          rutas, recorridos y paradas (API CKAN del portal municipal)
     trazados.py       recorrido de las líneas (shapefile del municipio)
+    movilidad.py      BiciPública, ciclovías y carga eléctrica (API Overpass)
     calles.py         índice de calles (API Overpass de OpenStreetMap)
 web/
   index.html          la página
@@ -226,7 +233,6 @@ regístrala en `FUENTES` de `cli.py` y añade sus pruebas.
 ## Próximos pasos
 
 - Responder "¿qué bus me lleva de aquí a allá?" con el GTFS.
-- Capas del portal municipal: BiciPública, ciclovías y carga de autos eléctricos.
 - Farmacias de turno, si hay una fuente pública fiable.
 - Cortes de agua de ETAPA y un bot de Telegram.
 

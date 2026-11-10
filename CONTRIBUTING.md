@@ -56,7 +56,9 @@ Para ver la página en tu computadora, sirve la carpeta del proyecto y abre <htt
 
 - **Revisar o mejorar las traducciones** de `web/textos.js` (español e inglés), o añadir otro idioma: cada texto
   tiene su clave y las pruebas avisan si falta alguna.
-- **Añadir capas del portal municipal** al mapa: BiciPública, ciclovías, puntos de carga de autos eléctricos.
+- **Mejorar OpenStreetMap en Cuenca**: si falta una ciclovía, una estación de BiciPública o un punto de carga,
+  añádelo en [openstreetmap.org](https://www.openstreetmap.org) y Morlaco lo recogerá en la siguiente
+  actualización.
 - **Buscar una fuente pública de farmacias de turno** y, si existe, escribir su lector en `fuentes/`.
 - **Probar la búsqueda con esquinas de tu barrio** y añadir a `tests/web/calles.test.mjs` las que fallen.
 

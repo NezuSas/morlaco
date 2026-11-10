@@ -11,6 +11,7 @@ import {
   formatoDistancia,
   hashDesdePunto,
   horaCuenca,
+  masCercano,
   nombreDia,
   paradasCercanas,
   proximaRecoleccion,
@@ -195,6 +196,7 @@ function crearMapa(zonas, alElegir) {
   const lineaResaltada = L.layerGroup().addTo(mapa);
 
   return {
+    leaflet: mapa,
     /** Dibuja una o varias calles y encuadra el mapa en ellas. */
     resaltar(calles) {
       callesResaltadas.clearLayers();
@@ -271,6 +273,125 @@ function crearMapa(zonas, alElegir) {
       else mapa.flyTo(destino, zoom, { duration: 0.6 });
     },
   };
+}
+
+// ---------- Capas de movilidad (OpenStreetMap) ----------
+
+const SVG_BICI =
+  '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="16" r="3.5"/><circle cx="18" cy="16" r="3.5"/><path d="M6 16l4-7h5l3 7M10 9l2 7M14 6h3"/></svg>';
+const SVG_RAYO =
+  '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M13.5 2.5 5 13.5h6.2l-1 8 8.8-11h-6.3z"/></svg>';
+
+function iconoCapa(clase, svg) {
+  return L.divIcon({
+    className: "",
+    html: `<span class="marca-capa ${clase}">${svg}</span>`,
+    iconSize: [24, 24],
+    iconAnchor: [12, 12],
+  });
+}
+
+function textoAcceso(acceso) {
+  return { publico: t("accesoPublico"), clientes: t("accesoClientes"), privado: t("accesoPrivado") }[acceso] ?? "";
+}
+
+/**
+ * Selector de capas: BiciPública, ciclovías y carga eléctrica. Las dos últimas se
+ * descargan solo la primera vez que alguien las activa.
+ */
+function agregarCapas(mapa, bicicletas) {
+  const capaBicis = L.layerGroup();
+  if (bicicletas) {
+    L.geoJSON(bicicletas, {
+      pointToLayer: (f, posicion) =>
+        L.marker(posicion, { icon: iconoCapa("bici", SVG_BICI), keyboard: false }).bindTooltip(
+          [f.properties.nombre, f.properties.capacidad ? t("bicicletaAnclajes", { n: f.properties.capacidad }) : null]
+            .filter(Boolean)
+            .join(" · "),
+        ),
+    }).addTo(capaBicis);
+  }
+
+  const capaCiclovias = L.layerGroup();
+  const capaCarga = L.layerGroup();
+  const pendientes = new Map([
+    [
+      capaCiclovias,
+      async () => {
+        const ciclovias = await cargarJson("movilidad/ciclovias.geojson");
+        L.geoJSON(ciclovias, {
+          style: (f) => ({
+            color: color("--tomebamba"),
+            weight: f.properties.tipo === "separada" ? 4 : 3,
+            opacity: 0.9,
+            dashArray: f.properties.tipo === "separada" ? null : "5 6",
+          }),
+          onEachFeature: (f, capa) =>
+            capa.bindTooltip(
+              [f.properties.nombre, f.properties.tipo === "separada" ? t("cicloviaSeparada") : t("cicloviaCarril")]
+                .filter(Boolean)
+                .join(" · "),
+              { sticky: true },
+            ),
+        }).addTo(capaCiclovias);
+      },
+    ],
+    [
+      capaCarga,
+      async () => {
+        const carga = await cargarJson("movilidad/carga.geojson");
+        L.geoJSON(carga, {
+          pointToLayer: (f, posicion) =>
+            L.marker(posicion, { icon: iconoCapa("carga", SVG_RAYO), keyboard: false }).bindTooltip(
+              [f.properties.nombre, textoAcceso(f.properties.acceso)].filter(Boolean).join(" · "),
+            ),
+        }).addTo(capaCarga);
+      },
+    ],
+  ]);
+
+  const etiqueta = (clase, texto) => `<span class="muestra-capa ${clase}"></span>${texto}`;
+  L.control
+    .layers(
+      null,
+      {
+        [etiqueta("bici", t("capaBicis"))]: capaBicis,
+        [etiqueta("ciclovia", t("capaCiclovias"))]: capaCiclovias,
+        [etiqueta("carga", t("capaCarga"))]: capaCarga,
+      },
+      { collapsed: true, position: "topright" },
+    )
+    .addTo(mapa);
+
+  mapa.on("overlayadd", async (evento) => {
+    const cargar = pendientes.get(evento.layer);
+    if (!cargar) return;
+    pendientes.delete(evento.layer);
+    try {
+      await cargar();
+    } catch {
+      pendientes.set(evento.layer, cargar); // se reintentará la próxima vez
+    }
+  });
+}
+
+function pintarBici(estacion) {
+  const caja = $("bici");
+  if (!estacion) {
+    caja.textContent = t("bicicletaNinguna");
+    return;
+  }
+  const detalle = [
+    formatoDistancia(estacion.metros),
+    estacion.capacidad ? t("bicicletaAnclajes", { n: estacion.capacidad }) : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+  caja.replaceChildren(
+    elemento("span", { class: "marca-capa bici", "aria-hidden": "true" }),
+    elemento("span", {}, elemento("strong", {}, estacion.nombre), elemento("span", { class: "frecuencia" }, detalle)),
+  );
+  caja.firstChild.innerHTML = SVG_BICI;
 }
 
 // ---------- Respuesta ----------
@@ -621,13 +742,14 @@ async function iniciar() {
     mensaje(t("errorDatos"), true);
     return;
   }
-  const [suspensiones, paradas, estado, lineas, rutas] = await Promise.all(
+  const [suspensiones, paradas, estado, lineas, rutas, bicicletas] = await Promise.all(
     [
       "luz/suspensiones.json",
       "buses/paradas.geojson",
       "estado.json",
       "buses/lineas.geojson",
       "buses/rutas.json",
+      "movilidad/bicicletas.geojson",
     ].map((r) =>
       cargarJson(r).catch(() => null),
     ),
@@ -655,6 +777,7 @@ async function iniciar() {
     pintarLuz(suspensiones);
     pintarParadas(cercanas);
     pintarLineas(lineas ? lineasCercanas(punto, lineas, rutas?.rutas ?? []) : null, mapa);
+    pintarBici(masCercano(punto, bicicletas));
     mapa.mostrar(punto, zona, cercanas);
     history.replaceState(null, "", hashDesdePunto(punto));
     guardar(CLAVE_ULTIMO_PUNTO, hashDesdePunto(punto));
@@ -666,6 +789,7 @@ async function iniciar() {
   };
 
   const mapa = crearMapa(zonas, (punto) => elegir(punto, t("puntoMapa")));
+  agregarCapas(mapa.leaflet, bicicletas);
 
   $("buscar").addEventListener("submit", async (evento) => {
     evento.preventDefault();
