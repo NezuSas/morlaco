@@ -111,13 +111,16 @@ export function prepararIndice(calles) {
     feature,
     nombre: feature.properties.nombre,
     rango: feature.properties.rango ?? 0,
+    largo: longitudMetros(feature),
     variantes: [feature.properties.nombre, ...(feature.properties.otros_nombres ?? [])].map(palabras),
   }));
 }
 
 /**
  * Las calles que mejor encajan con el texto, de mejor a peor: primero las que no
- * tienen palabras de más, luego las escritas igual y, a igualdad, la vía más importante.
+ * tienen palabras de más, luego las escritas igual y, a igualdad, la vía más
+ * importante y la más larga, que suele ser la que la gente conoce ("Borrero" es
+ * Presidente Borrero, en el centro, antes que un callejón Ramón Borrero).
  */
 export function buscarCalles(texto, indice, maximo = 6) {
   const buscadas = palabras(texto);
@@ -136,7 +139,8 @@ export function buscarCalles(texto, indice, maximo = 6) {
       a.sobrantes - b.sobrantes ||
       a.inexactas - b.inexactas ||
       b.rango - a.rango ||
-      a.nombre.length - b.nombre.length,
+      b.largo - a.largo ||
+      a.nombre.localeCompare(b.nombre),
   );
   return encontradas.slice(0, maximo);
 }

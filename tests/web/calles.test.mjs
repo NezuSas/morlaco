@@ -64,6 +64,16 @@ test("buscarCalles tolera tildes, mayúsculas y una letra de diferencia", () => 
   assert.deepEqual(buscarCalles("Calle que no existe", indice), []);
 });
 
+test("buscarCalles desempata por la calle más larga", () => {
+  const ix = prepararIndice({
+    features: [
+      calle("Ramón Borrero", 3, [[[-79.03, -2.89], [-79.0295, -2.89]]]),
+      calle("Presidente Borrero", 3, [[[-79.003, -2.89], [-79.003, -2.91]]]),
+    ],
+  });
+  assert.equal(buscarCalles("Borrero", ix)[0].nombre, "Presidente Borrero");
+});
+
 test("buscarCalles también busca en los nombres alternativos", () => {
   assert.ok(buscarCalles("Bolívar", indice).some((c) => c.nombre === "Simón Bolívar"));
 });
@@ -126,5 +136,10 @@ test("con las calles reales de Cuenca", (t) => {
   const solano = cruce("Av. Solano", "Remigio Crespo");
   assert.ok(solano, "Solano y Remigio Crespo deberían cruzarse");
   assert.equal(solano.b.nombre, "Avenida Remigio Crespo Toral");
+
+  // "Borrero" a secas es Presidente Borrero, la del Centro Histórico.
+  const sucre = cruce("Sucre", "Borrero");
+  assert.equal(sucre.b.nombre, "Presidente Borrero");
+  assert.ok(Math.abs(sucre.punto.lat - -2.898) < 0.002 && Math.abs(sucre.punto.lon - -79.003) < 0.002);
   assert.equal(buscarCalles("Ordoñez Lasso", real)[0].nombre, "Avenida Ordoñez Lasso");
 });
