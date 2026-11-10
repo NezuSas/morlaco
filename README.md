@@ -34,6 +34,8 @@ Escribe tu esquina como se dan las direcciones en Cuenca ("Sucre y Borrero") y M
   pie, con los pasos y el tiempo estimado, y la dibuja en el mapa.
 - **Qué buses pasan por una calle**: escribe solo la calle ("Av. Solano") y ves las líneas que la recorren y
   por dónde pasa cada una según el recorrido oficial.
+- **Cómo está el aire**: el índice de calidad del aire de la estación de la EMOV más cercana, con su
+  recomendación.
 - **Dónde está la BiciPública más cercana**, y en el mapa las estaciones del tranvía, las ciclovías y los
   puntos de carga para autos eléctricos.
 
@@ -135,6 +137,11 @@ Parque Calderón está en la zona 4.
   farmacias de otros cantones listadas como de Cuenca (se descartan las que nombran otro cantón) y teléfonos
   de otras provincias o de relleno. La página pide **llamar antes de ir** y enlaza el PDF oficial. Las
   direcciones de esquina se ubican con el índice de calles para ordenar por cercanía.
+- **Aire (EMOV).** No se guarda en `datos/`: el índice cambia cada hora, así que la página lo pide en vivo a
+  la web de la [Red de Monitoreo de la EMOV EP](https://caire.emov.gob.ec/) (una API sin documentar, con CORS
+  abierto). Se muestra la estación más cercana que mide partículas, con la hora del dato; si la EMOV no
+  responde en 6 segundos o el dato tiene más de 4 horas, "Aire" no aparece. Su servidor envía el certificado
+  sin el intermedio, así que algunos programas (Python, Node) no lo aceptan aunque los navegadores sí.
 - **Cortes de agua (ETAPA).** Todavía no están. ETAPA los anuncia en redes sociales y en prensa, no en un
   formato que se pueda leer de forma fiable.
 
@@ -217,7 +224,8 @@ Usa [Leaflet](https://leafletjs.com) y los mapas de OpenStreetMap. Los lugares q
 con [Nominatim](https://nominatim.org), limitado a la ciudad de Cuenca; la página lo avisa al pie. No usa
 cookies ni analítica: solo recuerda en el navegador el último punto elegido. Las tipografías (Alegreya y
 Alegreya Sans, de Huerta Tipográfica, con licencia SIL OFL) van en [`web/fuentes/`](web/fuentes/), así que la
-página no pide nada a servidores de terceros salvo el mapa.
+página no pide nada a servidores de terceros salvo el mapa y la calidad del aire (a la EMOV, sin enviarle tu
+ubicación: la estación más cercana se elige en tu navegador).
 
 Se cuida la **accesibilidad**: contraste suficiente en claro y en oscuro, navegación con teclado con un
 enlace para saltar al contenido, títulos en orden para lectores de pantalla y controles de buen tamaño.
@@ -300,6 +308,7 @@ web/
   manifest.webmanifest  datos para instalar la página como app
   calles.js           búsqueda de calles e intersecciones (sin DOM)
   buses.js            líneas cercanas y su frecuencia del día (sin DOM)
+  aire.js             calidad del aire: leer la respuesta de la EMOV y elegir estación (sin DOM)
   rutas.js            "¿qué bus me lleva?": directas, con transbordo o a pie (sin DOM)
   app.js              mapa, búsqueda y pintado de la respuesta
   estilos.css

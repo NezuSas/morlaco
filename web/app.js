@@ -50,6 +50,7 @@ import {
   pasajeDeOpcion,
 } from "./buses.js";
 import { planificar, prepararLineas } from "./rutas.js";
+import { PAGINA_AIRE, URL_AIRE, aireCercano, leerAire } from "./aire.js";
 import { LUGARES, cambiarLugar, leerLugar, leerLugares, lugarDe, textoDeLugar } from "./lugares.js";
 import { etiquetaIdioma, idioma, idiomaInicial, listar, t, usarIdioma } from "./textos.js";
 
@@ -962,7 +963,7 @@ function pintarLineas(cercanas, mapa, { punto, transporte, estaciones } = {}) {
 // ---------- Hoy en tu calle ----------
 
 const SVG_NS = "http://www.w3.org/2000/svg";
-const ICONO_SERVICIO = { basura: "#i-funda", luz: "#i-rayo", farmacias: "#i-cruz", buses: "#i-bus" };
+const ICONO_SERVICIO = { basura: "#i-funda", luz: "#i-rayo", farmacias: "#i-cruz", buses: "#i-bus", aire: "#i-aire" };
 
 /** Un icono del sprite de la página (#i-...). */
 function icono(href) {
@@ -1065,6 +1066,64 @@ function pintarResumen({ zona, suspensiones, turnos, cercanas }) {
       fichaFarmacias.detalle.textContent = t("resumenFarmaciaCerca", { distancia: formatoDistancia(farmacia.metros) });
     },
   };
+}
+
+const CONTAMINANTES = { CO: "CO", OZONE: "O₃", NO2: "NO₂", SO2: "SO₂", PM25: "PM2,5", PM10: "PM10" };
+const nombreContaminante = (clave) => {
+  const nombre = CONTAMINANTES[clave] ?? clave;
+  return idioma() === "en" ? nombre.replace(",", ".") : nombre;
+};
+
+/**
+ * "Aire hoy": un renglón en el resumen y su sección, con la estación de la EMOV más cercana.
+ * Sin dato reciente (o sin conexión con la EMOV) no se muestra nada.
+ */
+function pintarAire(estacion) {
+  $("resumen").querySelector(".ficha-aire")?.remove();
+  $("s-aire").hidden = !estacion;
+  $("nav-aire").hidden = !estacion;
+  if (!estacion) return;
+
+  const nivel = t("aireNiveles")[estacion.nivel - 1];
+  const hora = new Intl.DateTimeFormat(etiquetaIdioma(), { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "America/Guayaquil" }).format(estacion.fecha);
+  const { li } = ficha("aire", nivel, t("resumenAire", { valor: estacion.valor, estacion: estacion.nombre }), { aviso: estacion.nivel >= 3 });
+  li.classList.add("ficha-aire");
+  $("resumen").append(li);
+
+  // La recomendación oficial viene en español; en inglés, su traducción.
+  const recomendacion = idioma() === "en" ? t("aireRecomendaciones")[estacion.nivel - 1] : (estacion.recomendacion ?? t("aireRecomendaciones")[estacion.nivel - 1]);
+  $("aire-estado").replaceChildren(
+    elemento(
+      "p",
+      { class: "luz-resumen" },
+      elemento("i", { class: `nivel-aire n${estacion.nivel}`, "aria-hidden": "true" }),
+      t("aireResumen", { nivel, valor: estacion.valor }),
+    ),
+    elemento("p", { class: "aire-recomendacion" }, recomendacion),
+    elemento(
+      "p",
+      { class: "detalle" },
+      t("aireEstacion", {
+        estacion: estacion.nombre,
+        direccion: estacion.direccion ? ` (${direccionLegible(estacion.direccion)})` : "",
+        distancia: formatoDistancia(estacion.metros),
+        hora,
+      }),
+      " ",
+      t("aireMide", {
+        dominante: t("aireContaminantes")[estacion.dominante] ?? nombreContaminante(estacion.dominante),
+        lista: listar(estacion.parametros.map((p) => nombreContaminante(p.nombre))),
+      }),
+    ),
+    elemento(
+      "p",
+      { class: "detalle" },
+      t("aireFuente"),
+      " ",
+      elemento("a", { href: PAGINA_AIRE, target: "_blank", rel: "noopener" }, t("aireFuenteEnlace")),
+      ".",
+    ),
+  );
 }
 
 /** Los enlaces a secciones se desplazan sin tocar la dirección (#lat,lon guarda el punto). */
@@ -1485,6 +1544,28 @@ async function iniciar() {
   let lugares = leerLugares(leer(CLAVE_LUGARES));
   let recorridos = null;
 
+  // Calidad del aire: se pide en vivo a la EMOV (cambia cada hora) y, como mucho, cada media
+  // hora. Si no responde a tiempo o el dato es viejo, "Aire" simplemente no aparece.
+  let estacionesAire = [];
+  let aireLeido = 0;
+  const actualizarAire = async () => {
+    if (Date.now() - aireLeido < 30 * 60_000) return;
+    aireLeido = Date.now();
+    const control = new AbortController();
+    const reloj = setTimeout(() => control.abort(), 6000);
+    try {
+      const respuesta = await fetch(URL_AIRE, { signal: control.signal });
+      if (!respuesta.ok) throw new Error(`EMOV: ${respuesta.status}`);
+      estacionesAire = leerAire(await respuesta.json());
+    } catch {
+      estacionesAire = [];
+      aireLeido = Date.now() - 25 * 60_000; // se reintenta a los cinco minutos
+    } finally {
+      clearTimeout(reloj);
+    }
+    if (puntoActual) pintarAire(aireCercano(puntoActual, estacionesAire));
+  };
+
   const ICONO_LUGAR = { casa: "#i-casa", trabajo: "#i-maletin" };
   const nombreLugar = (clave) => t(clave === "casa" ? "lugarCasa" : "lugarTrabajo");
 
@@ -1562,6 +1643,8 @@ async function iniciar() {
     pintarPasaje(transporte?.tarifas);
     const resumen = pintarResumen({ zona, suspensiones, turnos: turnosFarmacias, cercanas: cercanasLineas });
     pintarFarmacias(turnosFarmacias, punto, (f) => resumen.farmaciaCercana(f));
+    pintarAire(aireCercano(punto, estacionesAire));
+    actualizarAire();
     pintarPunto();
     pintarBici(masCercano(punto, bicicletas));
     mapa.mostrar(punto, zona, cercanas);

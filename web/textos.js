@@ -82,6 +82,31 @@ const TEXTOS = {
     semanaAria: "Días de recolección en tu zona",
     tituloLuz: "Cortes de luz programados",
     tituloBuses: "Buses cerca de ti",
+    navAire: "Aire",
+    tituloAire: "Calidad del aire",
+    aireNiveles: ["Buena", "Moderada", "Insalubre para grupos sensibles", "Insalubre", "Muy insalubre", "Peligrosa"],
+    resumenAire: "Índice {valor} en la estación {estacion}",
+    aireResumen: "{nivel}, con un índice de {valor} sobre 500.",
+    aireRecomendaciones: [
+      "¡Es un día excelente para realizar actividades al aire libre!",
+      "Para personas excepcionalmente sensibles, se recomienda reducir las actividades que requieran esfuerzo prolongado o intenso al aire libre. Para el resto, es un buen día para realizar actividades al aire libre.",
+      "Los grupos sensibles deben reducir las actividades intensas al aire libre, descansar y estar atentos a síntomas como tos o dificultad para respirar.",
+      "Los grupos sensibles deben evitar las actividades intensas. El resto de las personas debe reducirlas y descansar a menudo al aire libre.",
+      "Los grupos sensibles deben evitar todas las actividades físicas al aire libre. El resto de las personas debe evitar las actividades intensas al aire libre.",
+      "Todos deben evitar las actividades físicas al aire libre. Los grupos sensibles deben permanecer en interiores.",
+    ],
+    aireEstacion: "Estación {estacion}{direccion}, a {distancia}. Dato de las {hora}.",
+    aireMide: "Lo que más pesa ahora: {dominante}. Esta estación mide {lista}.",
+    aireContaminantes: {
+      CO: "el monóxido de carbono (CO)",
+      OZONE: "el ozono (O₃)",
+      NO2: "el dióxido de nitrógeno (NO₂)",
+      SO2: "el dióxido de azufre (SO₂)",
+      PM25: "las partículas finas (PM2,5)",
+      PM10: "las partículas (PM10)",
+    },
+    aireFuente: "El índice va de 0 a 500 y toma el contaminante más alto de la estación. Recomendación y datos de la",
+    aireFuenteEnlace: "Red de Monitoreo de Calidad del Aire de la EMOV EP",
     subtituloLineas: "Líneas que pasan cerca",
     subtituloRuta: "¿Qué bus me lleva?",
     etiquetaDestino: "¿A dónde vas? Escribe una esquina o un lugar",
@@ -126,7 +151,7 @@ const TEXTOS = {
     pieColaborar:
       '¿Un dato está mal o no encuentra tu esquina? Escríbenos a <a data-aviso href="mailto:nezu.ec@nezuecuador.com">nezu.ec@nezuecuador.com</a> o, si tienes cuenta de GitHub, <a href="https://github.com/NezuSas/morlaco/issues/new/choose">abre un aviso</a>. ¿Programas? <a href="https://github.com/NezuSas/morlaco/blob/main/CONTRIBUTING.md">Colabora con Morlaco</a>. Las rutas de bus también están en <a href="../datos/gtfs/cuenca-buses.zip">formato GTFS</a> para apps de transporte.',
     pieAviso:
-      "Las calles se buscan en esta página; solo cuando buscas un lugar (como un parque o un centro comercial), el texto se envía a OpenStreetMap (Nominatim) para ubicarlo.",
+      "Las calles se buscan en esta página; solo cuando buscas un lugar (como un parque o un centro comercial), el texto se envía a OpenStreetMap (Nominatim) para ubicarlo. La calidad del aire se pide a la web de la EMOV, sin enviarle tu ubicación.",
     sobreTitulo:
       "Sobre estos datos",
     sobreIntro:
@@ -230,6 +255,8 @@ const TEXTOS = {
     tranviaEstacion: "Estación {estacion} a {distancia} · cada {minutos} min hoy",
     tranviaCada: "Cada {minutos} min hoy",
     rutaTranviaCada: "Tranvía cada {minutos} min hoy",
+    sobreAire:
+      '<strong>Aire.</strong> Índice de calidad del aire de la <a href="https://caire.emov.gob.ec/">Red de Monitoreo de la EMOV EP</a>, pedido en vivo a su web cada vez que abres la página. Se muestra la estación más cercana que mide partículas.',
     sobreTransporte: '<strong>Pasaje, cambios de líneas y tranvía.</strong> El pasaje y los cambios de líneas de 2026 salen de comunicados del municipio publicados en <a href="https://elmercurio.com.ec/cuenca/">El Mercurio</a>, y los revisamos a mano (última revisión: 10 de noviembre de 2026). Estaciones del tranvía: <a href="https://tranvia.cuenca.gob.ec/">Tranvía de Cuenca</a>; su frecuencia es la anunciada en octubre de 2025.',
     linea: "Línea {linea}",
     verMas: ({ n }) => `Ver ${n} ${n === 1 ? "línea más" : "líneas más"}`,
@@ -350,6 +377,31 @@ const TEXTOS = {
     semanaAria: "Collection days in your zone",
     tituloLuz: "Scheduled power cuts",
     tituloBuses: "Buses near you",
+    navAire: "Air",
+    tituloAire: "Air quality",
+    aireNiveles: ["Good", "Moderate", "Unhealthy for sensitive groups", "Unhealthy", "Very unhealthy", "Hazardous"],
+    resumenAire: "Index {valor} at the {estacion} station",
+    aireResumen: "{nivel}, with an index of {valor} out of 500.",
+    aireRecomendaciones: [
+      "It’s an excellent day for outdoor activities!",
+      "Unusually sensitive people should cut back on long or intense outdoor exertion. For everyone else, it’s a good day to be active outside.",
+      "Sensitive groups should cut back on intense outdoor activity, rest, and watch for symptoms such as coughing or shortness of breath.",
+      "Sensitive groups should avoid intense activity. Everyone else should cut back on it and take frequent breaks outdoors.",
+      "Sensitive groups should avoid all physical activity outdoors. Everyone else should avoid intense outdoor activity.",
+      "Everyone should avoid physical activity outdoors. Sensitive groups should stay indoors.",
+    ],
+    aireEstacion: "{estacion} station{direccion}, {distancia} away. Reading from {hora}.",
+    aireMide: "Main pollutant right now: {dominante}. This station measures {lista}.",
+    aireContaminantes: {
+      CO: "carbon monoxide (CO)",
+      OZONE: "ozone (O₃)",
+      NO2: "nitrogen dioxide (NO₂)",
+      SO2: "sulphur dioxide (SO₂)",
+      PM25: "fine particles (PM2.5)",
+      PM10: "particles (PM10)",
+    },
+    aireFuente: "The index runs from 0 to 500 and takes the station’s highest pollutant. Advice and data from EMOV EP’s",
+    aireFuenteEnlace: "Air Quality Monitoring Network",
     subtituloLineas: "Lines that pass nearby",
     subtituloRuta: "Which bus gets me there?",
     etiquetaDestino: "Where are you going? Type a corner or a place",
@@ -394,7 +446,7 @@ const TEXTOS = {
     pieColaborar:
       'Is something wrong, or can’t it find your corner? Email us at <a data-aviso href="mailto:nezu.ec@nezuecuador.com">nezu.ec@nezuecuador.com</a> or, if you have a GitHub account, <a href="https://github.com/NezuSas/morlaco/issues/new/choose">open an issue</a>. Do you code? <a href="https://github.com/NezuSas/morlaco/blob/main/CONTRIBUTING.md">Help build Morlaco</a>. Bus routes are also available in <a href="../datos/gtfs/cuenca-buses.zip">GTFS format</a> for transit apps.',
     pieAviso:
-      "Streets are searched on this page; only when you search for a place (like a park or a mall) is the text sent to OpenStreetMap (Nominatim) to find it.",
+      "Streets are searched on this page; only when you search for a place (like a park or a mall) is the text sent to OpenStreetMap (Nominatim) to find it. Air quality is requested from EMOV’s website, without sending it your location.",
     sobreTitulo:
       "About this data",
     sobreIntro:
@@ -498,6 +550,8 @@ const TEXTOS = {
     tranviaEstacion: "{estacion} stop, {distancia} away · every {minutos} min today",
     tranviaCada: "Every {minutos} min today",
     rutaTranviaCada: "Tram every {minutos} min today",
+    sobreAire:
+      '<strong>Air.</strong> Air quality index from <a href="https://caire.emov.gob.ec/">EMOV EP’s monitoring network</a>, requested live from its site each time you open the page. It shows the nearest station that measures particulates.',
     sobreTransporte: '<strong>Fares, line changes and tram.</strong> Fares and the 2026 line changes come from city announcements published in <a href="https://elmercurio.com.ec/cuenca/">El Mercurio</a>, and we check them by hand (last check: 10 November 2026). Tram stops: <a href="https://tranvia.cuenca.gob.ec/">Tranvía de Cuenca</a>; its frequency is the one announced in October 2025.',
     linea: "Line {linea}",
     verMas: ({ n }) => `Show ${n} more ${n === 1 ? "line" : "lines"}`,

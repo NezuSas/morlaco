@@ -68,6 +68,9 @@
         <rect x="3.5" y="7.5" width="17" height="12" rx="2" />
         <path d="M9 7.5v-2A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5v2M3.5 12.5h17" />
       </symbol>
+      <symbol id="i-aire" viewBox="0 0 24 24">
+        <path d="M3 9h10.5a2.5 2.5 0 1 0-2.4-3.2M3 13h15a2.5 2.5 0 1 1-2.4 3.2M3 17h7.5a2 2 0 1 1-1.9 2.6" />
+      </symbol>
       <symbol id="i-compartir" viewBox="0 0 24 24">
         <circle cx="6" cy="12" r="2.5" />
         <circle cx="17.5" cy="6" r="2.5" />
@@ -232,6 +235,7 @@
               <a href="#s-luz" class="servicio-luz" data-t="navLuz">Luz</a>
               <a href="#s-farmacias" class="servicio-farmacias" data-t="navFarmacias">Farmacias</a>
               <a href="#s-buses" class="servicio-buses" data-t="navBuses">Buses</a>
+              <a id="nav-aire" href="#s-aire" class="servicio-aire" data-t="navAire" hidden>Aire</a>
             </nav>
 
             <section id="s-basura" class="basura" aria-labelledby="t-basura">
@@ -313,6 +317,14 @@
               <p id="bici-nota" class="detalle" data-t="bicicletaNota"></p>
             </section>
 
+            <section id="s-aire" class="servicio-aire aire" aria-labelledby="t-aire" hidden>
+              <h2 id="t-aire">
+                <svg class="icono" aria-hidden="true"><use href="#i-aire" /></svg>
+                <span data-t="tituloAire">Calidad del aire</span>
+              </h2>
+              <div id="aire-estado"></div>
+            </section>
+
             <details id="sobre-datos" class="sobre-datos">
               <summary data-t="sobreTitulo">Sobre estos datos</summary>
               <p data-t="sobreIntro">Morlaco junta datos públicos de varias instituciones; no es un servicio oficial. Ante cualquier duda, consulta la fuente.</p>
@@ -322,6 +334,7 @@
                 <li data-t-html="sobreFarmacias"><strong>Farmacias de turno.</strong> La lista mensual de <a href="https://www.controlsanitario.gob.ec/turnos-de-farmacias/">ARCSA</a> para Azuay, que puede tener errores. La cercanía se calcula con la dirección que publica, así que es aproximada.</li>
                 <li data-t-html="sobreBuses"><strong>Buses.</strong> Trazados publicados por el municipio en 2022 y horarios de 2025, del portal <a href="https://cuencaendatos.cuenca.gob.ec">Cuenca en Datos</a>: algunas líneas pueden haber cambiado, confirma con el letrero del bus. Las paradas son las del registro municipal, que no incluye todas. Distancias en línea recta; tiempos estimados con la frecuencia del día, a 15 km/h en bus y 4,5 km/h a pie.</li>
                 <li data-t-html="sobreTransporte"><strong>Pasaje, cambios de líneas y tranvía.</strong> Comunicados del municipio publicados en prensa, revisados a mano.</li>
+                <li data-t-html="sobreAire"><strong>Aire.</strong> Índice de calidad del aire de la <a href="https://caire.emov.gob.ec/">Red de Monitoreo de la EMOV EP</a>, pedido en vivo a su web cada vez que abres la página. Se muestra la estación más cercana que mide partículas.</li>
                 <li data-t-html="sobreCalles"><strong>Calles, BiciPública, ciclovías y carga eléctrica.</strong> © colaboradores de <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> (ODbL).</li>
               </ul>
             </details>
@@ -351,7 +364,8 @@
           <p data-t="pieAviso">
             Morlaco no es un servicio oficial. Ante cualquier duda, consulta la fuente. Las calles se
             buscan en esta página; solo cuando buscas un lugar (como un parque o un centro comercial),
-            el texto se envía a OpenStreetMap (Nominatim) para ubicarlo.
+            el texto se envía a OpenStreetMap (Nominatim) para ubicarlo. La calidad del aire se pide a la web
+            de la EMOV, sin enviarle tu ubicación.
           </p>
         </footer>
       </div>
