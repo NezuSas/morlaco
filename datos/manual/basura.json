@@ -1,0 +1,119 @@
+{
+  "metadata": {
+    "titulo": "Basura: feriados y dónde llevar lo que no va en las fundas",
+    "nota": "Datos mantenidos a mano a partir de las páginas de EMAC EP y ETAPA EP y de comunicados publicados en prensa. Cada dato lleva su fuente. Hay que revisarlos cuando cambie un horario o al acercarse la fecha «hasta».",
+    "revisado": "2026-11-10"
+  },
+  "funda_celeste": {
+    "materiales": ["papel", "cartón", "plásticos", "latas", "tetrapak"],
+    "fuente": {
+      "nombre": "El Mercurio, con un técnico de EMAC EP (28 de octubre de 2024)",
+      "url": "https://elmercurio.com.ec/cuenca/2024/10/28/eficiencia-del-reciclaje-en-cuenca-aun-afronta-desafios/"
+    }
+  },
+  "feriados": {
+    "es": "En feriados el recolector pasa igual, con los mismos días y horarios. Lo que cierra o cambia de horario son BIOEMAC, la escombrera y las oficinas de EMAC.",
+    "en": "On public holidays the truck comes as usual, on the same days and at the same times. What closes or changes hours are BIOEMAC, the rubble dump and EMAC’s offices.",
+    "nota": "EMAC lo informó así para Año Nuevo, Carnaval, el 1 de mayo y el feriado de noviembre de 2026. Para Navidad no hay un comunicado propio.",
+    "desde": "2025-12-30",
+    "hasta": "2027-03-31",
+    "fuente": {
+      "nombre": "El Mercurio (30 de octubre de 2026)",
+      "url": "https://elmercurio.com.ec/cuenca/2026/10/30/servicios-cuenca-feriado-noviembre-2026-horarios-atencion/"
+    }
+  },
+  "donde_llevar": [
+    {
+      "id": "organicos",
+      "es": {
+        "que": "Restos de frutas y verduras, cáscaras, pasto y ramas delgadas",
+        "donde": "BIOEMAC, en la Av. 24 de Mayo y Ambato (diagonal al colegio Garaicoa), todos los días de 07:00 a 17:00. Recibe hasta 300 kg y te devuelve en compost el 10 % del peso. No recibe carnes, mariscos ni líquidos. Si son más de 300 kg, van a la Planta de Compostaje de El Valle, de lunes a viernes de 08:00 a 16:00."
+      },
+      "en": {
+        "que": "Fruit and vegetable scraps, peels, grass and thin branches",
+        "donde": "BIOEMAC, at Av. 24 de Mayo and Ambato (across from Garaicoa school), every day 07:00–17:00. It takes up to 300 kg and gives you back 10% of the weight as compost. No meat, seafood or liquids. Over 300 kg goes to the El Valle composting plant, Monday to Friday 08:00–16:00."
+      },
+      "fuente": { "nombre": "EMAC EP", "url": "https://emac.gob.ec/bioemac/" }
+    },
+    {
+      "id": "punto-limpio",
+      "es": {
+        "que": "Botellas de vidrio y aparatos electrónicos",
+        "donde": "Punto Limpio de BIOEMAC (Av. 24 de Mayo y Ambato), de lunes a sábado de 09:00 a 17:00. También recibe envases de plástico, cartón, papel y tetrapak."
+      },
+      "en": {
+        "que": "Glass bottles and electronics",
+        "donde": "The Punto Limpio at BIOEMAC (Av. 24 de Mayo and Ambato), Monday to Saturday 09:00–17:00. It also takes plastic containers, cardboard, paper and Tetra Pak."
+      },
+      "fuente": { "nombre": "EMAC EP", "url": "https://emac.gob.ec/bioemac/" }
+    },
+    {
+      "id": "vidrio-roto",
+      "es": {
+        "que": "Vidrio roto y latas cortantes",
+        "donde": "En la funda negra, envueltos en papel periódico y con cinta de embalaje, para que nadie se corte al recogerla."
+      },
+      "en": {
+        "que": "Broken glass and sharp cans",
+        "donde": "In the black bag, wrapped in newspaper and packing tape so nobody gets cut picking it up."
+      },
+      "fuente": { "nombre": "EMAC EP", "url": "https://emac.gob.ec/informacion-obligaciones-y-recomendaciones/" }
+    },
+    {
+      "id": "agujas",
+      "es": {
+        "que": "Agujas, palillos y palos de chuzo",
+        "donde": "Dentro de una botella rígida con tapa y esa botella, en la funda negra. Para las agujas, EMAC pide llamar al 139."
+      },
+      "en": {
+        "que": "Needles, toothpicks and skewers",
+        "donde": "Inside a rigid bottle with a cap, and that bottle in the black bag. For needles, EMAC asks you to call 139."
+      },
+      "fuente": { "nombre": "EMAC EP", "url": "https://emac.gob.ec/informacion-obligaciones-y-recomendaciones/" }
+    },
+    {
+      "id": "escombros",
+      "es": {
+        "que": "Escombros y restos de construcción",
+        "donde": "Escombrera de San Pedro de Llacao, de 08:00 a 17:00. Se paga por metro cúbico: confirma el valor y los requisitos con EMAC antes de ir."
+      },
+      "en": {
+        "que": "Rubble and construction waste",
+        "donde": "The San Pedro de Llacao rubble dump, 08:00–17:00. You pay per cubic metre: check the price and requirements with EMAC before you go."
+      },
+      "fuente": { "nombre": "EMAC EP", "url": "https://emac.gob.ec/gestion-de-escombros/" }
+    },
+    {
+      "id": "pilas",
+      "es": {
+        "que": "Pilas usadas",
+        "donde": "En los recipientes del programa de ETAPA EP, que están en locales de todo el cantón. Su mapa muestra el más cercano."
+      },
+      "en": {
+        "que": "Used batteries",
+        "donde": "In the ETAPA EP collection containers, found in shops across the canton. Its map shows the nearest one."
+      },
+      "fuente": {
+        "nombre": "ETAPA EP",
+        "url": "https://www.etapa.net.ec/gestion-ambiental/programas-de-gestion-ambiental/puntos-de-recoleccion/"
+      }
+    },
+    {
+      "id": "muebles",
+      "es": {
+        "que": "Muebles viejos y objetos grandes",
+        "donde": "EMAC no publica un servicio para recogerlos. Pregunta en su línea 139 antes de sacarlos a la vereda."
+      },
+      "en": {
+        "que": "Old furniture and bulky items",
+        "donde": "EMAC doesn’t publish a pick-up service for them. Ask on its 139 line before leaving them on the sidewalk."
+      },
+      "fuente": { "nombre": "EMAC EP", "url": "https://emac.gob.ec/contactanos/" }
+    }
+  ],
+  "contacto": {
+    "linea": "139",
+    "telefono": "(07) 4134 801",
+    "pagina": "https://emac.gob.ec/contactanos/"
+  }
+}

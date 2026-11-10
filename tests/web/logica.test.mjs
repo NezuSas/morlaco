@@ -7,6 +7,7 @@ import {
   direccionLegible,
   horaLegible,
   nombreParada,
+  enlaceCorreoAviso,
   enlaceReporteDireccion,
   enlacesCalendario,
   estadoLuz,
@@ -198,6 +199,17 @@ test("enlacesCalendario apunta al .ics de la zona y lo ofrece por webcal y Googl
   );
   // El parámetro de versión se mantiene dentro del cid y no rompe la dirección de Google.
   assert.ok(enlaces.google.includes("zona-4.ics%3Fv%3D"));
+});
+
+test("enlaceCorreoAviso abre un correo con el asunto y el cuerpo ya escritos", () => {
+  const enlace = enlaceCorreoAviso({ asunto: "Morlaco no encuentra: Sucre & Borrero", cuerpo: "Escribí “Sucre”.\n¿Dónde queda?" });
+  const url = new URL(enlace);
+  assert.equal(url.protocol, "mailto:");
+  assert.equal(url.pathname, "nezu.ec@nezuecuador.com");
+  // Sin "+" en lugar de espacios: algunos programas de correo los muestran tal cual.
+  assert.ok(!enlace.includes("+"), enlace);
+  assert.equal(url.searchParams.get("subject"), "Morlaco no encuentra: Sucre & Borrero");
+  assert.equal(url.searchParams.get("body"), "Escribí “Sucre”.\n¿Dónde queda?");
 });
 
 test("enlaceReporteDireccion rellena la plantilla con lo escrito", () => {

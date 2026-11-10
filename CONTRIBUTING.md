@@ -15,8 +15,9 @@ Morlaco es de y para la gente de Cuenca. Puedes ayudar aunque no sepas programar
 - **Comparte la página** con tu familia, tu barrio o tu grupo de WhatsApp:
   <https://nezusas.github.io/morlaco/web/>.
 
-Para abrir un reporte necesitas una cuenta de GitHub (es gratis). No escribas datos personales: con la esquina
-basta.
+Para abrir un reporte necesitas una cuenta de GitHub (es gratis). Si no tienes, escribe a
+<nezu.ec@nezuecuador.com>: la página trae un enlace que abre el correo con el asunto ya puesto. No escribas
+datos personales: con la esquina basta.
 
 ## Programando
 

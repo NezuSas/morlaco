@@ -20,8 +20,9 @@
 
 Escribe tu esquina como se dan las direcciones en Cuenca ("Sucre y Borrero") y Morlaco te dice:
 
-- **Cuándo pasa el recolector** por tu calle, qué funda sacar y qué día va la funda celeste. Con un toque te
-  suscribes al **calendario de tu zona** y recibes un aviso antes de cada recolección.
+- **Cuándo pasa el recolector** por tu calle, qué va en cada funda y qué día va la funda celeste. Con un toque
+  te suscribes al **calendario de tu zona** y recibes un aviso antes de cada recolección. También qué pasa en
+  **feriados** y **dónde llevar lo que no va en las fundas** (orgánicos, vidrio, escombros, pilas).
 - **Si hay cortes de luz programados** por Centro Sur para hoy, y si publicó cronogramas nuevos (y para qué
   provincias).
 - **Qué farmacias están de turno** esta semana (abiertas las 24 horas), ordenadas por cercanía y con su teléfono
@@ -31,8 +32,13 @@ Escribe tu esquina como se dan las direcciones en Cuenca ("Sucre y Borrero") y M
   **pasaje** vigente.
 - **Qué bus te lleva a donde vas**: escribe el destino y te propone líneas directas, con un transbordo o ir a
   pie, con los pasos y el tiempo estimado, y la dibuja en el mapa.
-- **Dónde está la BiciPública más cercana**, y en el mapa las ciclovías y los puntos de carga para autos
-  eléctricos.
+- **Qué buses pasan por una calle**: escribe solo la calle ("Av. Solano") y ves las líneas que la recorren y
+  por dónde pasa cada una según el recorrido oficial.
+- **Dónde está la BiciPública más cercana**, y en el mapa las estaciones del tranvía, las ciclovías y los
+  puntos de carga para autos eléctricos.
+
+Puedes **compartir tu calle** por WhatsApp con un toque e **imprimir la hoja de tu zona** (días de recolección
+y farmacias de turno) para la refrigeradora o la cartelera del edificio.
 
 Todo sale de **fuentes oficiales y públicas** (EMAC EP, Centro Sur, el portal Cuenca en Datos del municipio y
 OpenStreetMap), y los datos limpios quedan aquí, abiertos, para que cualquiera construya encima: una web, un bot,
@@ -56,12 +62,13 @@ una app o un análisis.
 | [`datos/recoleccion/calendarios/zona-N.ics`](datos/recoleccion/calendarios/) | Un calendario por zona (iCalendar) con los días de recolección, el día de la funda celeste y un aviso una hora antes, para suscribirse desde Google Calendar, el iPhone u Outlook | Generado a partir de las zonas de EMAC EP |
 | [`datos/luz/suspensiones.json`](datos/luz/suspensiones.json) | Suspensiones programadas del servicio eléctrico: alimentador, dirección, hora de inicio y de fin, trabajo. En `otras_publicaciones`, los cronogramas sueltos recientes: fecha, provincias y si mencionan Cuenca | [Centro Sur, suspensiones programadas](https://www.centrosur.gob.ec/suspensiones-programadas/) y [programación de cortes](https://www.centrosur.gob.ec/intermedia-programacion/) |
 | [`datos/buses/rutas.json`](datos/buses/rutas.json) | Líneas de bus con compañía, origen, destino, horario e intervalo entre buses (lunes a viernes, sábados, domingos) | [Cuenca en Datos](https://cuencaendatos.cuenca.gob.ec/dataset/f15c8808-0d12-4f97-bfd4-3b2f85ea84d1) |
-| [`datos/buses/recorridos.json`](datos/buses/recorridos.json) | Puntos por los que pasa cada línea, en orden, de ida y de retorno | [Cuenca en Datos](https://cuencaendatos.cuenca.gob.ec/dataset/4c727738-890e-445c-9b20-32df271db766) |
+| [`datos/buses/recorridos.json`](datos/buses/recorridos.json) | Puntos por los que pasa cada línea, en orden, de ida y de retorno: en `sentidos`, tal como los publica el municipio; en `pasa_por`, con el nombre pulido para mostrarlos | [Cuenca en Datos](https://cuencaendatos.cuenca.gob.ec/dataset/4c727738-890e-445c-9b20-32df271db766) |
 | [`datos/buses/lineas.geojson`](datos/buses/lineas.geojson) | Recorrido de las 38 líneas de bus, los alimentadores y el tranvía en cada sentido, con sus alargues | [Cuenca en Datos](https://cuencaendatos.cuenca.gob.ec/dataset/f15c8808-0d12-4f97-bfd4-3b2f85ea84d1) |
 | [`datos/gtfs/cuenca-buses.zip`](datos/gtfs/cuenca-buses.zip) | **Feed GTFS** de los buses urbanos (38 líneas, frecuencias de lunes a viernes, sábados y domingos), validado sin errores con el validador oficial de MobilityData | Generado a partir de los datos del municipio |
 | [`datos/buses/paradas.geojson`](datos/buses/paradas.geojson) | Paradas de bus con coordenadas corregidas y si tienen señal (paleta) | [Cuenca en Datos](https://cuencaendatos.cuenca.gob.ec/dataset/d98292ca-7c70-422a-ac6f-1b43194ff5ba) |
 | [`datos/buses/tranvia.geojson`](datos/buses/tranvia.geojson) | Las 20 estaciones del tranvía, con un punto por andén y el sentido en que para en cada una | [Tranvía de Cuenca](https://tranvia.cuenca.gob.ec/) |
 | [`datos/manual/transporte.json`](datos/manual/transporte.json) | **Mantenido a mano**: pasaje del bus y del tranvía, cambios de líneas de 2026 (con fecha de caducidad) y frecuencia del tranvía, cada dato con su fuente | Comunicados del municipio publicados en [El Mercurio](https://elmercurio.com.ec/cuenca/) |
+| [`datos/manual/basura.json`](datos/manual/basura.json) | **Mantenido a mano**: qué pasa con la recolección en feriados, qué va en la funda celeste y dónde llevar orgánicos, vidrio, escombros, pilas y objetos grandes, cada dato con su fuente | Páginas de [EMAC EP](https://emac.gob.ec) y [ETAPA EP](https://www.etapa.net.ec) y comunicados en prensa |
 | [`datos/calles/calles.geojson`](datos/calles/calles.geojson) | Las calles de Cuenca con nombre (unas 2.800), con su trazado simplificado y sus nombres alternativos, para buscar direcciones e intersecciones | [OpenStreetMap](https://www.openstreetmap.org) |
 | [`datos/farmacias/turnos.json`](datos/farmacias/turnos.json) | Farmacias de turno de Cuenca por semana (de 06:00 a 06:00), con dirección legible y teléfono para llamar | [ARCSA, turnos de farmacias](https://www.controlsanitario.gob.ec/turnos-de-farmacias/) |
 | [`datos/movilidad/`](datos/movilidad/) | Estaciones de BiciPública (BiciCuenca) con su capacidad, ciclovías (separadas o carriles pintados) y puntos de carga para autos eléctricos (públicos, para clientes o privados) | [OpenStreetMap](https://www.openstreetmap.org) |
@@ -94,6 +101,10 @@ Parque Calderón está en la zona 4.
   celeste (reciclables) se recoge los miércoles o los jueves; `dia_reciclaje` indica cuál toca en cada zona.
   Con las mismas zonas se generan los calendarios `.ics`: quien se suscribe recibe los cambios de horario
   sin hacer nada, porque su app vuelve a leer el archivo cada día.
+- **Feriados y dónde llevar cada cosa (a mano).** EMAC no lo publica en datos abiertos, así que
+  [`datos/manual/basura.json`](datos/manual/basura.json) se edita a mano a partir de sus páginas, las de ETAPA
+  y lo que informa a la prensa antes de cada feriado. El aviso de feriados tiene fecha `hasta`. Lo que la
+  fuente no dice (por ejemplo, un servicio para muebles viejos) se dice tal cual, sin completar.
 - **Cortes de luz (Centro Sur).** Se leen de los PDF diarios que Centro Sur publica. Las direcciones son texto
   tal como lo escribe Centro Sur, sin coordenadas. **En noviembre de 2026 la página no se actualizaba desde
   julio**: revisa `metadata.ultima_publicacion` antes de fiarte de estos datos. Desde octubre de 2026 Centro
@@ -191,7 +202,8 @@ Las direcciones se escriben como se dan en Cuenca, con dos calles que se cruzan:
 "Av. Solano y Remigio Crespo", "Bolívar esquina Benigno Malo". La búsqueda se hace dentro de la página con el
 índice de calles: no importan las tildes ni las mayúsculas, tolera una letra de más o de menos y entre calles
 con nombre parecido elige la que de verdad cruza a la otra. Si escribes una sola calle larga, la marca en el
-mapa y te pide la calle que la cruza. Solo cuando lo escrito no es una calle (un parque, un centro
+mapa, te pide la calle que la cruza y lista **los buses que pasan por ella**: las líneas cuyo trazado va pegado
+a la calle un buen tramo, no las que solo la cruzan. Solo cuando lo escrito no es una calle (un parque, un centro
 comercial) se pregunta a Nominatim de OpenStreetMap.
 
 Para verla en tu computadora, sirve la carpeta del proyecto (no solo `web/`, porque lee los datos de
@@ -203,7 +215,12 @@ Para verla en tu computadora, sirve la carpeta del proyecto (no solo `web/`, por
 
 Usa [Leaflet](https://leafletjs.com) y los mapas de OpenStreetMap. Los lugares que no son calles se ubican
 con [Nominatim](https://nominatim.org), limitado a la ciudad de Cuenca; la página lo avisa al pie. No usa
-cookies ni analítica: solo recuerda en el navegador el último punto elegido.
+cookies ni analítica: solo recuerda en el navegador el último punto elegido. Las tipografías (Alegreya y
+Alegreya Sans, de Huerta Tipográfica, con licencia SIL OFL) van en [`web/fuentes/`](web/fuentes/), así que la
+página no pide nada a servidores de terceros salvo el mapa.
+
+Se cuida la **accesibilidad**: contraste suficiente en claro y en oscuro, navegación con teclado con un
+enlace para saltar al contenido, títulos en orden para lectores de pantalla y controles de buen tamaño.
 
 ## Uso
 
@@ -286,6 +303,7 @@ web/
   rutas.js            "¿qué bus me lleva?": directas, con transbordo o a pie (sin DOM)
   app.js              mapa, búsqueda y pintado de la respuesta
   estilos.css
+  fuentes/            tipografías Alegreya y Alegreya Sans, con su licencia
 ```
 
 Para añadir una fuente: crea un módulo en `fuentes/` con una función `obtener(descargar) -> Resultado`,

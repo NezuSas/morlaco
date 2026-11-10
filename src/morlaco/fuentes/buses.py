@@ -21,7 +21,7 @@ from typing import Any
 from urllib.parse import urlencode
 
 from morlaco import gtfs, red
-from morlaco.comun import Resultado, decodificar, hora, limpiar
+from morlaco.comun import Resultado, decodificar, hora, limpiar, nombre_propio
 from morlaco.fuentes import trazados
 
 CKAN = "https://cuencaendatos.cuenca.gob.ec"
@@ -92,8 +92,15 @@ def parsear_rutas(texto: str) -> list[dict[str, Any]]:
     return rutas
 
 
+_PUNTO_PEGADO = re.compile(r"(?<=[A-Za-z])\.(?=[A-Za-z])")
+
+
 def parsear_recorridos(texto: str) -> list[dict[str, Any]]:
-    """Agrupa los puntos de recorrido por línea y sentido, conservando el orden."""
+    """Agrupa los puntos de recorrido por línea y sentido, conservando el orden.
+
+    "sentidos" guarda los puntos tal como los publica el municipio (en mayúsculas y sin
+    tildes) y "pasa_por", los mismos con el nombre pulido para mostrarlos.
+    """
     lineas: dict[str, dict[str, list[str]]] = {}
     for fila in _filas(texto):
         linea, punto = fila.get("LINEA"), fila.get("PUNTO_RECORRIDO")
@@ -102,7 +109,16 @@ def parsear_recorridos(texto: str) -> list[dict[str, Any]]:
         sentido = fila.get("SENTIDO", "").lower() or "sin_sentido"
         lineas.setdefault(linea, {}).setdefault(sentido, []).append(punto)
     return [
-        {"linea": linea, "sentidos": lineas[linea]} for linea in sorted(lineas, key=_orden_linea)
+        {
+            "linea": linea,
+            "sentidos": lineas[linea],
+            # "CDLA.ELOY ALFARO" -> "Ciudadela Eloy Alfaro": se separa la abreviatura pegada.
+            "pasa_por": {
+                s: [nombre_propio(_PUNTO_PEGADO.sub(". ", p)) for p in puntos]
+                for s, puntos in lineas[linea].items()
+            },
+        }
+        for linea in sorted(lineas, key=_orden_linea)
     ]
 
 

@@ -7,6 +7,8 @@ import {
   direccionLegible,
   horaLegible,
   nombreParada,
+  CORREO_AVISOS,
+  enlaceCorreoAviso,
   enlaceReporteDireccion,
   enlacesCalendario,
   estadoLuz,
@@ -43,6 +45,7 @@ import {
   dolares,
   estacionCercana,
   frecuenciaTranvia,
+  lineasPorCalle,
   lineasCercanas,
   pasajeDeOpcion,
 } from "./buses.js";
@@ -374,7 +377,17 @@ function textoAcceso(acceso) {
  * Selector de capas: BiciPública, ciclovías y carga eléctrica. Las dos últimas se
  * descargan solo la primera vez que alguien las activa.
  */
-function agregarCapas(mapa, bicicletas) {
+function agregarCapas(mapa, bicicletas, estaciones) {
+  const capaTranvia = L.layerGroup();
+  if (estaciones) {
+    L.geoJSON(estaciones, {
+      pointToLayer: (f, posicion) =>
+        L.marker(posicion, { icon: iconoCapa("tranvia", "T"), keyboard: false }).bindTooltip(
+          t("tranviaEstacionMapa", { estacion: f.properties.nombre, hacia: listar(f.properties.hacia) }),
+        ),
+    }).addTo(capaTranvia);
+  }
+
   const capaBicis = L.layerGroup();
   if (bicicletas) {
     L.geoJSON(bicicletas, {
@@ -430,6 +443,7 @@ function agregarCapas(mapa, bicicletas) {
     .layers(
       null,
       {
+        ...(estaciones ? { [etiqueta("tranvia", t("capaTranvia"))]: capaTranvia } : {}),
         [etiqueta("bici", t("capaBicis"))]: capaBicis,
         [etiqueta("ciclovia", t("capaCiclovias"))]: capaCiclovias,
         [etiqueta("carga", t("capaCarga"))]: capaCarga,
@@ -448,6 +462,7 @@ function agregarCapas(mapa, bicicletas) {
       pendientes.set(evento.layer, cargar); // se reintentará la próxima vez
     }
   });
+  return { tranvia: capaTranvia };
 }
 
 function pintarBici(estacion) {
@@ -529,11 +544,54 @@ function pintarBasura(zona) {
     const cuando = proxima.conReciclaje
       ? t("fundaCelesteVa")
       : t("fundaCelesteGuarda", { dia: nombreDia(reciclaje) });
-    lineas.push(linea("celeste", "fundaCeleste", t("fundaCelesteQue"), " ", elemento("strong", {}, cuando)));
+    // "Esta vez sí / esta vez no" solo vale hoy: en la hoja impresa va el día.
+    lineas.push(
+      linea(
+        "celeste",
+        "fundaCeleste",
+        t("fundaCelesteQue"),
+        " ",
+        elemento("strong", { class: "solo-pantalla" }, cuando),
+        elemento("strong", { class: "solo-impresion-linea" }, t("fundaCelesteDia", { dia: nombreDia(reciclaje) })),
+      ),
+    );
   }
   fundas.replaceChildren(...lineas);
+  $("basura-dias").textContent = t("basuraDias", {
+    zona: p.zona,
+    dias: listar(p.dias_iso.map(nombreDia)),
+    desde: p.desde,
+    hasta: horaLegible(p.hasta),
+  });
   detalle.textContent = t("zonaDetalle", { zona: p.zona });
   pintarCalendario(p.zona);
+}
+
+/** Feriados y dónde llevar lo que no va en las fundas (datos/manual/basura.json). */
+function pintarBasuraManual(basura) {
+  const feriados = basura?.feriados;
+  const hoy = horaCuenca().fecha;
+  const vigente = feriados && feriados.desde <= hoy && hoy <= feriados.hasta;
+  $("basura-feriados").hidden = !vigente;
+  if (vigente) {
+    $("basura-feriados").textContent = feriados[idioma()] ?? feriados.es;
+  }
+
+  const destinos = basura?.donde_llevar ?? [];
+  const caja = $("donde-llevar");
+  caja.hidden = !destinos.length;
+  if (!destinos.length) return;
+  caja.querySelector("dl").replaceChildren(
+    ...destinos.flatMap((d) => {
+      const texto = d[idioma()] ?? d.es;
+      return [
+        elemento("dt", {}, texto.que),
+        elemento("dd", {}, texto.donde, " ", elemento("a", { href: d.fuente.url, target: "_blank", rel: "noopener" }, d.fuente.nombre), "."),
+      ];
+    }),
+  );
+  const fecha = fechaLarga().format(new Date(`${basura.metadata.revisado}T12:00:00Z`));
+  caja.querySelector("p").textContent = t("dondeLlevarNota", { fecha, linea: basura.contacto.linea, telefono: basura.contacto.telefono });
 }
 
 /** Botones para suscribirse al calendario de recolección de la zona. */
@@ -757,6 +815,81 @@ function pintarParadas(cercanas) {
   }
 }
 
+let recorridosOficiales = null;
+
+/** Por dónde pasa una línea según el recorrido oficial del municipio, bajo su fila. */
+async function pintarPasaPor(nodo, linea) {
+  try {
+    recorridosOficiales ??= cargarJson("buses/recorridos.json");
+    const { recorridos } = await recorridosOficiales;
+    const puntos = recorridos.find((r) => r.linea === linea)?.pasa_por?.ida;
+    if (!puntos?.length) return;
+    nodo.replaceChildren(elemento("strong", {}, t("pasaPor"), ": "), `${puntos.join(", ")}.`);
+    nodo.hidden = false;
+  } catch {
+    recorridosOficiales = null; // sin conexión: se intenta de nuevo al tocar otra línea
+  }
+}
+
+/** Tocar una línea la dibuja en el mapa y muestra por dónde pasa; tocarla otra vez lo quita. */
+function alTocarLinea(boton, botones, linea, mapa) {
+  const activa = boton.getAttribute("aria-pressed") === "true";
+  for (const b of botones) {
+    b.setAttribute("aria-pressed", "false");
+    b.nextElementSibling.hidden = true;
+  }
+  if (activa) {
+    mapa.resaltarLinea(null);
+    return;
+  }
+  boton.setAttribute("aria-pressed", "true");
+  mapa.resaltarLinea(linea.trazados);
+  if (linea.tipo === "tranvia" && mapa.capas?.tranvia) mapa.leaflet.addLayer(mapa.capas.tranvia);
+  pintarPasaPor(boton.nextElementSibling, linea.linea);
+}
+
+/** Las líneas que recorren una calle, cuando se busca la calle sola. */
+function pintarBusesDeCalle(calle, lineas, rutas, mapa) {
+  const caja = $("buses-calle");
+  if (!calle || !lineas) {
+    caja.hidden = true;
+    caja.replaceChildren();
+    return;
+  }
+  const encontradas = lineasPorCalle(calle.feature, lineas, rutas);
+  const titulo = elemento("h2", {}, icono("#i-bus"), elemento("span", {}, t("busesCalleTitulo", { calle: calle.nombre })));
+  if (!encontradas.length) {
+    caja.replaceChildren(titulo, elemento("p", { class: "detalle" }, t("busesCalleNinguno")));
+    caja.hidden = false;
+    return;
+  }
+  const botones = [];
+  const lista = elemento(
+    "ul",
+    { class: "lineas" },
+    ...encontradas.map((l) => {
+      const esTranvia = l.tipo === "tranvia";
+      const boton = elemento(
+        "button",
+        { type: "button", class: "linea", "aria-pressed": "false" },
+        elemento("span", { class: `numero-linea${esTranvia ? " tranvia" : ""}`, "aria-hidden": "true" }, esTranvia ? "T" : l.linea),
+        elemento(
+          "span",
+          { class: "linea-texto" },
+          elemento("strong", {}, esTranvia ? t("tranvia") : t("linea", { linea: l.linea }), " ", elemento("span", { class: "destinos" }, describirDestinos(l.destinos))),
+          elemento("span", { class: "frecuencia" }, esTranvia ? t("tranviaDetalle") : describirFrecuencia(l.horario)),
+          elemento("span", { class: "frecuencia" }, t("busesCalleRecorre", { distancia: formatoDistancia(l.metros) })),
+        ),
+      );
+      boton.addEventListener("click", () => alTocarLinea(boton, botones, l, mapa));
+      botones.push(boton);
+      return elemento("li", {}, boton, elemento("p", { class: "pasa-por", hidden: "" }));
+    }),
+  );
+  caja.replaceChildren(titulo, lista, elemento("p", { class: "detalle" }, t("busesCalleNota")));
+  caja.hidden = false;
+}
+
 /** Lista de líneas cercanas; al tocar una se resalta su recorrido en el mapa. */
 function pintarLineas(cercanas, mapa, { punto, transporte, estaciones } = {}) {
   const lista = $("lineas");
@@ -801,18 +934,10 @@ function pintarLineas(cercanas, mapa, { punto, transporte, estaciones } = {}) {
         ),
         elemento("span", { class: "metros" }, formatoDistancia(l.metros)),
       );
-      boton.addEventListener("click", () => {
-        const activa = boton.getAttribute("aria-pressed") === "true";
-        for (const b of botones) b.setAttribute("aria-pressed", "false");
-        if (activa) {
-          mapa.resaltarLinea(null);
-        } else {
-          boton.setAttribute("aria-pressed", "true");
-          mapa.resaltarLinea(l.trazados);
-        }
-      });
+      const pasaPor = elemento("p", { class: "pasa-por", hidden: "" });
+      boton.addEventListener("click", () => alTocarLinea(boton, botones, l, mapa));
       botones.push(boton);
-      return elemento("li", {}, boton);
+      return elemento("li", {}, boton, pasaPor);
     }),
   );
   // Las más cercanas primero; el resto, a un toque.
@@ -1225,6 +1350,7 @@ async function ubicarTexto(texto) {
       return {
         error: `${motivo} ${t("escribeCruce", { calle: calles[0] })}`,
         resaltar: [calle.feature],
+        calle,
       };
     }
   }
@@ -1303,6 +1429,11 @@ function textoProblemaUbicacion({ problema, km, metros }) {
 
 async function iniciar() {
   aplicarTextos();
+  // El correo para avisar de un error, con el asunto ya puesto.
+  for (const enlace of document.querySelectorAll("a[data-aviso]")) {
+    enlace.href = enlaceCorreoAviso({ asunto: t("avisoAsunto"), cuerpo: t("avisoCuerpo", { pagina: location.href }) });
+    enlace.textContent = CORREO_AVISOS;
+  }
   // Cambiar de idioma recarga la página: el punto elegido sigue en la dirección (#lat,lon).
   $("idioma").addEventListener("click", () => {
     guardar(CLAVE_IDIOMA, idioma() === "en" ? "es" : "en");
@@ -1316,7 +1447,7 @@ async function iniciar() {
     mensaje(t("errorDatos"), true);
     return;
   }
-  const [suspensiones, paradas, estado, lineas, rutas, bicicletas, turnosFarmacias, transporte, estacionesTranvia] = await Promise.all(
+  const [suspensiones, paradas, estado, lineas, rutas, bicicletas, turnosFarmacias, transporte, estacionesTranvia, basura] = await Promise.all(
     [
       "luz/suspensiones.json",
       "buses/paradas.geojson",
@@ -1327,6 +1458,7 @@ async function iniciar() {
       "farmacias/turnos.json",
       "manual/transporte.json",
       "buses/tranvia.geojson",
+      "manual/basura.json",
     ].map((r) =>
       cargarJson(r).catch(() => null),
     ),
@@ -1445,7 +1577,8 @@ async function iniciar() {
   };
 
   const mapa = crearMapa(zonas, (punto) => elegir(punto, t("puntoMapa"), t("puntoMapaNombre"), { nombrar: true }));
-  agregarCapas(mapa.leaflet, bicicletas);
+  mapa.capas = agregarCapas(mapa.leaflet, bicicletas, estacionesTranvia);
+  pintarBasuraManual(basura);
 
   $("buscar").addEventListener("submit", async (evento) => {
     evento.preventDefault();
@@ -1454,6 +1587,7 @@ async function iniciar() {
     const boton = evento.submitter;
     if (boton) boton.disabled = true;
     mensaje(t("buscando"));
+    pintarBusesDeCalle(null);
     try {
       const resultado = await ubicarTexto(texto);
       if (resultado.error) {
@@ -1463,11 +1597,18 @@ async function iniciar() {
         document.querySelector(".consulta").classList.remove("con-respuesta", "cambiando");
         if (resultado.resaltar) mapa.resaltar(resultado.resaltar);
         mensaje(resultado.error, true);
+        pintarBusesDeCalle(resultado.calle, lineas, rutas?.rutas ?? [], mapa);
         if (resultado.reportable) {
           // Si la búsqueda falla con una dirección real, que la persona pueda avisar.
           $("mensaje").append(
             " ",
-            elemento("a", { href: enlaceReporteDireccion(texto), target: "_blank", rel: "noopener" }, t("reportar")),
+            elemento(
+              "a",
+              { href: enlaceCorreoAviso({ asunto: t("avisoAsuntoDireccion", { texto }), cuerpo: t("avisoCuerpoDireccion", { texto }) }) },
+              t("reportar"),
+            ),
+            " ",
+            elemento("a", { href: enlaceReporteDireccion(texto), target: "_blank", rel: "noopener" }, t("reportarGithub")),
             ".",
           );
         }
@@ -1549,6 +1690,33 @@ async function iniciar() {
     $("buscar").scrollIntoView({ behavior: SIN_MOVIMIENTO ? "auto" : "smooth", block: "center" });
     $("direccion").focus({ preventScroll: true });
     $("direccion").select();
+  });
+
+  // Compartir tu calle: el menú del teléfono (WhatsApp, etc.) o, si no hay, copiar el enlace.
+  $("compartir").addEventListener("click", async () => {
+    const nombre = nombreProvisional ? null : nombreActual;
+    const datos = {
+      title: "Morlaco",
+      text: nombre ? t("compartirTexto", { calle: nombre }) : t("compartirTextoSinCalle"),
+      url: location.href,
+    };
+    try {
+      if (navigator.share) {
+        await navigator.share(datos);
+        return;
+      }
+      await navigator.clipboard.writeText(`${datos.text} ${datos.url}`);
+      mensaje(t("compartirCopiado"));
+    } catch (error) {
+      // Cerrar el menú de compartir no es un error.
+      if (error?.name !== "AbortError") mensaje(t("compartirError", { enlace: location.href }));
+    }
+  });
+
+  $("imprimir").addEventListener("click", () => {
+    const fecha = new Intl.DateTimeFormat(etiquetaIdioma(), { dateStyle: "long", timeZone: "America/Guayaquil" }).format(new Date());
+    $("pie-impresion").textContent = t("pieImpresion", { fecha });
+    window.print();
   });
 
   autocompletar($("direccion"), $("sug-direccion"), () => $("buscar").requestSubmit());

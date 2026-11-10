@@ -14,8 +14,35 @@ def transporte():
     return json.loads((MANUAL / "transporte.json").read_text(encoding="utf-8"))
 
 
+@pytest.fixture(scope="module")
+def basura():
+    return json.loads((MANUAL / "basura.json").read_text(encoding="utf-8"))
+
+
 def _fecha(texto):
     return date.fromisoformat(texto)
+
+
+def test_basura_feriados_con_fuente_y_caducidad(basura):
+    feriados = basura["feriados"]
+    assert feriados["es"].strip() and feriados["en"].strip()
+    assert (
+        _fecha(feriados["desde"])
+        <= _fecha(basura["metadata"]["revisado"])
+        <= _fecha(feriados["hasta"])
+    )
+    assert feriados["fuente"]["url"].startswith("https://")
+
+
+def test_basura_donde_llevar_completo_en_los_dos_idiomas(basura):
+    ids = [d["id"] for d in basura["donde_llevar"]]
+    assert ids and len(ids) == len(set(ids))
+    for destino in basura["donde_llevar"]:
+        for idioma in ("es", "en"):
+            assert destino[idioma]["que"].strip() and destino[idioma]["donde"].strip()
+        assert destino["fuente"]["nombre"] and destino["fuente"]["url"].startswith("https://")
+    assert basura["funda_celeste"]["materiales"]
+    assert basura["contacto"]["linea"] == "139"
 
 
 def test_tarifas_con_fuente_y_valores_razonables(transporte):

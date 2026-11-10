@@ -85,7 +85,10 @@ ABREVIATURAS = {
     "gral.": "General", "pdte": "Presidente", "pdte.": "Presidente", "cdla": "Ciudadela",
     "cdla.": "Ciudadela", "univ": "Universidad", "univ.": "Universidad", "av": "Av.",
 }  # fmt: skip
-SIGLAS = {"iess", "ups", "sit", "etapa", "emac", "sas", "uda", "ucuenca", "gad", "ii", "iii"}
+SIGLAS = {
+    "iess", "ups", "sit", "etapa", "emac", "sas", "uda", "ucuenca", "gad", "ii", "iii",
+    "jep", "secap", "innfa", "iece", "cedfi", "crea",
+}  # fmt: skip
 TILDES = {
     "banos": "Baños", "rio": "Río", "rios": "Ríos", "sayausi": "Sayausí", "joaquin": "Joaquín",
     "jose": "José", "tomas": "Tomás", "ordonez": "Ordóñez", "ordoniez": "Ordóñez",
@@ -102,6 +105,33 @@ TILDES = {
     "capac": "Cápac", "canaris": "Cañaris", "espana": "España", "mexico": "México",
     "americas": "Américas", "heroes": "Héroes", "cesar": "César", "proano": "Proaño",
     "monsenor": "Monseñor", "leon": "León", "batallon": "Batallón",
+    # Vistas en los recorridos de buses (abril de 2026).
+    "agronomia": "Agronomía", "alarcon": "Alarcón", "alvarez": "Álvarez", "andres": "Andrés",
+    "angel": "Ángel", "angeles": "Ángeles", "aragon": "Aragón", "arizaga": "Arízaga",
+    "azucar": "Azúcar", "balcon": "Balcón", "bartolome": "Bartolomé", "batan": "Batán",
+    "bueran": "Buerán", "caamano": "Caamaño", "cabanas": "Cabañas", "calderon": "Calderón",
+    "campina": "Campiña", "canizares": "Cañizares", "carpinteria": "Carpintería",
+    "carrion": "Carrión", "caserio": "Caserío", "catolica": "Católica", "catolico": "Católico",
+    "cenaculo": "Cenáculo", "ceramica": "Cerámica", "chanchan": "Chanchán", "clinica": "Clínica",
+    "colon": "Colón", "compania": "Compañía", "condor": "Cóndor", "convencion": "Convención",
+    "cristobal": "Cristóbal", "democrito": "Demócrito", "deposito": "Depósito", "diaz": "Díaz",
+    "dragon": "Dragón", "electrica": "Eléctrica", "escandon": "Escandón", "espadana": "Espadaña",
+    "estacion": "Estación", "evangelica": "Evangélica", "fabian": "Fabián", "fabrica": "Fábrica",
+    "fatima": "Fátima", "ferreteria": "Ferretería", "fruteria": "Frutería",
+    "fundacion": "Fundación", "futbol": "Fútbol", "galeria": "Galería", "geologica": "Geológica",
+    "gonzalez": "González", "guaman": "Guamán", "herrerias": "Herrerías", "hosteria": "Hostería",
+    "iniguez": "Íñiguez", "jadan": "Jadán", "jesus": "Jesús", "jijon": "Jijón",
+    "landivar": "Landívar", "linea": "Línea", "machangara": "Machángara", "martin": "Martín",
+    "mecanica": "Mecánica", "medico": "Médico", "mejia": "Mejía", "merchan": "Merchán",
+    "munoz": "Muñoz", "narvaez": "Narváez", "nino": "Niño", "nunez": "Núñez",
+    "pasamaneria": "Pasamanería", "penas": "Peñas", "pequenos": "Pequeños", "pinzon": "Pinzón",
+    "plasticos": "Plásticos", "plateria": "Platería", "playon": "Playón", "policia": "Policía",
+    "poligono": "Polígono", "porton": "Portón", "pucara": "Pucará", "republica": "República",
+    "rincon": "Rincón", "rodriguez": "Rodríguez", "sanchez": "Sánchez", "sebastian": "Sebastián",
+    "senor": "Señor", "sintetica": "Sintética", "sofia": "Sofía", "suarez": "Suárez",
+    "suenos": "Sueños", "tecnico": "Técnico", "telefonica": "Telefónica",
+    "urbanizacion": "Urbanización", "vasquez": "Vásquez", "velez": "Vélez",
+    "zoologico": "Zoológico",
 }  # fmt: skip
 _MINUSCULAS = {"de", "del", "la", "las", "los", "el", "y", "e", "a", "al", "en"}
 

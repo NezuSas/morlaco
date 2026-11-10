@@ -241,6 +241,18 @@ export const VERSION_CALENDARIOS = 2;
 
 const REPORTES = "https://github.com/NezuSas/morlaco/issues/new";
 
+/** A este correo llegan los avisos de quien no tiene cuenta de GitHub. */
+export const CORREO_AVISOS = "nezu.ec@nezuecuador.com";
+
+/**
+ * Enlace que abre el correo de la persona con el aviso ya empezado: el asunto dice qué
+ * falla y el cuerpo, qué escribió o en qué página estaba. Nada se envía hasta que ella lo mande.
+ */
+export function enlaceCorreoAviso({ asunto, cuerpo }) {
+  const parametros = [`subject=${encodeURIComponent(asunto)}`, `body=${encodeURIComponent(cuerpo)}`];
+  return `mailto:${CORREO_AVISOS}?${parametros.join("&")}`;
+}
+
 /** Enlace a la plantilla "No encuentra mi dirección", con lo escrito ya rellenado. */
 export function enlaceReporteDireccion(texto) {
   const parametros = new URLSearchParams({ template: "direccion.yml", title: `Dirección: ${texto}`, escribi: texto });

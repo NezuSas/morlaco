@@ -67,9 +67,14 @@ def test_parsear_recorridos_agrupa_y_conserva_el_orden():
         {
             "linea": "1",
             "sentidos": {"ida": ["TERMINAL LIRIO", "SECTOR GULAG"], "retorno": ["KENNEDY"]},
+            "pasa_por": {"ida": ["Terminal Lirio", "Sector Gulag"], "retorno": ["Kennedy"]},
         },
-        {"linea": "2", "sentidos": {"ida": ["PARQUE"]}},
-        {"linea": "11B", "sentidos": {"ida": ["FERIA LIBRE"]}},
+        {"linea": "2", "sentidos": {"ida": ["PARQUE"]}, "pasa_por": {"ida": ["Parque"]}},
+        {
+            "linea": "11B",
+            "sentidos": {"ida": ["FERIA LIBRE"]},
+            "pasa_por": {"ida": ["Feria Libre"]},
+        },
     ]
 
 

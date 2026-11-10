@@ -12,6 +12,7 @@ import {
   describirFrecuencia,
   horarioDeHoy,
   lineasCercanas,
+  lineasPorCalle,
   tipoDeDia,
 } from "../../web/buses.js";
 
@@ -138,4 +139,39 @@ test("estacionCercana usa las estaciones del tranvía", () => {
   };
   assert.equal(estacionCercana({ lat: -2.8955, lon: -79.0055 }, estaciones).nombre, "Padre Aguirre");
   assert.equal(estacionCercana({ lat: -2.95, lon: -79.05 }, estaciones), null);
+});
+
+test("lineasPorCalle: las líneas que recorren la calle, no las que solo la cruzan", () => {
+  // Una calle de este a oeste, de 1,1 km, por donde va la línea 7 (ida).
+  const calle = {
+    type: "Feature",
+    properties: { nombre: "Calle de prueba" },
+    geometry: { type: "MultiLineString", coordinates: [[[-79.01, -2.9], [-79.0, -2.9]]] },
+  };
+  const cruza = tramo("30", "linea", "Norte", "ida", [[-79.005, -2.91], [-79.005, -2.89]]);
+  const lejos = tramo("40", "linea", "Sur", "ida", [[-79.01, -2.92], [-79.0, -2.92]]);
+  const encontradas = lineasPorCalle(calle, { features: [...lineas.features, cruza, lejos] }, rutas, { fecha: lunes10h });
+  assert.deepEqual(encontradas.map((l) => l.linea), ["7"]);
+  const [siete] = encontradas;
+  assert.ok(siete.metros > 1000 && siete.metros < 1200, String(siete.metros));
+  assert.deepEqual(siete.destinos, ["Mall del Rio", "Trigales Altos"]);
+  assert.equal(siete.trazados.length, 3); // con su alargue, para dibujarla entera
+  assert.equal(siete.horario.intervalo_min, 9);
+});
+
+test("lineasPorCalle: el tranvía cuenta y va primero; una calle sin buses da una lista vacía", () => {
+  const conTranvia = {
+    type: "Feature",
+    properties: {},
+    geometry: { type: "MultiLineString", coordinates: [[[-79.006, -2.902], [-79.0, -2.902]]] },
+  };
+  const [tranvia] = lineasPorCalle(conTranvia, lineas, rutas);
+  assert.equal(tranvia.linea, "Tranvía");
+  assert.equal(tranvia.horario, undefined);
+  const sinBuses = {
+    type: "Feature",
+    properties: {},
+    geometry: { type: "MultiLineString", coordinates: [[[-79.03, -2.87], [-79.02, -2.87]]] },
+  };
+  assert.deepEqual(lineasPorCalle(sinBuses, lineas, rutas), []);
 });

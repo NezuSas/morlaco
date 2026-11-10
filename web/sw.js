@@ -6,7 +6,7 @@
 //   desde la caché, porque no cambian.
 // - La búsqueda de lugares (Nominatim) nunca se guarda.
 
-const CACHE_PAGINA = "morlaco-pagina-v6";
+const CACHE_PAGINA = "morlaco-pagina-v7";
 const CACHE_EXTERNOS = "morlaco-externos-v1";
 const CACHE_MAPA = "morlaco-mapa-v2";
 const CACHES = [CACHE_PAGINA, CACHE_EXTERNOS, CACHE_MAPA];
@@ -25,6 +25,9 @@ const PRECARGA = [
   "lugares.js",
   "textos.js",
   "icono.svg",
+  "fuentes/alegreya.woff2",
+  "fuentes/alegreya-sans-400.woff2",
+  "fuentes/alegreya-sans-700.woff2",
   "manifest.webmanifest",
   "iconos/icono-192.png",
   "../datos/recoleccion/zonas.geojson",
@@ -36,9 +39,10 @@ const PRECARGA = [
   "../datos/movilidad/bicicletas.geojson",
   "../datos/farmacias/turnos.json",
   "../datos/manual/transporte.json",
+  "../datos/manual/basura.json",
   "../datos/buses/tranvia.geojson",
 ];
-const EXTERNOS = ["unpkg.com", "fonts.googleapis.com", "fonts.gstatic.com"];
+const EXTERNOS = ["unpkg.com"];
 
 self.addEventListener("install", (evento) => {
   evento.waitUntil(

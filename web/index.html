@@ -32,13 +32,9 @@
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="apple-touch-icon" href="iconos/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-title" content="Morlaco" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Alegreya:wght@500..800&family=Alegreya+Sans:wght@400;500;700&display=swap"
-      crossorigin="anonymous"
-    />
+    <!-- Las tipografías van en el propio sitio: cargan antes y no se pide nada a terceros. -->
+    <link rel="preload" href="fuentes/alegreya.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="fuentes/alegreya-sans-400.woff2" as="font" type="font/woff2" crossorigin />
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -48,6 +44,7 @@
     <link rel="stylesheet" href="estilos.css" />
   </head>
   <body>
+    <a class="saltar" href="#contenido" data-t="saltar">Saltar al contenido</a>
     <!-- Iconos de las secciones, reutilizados con <use>. -->
     <svg width="0" height="0" class="oculto" aria-hidden="true">
       <symbol id="i-funda" viewBox="0 0 24 24">
@@ -70,6 +67,16 @@
       <symbol id="i-maletin" viewBox="0 0 24 24">
         <rect x="3.5" y="7.5" width="17" height="12" rx="2" />
         <path d="M9 7.5v-2A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5v2M3.5 12.5h17" />
+      </symbol>
+      <symbol id="i-compartir" viewBox="0 0 24 24">
+        <circle cx="6" cy="12" r="2.5" />
+        <circle cx="17.5" cy="6" r="2.5" />
+        <circle cx="17.5" cy="18" r="2.5" />
+        <path d="M8.2 10.8l7-3.6M8.2 13.2l7 3.6" />
+      </symbol>
+      <symbol id="i-imprimir" viewBox="0 0 24 24">
+        <path d="M7 8.5V4h10v4.5M7 17.5H5a1.5 1.5 0 0 1-1.5-1.5v-6A1.5 1.5 0 0 1 5 8.5h14a1.5 1.5 0 0 1 1.5 1.5v6a1.5 1.5 0 0 1-1.5 1.5h-2" />
+        <rect x="7" y="14" width="10" height="6" />
       </symbol>
       <symbol id="i-ubicar" viewBox="0 0 24 24">
         <circle cx="12" cy="12" r="6.5" />
@@ -95,7 +102,7 @@
 
     <main class="disposicion">
       <div class="columna">
-        <section class="consulta" aria-labelledby="titulo">
+        <section id="contenido" class="consulta" aria-labelledby="titulo" tabindex="-1">
           <div class="muro">
           <div class="portada">
             <!-- Las tres cúpulas de la Catedral Nueva de Cuenca. -->
@@ -160,11 +167,15 @@
           <div id="tu-punto" class="tu-punto">
             <div class="letrero">
               <p class="tu-punto-etiqueta" data-t="tuPunto">Tu punto</p>
-              <p id="punto-nombre" class="punto-nombre" aria-live="polite"></p>
+              <p id="punto-nombre" class="punto-nombre" role="heading" aria-level="1" aria-live="polite"></p>
             </div>
             <p id="punto-zona" class="punto-zona"></p>
             <div class="punto-acciones">
               <button type="button" id="cambiar-punto" class="en-muro" data-t="cambiarPunto">Cambiar de lugar</button>
+              <button type="button" id="compartir" class="en-muro con-icono">
+                <svg class="icono" aria-hidden="true"><use href="#i-compartir" /></svg>
+                <span data-t="compartir">Compartir</span>
+              </button>
               <div class="guardar-lugar" role="group" aria-labelledby="t-guardar-como">
                 <span id="t-guardar-como" data-t="guardarComo">Guardar como</span>
                 <button type="button" class="lugar-boton en-muro" data-lugar="casa" aria-pressed="false">
@@ -181,6 +192,7 @@
           </div>
 
           <div id="inicio" class="inicio">
+            <section id="buses-calle" class="buses-calle" aria-live="polite" hidden></section>
             <div class="ejemplos">
               <p id="t-ejemplos" data-t="pruebaCon">Prueba con</p>
               <ul aria-labelledby="t-ejemplos">
@@ -229,9 +241,23 @@
               </h2>
               <p id="basura-cuando" class="cuando"></p>
               <ol id="semana" class="semana" aria-label="Días de recolección en tu zona" data-t-aria-label="semanaAria"></ol>
+              <p id="basura-dias" class="solo-impresion"></p>
               <p id="basura-fundas" class="fundas"></p>
               <p id="basura-zona" class="detalle"></p>
+              <p id="basura-feriados" class="feriados" hidden></p>
+              <details id="donde-llevar" class="donde-llevar" hidden>
+                <summary data-t="dondeLlevarTitulo">¿Dónde llevo lo que no va en las fundas?</summary>
+                <dl></dl>
+                <p class="detalle"></p>
+              </details>
               <div id="calendario" class="calendario"></div>
+              <div class="imprimir">
+                <button type="button" id="imprimir" class="secundario con-icono">
+                  <svg class="icono" aria-hidden="true"><use href="#i-imprimir" /></svg>
+                  <span data-t="imprimir">Imprimir la hoja de tu zona</span>
+                </button>
+                <p class="detalle" data-t="imprimirNota">Con los días de recolección y las farmacias de turno, para la refrigeradora o la cartelera del edificio.</p>
+              </div>
             </section>
 
             <section id="s-luz" class="tarjeta-seccion servicio-luz" aria-labelledby="t-luz">
@@ -303,6 +329,8 @@
 
         </section>
 
+        <p id="pie-impresion" class="solo-impresion pie-impresion"></p>
+
         <footer class="pie">
           <p>
             <span data-t-html="pieFuentes">Datos de <a href="https://emac.gob.ec/mapa-zonas-de-recoleccion/">EMAC EP</a>,
@@ -313,9 +341,9 @@
             <span id="actualizado"></span>
           </p>
           <p data-t-html="pieColaborar">
-            ¿Un dato está mal o no encuentra tu esquina?
-            <a href="https://github.com/NezuSas/morlaco/issues/new/choose">Avísanos</a> (necesitas una
-            cuenta de GitHub, es gratis). ¿Programas?
+            ¿Un dato está mal o no encuentra tu esquina? Escríbenos a
+            <a data-aviso href="mailto:nezu.ec@nezuecuador.com">nezu.ec@nezuecuador.com</a> o, si tienes cuenta
+            de GitHub, <a href="https://github.com/NezuSas/morlaco/issues/new/choose">abre un aviso</a>. ¿Programas?
             <a href="https://github.com/NezuSas/morlaco/blob/main/CONTRIBUTING.md">Colabora con Morlaco</a>.
             Las rutas de bus también están en
             <a href="../datos/gtfs/cuenca-buses.zip">formato GTFS</a> para apps de transporte.

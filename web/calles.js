@@ -379,6 +379,20 @@ function cajaDe(feature) {
   return [oeste, sur, este, norte];
 }
 
+/** Puntos {lat, lon} cada `paso` metros a lo largo de una calle (todos sus tramos). */
+export function puntosALoLargo(feature, paso = 25) {
+  const puntos = [];
+  for (const [a, b] of segmentos(feature)) {
+    const largo = Math.hypot(b[0] - a[0], b[1] - a[1]);
+    const trozos = Math.max(1, Math.round(largo / paso));
+    for (let i = 0; i < trozos; i++) {
+      const f = (i + 0.5) / trozos;
+      puntos.push({ ...aGrados([a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f]), metros: largo / trozos });
+    }
+  }
+  return puntos;
+}
+
 export function longitudMetros(feature) {
   return segmentos(feature).reduce((total, [a, b]) => total + Math.hypot(b[0] - a[0], b[1] - a[1]), 0);
 }

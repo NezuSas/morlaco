@@ -1,6 +1,6 @@
 // Líneas de bus cercanas a un punto y su frecuencia del día. Sin DOM ni red.
 
-import { distanciaALinea } from "./calles.js";
+import { distanciaALinea, puntosALoLargo } from "./calles.js";
 import { aMinutos, horaCuenca, masCercano } from "./logica.js";
 import { etiquetaIdioma, t } from "./textos.js";
 
@@ -63,6 +63,69 @@ export function lineasCercanas(punto, lineas, rutas = [], { maximoMetros = 350, 
   return [...porLinea.values()]
     .filter((g) => g.metros <= maximoMetros)
     .sort((a, b) => a.metros - b.metros || ordenLinea(a.linea) - ordenLinea(b.linea))
+    .map((g) => ({
+      ...g,
+      metros: Math.round(g.metros),
+      horario: g.tipo === "tranvia" ? undefined : horarioDeHoy(g.linea, rutas, fecha),
+    }));
+}
+
+const cajas = new WeakMap();
+
+/** La caja [oeste, sur, este, norte] de un trazado, calculada una vez. */
+function cajaDeTrazado(feature) {
+  let caja = cajas.get(feature);
+  if (!caja) {
+    caja = [Infinity, Infinity, -Infinity, -Infinity];
+    const g = feature.geometry;
+    for (const linea of g.type === "LineString" ? [g.coordinates] : g.coordinates) {
+      for (const [lon, lat] of linea) {
+        caja = [Math.min(caja[0], lon), Math.min(caja[1], lat), Math.max(caja[2], lon), Math.max(caja[3], lat)];
+      }
+    }
+    cajas.set(feature, caja);
+  }
+  return caja;
+}
+
+/**
+ * Las líneas que recorren una calle: su trazado va pegado a ella (a menos de `tolerancia`
+ * metros) durante un buen tramo, no solo la cruza. Devuelve cada línea con los metros de
+ * la calle que recorre, de la que más a la que menos.
+ */
+export function lineasPorCalle(calle, lineas, rutas = [], { tolerancia = 22, minimoMetros = 150, fecha = new Date() } = {}) {
+  const puntos = puntosALoLargo(calle);
+  if (!puntos.length) return [];
+  const largo = puntos.reduce((total, p) => total + p.metros, 0);
+  const margen = 0.0004; // unos 45 m, para descartar pronto los trazados lejanos
+  const oeste = Math.min(...puntos.map((p) => p.lon)) - margen;
+  const este = Math.max(...puntos.map((p) => p.lon)) + margen;
+  const sur = Math.min(...puntos.map((p) => p.lat)) - margen;
+  const norte = Math.max(...puntos.map((p) => p.lat)) + margen;
+
+  const porLinea = new Map();
+  for (const feature of lineas.features) {
+    const p = feature.properties;
+    const grupo = porLinea.get(p.linea) ?? { linea: p.linea, tipo: p.tipo, metros: 0, destinos: [], trazados: [] };
+    grupo.trazados.push(feature);
+    if (p.tipo !== "alargue") {
+      if (!grupo.destinos.includes(p.hacia)) grupo.destinos.push(p.hacia);
+      grupo.tipo = p.tipo;
+    }
+    porLinea.set(p.linea, grupo);
+    const caja = cajaDeTrazado(feature);
+    if (caja[0] > este || caja[2] < oeste || caja[1] > norte || caja[3] < sur) continue;
+    let recorre = 0;
+    for (const punto of puntos) {
+      if (distanciaALinea(punto, feature.geometry) <= tolerancia) recorre += punto.metros;
+    }
+    grupo.metros = Math.max(grupo.metros, recorre);
+  }
+  // En una calle corta basta con recorrer la mitad.
+  const minimo = Math.min(minimoMetros, largo / 2);
+  return [...porLinea.values()]
+    .filter((g) => g.metros >= minimo)
+    .sort((a, b) => ordenLinea(a.linea) - ordenLinea(b.linea))
     .map((g) => ({
       ...g,
       metros: Math.round(g.metros),
