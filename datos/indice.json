@@ -1,0 +1,313 @@
+{
+  "titulo": "Datos abiertos de Morlaco",
+  "descripcion": "Servicios públicos de Cuenca, Ecuador: basura, luz, agua, farmacias, buses y calles. Archivos estáticos que cualquiera puede leer, también desde otra página web (CORS).",
+  "version": 1,
+  "estabilidad": "Los campos listados no cambian de nombre ni de tipo, ni desaparecen, sin aviso. Se pueden añadir campos nuevos. Un cambio incompatible sube la versión y se anuncia en el README al menos 30 días antes.",
+  "base": "https://nezusas.github.io/morlaco/datos/",
+  "documentacion": "https://nezusas.github.io/morlaco/web/datos.html",
+  "estado": "https://nezusas.github.io/morlaco/datos/estado.json",
+  "zona_horaria": "America/Guayaquil (UTC-5); las horas sin zona son de Cuenca",
+  "contacto": "nezu.ec@nezuecuador.com",
+  "mantiene": "Nezu S.A.S. (https://www.nezuecuador.com/)",
+  "conjuntos": [
+    {
+      "id": "recoleccion-zonas",
+      "archivo": "recoleccion/zonas.geojson",
+      "formato": "GeoJSON (polígonos)",
+      "tema": "basura",
+      "titulo": "Zonas de recolección de basura",
+      "descripcion": "Las 8 zonas urbanas de EMAC EP con sus días, horario y día de la funda celeste.",
+      "campos": {
+        "zona": "Número de zona (1 a 8)",
+        "dias": "Días de recolección, en español",
+        "dias_iso": "Los mismos días como número ISO (1 = lunes)",
+        "desde / hasta": "Horario, HH:MM en hora de Cuenca (UTC-5); 24:00 es medianoche",
+        "dia_reciclaje": "Día de la funda celeste"
+      },
+      "fuente_morlaco": "recoleccion",
+      "frecuencia": "diaria",
+      "fuente": "EMAC EP",
+      "licencia": "CC BY-NC (Creative Commons Atribución-NoComercial), según el portal Cuenca en Datos",
+      "url": "https://nezusas.github.io/morlaco/datos/recoleccion/zonas.geojson"
+    },
+    {
+      "id": "recoleccion-calendarios",
+      "archivo": "recoleccion/calendarios/zona-N.ics",
+      "formato": "iCalendar (.ics)",
+      "tema": "basura",
+      "titulo": "Calendarios de recolección por zona",
+      "descripcion": "Un calendario por zona (cambia N por el número) para suscribirse desde Google Calendar, Apple o Outlook, con aviso una hora antes.",
+      "campos": {},
+      "fuente_morlaco": "recoleccion",
+      "frecuencia": "diaria",
+      "fuente": "EMAC EP",
+      "licencia": "CC BY-NC (Creative Commons Atribución-NoComercial), según el portal Cuenca en Datos",
+      "url": "https://nezusas.github.io/morlaco/datos/recoleccion/calendarios/zona-N.ics"
+    },
+    {
+      "id": "basura-manual",
+      "archivo": "manual/basura.json",
+      "formato": "JSON",
+      "tema": "basura",
+      "titulo": "Feriados y dónde llevar cada cosa",
+      "descripcion": "Qué pasa con la recolección en feriados, qué va en la funda celeste y dónde llevar orgánicos, vidrio, escombros, pilas y objetos grandes. En español e inglés.",
+      "campos": {
+        "feriados": "Texto (es, en), vigencia (desde, hasta) y fuente",
+        "donde_llevar[]": "id, qué (es/en), dónde (es/en) y fuente",
+        "contacto": "Línea, teléfono y página de EMAC"
+      },
+      "fuente_morlaco": null,
+      "frecuencia": "a mano",
+      "fuente": "EMAC EP, ETAPA EP y El Mercurio",
+      "licencia": "CC BY 4.0 (Morlaco); los datos de cada fuente conservan su licencia",
+      "url": "https://nezusas.github.io/morlaco/datos/manual/basura.json"
+    },
+    {
+      "id": "luz-suspensiones",
+      "archivo": "luz/suspensiones.json",
+      "formato": "JSON",
+      "tema": "luz",
+      "titulo": "Cortes de luz programados",
+      "descripcion": "Los cortes que publica Centro Sur por día y los cronogramas sueltos recientes. Revisa metadata.ultima_publicacion: en noviembre de 2026 Centro Sur no publicaba para Cuenca desde julio.",
+      "campos": {
+        "publicaciones[]": "pdf, fecha y cortes[] (alimentador, direccion, desde, hasta, trabajo)",
+        "otras_publicaciones[]": "pdf, fecha, provincias y menciona_cuenca",
+        "metadata.ultima_publicacion": "Fecha del último PDF diario"
+      },
+      "fuente_morlaco": "luz",
+      "frecuencia": "diaria",
+      "fuente": "Centro Sur C.A.",
+      "licencia": "Información pública de la institución; cita la fuente",
+      "url": "https://nezusas.github.io/morlaco/datos/luz/suspensiones.json"
+    },
+    {
+      "id": "agua-cortes",
+      "archivo": "manual/agua.json",
+      "formato": "JSON",
+      "tema": "agua",
+      "titulo": "Cortes de agua confirmados",
+      "descripcion": "Cortes de ETAPA EP anunciados en prensa y revisados por una persona. Un corte vale hasta su fecha y hora de fin.",
+      "campos": {
+        "cortes[]": "fecha, desde, hasta, sectores y motivo (es/en) y fuente (nombre, url)",
+        "descartados[]": "Notas revisadas que no eran cortes de ETAPA en Cuenca"
+      },
+      "fuente_morlaco": null,
+      "frecuencia": "a mano, el mismo día del aviso",
+      "fuente": "El Mercurio, citando a ETAPA EP",
+      "licencia": "CC BY 4.0 (Morlaco); los datos de cada fuente conservan su licencia",
+      "url": "https://nezusas.github.io/morlaco/datos/manual/agua.json"
+    },
+    {
+      "id": "agua-avisos",
+      "archivo": "agua/avisos.json",
+      "formato": "JSON",
+      "tema": "agua",
+      "titulo": "Avisos de cortes de agua por confirmar",
+      "descripcion": "Notas de prensa de las últimas tres semanas cuyo título anuncia un corte de agua. Sin revisar: para mostrar cortes, usa manual/agua.json.",
+      "campos": {
+        "avisos[]": "publicado, titulo, enlace, resumen y menciona_etapa"
+      },
+      "fuente_morlaco": "agua",
+      "frecuencia": "diaria",
+      "fuente": "El Mercurio",
+      "licencia": "Información pública de la institución; cita la fuente",
+      "url": "https://nezusas.github.io/morlaco/datos/agua/avisos.json"
+    },
+    {
+      "id": "farmacias-turnos",
+      "archivo": "farmacias/turnos.json",
+      "formato": "JSON",
+      "tema": "salud",
+      "titulo": "Farmacias de turno",
+      "descripcion": "Farmacias abiertas las 24 horas en Cuenca, por semana. Cada turno va de las 06:00 del día de inicio a las 06:00 del día final. La fuente tiene errores: llama antes de ir.",
+      "campos": {
+        "turnos[]": "inicio, fin y farmacias[] (nombre, direccion, telefono, tel para marcar)"
+      },
+      "fuente_morlaco": "farmacias",
+      "frecuencia": "diaria (ARCSA publica un PDF al mes)",
+      "fuente": "ARCSA",
+      "licencia": "Información pública de la institución; cita la fuente",
+      "url": "https://nezusas.github.io/morlaco/datos/farmacias/turnos.json"
+    },
+    {
+      "id": "buses-lineas",
+      "archivo": "buses/lineas.geojson",
+      "formato": "GeoJSON (líneas)",
+      "tema": "transporte",
+      "titulo": "Recorrido de las líneas de bus y del tranvía",
+      "descripcion": "El trazado de cada línea en cada sentido, con sus alargues. Trazados de 2022.",
+      "campos": {
+        "linea": "Número de línea, o Tranvía",
+        "tipo": "linea, alargue o tranvia",
+        "hacia": "Destino de ese sentido",
+        "sentido": "ida o retorno",
+        "longitud_km": "Largo del trazado"
+      },
+      "fuente_morlaco": "buses",
+      "frecuencia": "semanal",
+      "fuente": "GAD Municipal de Cuenca, portal Cuenca en Datos",
+      "licencia": "CC BY-NC (Creative Commons Atribución-NoComercial), según el portal Cuenca en Datos",
+      "url": "https://nezusas.github.io/morlaco/datos/buses/lineas.geojson"
+    },
+    {
+      "id": "buses-rutas",
+      "archivo": "buses/rutas.json",
+      "formato": "JSON",
+      "tema": "transporte",
+      "titulo": "Horarios y frecuencia de las líneas",
+      "descripcion": "Compañía, origen, destino y, para lunes a viernes, sábados y domingos, la primera y la última salida y cada cuántos minutos pasa. null: ese día no hay servicio.",
+      "campos": {
+        "linea, sentido": "Línea e ida o retorno",
+        "compania, origen, destino": "Datos de la ruta",
+        "horarios": "lunes_viernes, sabados, domingos: {inicio, fin, intervalo_min} o null"
+      },
+      "fuente_morlaco": "buses",
+      "frecuencia": "semanal",
+      "fuente": "GAD Municipal de Cuenca, portal Cuenca en Datos",
+      "licencia": "CC BY-NC (Creative Commons Atribución-NoComercial), según el portal Cuenca en Datos",
+      "url": "https://nezusas.github.io/morlaco/datos/buses/rutas.json"
+    },
+    {
+      "id": "buses-recorridos",
+      "archivo": "buses/recorridos.json",
+      "formato": "JSON",
+      "tema": "transporte",
+      "titulo": "Por dónde pasa cada línea",
+      "descripcion": "Los puntos de paso de cada línea, en orden, de ida y de retorno (abril de 2026).",
+      "campos": {
+        "linea": "Número de línea",
+        "sentidos": "ida y retorno: puntos tal como los publica el municipio",
+        "pasa_por": "Los mismos puntos con el nombre pulido"
+      },
+      "fuente_morlaco": "buses",
+      "frecuencia": "semanal",
+      "fuente": "GAD Municipal de Cuenca, portal Cuenca en Datos",
+      "licencia": "CC BY-NC (Creative Commons Atribución-NoComercial), según el portal Cuenca en Datos",
+      "url": "https://nezusas.github.io/morlaco/datos/buses/recorridos.json"
+    },
+    {
+      "id": "buses-paradas",
+      "archivo": "buses/paradas.geojson",
+      "formato": "GeoJSON (puntos)",
+      "tema": "transporte",
+      "titulo": "Paradas de bus",
+      "descripcion": "Paradas del registro municipal con coordenadas corregidas. No incluye todas.",
+      "campos": {
+        "id": "Identificador de la parada",
+        "nombre": "Nombre legible",
+        "ubicacion": "Dirección tal como la publica el municipio",
+        "tiene_paleta": "Si tiene señal de parada"
+      },
+      "fuente_morlaco": "buses",
+      "frecuencia": "semanal",
+      "fuente": "GAD Municipal de Cuenca, portal Cuenca en Datos",
+      "licencia": "CC BY-NC (Creative Commons Atribución-NoComercial), según el portal Cuenca en Datos",
+      "url": "https://nezusas.github.io/morlaco/datos/buses/paradas.geojson"
+    },
+    {
+      "id": "buses-gtfs",
+      "archivo": "gtfs/cuenca-buses.zip",
+      "formato": "GTFS (ZIP)",
+      "tema": "transporte",
+      "titulo": "Feed GTFS de los buses",
+      "descripcion": "Las 38 líneas en el formato estándar de las apps de transporte, con frecuencias por tipo de día. Validado con el validador de MobilityData.",
+      "campos": {},
+      "fuente_morlaco": "buses",
+      "frecuencia": "semanal",
+      "fuente": "Generado por Morlaco con los datos del portal Cuenca en Datos",
+      "licencia": "CC BY-NC (Creative Commons Atribución-NoComercial), según el portal Cuenca en Datos",
+      "url": "https://nezusas.github.io/morlaco/datos/gtfs/cuenca-buses.zip"
+    },
+    {
+      "id": "tranvia-estaciones",
+      "archivo": "buses/tranvia.geojson",
+      "formato": "GeoJSON (puntos)",
+      "tema": "transporte",
+      "titulo": "Estaciones del tranvía",
+      "descripcion": "Las 20 estaciones, con un punto por andén y el sentido en que para el tranvía.",
+      "campos": {
+        "id": "Código de la estación",
+        "nombre": "Nombre",
+        "hacia": "Sentidos que paran ahí"
+      },
+      "fuente_morlaco": "tranvia",
+      "frecuencia": "diaria",
+      "fuente": "Tranvía de Cuenca",
+      "licencia": "Información pública de la institución; cita la fuente",
+      "url": "https://nezusas.github.io/morlaco/datos/buses/tranvia.geojson"
+    },
+    {
+      "id": "transporte-manual",
+      "archivo": "manual/transporte.json",
+      "formato": "JSON",
+      "tema": "transporte",
+      "titulo": "Pasaje, cambios de líneas y frecuencia del tranvía",
+      "descripcion": "Datos que el municipio solo anuncia en prensa: el pasaje vigente, los cambios de líneas de 2026 (con fecha de caducidad) y cada cuánto pasa el tranvía.",
+      "campos": {
+        "tarifas": "bus y tranvia, en dólares, con su fuente",
+        "avisos[]": "lineas, desde, hasta, texto (es, en) y fuente",
+        "tranvia.frecuencia_min": "lunes_viernes y fin_de_semana"
+      },
+      "fuente_morlaco": null,
+      "frecuencia": "a mano",
+      "fuente": "Comunicados del municipio publicados en El Mercurio",
+      "licencia": "CC BY 4.0 (Morlaco); los datos de cada fuente conservan su licencia",
+      "url": "https://nezusas.github.io/morlaco/datos/manual/transporte.json"
+    },
+    {
+      "id": "calles",
+      "archivo": "calles/calles.geojson",
+      "formato": "GeoJSON (líneas)",
+      "tema": "ciudad",
+      "titulo": "Calles con nombre",
+      "descripcion": "Unas 2.800 calles de Cuenca con su trazado simplificado y nombres alternativos.",
+      "campos": {
+        "nombre": "Nombre de la calle",
+        "otros_nombres": "Otras formas de llamarla",
+        "tipo": "Tipo de vía según OpenStreetMap",
+        "rango": "Importancia de la vía (más alto, más importante)"
+      },
+      "fuente_morlaco": "calles",
+      "frecuencia": "semanal",
+      "fuente": "OpenStreetMap",
+      "licencia": "ODbL 1.0 (© colaboradores de OpenStreetMap)",
+      "url": "https://nezusas.github.io/morlaco/datos/calles/calles.geojson"
+    },
+    {
+      "id": "movilidad",
+      "archivo": "movilidad/bicicletas.geojson, carga.geojson, ciclovias.geojson",
+      "formato": "GeoJSON",
+      "tema": "ciudad",
+      "titulo": "BiciPública, carga eléctrica y ciclovías",
+      "descripcion": "Estaciones de BiciPública, puntos de carga para autos eléctricos (con su acceso) y ciclovías (separadas o carriles pintados).",
+      "campos": {
+        "bicicletas": "id, nombre, capacidad",
+        "carga": "id, nombre, operador, acceso, conectores",
+        "ciclovias": "id, nombre, tipo"
+      },
+      "fuente_morlaco": "movilidad",
+      "frecuencia": "semanal",
+      "fuente": "OpenStreetMap",
+      "licencia": "ODbL 1.0 (© colaboradores de OpenStreetMap)",
+      "url": "https://nezusas.github.io/morlaco/datos/movilidad/"
+    },
+    {
+      "id": "estado",
+      "archivo": "estado.json",
+      "formato": "JSON",
+      "tema": "control",
+      "titulo": "Estado de cada fuente",
+      "descripcion": "Cuándo se actualizó por última vez cada fuente, qué archivos escribió y si falló.",
+      "campos": {
+        "<fuente>.ok": "true si la última actualización salió bien",
+        "<fuente>.actualizado": "Fecha y hora (UTC) de la última actualización buena",
+        "<fuente>.error": "Último error, si lo hubo"
+      },
+      "fuente_morlaco": null,
+      "frecuencia": "diaria",
+      "fuente": "Morlaco",
+      "licencia": "CC BY 4.0 (Morlaco); los datos de cada fuente conservan su licencia",
+      "url": "https://nezusas.github.io/morlaco/datos/estado.json"
+    }
+  ]
+}

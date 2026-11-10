@@ -38,3 +38,5 @@ select = ["E", "F", "W", "I", "B", "UP"]
 [tool.ruff.lint.per-file-ignores]
 # Filas de ejemplo copiadas de las tablas de ARCSA: se dejan en una línea para que se lean como la tabla.
 "tests/test_farmacias.py" = ["E501"]
+# El catálogo es texto para personas: cada descripción va en su línea, como se lee.
+"src/morlaco/catalogo.py" = ["E501"]

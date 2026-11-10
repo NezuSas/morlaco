@@ -2054,6 +2054,176 @@ button.con-icono {
   }
 }
 
+/* ---------- Página de datos abiertos ---------- */
+
+/* Una columna de lectura centrada; la barra y el muro se alinean con ella. */
+.pagina-datos .barra,
+.muro-datos {
+  padding-inline: max(var(--margen), calc((100% - 46rem) / 2));
+}
+
+.muro-datos {
+  padding-top: 2rem;
+  padding-bottom: 2.25rem;
+}
+
+.muro-datos h1 {
+  max-width: 16ch;
+}
+
+.muro-datos .entrada {
+  max-width: 52ch;
+}
+
+.datos-contenido {
+  max-width: calc(46rem + 2 * var(--margen));
+  margin: 0 auto;
+  padding: 0 var(--margen) 3rem;
+}
+
+.datos-contenido:focus {
+  outline: none;
+}
+
+.datos-contenido > section {
+  padding: 2rem 0;
+}
+
+.datos-contenido > section + section {
+  border-top: 1px solid var(--linea);
+}
+
+.datos-contenido h2 {
+  font-family: var(--serif);
+  font-size: var(--t-3);
+  line-height: 1.15;
+}
+
+.datos-contenido h3 {
+  margin-top: 1.75rem;
+  font-family: var(--serif);
+  font-size: var(--t-2);
+}
+
+.datos-contenido p,
+.datos-contenido ul {
+  margin: 0.75rem 0 0;
+  max-width: 64ch;
+}
+
+.datos-contenido code {
+  padding: 0.05em 0.3em;
+  border-radius: 4px;
+  background: var(--cal);
+  font-size: 0.92em;
+  overflow-wrap: anywhere;
+}
+
+.datos-contenido pre {
+  margin: 0.75rem 0 0;
+  padding: 0.9rem 1rem;
+  overflow-x: auto;
+  border-radius: var(--radio-control);
+  background: var(--cal);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.datos-contenido pre code {
+  padding: 0;
+  background: none;
+  overflow-wrap: normal;
+}
+
+.datos-claves {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.5rem 1rem;
+  margin: 1rem 0;
+}
+
+.datos-claves dt {
+  font-weight: 700;
+}
+
+.datos-claves dd {
+  margin: 0;
+  min-width: 0;
+}
+
+.conjunto {
+  padding: 1.1rem 0;
+  border-top: 1px solid var(--linea);
+}
+
+.conjunto h4 {
+  font-size: var(--t-1);
+}
+
+.conjunto-url {
+  font-size: var(--t-0);
+}
+
+.conjunto-ficha {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.2rem 0.9rem;
+  margin: 0.6rem 0 0;
+  font-size: var(--t-0);
+}
+
+.conjunto-ficha dt {
+  color: var(--tinta-suave);
+}
+
+.conjunto-ficha dd {
+  margin: 0;
+}
+
+.conjunto-campos {
+  margin-top: 0.6rem;
+  font-size: var(--t-0);
+}
+
+.conjunto-campos summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.conjunto-campos dl {
+  margin: 0.5rem 0 0;
+}
+
+.conjunto-campos dd {
+  margin: 0.1rem 0 0.5rem;
+  color: var(--tinta-suave);
+}
+
+.datos-licencias {
+  padding-left: 1.1rem;
+}
+
+.datos-licencias li + li {
+  margin-top: 0.5rem;
+}
+
+.datos-contenido .autoria {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--linea);
+}
+
+@media (max-width: 520px) {
+  .datos-claves {
+    grid-template-columns: 1fr;
+    gap: 0.15rem;
+  }
+
+  .datos-claves dd {
+    margin-bottom: 0.6rem;
+  }
+}
+
 /* ---------- Pie ---------- */
 
 .pie {

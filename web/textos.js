@@ -160,7 +160,7 @@ const TEXTOS = {
     pieFuentes:
       'Datos de <a href="https://emac.gob.ec/mapa-zonas-de-recoleccion/">EMAC EP</a>, <a href="https://www.centrosur.gob.ec/suspensiones-programadas/">Centro Sur</a> y el portal <a href="https://cuencaendatos.cuenca.gob.ec">Cuenca en Datos</a> del GAD Municipal. Calles: © colaboradores de <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> (ODbL).',
     pieColaborar:
-      '¿Un dato está mal o no encuentra tu esquina? Escríbenos a <a data-aviso href="mailto:nezu.ec@nezuecuador.com">nezu.ec@nezuecuador.com</a> o, si tienes cuenta de GitHub, <a href="https://github.com/NezuSas/morlaco/issues/new/choose">abre un aviso</a>. ¿Programas? <a href="https://github.com/NezuSas/morlaco/blob/main/CONTRIBUTING.md">Colabora con Morlaco</a>. Las rutas de bus también están en <a href="../datos/gtfs/cuenca-buses.zip">formato GTFS</a> para apps de transporte.',
+      '¿Un dato está mal o no encuentra tu esquina? Escríbenos a <a data-aviso href="mailto:nezu.ec@nezuecuador.com">nezu.ec@nezuecuador.com</a> o, si tienes cuenta de GitHub, <a href="https://github.com/NezuSas/morlaco/issues/new/choose">abre un aviso</a>. ¿Programas? <a href="https://github.com/NezuSas/morlaco/blob/main/CONTRIBUTING.md">Colabora con Morlaco</a>. Todos los datos son abiertos: <a href="datos.html">úsalos en tu app o tu investigación</a>.',
     pieAviso:
       "Las calles se buscan en esta página; solo cuando buscas un lugar (como un parque o un centro comercial), el texto se envía a OpenStreetMap (Nominatim) para ubicarlo. La calidad del aire se pide a la web de la EMOV, sin enviarle tu ubicación.",
     sobreTitulo:
@@ -469,7 +469,7 @@ const TEXTOS = {
     pieFuentes:
       'Data from <a href="https://emac.gob.ec/mapa-zonas-de-recoleccion/">EMAC EP</a>, <a href="https://www.centrosur.gob.ec/suspensiones-programadas/">Centro Sur</a> and the city’s <a href="https://cuencaendatos.cuenca.gob.ec">Cuenca en Datos</a> portal. Streets: © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors (ODbL).',
     pieColaborar:
-      'Is something wrong, or can’t it find your corner? Email us at <a data-aviso href="mailto:nezu.ec@nezuecuador.com">nezu.ec@nezuecuador.com</a> or, if you have a GitHub account, <a href="https://github.com/NezuSas/morlaco/issues/new/choose">open an issue</a>. Do you code? <a href="https://github.com/NezuSas/morlaco/blob/main/CONTRIBUTING.md">Help build Morlaco</a>. Bus routes are also available in <a href="../datos/gtfs/cuenca-buses.zip">GTFS format</a> for transit apps.',
+      'Is something wrong, or can’t it find your corner? Email us at <a data-aviso href="mailto:nezu.ec@nezuecuador.com">nezu.ec@nezuecuador.com</a> or, if you have a GitHub account, <a href="https://github.com/NezuSas/morlaco/issues/new/choose">open an issue</a>. Do you code? <a href="https://github.com/NezuSas/morlaco/blob/main/CONTRIBUTING.md">Help build Morlaco</a>. All the data is open: <a href="datos.html">use it in your app or research</a> (page in Spanish).',
     pieAviso:
       "Streets are searched on this page; only when you search for a place (like a park or a mall) is the text sent to OpenStreetMap (Nominatim) to find it. Air quality is requested from EMOV’s website, without sending it your location.",
     sobreTitulo:

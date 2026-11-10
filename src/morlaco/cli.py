@@ -9,7 +9,7 @@ from collections.abc import Callable, Sequence
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from morlaco import cambios, red
+from morlaco import cambios, catalogo, red
 from morlaco.comun import Resultado
 from morlaco.fuentes import agua, buses, calles, centrosur, emac, farmacias, movilidad, tranvia
 from morlaco.salida import escribir, escribir_json
@@ -80,6 +80,8 @@ def actualizar(
             }
             print(f"[error] {nombre}: {type(error).__name__}: {error}", file=sys.stderr)
     escribir_json(ruta_estado, dict(sorted(estado.items())))
+    # El catálogo no lleva fechas: solo cambia si cambia la descripción de los datos.
+    catalogo.escribir_indice(salida)
     return 1 if fallos else 0
 
 

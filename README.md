@@ -77,10 +77,19 @@ una app o un análisis.
 | [`datos/farmacias/turnos.json`](datos/farmacias/turnos.json) | Farmacias de turno de Cuenca por semana (de 06:00 a 06:00), con dirección legible y teléfono para llamar | [ARCSA, turnos de farmacias](https://www.controlsanitario.gob.ec/turnos-de-farmacias/) |
 | [`datos/movilidad/`](datos/movilidad/) | Estaciones de BiciPública (BiciCuenca) con su capacidad, ciclovías (separadas o carriles pintados) y puntos de carga para autos eléctricos (públicos, para clientes o privados) | [OpenStreetMap](https://www.openstreetmap.org) |
 | [`datos/estado.json`](datos/estado.json) | Cuándo se actualizó cada fuente por última vez y si hubo errores | — |
+| [`datos/indice.json`](datos/indice.json) | **Catálogo** legible por programas: cada archivo con su descripción, sus campos principales, su frecuencia, su fuente y su licencia | — |
 
-Todos los archivos se pueden descargar directamente desde
-`https://nezusas.github.io/morlaco/datos/...`, por ejemplo
-<https://nezusas.github.io/morlaco/datos/recoleccion/zonas.geojson>.
+### Usar los datos desde otro programa
+
+Todos los archivos se pueden leer directamente desde `https://nezusas.github.io/morlaco/datos/...`, por ejemplo
+<https://nezusas.github.io/morlaco/datos/recoleccion/zonas.geojson>, sin claves ni registro y también desde
+otra página web (el servidor envía `Access-Control-Allow-Origin: *`). La página
+[**Datos abiertos**](https://nezusas.github.io/morlaco/web/datos.html) los explica con ejemplos.
+
+**Estabilidad (versión 1).** Los campos que lista el catálogo no cambian de nombre ni de tipo, ni desaparecen,
+sin aviso; se pueden añadir campos nuevos, así que un programa debe ignorar los que no conozca. Un cambio
+incompatible sube `version` en `indice.json` y se anuncia aquí al menos 30 días antes. El catálogo sale de
+[`src/morlaco/catalogo.py`](src/morlaco/catalogo.py) y una prueba comprueba que describa todo lo que se publica.
 
 ### Ejemplo: una zona de recolección
 
@@ -302,6 +311,7 @@ src/morlaco/
   geo.py              conversión de UTM a latitud y longitud
   cli.py              comandos "morlaco actualizar" y "morlaco cambios"
   cambios.py          decide si hay algo que publicar tras actualizar
+  catalogo.py         el catálogo de los datos (datos/indice.json) y su política de estabilidad
   fuentes/
     emac.py           zonas de recolección (KML)
     centrosur.py      suspensiones de luz (PDF) y cronogramas sueltos (API de WordPress)
@@ -314,6 +324,7 @@ src/morlaco/
     calles.py         índice de calles (API Overpass de OpenStreetMap)
 web/
   index.html          la página
+  datos.html, datos.js  la página "Datos abiertos", hecha a partir del catálogo
   logica.js           zonas, próxima recolección, cortes de hoy, paradas cercanas (sin DOM)
   textos.js           textos de la interfaz en español e inglés
   sw.js               service worker: la página y los datos sin conexión
@@ -357,6 +368,10 @@ Los datos mantienen la licencia de su fuente. Los conjuntos del portal Cuenca en
 paradas y el mapa de zonas de recolección) están publicados bajo **Creative Commons No Comercial**: se
 pueden usar y compartir citando la fuente, pero no con fines comerciales. Los PDF de Centro Sur son
 información pública de su web.
+
+Lo que Morlaco recopila a mano (`datos/manual/`: pasaje, cambios de líneas, cortes de agua, feriados) se
+publica bajo [Creative Commons Atribución 4.0](https://creativecommons.org/licenses/by/4.0/deed.es): se puede
+usar para cualquier fin citando «Morlaco».
 
 El índice de calles (`datos/calles/`) es una base de datos derivada de OpenStreetMap y se distribuye bajo la
 [Open Database License (ODbL) 1.0](https://opendatacommons.org/licenses/odbl/): © colaboradores de
