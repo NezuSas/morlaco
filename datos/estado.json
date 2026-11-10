@@ -41,8 +41,16 @@
   },
   "recoleccion": {
     "ok": true,
-    "actualizado": "2026-11-10T01:02:09+00:00",
+    "actualizado": "2026-11-10T02:03:22+00:00",
     "archivos": [
+      "recoleccion/calendarios/zona-1.ics",
+      "recoleccion/calendarios/zona-2.ics",
+      "recoleccion/calendarios/zona-3.ics",
+      "recoleccion/calendarios/zona-4.ics",
+      "recoleccion/calendarios/zona-5.ics",
+      "recoleccion/calendarios/zona-6.ics",
+      "recoleccion/calendarios/zona-7.ics",
+      "recoleccion/calendarios/zona-8.ics",
       "recoleccion/zonas.geojson"
     ],
     "resumen": {
@@ -56,7 +64,8 @@
         6,
         7,
         8
-      ]
+      ],
+      "calendarios": 8
     }
   }
 }

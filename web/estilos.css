@@ -538,6 +538,52 @@ button.ejemplo:hover {
   color: rgb(255 255 255 / 0.75);
 }
 
+/* Suscripción al calendario, dentro de la tarjeta azul. */
+.calendario:empty {
+  display: none;
+}
+
+.calendario {
+  margin-top: 1.1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgb(255 255 255 / 0.22);
+}
+
+.calendario-titulo {
+  font-weight: 700;
+}
+
+.calendario-botones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin-top: 0.6rem;
+}
+
+.boton-claro {
+  display: inline-block;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--tarjeta);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.boton-claro:hover {
+  background: var(--funda-celeste);
+  color: var(--tarjeta-hondo);
+}
+
+.enlace-claro {
+  color: #fff;
+}
+
+.basura :focus-visible {
+  outline-color: #fff;
+}
+
 .detalle {
   margin-top: 0.65rem;
   font-size: var(--t-0);

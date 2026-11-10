@@ -84,5 +84,10 @@ def test_obtener_usa_el_kml_publico():
 
     resultado = emac.obtener(falso)
     assert pedidas == [emac.KML_URL]
-    assert resultado.resumen == {"zonas": 2, "numeros": [1, 5]}
-    assert list(resultado.archivos) == ["recoleccion/zonas.geojson"]
+    assert resultado.resumen == {"zonas": 2, "numeros": [1, 5], "calendarios": 2}
+    assert list(resultado.archivos) == [
+        "recoleccion/zonas.geojson",
+        "recoleccion/calendarios/zona-1.ics",
+        "recoleccion/calendarios/zona-5.ics",
+    ]
+    assert resultado.archivos["recoleccion/calendarios/zona-5.ics"].startswith("BEGIN:VCALENDAR")

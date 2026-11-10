@@ -12,7 +12,7 @@ from pathlib import Path
 from morlaco import red
 from morlaco.comun import Resultado
 from morlaco.fuentes import buses, calles, centrosur, emac
-from morlaco.salida import escribir_json
+from morlaco.salida import escribir, escribir_json
 
 Fuente = Callable[[red.Descargador], Resultado]
 
@@ -54,7 +54,7 @@ def actualizar(
         try:
             resultado = fuentes[nombre](descargar)
             for ruta, contenido in resultado.archivos.items():
-                escribir_json(salida / ruta, contenido)
+                escribir(salida / ruta, contenido)
             estado[nombre] = {
                 "ok": True,
                 "actualizado": _ahora(),

@@ -1,0 +1,7 @@
+# Todo el texto con saltos de línea LF en el repositorio y al sacarlo, también en Windows.
+* text=auto eol=lf
+
+# Los calendarios iCalendar deben usar CRLF (RFC 5545): se guardan tal cual.
+*.ics -text
+
+*.pdf binary

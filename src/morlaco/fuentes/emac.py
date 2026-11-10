@@ -12,7 +12,7 @@ import re
 import xml.etree.ElementTree as ET
 from typing import Any
 
-from morlaco import red
+from morlaco import calendario, red
 from morlaco.comun import DIAS_SEMANA, NOMBRE_DIA, Resultado, limpiar, sin_tildes
 
 PAGINA = "https://emac.gob.ec/mapa-zonas-de-recoleccion/"
@@ -132,7 +132,13 @@ def parsear_kml(contenido: bytes) -> dict[str, Any]:
 def obtener(descargar: red.Descargador = red.descargar) -> Resultado:
     zonas = parsear_kml(descargar(KML_URL))
     numeros = [e["properties"]["zona"] for e in zonas["features"]]
+    calendarios = {
+        calendario.nombre_archivo(e["properties"]["zona"]): calendario.calendario_zona(
+            e["properties"]
+        )
+        for e in zonas["features"]
+    }
     return Resultado(
-        archivos={"recoleccion/zonas.geojson": zonas},
-        resumen={"zonas": len(numeros), "numeros": numeros},
+        archivos={"recoleccion/zonas.geojson": zonas, **calendarios},
+        resumen={"zonas": len(numeros), "numeros": numeros, "calendarios": len(calendarios)},
     )

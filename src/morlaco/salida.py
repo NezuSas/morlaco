@@ -29,3 +29,13 @@ def a_texto(objeto: Any) -> str:
 def escribir_json(ruta: Path, objeto: Any) -> None:
     ruta.parent.mkdir(parents=True, exist_ok=True)
     ruta.write_text(a_texto(objeto), encoding="utf-8", newline="\n")
+
+
+def escribir(ruta: Path, contenido: Any) -> None:
+    """Un texto se escribe tal cual (con sus saltos de línea, p. ej. CRLF en .ics);
+    cualquier otra cosa, como JSON."""
+    if isinstance(contenido, str):
+        ruta.parent.mkdir(parents=True, exist_ok=True)
+        ruta.write_text(contenido, encoding="utf-8", newline="")
+    else:
+        escribir_json(ruta, contenido)

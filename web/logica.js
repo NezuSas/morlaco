@@ -193,6 +193,20 @@ export function direccionLegible(texto) {
     .join(" ");
 }
 
+/**
+ * Enlaces para suscribirse al calendario de recolección de una zona.
+ * `base` es la dirección de la página; los .ics están en ../datos/ respecto a web/.
+ */
+export function enlacesCalendario(zona, base) {
+  const archivo = new URL(`../datos/recoleccion/calendarios/zona-${zona}.ics`, base).href;
+  const webcal = archivo.replace(/^https?:/, "webcal:");
+  return {
+    archivo,
+    webcal,
+    google: `https://calendar.google.com/calendar/render?cid=${encodeURIComponent(webcal)}`,
+  };
+}
+
 /** "350 m", "1,2 km". */
 export function formatoDistancia(metros) {
   if (metros < 1000) return `${Math.round(metros / 10) * 10} m`;

@@ -1,0 +1,60 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Morlaco//Recoleccion de basura de Cuenca//ES
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Basura en Cuenca (zona 6)
+X-WR-CALDESC:Días y horas de recolección de EMAC EP para tu zona. Publica
+ do por Morlaco.
+X-WR-TIMEZONE:America/Guayaquil
+REFRESH-INTERVAL;VALUE=DURATION:P1D
+X-PUBLISHED-TTL:P1D
+BEGIN:VTIMEZONE
+TZID:America/Guayaquil
+BEGIN:STANDARD
+DTSTART:19700101T000000
+TZOFFSETFROM:-0500
+TZOFFSETTO:-0500
+TZNAME:-05
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+UID:morlaco-zona-6-basura@nezusas.github.io
+DTSTAMP:20260101T000000Z
+DTSTART;TZID=America/Guayaquil:20260106T130000
+DTEND;TZID=America/Guayaquil:20260106T170000
+RRULE:FREQ=WEEKLY;BYDAY=TU,SA
+SUMMARY:Recolección de basura: funda negra
+DESCRIPTION:Zona 6 de EMAC: martes\, jueves y sábado\, de 13:00 a 17:00.\n
+ Saca la funda negra antes de las 13:00.\nDatos de EMAC EP publicados por M
+ orlaco (https://nezusas.github.io/morlaco/web/). No es un servicio oficial
+ .
+URL:https://nezusas.github.io/morlaco/web/
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+TRIGGER:-PT60M
+DESCRIPTION:Saca la funda negra: el recolector pasa a las 13:00.
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:morlaco-zona-6-reciclaje@nezusas.github.io
+DTSTAMP:20260101T000000Z
+DTSTART;TZID=America/Guayaquil:20260108T130000
+DTEND;TZID=America/Guayaquil:20260108T170000
+RRULE:FREQ=WEEKLY;BYDAY=TH
+SUMMARY:Recolección de basura: funda negra y funda celeste
+DESCRIPTION:Zona 6 de EMAC: martes\, jueves y sábado\, de 13:00 a 17:00.\n
+ Saca la funda negra y la funda celeste (reciclables) antes de las 13:00.\n
+ Datos de EMAC EP publicados por Morlaco (https://nezusas.github.io/morlaco
+ /web/). No es un servicio oficial.
+URL:https://nezusas.github.io/morlaco/web/
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+TRIGGER:-PT60M
+DESCRIPTION:Saca la funda negra y la funda celeste (reciclables): el recole
+ ctor pasa a las 13:00.
+END:VALARM
+END:VEVENT
+END:VCALENDAR

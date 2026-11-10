@@ -39,6 +39,14 @@ def test_un_fallo_conserva_la_ultima_actualizacion_buena(tmp_path):
     assert estado["ok"] is False
 
 
+def test_los_textos_se_escriben_tal_cual_con_crlf(tmp_path):
+    def fuente_texto(descargar):
+        return Resultado(archivos={"cal/zona.ics": "BEGIN:VCALENDAR\r\nEND:VCALENDAR\r\n"})
+
+    assert cli.actualizar(["t"], tmp_path, fuentes={"t": fuente_texto}) == 0
+    assert (tmp_path / "cal" / "zona.ics").read_bytes() == b"BEGIN:VCALENDAR\r\nEND:VCALENDAR\r\n"
+
+
 def test_todo_bien_devuelve_cero(tmp_path):
     assert cli.actualizar(["x"], tmp_path, fuentes={"x": fuente_ok}) == 0
 

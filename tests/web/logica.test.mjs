@@ -5,6 +5,7 @@ import { test } from "node:test";
 import {
   describirRecoleccion,
   direccionLegible,
+  enlacesCalendario,
   estadoLuz,
   filtrarCortes,
   formatoDistancia,
@@ -151,6 +152,16 @@ test("direccionLegible pasa de mayúsculas a nombre propio", () => {
   );
   assert.equal(direccionLegible("12 DE ABRIL 5-99"), "12 de Abril 5-99");
   assert.equal(direccionLegible(undefined), "");
+});
+
+test("enlacesCalendario apunta al .ics de la zona y lo ofrece por webcal y Google", () => {
+  const enlaces = enlacesCalendario(4, "https://nezusas.github.io/morlaco/web/#-2.9,-79.0");
+  assert.equal(enlaces.archivo, "https://nezusas.github.io/morlaco/datos/recoleccion/calendarios/zona-4.ics");
+  assert.equal(enlaces.webcal, "webcal://nezusas.github.io/morlaco/datos/recoleccion/calendarios/zona-4.ics");
+  assert.equal(
+    enlaces.google,
+    "https://calendar.google.com/calendar/render?cid=webcal%3A%2F%2Fnezusas.github.io%2Fmorlaco%2Fdatos%2Frecoleccion%2Fcalendarios%2Fzona-4.ics",
+  );
 });
 
 test("formatoDistancia", () => {

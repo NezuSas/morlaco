@@ -4,6 +4,7 @@ import {
   CENTRO_CUENCA,
   describirRecoleccion,
   direccionLegible,
+  enlacesCalendario,
   estadoLuz,
   filtrarCortes,
   formatoDistancia,
@@ -233,6 +234,7 @@ function pintarBasura(zona) {
       "Ese punto no está en ninguna de las 8 zonas urbanas de EMAC. En el área rural la recolección " +
       "tiene otros horarios: consulta con EMAC EP.";
     detalle.textContent = "";
+    $("calendario").replaceChildren();
     return;
   }
 
@@ -285,6 +287,28 @@ function pintarBasura(zona) {
     fundas.replaceChildren("Saca la ", negra, "funda negra antes de la hora.");
   }
   detalle.textContent = `Zona ${p.zona} de EMAC. Deja las fundas antes de que empiece el horario.`;
+  pintarCalendario(p.zona);
+}
+
+/** Botones para suscribirse al calendario de recolección de la zona. */
+function pintarCalendario(zona) {
+  const enlaces = enlacesCalendario(zona, location.href);
+  const externo = { target: "_blank", rel: "noopener" };
+  $("calendario").replaceChildren(
+    elemento("p", { class: "calendario-titulo" }, "Recibe un aviso antes de cada recolección"),
+    elemento(
+      "div",
+      { class: "calendario-botones" },
+      elemento("a", { class: "boton-claro", href: enlaces.google, ...externo }, "Google Calendar"),
+      elemento("a", { class: "boton-claro", href: enlaces.webcal }, "iPhone, Mac u Outlook"),
+      elemento("a", { class: "enlace-claro", href: enlaces.archivo, download: `basura-zona-${zona}.ics` }, "Descargar el archivo"),
+    ),
+    elemento(
+      "p",
+      { class: "detalle" },
+      "El calendario se actualiza solo si EMAC cambia los horarios. En Google Calendar, activa las notificaciones de este calendario en su configuración para recibir el aviso.",
+    ),
+  );
 }
 
 function pintarLuz(suspensiones) {

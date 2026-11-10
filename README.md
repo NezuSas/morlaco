@@ -18,6 +18,7 @@ mira cuándo pasa el recolector, si hay cortes de luz programados y qué paradas
 | Archivo | Qué contiene | Fuente |
 |---|---|---|
 | [`datos/recoleccion/zonas.geojson`](datos/recoleccion/zonas.geojson) | Las 8 zonas de recolección de basura (polígonos) con sus días, horario y día de recolección de reciclables | [EMAC EP, mapa de zonas](https://emac.gob.ec/mapa-zonas-de-recoleccion/) |
+| [`datos/recoleccion/calendarios/zona-N.ics`](datos/recoleccion/calendarios/) | Un calendario por zona (iCalendar) con los días de recolección, el día de la funda celeste y un aviso una hora antes, para suscribirse desde Google Calendar, el iPhone u Outlook | Generado a partir de las zonas de EMAC EP |
 | [`datos/luz/suspensiones.json`](datos/luz/suspensiones.json) | Suspensiones programadas del servicio eléctrico: alimentador, dirección, hora de inicio y de fin, trabajo | [Centro Sur, suspensiones programadas](https://www.centrosur.gob.ec/suspensiones-programadas/) |
 | [`datos/buses/rutas.json`](datos/buses/rutas.json) | Líneas de bus con compañía, origen, destino, horario e intervalo entre buses (lunes a viernes, sábados, domingos) | [Cuenca en Datos](https://cuencaendatos.cuenca.gob.ec/dataset/f15c8808-0d12-4f97-bfd4-3b2f85ea84d1) |
 | [`datos/buses/recorridos.json`](datos/buses/recorridos.json) | Puntos por los que pasa cada línea, en orden, de ida y de retorno | [Cuenca en Datos](https://cuencaendatos.cuenca.gob.ec/dataset/4c727738-890e-445c-9b20-32df271db766) |
@@ -50,6 +51,8 @@ Parque Calderón está en la zona 4.
 
 - **Recolección (EMAC).** Viene del mapa de Google que EMAC publica en su web. Según EMAC, la funda
   celeste (reciclables) se recoge los miércoles o los jueves; `dia_reciclaje` indica cuál toca en cada zona.
+  Con las mismas zonas se generan los calendarios `.ics`: quien se suscribe recibe los cambios de horario
+  sin hacer nada, porque su app vuelve a leer el archivo cada día.
 - **Cortes de luz (Centro Sur).** Se leen de los PDF diarios que Centro Sur publica. Las direcciones son texto
   tal como lo escribe Centro Sur, sin coordenadas. **En noviembre de 2026 la página no se actualizaba desde
   julio**: revisa `metadata.ultima_publicacion` antes de fiarte de estos datos.
@@ -68,7 +71,8 @@ En [`web/`](web/) hay una página que usa estos datos, publicada en
 <https://nezusas.github.io/morlaco/web/>: escribes tu dirección, compartes tu ubicación o tocas
 el mapa, y te dice cuándo pasa el recolector (y si toca funda celeste), si hay cortes de luz programados y
 qué paradas de bus tienes cerca. El punto elegido queda en la dirección de la página
-(`web/#-2.89733,-79.00454`), así que se puede compartir.
+(`web/#-2.89733,-79.00454`), así que se puede compartir. Desde la respuesta te puedes suscribir al
+calendario de recolección de tu zona.
 
 Las direcciones se escriben como se dan en Cuenca, con dos calles que se cruzan: "Sucre y Borrero",
 "Av. Solano y Remigio Crespo", "Bolívar esquina Benigno Malo". La búsqueda se hace dentro de la página con el
@@ -130,7 +134,8 @@ tocan el DOM ni la red, y sus pruebas corren con Node 20 o superior.
 src/morlaco/
   red.py              descargas HTTP con reintentos (lo único que toca la red)
   comun.py            texto, horas, días y meses
-  salida.py           escritura de JSON y GeoJSON
+  salida.py           escritura de JSON, GeoJSON y texto
+  calendario.py       calendarios .ics de recolección por zona
   cli.py              comando "morlaco actualizar"
   fuentes/
     emac.py           zonas de recolección (KML)
