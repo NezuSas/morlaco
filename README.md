@@ -3,11 +3,11 @@
   Morlaco
 </h1>
 
-<h3 align="center">¿Qué pasa hoy en tu calle? Basura, cortes de luz y buses de Cuenca, Ecuador.</h3>
+<h3 align="center">¿Qué pasa hoy en tu calle? Basura, luz, agua, farmacias, buses y aire de Cuenca, Ecuador.</h3>
 
 <p align="center">
   <a href="https://nezusas.github.io/morlaco/web/"><b>Abrir Morlaco</b></a> ·
-  <a href="#qué-datos-hay">Los datos</a> ·
+  <a href="https://nezusas.github.io/morlaco/web/datos.html">Datos abiertos</a> ·
   <a href="CONTRIBUTING.md">Colaborar</a> ·
   <a href="https://github.com/NezuSas/morlaco/issues/new/choose">Avisar de un error</a>
 </p>
@@ -43,9 +43,11 @@ Escribe tu esquina como se dan las direcciones en Cuenca ("Sucre y Borrero") y M
 Puedes **compartir tu calle** por WhatsApp con un toque e **imprimir la hoja de tu zona** (días de recolección
 y farmacias de turno) para la refrigeradora o la cartelera del edificio.
 
-Todo sale de **fuentes oficiales y públicas** (EMAC EP, Centro Sur, el portal Cuenca en Datos del municipio y
-OpenStreetMap), y los datos limpios quedan aquí, abiertos, para que cualquiera construya encima: una web, un bot,
-una app o un análisis.
+Todo sale de **fuentes oficiales y públicas** (EMAC EP, Centro Sur, ARCSA, la EMOV, el Tranvía, el portal
+Cuenca en Datos del municipio y OpenStreetMap) y, cuando una institución solo lo anuncia en redes, de la
+**prensa local** que la cita, revisada a mano. Los datos limpios quedan aquí, abiertos, para que cualquiera
+construya encima: una web, un bot, una app o un análisis. El mapa de dónde está cada dato y qué tan al día
+está vive en [`docs/fuentes.md`](docs/fuentes.md).
 
 <table>
   <tr>
@@ -85,6 +87,7 @@ and is not an official service.
 | [`datos/buses/paradas.geojson`](datos/buses/paradas.geojson) | Paradas de bus con coordenadas corregidas y si tienen señal (paleta) | [Cuenca en Datos](https://cuencaendatos.cuenca.gob.ec/dataset/d98292ca-7c70-422a-ac6f-1b43194ff5ba) |
 | [`datos/buses/tranvia.geojson`](datos/buses/tranvia.geojson) | Las 20 estaciones del tranvía, con un punto por andén y el sentido en que para en cada una | [Tranvía de Cuenca](https://tranvia.cuenca.gob.ec/) |
 | [`datos/manual/transporte.json`](datos/manual/transporte.json) | **Mantenido a mano**: pasaje del bus y del tranvía, cambios de líneas de 2026 (con fecha de caducidad) y frecuencia del tranvía, cada dato con su fuente | Comunicados del municipio publicados en [El Mercurio](https://elmercurio.com.ec/cuenca/) |
+| [`datos/agua/avisos.json`](datos/agua/avisos.json) | Notas de prensa de las últimas tres semanas que anuncian un corte de agua, **por confirmar** (la página no las muestra) | [El Mercurio](https://elmercurio.com.ec/cuenca/) |
 | [`datos/manual/agua.json`](datos/manual/agua.json) | **Mantenido a mano**: cortes de agua confirmados (fecha, horario, sectores y la nota de prensa que cita a ETAPA) y las notas descartadas | El Mercurio, a partir de [`datos/agua/avisos.json`](datos/agua/avisos.json) |
 | [`datos/manual/basura.json`](datos/manual/basura.json) | **Mantenido a mano**: qué pasa con la recolección en feriados, qué va en la funda celeste y dónde llevar orgánicos, vidrio, escombros, pilas y objetos grandes, cada dato con su fuente | Páginas de [EMAC EP](https://emac.gob.ec) y [ETAPA EP](https://www.etapa.net.ec) y comunicados en prensa |
 | [`datos/calles/calles.geojson`](datos/calles/calles.geojson) | Las calles de Cuenca con nombre (unas 2.800), con su trazado simplificado y sus nombres alternativos, para buscar direcciones e intersecciones | [OpenStreetMap](https://www.openstreetmap.org) |
@@ -219,10 +222,11 @@ publicado: se remite a su web. Todo se calcula en el navegador, en milisegundos 
 
 En [`web/`](web/) hay una página que usa estos datos, publicada en
 <https://nezusas.github.io/morlaco/web/>: escribes tu dirección, compartes tu ubicación o tocas
-el mapa, y te dice cuándo pasa el recolector (y si toca funda celeste), si hay cortes de luz programados y
-qué paradas de bus tienes cerca. El punto elegido queda en la dirección de la página
-(`web/#-2.89733,-79.00454`), así que se puede compartir. Desde la respuesta te puedes suscribir al
-calendario de recolección de tu zona.
+el mapa, y te responde con el resumen "Hoy en tu calle" y una sección por servicio: basura, luz, agua,
+farmacias, buses y aire. El punto elegido queda en la dirección de la página (`web/#-2.89733,-79.00454`), así
+que se puede compartir; el botón **WhatsApp** abre el mensaje ya escrito para que salga la tarjeta con la
+imagen. Desde la respuesta te puedes suscribir al calendario de recolección de tu zona o **imprimir la hoja
+de tu zona**.
 
 Mientras escribes, **sugiere calles** del índice; después de "y" solo propone las que cruzan la primera, así que
 la esquina siempre existe. La página abre con el último punto que consultaste y puedes guardar dos lugares,
@@ -255,7 +259,7 @@ Para verla en tu computadora, sirve la carpeta del proyecto (no solo `web/`, por
 
 Usa [Leaflet](https://leafletjs.com) y los mapas de OpenStreetMap. Los lugares que no son calles se ubican
 con [Nominatim](https://nominatim.org), limitado a la ciudad de Cuenca; la página lo avisa al pie. No usa
-cookies ni analítica: solo recuerda en el navegador el último punto elegido. Las tipografías (Alegreya y
+cookies ni analítica: solo recuerda en el navegador el último punto elegido, tus lugares y el idioma. Las tipografías (Alegreya y
 Alegreya Sans, de Huerta Tipográfica, con licencia SIL OFL) van en [`web/fuentes/`](web/fuentes/), así que la
 página no pide nada a servidores de terceros salvo el mapa y la calidad del aire (a la EMOV, sin enviarle tu
 ubicación: la estación más cercana se elige en tu navegador).
@@ -294,12 +298,14 @@ fecha de generación, así que solo cambian cuando cambia la fuente.
 El workflow [`actualizar-datos.yml`](.github/workflows/actualizar-datos.yml) lo hace solo en GitHub:
 
 - **Todos los días a las 06:00** de Cuenca revisa las fuentes que cambian seguido: `recoleccion`, `luz`,
-  `farmacias` y `tranvia`.
+  `farmacias`, `tranvia` y `agua`.
 - **Los lunes a las 06:30** revisa todas y publica aunque no haya cambios, para que conste la revisión.
 - Antes de publicar pasa todas las pruebas con los datos nuevos. Si alguna falla, no publica nada.
 - Publica en `main` solo si algún archivo de datos cambió o si una fuente empezó a fallar o se recuperó. Eso lo
   decide `morlaco cambios`.
 - Si una fuente falla, publica el resto y la ejecución queda en rojo, así que GitHub avisa por correo.
+- Si la prensa anuncia un corte de agua nuevo, abre un aviso en GitHub (etiqueta `corte-agua`) para que una
+  persona lo revise; GitHub también lo manda por correo.
 - También se puede lanzar a mano desde la pestaña *Actions*, con todas las fuentes o solo algunas.
 
 ## Desarrollo
@@ -357,7 +363,11 @@ regístrala en `FUENTES` de `cli.py` y añade sus pruebas.
 
 ## Próximos pasos
 
-- Cortes de agua de ETAPA y un bot de Telegram.
+- Avisar con anticipación cuando un dato mantenido a mano (pasaje, feriados, cambios de líneas) esté por
+  caducar.
+- Horarios de recolección de las parroquias rurales (EMAC solo publica la regla general).
+- Comparar el servicio de mapas del municipio (`ide.cuenca.gob.ec`) con los datos de buses actuales.
+- Un bot de Telegram o WhatsApp que responda con tu calle.
 
 ## Quién lo hace
 

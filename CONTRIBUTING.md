@@ -9,6 +9,8 @@ Morlaco es de y para la gente de Cuenca. Puedes ayudar aunque no sepas programar
   Cada caso real mejora la búsqueda para todos.
 - **¿Un horario o una parada no coincide con lo que ves en tu calle?** Usa
   [Un dato está mal](https://github.com/NezuSas/morlaco/issues/new?template=dato.yml).
+- **¿Ves en la prensa o en redes un corte de agua, un cambio de ruta o un nuevo pasaje?** Avísanos con el
+  enlace: lo revisamos y lo añadimos con su fuente.
 - **¿Se te ocurre algo útil para la ciudad?** Cuéntalo en
   [Una idea para Morlaco](https://github.com/NezuSas/morlaco/issues/new?template=idea.yml), y si sabes dónde se
   publican esos datos, mejor.
@@ -51,7 +53,9 @@ Para ver la página en tu computadora, sirve la carpeta del proyecto y abre <htt
   descarga del parseo, que son funciones puras probadas con ejemplos.
 - `web/` es la página: HTML, CSS y JavaScript sin compilación. La lógica sin DOM (`logica.js`, `calles.js`) tiene
   pruebas en `tests/web/`.
-- `datos/` lo genera `morlaco actualizar`; no se edita a mano.
+- `datos/` lo genera `morlaco actualizar`; no se edita a mano, salvo `datos/manual/`, que guarda lo que no
+  está en datos abiertos (pasaje, cambios de líneas, cortes de agua, feriados), cada dato con su fuente.
+- `docs/fuentes.md` dice dónde está hoy cada dato de Cuenca. Si encuentras una fuente mejor, añádela ahí.
 
 ### Buenas primeras tareas
 
