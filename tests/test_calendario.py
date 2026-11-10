@@ -35,16 +35,17 @@ def test_estructura_y_saltos_de_linea_crlf():
     assert ics.startswith("BEGIN:VCALENDAR\r\nVERSION:2.0\r\n")
     assert ics.endswith("END:VCALENDAR\r\n")
     assert "\n" not in ics.replace("\r\n", "")
-    assert "X-WR-CALNAME:Basura en Cuenca (zona 4)" in desplegar(ics)
+    assert "X-WR-CALNAME:♻️ Cuenca limpia (zona 4)" in desplegar(ics)
+    assert "X-APPLE-CALENDAR-COLOR:#2D63A8" in ics
     assert "TZID:America/Guayaquil" in ics
 
 
 def test_dos_eventos_funda_negra_y_dia_de_reciclaje():
     negra, celeste = eventos(calendario.calendario_zona(ZONA_4))
     assert negra["RRULE"] == "FREQ=WEEKLY;BYDAY=MO,FR"
-    assert negra["SUMMARY"] == "Recolección de basura: funda negra"
+    assert negra["SUMMARY"] == "🗑️ Recolección: funda negra"
     assert celeste["RRULE"] == "FREQ=WEEKLY;BYDAY=WE"
-    assert celeste["SUMMARY"] == "Recolección de basura: funda negra y funda celeste"
+    assert celeste["SUMMARY"] == "♻️ Recolección: funda negra y celeste"
     assert negra["UID"] != celeste["UID"]
 
 
@@ -105,3 +106,14 @@ def test_plegar_lineas_largas_sin_romper_tildes():
 def test_todas_las_lineas_del_archivo_caben_en_75_bytes():
     ics = calendario.calendario_zona(ZONA_4)
     assert all(len(linea.encode("utf-8")) <= 75 for linea in ics.split("\r\n"))
+
+
+def test_descripcion_dice_que_sacar_y_cuando():
+    negra, celeste = eventos(calendario.calendario_zona(ZONA_4))
+    texto_negra = negra["DESCRIPTION"].replace("\\n", "\n").replace("\\,", ",")
+    assert "entre las 20:00 y la medianoche" in texto_negra
+    assert "Saca la funda negra antes de las 20:00" in texto_negra
+    assert "La funda celeste (reciclables) va el miércoles" in texto_negra
+    assert "Patrimonio Cultural de la Humanidad" in texto_negra
+    assert "funda celeste (reciclables) antes de las 20:00" in celeste["DESCRIPTION"]
+    assert negra["LOCATION"] == "Zona 4 de recolección\\, Cuenca\\, Ecuador"

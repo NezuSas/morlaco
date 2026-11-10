@@ -15,6 +15,8 @@ from __future__ import annotations
 from datetime import date, timedelta
 from typing import Any
 
+from morlaco.comun import NOMBRE_DIA
+
 PAGINA = "https://nezusas.github.io/morlaco/web/"
 ZONA_HORARIA = "America/Guayaquil"
 # Lunes de referencia para la primera aparición de cada evento.
@@ -73,34 +75,57 @@ def _lista(nombres: list[str]) -> str:
     return nombres[0] if len(nombres) == 1 else f"{', '.join(nombres[:-1])} y {nombres[-1]}"
 
 
-def _evento(zona: dict[str, Any], dias: list[int], con_reciclaje: bool) -> list[str]:
+def _evento(zona: dict[str, Any], dias: list[int], reciclaje: int | None) -> list[str]:
+    """Un evento semanal. Con `reciclaje` igual a sus días, es el de la funda celeste."""
     numero = zona["zona"]
+    con_reciclaje = reciclaje in dias
     primer_dia = LUNES_INICIAL + timedelta(days=min(dias) - 1)
-    if con_reciclaje:
-        titulo = "Recolección de basura: funda negra y funda celeste"
-        que_sacar = "Saca la funda negra y la funda celeste (reciclables)"
-        clave = "reciclaje"
-    else:
-        titulo = "Recolección de basura: funda negra"
-        que_sacar = "Saca la funda negra"
-        clave = "basura"
     desde, hasta = zona["desde"], zona["hasta"]
-    descripcion = (
-        f"Zona {numero} de EMAC: {_lista(zona['dias'])}, de {desde} a {hasta}.\n"
-        f"{que_sacar} antes de las {desde}.\n"
-        f"Datos de EMAC EP publicados por Morlaco ({PAGINA}). No es un servicio oficial."
+    hasta_texto = "la medianoche" if hasta == "24:00" else f"las {hasta}"
+
+    if con_reciclaje:
+        clave = "reciclaje"
+        titulo = "♻️ Recolección: funda negra y celeste"
+        que_sacar = "Saca la funda negra y la funda celeste (reciclables)"
+        lineas_fundas = [
+            f"🖤💙 Hoy saca la funda negra y la funda celeste (reciclables) antes de las {desde}."
+        ]
+        color = "skyblue"
+    else:
+        clave = "basura"
+        titulo = "🗑️ Recolección: funda negra"
+        que_sacar = "Saca la funda negra"
+        lineas_fundas = [f"🖤 Saca la funda negra antes de las {desde}."]
+        if reciclaje:
+            lineas_fundas.append(
+                f"💙 La funda celeste (reciclables) va el {NOMBRE_DIA[reciclaje]}."
+            )
+        color = "royalblue"
+
+    descripcion = "\n".join(
+        [
+            f"🕐 El recolector pasa entre las {desde} y {hasta_texto}.",
+            *lineas_fundas,
+            f"📍 Zona {numero} de EMAC: {_lista(zona['dias'])}.",
+            "",
+            "🏛️ Cuenca es Patrimonio Cultural de la Humanidad: ayudemos a mantenerla limpia.",
+            f"Consulta tu calle en Morlaco: {PAGINA}",
+            "Datos de EMAC EP. Morlaco no es un servicio oficial.",
+        ]
     )
-    aviso = f"{que_sacar}: el recolector pasa a las {desde}."
+    aviso = f"{que_sacar}: el recolector pasa desde las {desde}."
     return [
         "BEGIN:VEVENT",
         f"UID:morlaco-zona-{numero}-{clave}@nezusas.github.io",
         f"DTSTAMP:{SELLO}",
-        f"DTSTART;TZID={ZONA_HORARIA}:{_fecha_hora(primer_dia, zona['desde'])}",
-        f"DTEND;TZID={ZONA_HORARIA}:{_fecha_hora(primer_dia, zona['hasta'])}",
+        f"DTSTART;TZID={ZONA_HORARIA}:{_fecha_hora(primer_dia, desde)}",
+        f"DTEND;TZID={ZONA_HORARIA}:{_fecha_hora(primer_dia, hasta)}",
         f"RRULE:FREQ=WEEKLY;BYDAY={','.join(DIAS_ICAL[d] for d in sorted(dias))}",
         f"SUMMARY:{escapar(titulo)}",
         f"DESCRIPTION:{escapar(descripcion)}",
+        f"LOCATION:{escapar(f'Zona {numero} de recolección, Cuenca, Ecuador')}",
         f"URL:{PAGINA}",
+        f"COLOR:{color}",
         "TRANSP:TRANSPARENT",
         "BEGIN:VALARM",
         "ACTION:DISPLAY",
@@ -118,9 +143,12 @@ def calendario_zona(zona: dict[str, Any]) -> str:
         dias[zona["dias"].index(zona["dia_reciclaje"])] if zona.get("dia_reciclaje") else None
     )
     normales = [d for d in dias if d != reciclaje]
-    nombre = f"Basura en Cuenca (zona {zona['zona']})"
+    nombre = f"♻️ Cuenca limpia (zona {zona['zona']})"
     # Sin comas: algunas apps muestran tal cual la coma escapada de estos campos X-WR.
-    resumen = "Días y horas de recolección de EMAC EP para tu zona. Publicado por Morlaco."
+    resumen = (
+        "Días y horas en que pasa el recolector de EMAC EP por tu zona de Cuenca. "
+        "Publicado por Morlaco."
+    )
 
     lineas = [
         "BEGIN:VCALENDAR",
@@ -133,12 +161,16 @@ def calendario_zona(zona: dict[str, Any]) -> str:
         f"X-WR-TIMEZONE:{ZONA_HORARIA}",
         "REFRESH-INTERVAL;VALUE=DURATION:P1D",
         "X-PUBLISHED-TTL:P1D",
+        # Color del calendario: lo respetan Apple y las apps que siguen el RFC 7986.
+        # Google Calendar lo ignora y deja que cada persona elija el suyo.
+        "COLOR:royalblue",
+        "X-APPLE-CALENDAR-COLOR:#2D63A8",
         *_ZONA_HORARIA_ICAL,
     ]
     if normales:
-        lineas += _evento(zona, normales, con_reciclaje=False)
+        lineas += _evento(zona, normales, reciclaje)
     if reciclaje:
-        lineas += _evento(zona, [reciclaje], con_reciclaje=True)
+        lineas += _evento(zona, [reciclaje], reciclaje)
     lineas.append("END:VCALENDAR")
 
     plegadas = [trozo for linea in lineas for trozo in plegar(linea)]

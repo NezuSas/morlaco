@@ -306,7 +306,7 @@ function pintarCalendario(zona) {
     elemento(
       "p",
       { class: "detalle" },
-      "El calendario se actualiza solo si EMAC cambia los horarios. En Google Calendar, activa las notificaciones de este calendario en su configuración para recibir el aviso.",
+      "El calendario se actualiza solo si EMAC cambia los horarios. En Google Calendar, abre la configuración de “Cuenca limpia” para elegirle un color (Google lo pone gris) y activar las notificaciones.",
     ),
   );
 }

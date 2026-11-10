@@ -3,12 +3,14 @@ VERSION:2.0
 PRODID:-//Morlaco//Recoleccion de basura de Cuenca//ES
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
-X-WR-CALNAME:Basura en Cuenca (zona 3)
-X-WR-CALDESC:Días y horas de recolección de EMAC EP para tu zona. Publica
- do por Morlaco.
+X-WR-CALNAME:♻️ Cuenca limpia (zona 3)
+X-WR-CALDESC:Días y horas en que pasa el recolector de EMAC EP por tu zona
+  de Cuenca. Publicado por Morlaco.
 X-WR-TIMEZONE:America/Guayaquil
 REFRESH-INTERVAL;VALUE=DURATION:P1D
 X-PUBLISHED-TTL:P1D
+COLOR:royalblue
+X-APPLE-CALENDAR-COLOR:#2D63A8
 BEGIN:VTIMEZONE
 TZID:America/Guayaquil
 BEGIN:STANDARD
@@ -24,17 +26,21 @@ DTSTAMP:20260101T000000Z
 DTSTART;TZID=America/Guayaquil:20260105T150000
 DTEND;TZID=America/Guayaquil:20260105T190000
 RRULE:FREQ=WEEKLY;BYDAY=MO,FR
-SUMMARY:Recolección de basura: funda negra
-DESCRIPTION:Zona 3 de EMAC: lunes\, miércoles y viernes\, de 15:00 a 19:00
- .\nSaca la funda negra antes de las 15:00.\nDatos de EMAC EP publicados po
- r Morlaco (https://nezusas.github.io/morlaco/web/). No es un servicio ofic
- ial.
+SUMMARY:🗑️ Recolección: funda negra
+DESCRIPTION:🕐 El recolector pasa entre las 15:00 y las 19:00.\n🖤 Saca
+  la funda negra antes de las 15:00.\n💙 La funda celeste (reciclables) v
+ a el miércoles.\n📍 Zona 3 de EMAC: lunes\, miércoles y viernes.\n\n
+ 🏛️ Cuenca es Patrimonio Cultural de la Humanidad: ayudemos a mantener
+ la limpia.\nConsulta tu calle en Morlaco: https://nezusas.github.io/morlac
+ o/web/\nDatos de EMAC EP. Morlaco no es un servicio oficial.
+LOCATION:Zona 3 de recolección\, Cuenca\, Ecuador
 URL:https://nezusas.github.io/morlaco/web/
+COLOR:royalblue
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
 TRIGGER:-PT60M
-DESCRIPTION:Saca la funda negra: el recolector pasa a las 15:00.
+DESCRIPTION:Saca la funda negra: el recolector pasa desde las 15:00.
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
@@ -43,18 +49,22 @@ DTSTAMP:20260101T000000Z
 DTSTART;TZID=America/Guayaquil:20260107T150000
 DTEND;TZID=America/Guayaquil:20260107T190000
 RRULE:FREQ=WEEKLY;BYDAY=WE
-SUMMARY:Recolección de basura: funda negra y funda celeste
-DESCRIPTION:Zona 3 de EMAC: lunes\, miércoles y viernes\, de 15:00 a 19:00
- .\nSaca la funda negra y la funda celeste (reciclables) antes de las 15:00
- .\nDatos de EMAC EP publicados por Morlaco (https://nezusas.github.io/morl
- aco/web/). No es un servicio oficial.
+SUMMARY:♻️ Recolección: funda negra y celeste
+DESCRIPTION:🕐 El recolector pasa entre las 15:00 y las 19:00.\n🖤💙 
+ Hoy saca la funda negra y la funda celeste (reciclables) antes de las 15:0
+ 0.\n📍 Zona 3 de EMAC: lunes\, miércoles y viernes.\n\n🏛️ Cuenca e
+ s Patrimonio Cultural de la Humanidad: ayudemos a mantenerla limpia.\nCons
+ ulta tu calle en Morlaco: https://nezusas.github.io/morlaco/web/\nDatos de
+  EMAC EP. Morlaco no es un servicio oficial.
+LOCATION:Zona 3 de recolección\, Cuenca\, Ecuador
 URL:https://nezusas.github.io/morlaco/web/
+COLOR:skyblue
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
 TRIGGER:-PT60M
 DESCRIPTION:Saca la funda negra y la funda celeste (reciclables): el recole
- ctor pasa a las 15:00.
+ ctor pasa desde las 15:00.
 END:VALARM
 END:VEVENT
 END:VCALENDAR
