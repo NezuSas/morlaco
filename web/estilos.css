@@ -651,6 +651,100 @@ button.ejemplo:hover {
   background: var(--superficie);
 }
 
+/* ---------- Líneas de bus ---------- */
+
+.subtitulo {
+  margin: 1.1rem 0 0;
+  font-size: var(--t-0);
+  font-weight: 700;
+  color: var(--tinta-suave);
+}
+
+.lineas {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0;
+}
+
+.lineas li + li {
+  border-top: 1px solid var(--linea);
+}
+
+.lineas .ver-mas-fila {
+  padding: 0.6rem 0 0.2rem;
+}
+
+.lineas .sin-lineas {
+  padding: 0.6rem 0;
+  color: var(--tinta-suave);
+}
+
+button.linea {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.4rem;
+  margin: 0 -0.4rem;
+  width: calc(100% + 0.8rem);
+  border: 0;
+  border-radius: var(--radio-control);
+  background: transparent;
+  color: var(--tinta);
+  font-weight: 400;
+  text-align: left;
+}
+
+button.linea:hover {
+  background: var(--cal-hondo);
+  border: 0;
+}
+
+button.linea[aria-pressed="true"] {
+  background: var(--cal-hondo);
+  box-shadow: inset 3px 0 0 var(--tinta);
+}
+
+/* El número de línea como el letrero de un bus. */
+.numero-linea {
+  display: grid;
+  place-items: center;
+  min-width: 2.4rem;
+  height: 2.1rem;
+  padding: 0 0.45rem;
+  border-radius: 7px;
+  background: var(--tinta);
+  color: var(--cal);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.numero-linea.tranvia {
+  background: var(--tomebamba);
+  color: #fff;
+}
+
+.linea-texto {
+  display: grid;
+  min-width: 0;
+}
+
+.linea-texto .destinos {
+  font-weight: 400;
+  color: var(--tinta-suave);
+}
+
+.frecuencia {
+  font-size: var(--t-0);
+  color: var(--tinta-suave);
+}
+
+button.linea .metros {
+  color: var(--tinta-suave);
+  font-size: var(--t-0);
+  font-variant-numeric: tabular-nums;
+}
+
 /* ---------- Paradas ---------- */
 
 .paradas {

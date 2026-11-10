@@ -22,6 +22,7 @@ from urllib.parse import urlencode
 
 from morlaco import red
 from morlaco.comun import Resultado, decodificar, hora, limpiar
+from morlaco.fuentes import trazados
 
 CKAN = "https://cuencaendatos.cuenca.gob.ec"
 DATASETS = {
@@ -177,10 +178,25 @@ def _paquete(descargar: red.Descargador, identificador: str) -> dict[str, Any]:
 
 def obtener(descargar: red.Descargador = red.descargar) -> Resultado:
     fuentes = {}
+    paquetes = {}
     for clave, identificador in DATASETS.items():
         paquete = _paquete(descargar, identificador)
+        paquetes[clave] = paquete
         recurso = csv_mas_reciente(paquete)
         fuentes[clave] = (_metadata(paquete, recurso), decodificar(descargar(recurso["url"])))
+
+    # El trazado de las líneas viene en un shapefile dentro del mismo conjunto de rutas.
+    recurso_zip = trazados.zip_mas_reciente(paquetes["rutas"])
+    lineas = {
+        "type": "FeatureCollection",
+        "metadata": {
+            **_metadata(paquetes["rutas"], recurso_zip),
+            "titulo": "Trazado de las líneas de bus y del tranvía",
+            "nota": "Trazado publicado por el municipio en septiembre de 2022; algunas líneas "
+            "han cambiado desde entonces. Simplificado con 4 m de tolerancia.",
+        },
+        "features": trazados.parsear_shapefile(descargar(recurso_zip["url"])),
+    }
 
     meta_rutas, texto_rutas = fuentes["rutas"]
     meta_recorridos, texto_recorridos = fuentes["recorridos"]
@@ -197,8 +213,10 @@ def obtener(descargar: red.Descargador = red.descargar) -> Resultado:
             "buses/rutas.json": {"metadata": meta_rutas, "rutas": rutas},
             "buses/recorridos.json": {"metadata": meta_recorridos, "recorridos": recorridos},
             "buses/paradas.geojson": paradas,
+            "buses/lineas.geojson": lineas,
         },
         resumen={
+            "trazados": len(lineas["features"]),
             "rutas": len(rutas),
             "lineas": len({r["linea"] for r in rutas}),
             "lineas_con_recorrido": len(recorridos),

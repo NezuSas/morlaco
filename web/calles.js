@@ -229,6 +229,21 @@ export function cruceDeCalles(candidatosA, candidatosB, maximoMetros = 40) {
   return cruce;
 }
 
+/** Distancia en metros de un punto {lat, lon} a una LineString o MultiLineString. */
+export function distanciaALinea(punto, geometria) {
+  const p = aMetros([punto.lon, punto.lat]);
+  const lineas = geometria.type === "LineString" ? [geometria.coordinates] : geometria.coordinates;
+  let minima = Infinity;
+  for (const linea of lineas) {
+    const puntos = linea.map(aMetros);
+    for (let i = 1; i < puntos.length; i++) {
+      const q = puntoMasCercano(p, [puntos[i - 1], puntos[i]]);
+      minima = Math.min(minima, Math.hypot(p[0] - q[0], p[1] - q[1]));
+    }
+  }
+  return minima;
+}
+
 export function longitudMetros(feature) {
   return segmentos(feature).reduce((total, [a, b]) => total + Math.hypot(b[0] - a[0], b[1] - a[1]), 0);
 }

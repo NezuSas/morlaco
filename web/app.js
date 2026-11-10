@@ -26,6 +26,7 @@ import {
   prepararIndice,
   puntoMedio,
 } from "./calles.js";
+import { describirDestinos, describirFrecuencia, lineasCercanas } from "./buses.js";
 
 const DATOS = "../datos/";
 const NOMINATIM = "https://nominatim.openstreetmap.org/search";
@@ -161,11 +162,13 @@ function crearMapa(zonas, alElegir) {
   let marcador = null;
   const marcasParadas = L.layerGroup().addTo(mapa);
   const callesResaltadas = L.layerGroup().addTo(mapa);
+  const lineaResaltada = L.layerGroup().addTo(mapa);
 
   return {
     /** Dibuja una o varias calles y encuadra el mapa en ellas. */
     resaltar(calles) {
       callesResaltadas.clearLayers();
+      lineaResaltada.clearLayers();
       marcasParadas.clearLayers();
       if (marcador) {
         marcador.remove();
@@ -177,8 +180,29 @@ function crearMapa(zonas, alElegir) {
       ).addTo(callesResaltadas);
       mapa.fitBounds(capa.getBounds(), { padding: [30, 30], animate: !SIN_MOVIMIENTO });
     },
+    /** Dibuja el recorrido de una línea (o lo quita con null) y encuadra el mapa. */
+    resaltarLinea(trazados) {
+      lineaResaltada.clearLayers();
+      if (!trazados) return;
+      const principales = trazados.filter((t) => t.properties.tipo !== "alargue");
+      const capa = L.geoJSON(
+        { type: "FeatureCollection", features: trazados },
+        {
+          interactive: false,
+          style: (t) => ({
+            color: color("--tinta"),
+            weight: t.properties.tipo === "alargue" ? 3 : 4,
+            opacity: 0.85,
+            dashArray: t.properties.tipo === "alargue" ? "6 6" : null,
+          }),
+        },
+      ).addTo(lineaResaltada);
+      const encuadre = principales.length ? L.geoJSON({ type: "FeatureCollection", features: principales }) : capa;
+      mapa.fitBounds(encuadre.getBounds(), { padding: [30, 30], animate: !SIN_MOVIMIENTO });
+    },
     mostrar(punto, zona, paradas) {
       callesResaltadas.clearLayers();
+      lineaResaltada.clearLayers();
       for (const { zona: z, capa } of capas.values()) {
         capa.setStyle(estilo(z, zona && z.properties.zona === zona.properties.zona, Boolean(zona)));
       }
@@ -397,6 +421,73 @@ function pintarParadas(cercanas) {
     "Según el registro de paradas del municipio, que no incluye todas. Las distancias son en línea recta.";
 }
 
+/** Lista de líneas cercanas; al tocar una se resalta su recorrido en el mapa. */
+function pintarLineas(cercanas, mapa) {
+  const lista = $("lineas");
+  const nota = $("lineas-nota");
+  if (cercanas === null) {
+    lista.replaceChildren(elemento("li", { class: "sin-lineas" }, "No se pudieron cargar las líneas de bus."));
+    nota.textContent = "";
+    return;
+  }
+  if (!cercanas.length) {
+    lista.replaceChildren(elemento("li", { class: "sin-lineas" }, "Ninguna línea pasa a menos de 350 m de este punto."));
+    nota.textContent = "";
+    return;
+  }
+  const botones = [];
+  lista.replaceChildren(
+    ...cercanas.map((l) => {
+      const esTranvia = l.tipo === "tranvia";
+      const detalle = esTranvia
+        ? "Próximos trenes en tranvia.cuenca.gob.ec"
+        : describirFrecuencia(l.horario);
+      const boton = elemento(
+        "button",
+        { type: "button", class: "linea", "aria-pressed": "false" },
+        elemento("span", { class: `numero-linea${esTranvia ? " tranvia" : ""}`, "aria-hidden": "true" }, esTranvia ? "T" : l.linea),
+        elemento(
+          "span",
+          { class: "linea-texto" },
+          elemento("strong", {}, esTranvia ? "Tranvía" : `Línea ${l.linea}`, " ", elemento("span", { class: "destinos" }, describirDestinos(l.destinos))),
+          elemento("span", { class: "frecuencia" }, detalle),
+        ),
+        elemento("span", { class: "metros" }, formatoDistancia(l.metros)),
+      );
+      boton.addEventListener("click", () => {
+        const activa = boton.getAttribute("aria-pressed") === "true";
+        for (const b of botones) b.setAttribute("aria-pressed", "false");
+        if (activa) {
+          mapa.resaltarLinea(null);
+        } else {
+          boton.setAttribute("aria-pressed", "true");
+          mapa.resaltarLinea(l.trazados);
+        }
+      });
+      botones.push(boton);
+      return elemento("li", {}, boton);
+    }),
+  );
+  // Las más cercanas primero; el resto, a un toque.
+  const VISIBLES = 6;
+  const ocultas = [...lista.children].slice(VISIBLES);
+  if (ocultas.length) {
+    for (const li of ocultas) li.hidden = true;
+    const ver = elemento(
+      "button",
+      { type: "button", class: "secundario ver-mas" },
+      `Ver ${ocultas.length} ${ocultas.length === 1 ? "línea más" : "líneas más"}`,
+    );
+    ver.addEventListener("click", () => {
+      for (const li of ocultas) li.hidden = false;
+      ver.parentElement.remove();
+    });
+    lista.append(elemento("li", { class: "ver-mas-fila" }, ver));
+  }
+  nota.textContent =
+    "Toca una línea para verla en el mapa. Trazados publicados por el municipio en 2022 y horarios de 2025: algunas líneas pueden haber cambiado.";
+}
+
 // ---------- Ubicar al usuario ----------
 
 // El índice de calles pesa unos cientos de KB: se descarga la primera vez que se busca.
@@ -518,8 +609,14 @@ async function iniciar() {
     mensaje("No se pudieron cargar los datos de Morlaco. Recarga la página para intentarlo de nuevo.", true);
     return;
   }
-  const [suspensiones, paradas, estado] = await Promise.all(
-    ["luz/suspensiones.json", "buses/paradas.geojson", "estado.json"].map((r) =>
+  const [suspensiones, paradas, estado, lineas, rutas] = await Promise.all(
+    [
+      "luz/suspensiones.json",
+      "buses/paradas.geojson",
+      "estado.json",
+      "buses/lineas.geojson",
+      "buses/rutas.json",
+    ].map((r) =>
       cargarJson(r).catch(() => null),
     ),
   );
@@ -545,6 +642,7 @@ async function iniciar() {
     pintarBasura(zona);
     pintarLuz(suspensiones);
     pintarParadas(cercanas);
+    pintarLineas(lineas ? lineasCercanas(punto, lineas, rutas?.rutas ?? []) : null, mapa);
     mapa.mostrar(punto, zona, cercanas);
     history.replaceState(null, "", hashDesdePunto(punto));
     guardar(CLAVE_ULTIMO_PUNTO, hashDesdePunto(punto));

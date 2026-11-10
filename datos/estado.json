@@ -1,13 +1,15 @@
 {
   "buses": {
     "ok": true,
-    "actualizado": "2026-11-10T01:00:59+00:00",
+    "actualizado": "2026-11-10T03:04:00+00:00",
     "archivos": [
+      "buses/lineas.geojson",
       "buses/paradas.geojson",
       "buses/recorridos.json",
       "buses/rutas.json"
     ],
     "resumen": {
+      "trazados": 184,
       "rutas": 76,
       "lineas": 38,
       "lineas_con_recorrido": 37,

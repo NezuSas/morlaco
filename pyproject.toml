@@ -10,7 +10,7 @@ readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.10"
-dependencies = ["pymupdf>=1.24"]
+dependencies = ["pymupdf>=1.24", "pyshp>=2.3"]
 
 [project.optional-dependencies]
 # pytest 9.2 falla al arrancar en Python 3.10.0; se fija la serie 8.

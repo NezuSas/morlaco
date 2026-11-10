@@ -23,7 +23,8 @@ Escribe tu esquina como se dan las direcciones en Cuenca ("Sucre y Borrero") y M
 - **Cuándo pasa el recolector** por tu calle, qué funda sacar y qué día va la funda celeste. Con un toque te
   suscribes al **calendario de tu zona** y recibes un aviso antes de cada recolección.
 - **Si hay cortes de luz programados** por Centro Sur para hoy.
-- **Qué paradas de bus tienes cerca** y a cuántos metros están.
+- **Qué líneas de bus pasan cerca**, cada cuánto pasan hoy y su recorrido en el mapa, y las paradas más
+  cercanas.
 
 Todo sale de **fuentes oficiales y públicas** (EMAC EP, Centro Sur, el portal Cuenca en Datos del municipio y
 OpenStreetMap), y los datos limpios quedan aquí, abiertos, para que cualquiera construya encima: una web, un bot,
@@ -48,6 +49,7 @@ una app o un análisis.
 | [`datos/luz/suspensiones.json`](datos/luz/suspensiones.json) | Suspensiones programadas del servicio eléctrico: alimentador, dirección, hora de inicio y de fin, trabajo | [Centro Sur, suspensiones programadas](https://www.centrosur.gob.ec/suspensiones-programadas/) |
 | [`datos/buses/rutas.json`](datos/buses/rutas.json) | Líneas de bus con compañía, origen, destino, horario e intervalo entre buses (lunes a viernes, sábados, domingos) | [Cuenca en Datos](https://cuencaendatos.cuenca.gob.ec/dataset/f15c8808-0d12-4f97-bfd4-3b2f85ea84d1) |
 | [`datos/buses/recorridos.json`](datos/buses/recorridos.json) | Puntos por los que pasa cada línea, en orden, de ida y de retorno | [Cuenca en Datos](https://cuencaendatos.cuenca.gob.ec/dataset/4c727738-890e-445c-9b20-32df271db766) |
+| [`datos/buses/lineas.geojson`](datos/buses/lineas.geojson) | Recorrido de las 38 líneas de bus, los alimentadores y el tranvía en cada sentido, con sus alargues | [Cuenca en Datos](https://cuencaendatos.cuenca.gob.ec/dataset/f15c8808-0d12-4f97-bfd4-3b2f85ea84d1) |
 | [`datos/buses/paradas.geojson`](datos/buses/paradas.geojson) | Paradas de bus con coordenadas corregidas y si tienen señal (paleta) | [Cuenca en Datos](https://cuencaendatos.cuenca.gob.ec/dataset/d98292ca-7c70-422a-ac6f-1b43194ff5ba) |
 | [`datos/calles/calles.geojson`](datos/calles/calles.geojson) | Las calles de Cuenca con nombre (unas 2.800), con su trazado simplificado y sus nombres alternativos, para buscar direcciones e intersecciones | [OpenStreetMap](https://www.openstreetmap.org) |
 | [`datos/estado.json`](datos/estado.json) | Cuándo se actualizó cada fuente por última vez y si hubo errores | — |
@@ -85,6 +87,9 @@ Parque Calderón está en la zona 4.
 - **Buses (municipio).** Se toma siempre el CSV más reciente del portal. En el CSV de paradas las coordenadas
   vienen mal formateadas (`-2.895.956` en vez de `-2.895956`); Morlaco las corrige y descarta las que caen
   fuera de Cuenca (`metadata.descartadas`). No hay posiciones de buses en tiempo real: no son públicas.
+  El recorrido de cada línea sale del shapefile del mismo conjunto (en UTM 17 Sur, convertido a
+  latitud y longitud). **El último publicado es de septiembre de 2022**, así que algunas líneas pueden haber
+  cambiado; los horarios y frecuencias sí son de 2025.
 - **Calles (OpenStreetMap).** Se descargan con la API Overpass todas las vías con nombre de la ciudad, se
   agrupan por nombre y se simplifica su trazado con 4 m de tolerancia. Overpass a veces está saturado; si
   falla, basta con volver a correr `morlaco actualizar calles`.
@@ -162,16 +167,19 @@ src/morlaco/
   comun.py            texto, horas, días y meses
   salida.py           escritura de JSON, GeoJSON y texto
   calendario.py       calendarios .ics de recolección por zona
+  geo.py              conversión de UTM a latitud y longitud
   cli.py              comando "morlaco actualizar"
   fuentes/
     emac.py           zonas de recolección (KML)
     centrosur.py      suspensiones de luz (PDF)
     buses.py          rutas, recorridos y paradas (API CKAN del portal municipal)
+    trazados.py       recorrido de las líneas (shapefile del municipio)
     calles.py         índice de calles (API Overpass de OpenStreetMap)
 web/
   index.html          la página
   logica.js           zonas, próxima recolección, cortes de hoy, paradas cercanas (sin DOM)
   calles.js           búsqueda de calles e intersecciones (sin DOM)
+  buses.js            líneas cercanas y su frecuencia del día (sin DOM)
   app.js              mapa, búsqueda y pintado de la respuesta
   estilos.css
 ```
@@ -181,8 +189,8 @@ regístrala en `FUENTES` de `cli.py` y añade sus pruebas.
 
 ## Próximos pasos
 
-- Convertir las rutas de bus al formato GTFS: dibujar cada línea en el mapa, responder "¿qué bus me lleva?" y
-  que Cuenca tenga rutas de bus en las apps de transporte.
+- Publicar las rutas de bus en formato GTFS (el estándar de las apps de transporte) y responder
+  "¿qué bus me lleva de aquí a allá?".
 - Versión en inglés para la comunidad extranjera de Cuenca.
 - Instalar la página en el móvil y usarla sin conexión.
 - Capas del portal municipal: BiciPública, ciclovías y carga de autos eléctricos.

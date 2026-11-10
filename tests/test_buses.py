@@ -1,6 +1,7 @@
 import json
 
 import pytest
+from test_trazados import _zip_shapefile
 
 from morlaco.fuentes import buses
 
@@ -118,8 +119,24 @@ def test_csv_mas_reciente():
 
 def test_obtener_consulta_la_api_de_ckan():
     contenidos = {"rutas": RUTAS, "recorridos": RECORRIDOS, "paradas": PARADAS}
+    shapefile_zip = _zip_shapefile(
+        [
+            (
+                [(721000.0, 9679000.0), (721000.0, 9680000.0)],
+                {
+                    "linename": "1",
+                    "name": "L1 Kennedy",
+                    "direction": ">",
+                    "length": "20.9km",
+                    "empresa": "SIT",
+                },
+            )
+        ]
+    )
 
     def falso(url):
+        if url == "zip/rutas":
+            return shapefile_zip
         for clave, identificador in buses.DATASETS.items():
             if url.endswith(f"package_show?id={identificador}"):
                 paquete = {
@@ -127,7 +144,10 @@ def test_obtener_consulta_la_api_de_ckan():
                     "name": clave,
                     "title": clave.title(),
                     "license_title": "Creative Commons Non-Commercial (Cualquiera)",
-                    "resources": [{"format": "CSV", "created": "2026", "url": f"csv/{clave}"}],
+                    "resources": [
+                        {"format": "CSV", "created": "2026", "url": f"csv/{clave}"},
+                        {"format": "ZIP", "name": "RutasTransporteGeo.zip", "url": f"zip/{clave}"},
+                    ],
                 }
                 return json.dumps({"success": True, "result": paquete}).encode()
             if url == f"csv/{clave}":
@@ -137,6 +157,7 @@ def test_obtener_consulta_la_api_de_ckan():
 
     resultado = buses.obtener(falso)
     assert resultado.resumen == {
+        "trazados": 1,
         "rutas": 3,
         "lineas": 2,
         "lineas_con_recorrido": 3,
@@ -145,3 +166,6 @@ def test_obtener_consulta_la_api_de_ckan():
     }
     paradas = resultado.archivos["buses/paradas.geojson"]
     assert paradas["metadata"]["licencia"].startswith("Creative Commons Non-Commercial")
+    lineas = resultado.archivos["buses/lineas.geojson"]
+    assert lineas["features"][0]["properties"]["linea"] == "1"
+    assert "2022" in lineas["metadata"]["nota"]
