@@ -84,6 +84,7 @@
     <main class="disposicion">
       <div class="columna">
         <section class="consulta" aria-labelledby="titulo">
+          <div class="banda">
           <div class="portada">
             <!-- Las tres cúpulas de la Catedral Nueva de Cuenca. -->
             <svg class="cupulas" viewBox="0 0 320 100" aria-hidden="true" focusable="false">
@@ -110,8 +111,9 @@
               cerca, en Cuenca.
             </p>
           </div>
+          </div>
 
-          <form id="buscar" class="buscar" role="search">
+          <form id="buscar" class="buscar tarjeta-busqueda" role="search">
             <label for="direccion" data-t="etiquetaBusqueda">Tu esquina o un lugar conocido</label>
             <div class="campo">
               <input
@@ -141,24 +143,47 @@
                 <li><button type="button" class="ejemplo" data-busqueda="Mall del Río">Mall del Río</button></li>
               </ul>
             </div>
-            <ul class="avance">
-              <li>
+            <ul class="servicios">
+              <li class="servicio servicio-basura">
                 <svg class="icono" aria-hidden="true"><use href="#i-funda" /></svg>
                 <p data-t-html="avanceBasura"><strong>Recolección de basura.</strong> Qué días y a qué hora pasa el recolector, y cuándo sacar la funda celeste.</p>
               </li>
-              <li>
+              <li class="servicio servicio-luz">
                 <svg class="icono" aria-hidden="true"><use href="#i-rayo" /></svg>
                 <p data-t-html="avanceLuz"><strong>Cortes de luz.</strong> Los cortes que Centro Sur programó para hoy.</p>
               </li>
-              <li>
+              <li class="servicio servicio-farmacias">
+                <svg class="icono" aria-hidden="true"><use href="#i-cruz" /></svg>
+                <p data-t-html="avanceFarmacias"><strong>Farmacias de turno.</strong> Las que abren las 24 horas esta semana, la más cercana primero.</p>
+              </li>
+              <li class="servicio servicio-buses">
                 <svg class="icono" aria-hidden="true"><use href="#i-bus" /></svg>
-                <p data-t-html="avanceBuses"><strong>Buses.</strong> Las líneas que pasan cerca, cada cuánto pasan hoy y las paradas más cercanas.</p>
+                <p data-t-html="avanceBuses"><strong>Buses.</strong> Qué bus te lleva a donde vas, las líneas cercanas y cada cuánto pasan.</p>
               </li>
             </ul>
           </div>
 
           <div id="respuesta" class="respuesta" hidden>
-            <section class="basura" aria-labelledby="t-basura">
+            <div class="tu-punto">
+              <svg class="icono" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0C18.5 15.4 12 21 12 21z" /><circle cx="12" cy="10" r="2.3" /></svg>
+              <div class="tu-punto-texto">
+                <p class="tu-punto-etiqueta" data-t="tuPunto">Tu punto</p>
+                <p id="punto-nombre" class="punto-nombre" aria-live="polite"></p>
+              </div>
+              <button type="button" id="cambiar-punto" class="secundario" data-t="cambiarPunto">Cambiar</button>
+            </div>
+
+            <h2 class="titulo-hoy" data-t="hoyEnTuCalle">Hoy en tu calle</h2>
+            <ul id="resumen" class="resumen"></ul>
+
+            <nav class="secciones" aria-label="Secciones de la respuesta" data-t-aria-label="seccionesAria">
+              <a href="#s-basura" class="servicio-basura" data-t="navBasura">Basura</a>
+              <a href="#s-luz" class="servicio-luz" data-t="navLuz">Luz</a>
+              <a href="#s-farmacias" class="servicio-farmacias" data-t="navFarmacias">Farmacias</a>
+              <a href="#s-buses" class="servicio-buses" data-t="navBuses">Buses</a>
+            </nav>
+
+            <section id="s-basura" class="basura" aria-labelledby="t-basura">
               <h2 id="t-basura">
                 <svg class="icono" aria-hidden="true"><use href="#i-funda" /></svg>
                 <span data-t="tituloBasura">Recolección de basura</span>
@@ -170,7 +195,7 @@
               <div id="calendario" class="calendario"></div>
             </section>
 
-            <section class="bloque luz" aria-labelledby="t-luz">
+            <section id="s-luz" class="tarjeta-seccion servicio-luz" aria-labelledby="t-luz">
               <h2 id="t-luz">
                 <svg class="icono" aria-hidden="true"><use href="#i-rayo" /></svg>
                 <span data-t="tituloLuz">Cortes de luz programados</span>
@@ -178,7 +203,7 @@
               <div id="luz-estado"></div>
             </section>
 
-            <section class="bloque farmacias" aria-labelledby="t-farmacias">
+            <section id="s-farmacias" class="tarjeta-seccion servicio-farmacias farmacias" aria-labelledby="t-farmacias">
               <h2 id="t-farmacias">
                 <svg class="icono" aria-hidden="true"><use href="#i-cruz" /></svg>
                 <span data-t="tituloFarmacias">Farmacias de turno</span>
@@ -186,7 +211,7 @@
               <div id="farmacias-estado"></div>
             </section>
 
-            <section class="bloque buses" aria-labelledby="t-buses">
+            <section id="s-buses" class="tarjeta-seccion servicio-buses buses" aria-labelledby="t-buses">
               <h2 id="t-buses">
                 <svg class="icono" aria-hidden="true"><use href="#i-bus" /></svg>
                 <span data-t="tituloBuses">Buses cerca de ti</span>

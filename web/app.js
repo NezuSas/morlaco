@@ -593,7 +593,7 @@ function pintarLuz(suspensiones) {
  * Farmacias de turno de esta semana. Si el índice de calles ya está cargado (o se carga),
  * las que tienen dirección de esquina se ordenan por cercanía aproximada al punto.
  */
-function pintarFarmacias(datos, punto) {
+function pintarFarmacias(datos, punto, alUbicar = () => {}) {
   const caja = $("farmacias-estado");
   if (!datos) {
     caja.replaceChildren(elemento("p", { class: "aviso" }, t("farmaciasError")));
@@ -679,6 +679,7 @@ function pintarFarmacias(datos, punto) {
           .sort((a, b) => (a.metros ?? Infinity) - (b.metros ?? Infinity));
         if (lista.some((f) => f.metros !== null)) orden.hidden = false;
         pintarLista();
+        if (lista[0]?.metros !== null && lista[0]?.metros !== undefined) alUbicar(lista[0]);
       })
       .catch(() => {
         // Sin índice de calles, la lista queda en el orden de ARCSA.
@@ -770,6 +771,103 @@ function pintarLineas(cercanas, mapa) {
     lista.append(elemento("li", { class: "ver-mas-fila" }, ver));
   }
   nota.textContent = t("lineasNota");
+}
+
+// ---------- Hoy en tu calle ----------
+
+const SVG_NS = "http://www.w3.org/2000/svg";
+const ICONO_SERVICIO = { basura: "#i-funda", luz: "#i-rayo", farmacias: "#i-cruz", buses: "#i-bus" };
+
+function iconoServicio(servicio) {
+  const svg = document.createElementNS(SVG_NS, "svg");
+  svg.setAttribute("class", "icono");
+  svg.setAttribute("aria-hidden", "true");
+  const use = document.createElementNS(SVG_NS, "use");
+  use.setAttribute("href", ICONO_SERVICIO[servicio]);
+  svg.append(use);
+  return svg;
+}
+
+/** Una ficha del resumen; tocarla lleva a su sección. Devuelve el nodo del detalle para actualizarlo. */
+function ficha(servicio, valor, detalle, { aviso = false } = {}) {
+  const nodoDetalle = elemento("span", { class: "ficha-detalle" }, detalle ?? "");
+  const enlace = elemento(
+    "a",
+    { href: `#s-${servicio}`, class: `ficha servicio-${servicio}${aviso ? " con-aviso" : ""}` },
+    elemento("span", { class: "ficha-cabecera" }, iconoServicio(servicio), elemento("span", {}, t(`nav${servicio[0].toUpperCase()}${servicio.slice(1)}`))),
+    elemento("strong", { class: "ficha-valor" }, valor),
+    nodoDetalle,
+  );
+  return { li: elemento("li", {}, enlace), detalle: nodoDetalle };
+}
+
+/** Las cuatro fichas de "Hoy en tu calle". Devuelve cómo actualizar la de farmacias. */
+function pintarResumen({ zona, suspensiones, turnos, cercanas }) {
+  const fichas = [];
+
+  const p = zona?.properties;
+  fichas.push(
+    ficha(
+      "basura",
+      p ? describirRecoleccion(proximaRecoleccion(p)) : t("fueraZonas"),
+      p ? t("zonaRecoleccion", { zona: p.zona }) : "",
+    ),
+  );
+
+  if (!suspensiones) {
+    fichas.push(ficha("luz", t("sinDatos"), ""));
+  } else {
+    const luz = estadoLuz(suspensiones);
+    if (luz.publicadoHoy) {
+      fichas.push(ficha("luz", t("resumenLuzHoy", { n: luz.cortesHoy.length }), t("resumenLuzFuente"), { aviso: luz.cortesHoy.length > 0 }));
+    } else if (luz.diasSinPublicar !== null && luz.diasSinPublicar > 2) {
+      const fecha = fechaLarga().format(new Date(luz.ultima));
+      fichas.push(ficha("luz", t("resumenLuzSinDatos"), t("resumenLuzDesde", { fecha }), { aviso: true }));
+    } else {
+      fichas.push(ficha("luz", t("resumenLuzSinCortes"), t("resumenLuzFuente")));
+    }
+  }
+
+  const turno = turnoActual(turnos?.turnos);
+  let fichaFarmacias;
+  if (turno) {
+    const fecha = new Intl.DateTimeFormat(etiquetaIdioma(), { weekday: "long", day: "numeric", timeZone: "UTC" }).format(
+      new Date(`${turno.fin}T12:00:00Z`),
+    );
+    fichaFarmacias = ficha("farmacias", t("resumenFarmacias", { n: turno.farmacias.length }), t("resumenFarmaciasHasta", { fecha }));
+  } else {
+    fichaFarmacias = ficha("farmacias", turnos ? t("resumenFarmaciasSin") : t("sinDatos"), "");
+  }
+  fichas.push(fichaFarmacias);
+
+  if (!cercanas) {
+    fichas.push(ficha("buses", t("sinDatos"), ""));
+  } else if (!cercanas.length) {
+    fichas.push(ficha("buses", t("resumenSinLineas"), ""));
+  } else {
+    const primera = cercanas[0];
+    const distancia = formatoDistancia(primera.metros);
+    const detalle =
+      primera.tipo === "tranvia"
+        ? t("resumenTranviaCerca", { distancia })
+        : t("resumenLineaCerca", { linea: primera.linea, distancia });
+    fichas.push(ficha("buses", t("resumenLineas", { n: cercanas.length }), detalle));
+  }
+
+  $("resumen").replaceChildren(...fichas.map((f) => f.li));
+  return {
+    farmaciaCercana(farmacia) {
+      fichaFarmacias.detalle.textContent = t("resumenFarmaciaCerca", { distancia: formatoDistancia(farmacia.metros) });
+    },
+  };
+}
+
+/** Los enlaces a secciones se desplazan sin tocar la dirección (#lat,lon guarda el punto). */
+function irASeccion(evento) {
+  const enlace = evento.target.closest('a[href^="#s-"]');
+  if (!enlace) return;
+  evento.preventDefault();
+  document.querySelector(enlace.getAttribute("href"))?.scrollIntoView({ behavior: SIN_MOVIMIENTO ? "auto" : "smooth", block: "start" });
 }
 
 // ---------- ¿Qué bus me lleva? ----------
@@ -1005,7 +1103,7 @@ async function iniciar() {
 
   let puntoActual = null;
   let recorridos = null;
-  const elegir = (punto, origen) => {
+  const elegir = (punto, origen, nombre) => {
     puntoActual = punto;
     $("ruta-opciones").replaceChildren();
     $("ruta-nota").hidden = true;
@@ -1015,23 +1113,32 @@ async function iniciar() {
     const cercanas = paradas ? paradasCercanas(punto, paradas) : [];
     $("respuesta").hidden = false;
     $("inicio").hidden = true;
+    document.querySelector(".consulta").classList.add("con-respuesta");
     pintarBasura(zona);
     pintarLuz(suspensiones);
-    pintarFarmacias(turnosFarmacias, punto);
     pintarParadas(cercanas);
-    pintarLineas(lineas ? lineasCercanas(punto, lineas, rutas?.rutas ?? []) : null, mapa);
+    const cercanasLineas = lineas ? lineasCercanas(punto, lineas, rutas?.rutas ?? []) : null;
+    pintarLineas(cercanasLineas, mapa);
+    const resumen = pintarResumen({ zona, suspensiones, turnos: turnosFarmacias, cercanas: cercanasLineas });
+    pintarFarmacias(turnosFarmacias, punto, (f) => resumen.farmaciaCercana(f));
+    const z = zona?.properties.zona;
+    $("punto-nombre").replaceChildren(
+      nombre ?? t("puntoGuardado"),
+      z ? elemento("span", { class: "punto-zona" }, t("zonaRecoleccion", { zona: z })) : "",
+    );
     pintarBici(masCercano(punto, bicicletas));
     mapa.mostrar(punto, zona, cercanas);
     history.replaceState(null, "", hashDesdePunto(punto));
     guardar(CLAVE_ULTIMO_PUNTO, hashDesdePunto(punto));
     if (origen) {
-      mensaje(origen);
-      // Tras una acción de la persona, lleva la vista a la respuesta (queda bajo la portada).
-      $("mensaje").scrollIntoView({ behavior: SIN_MOVIMIENTO ? "auto" : "smooth", block: "start" });
+      // "Tu punto" ya dice dónde: el mensaje de la búsqueda sobra. Tras una acción de la
+      // persona, la vista baja a la respuesta.
+      mensaje("");
+      $("respuesta").scrollIntoView({ behavior: SIN_MOVIMIENTO ? "auto" : "smooth", block: "start" });
     }
   };
 
-  const mapa = crearMapa(zonas, (punto) => elegir(punto, t("puntoMapa")));
+  const mapa = crearMapa(zonas, (punto) => elegir(punto, t("puntoMapa"), t("puntoMapaNombre")));
   agregarCapas(mapa.leaflet, bicicletas);
 
   $("buscar").addEventListener("submit", async (evento) => {
@@ -1047,6 +1154,7 @@ async function iniciar() {
         // La respuesta anterior era de otro lugar: se oculta para no confundir.
         $("respuesta").hidden = true;
         $("inicio").hidden = false;
+        document.querySelector(".consulta").classList.remove("con-respuesta");
         if (resultado.resaltar) mapa.resaltar(resultado.resaltar);
         mensaje(resultado.error, true);
         if (resultado.reportable) {
@@ -1059,7 +1167,7 @@ async function iniciar() {
         }
         return;
       }
-      elegir(resultado.punto, t("encontrado", { texto: resultado.texto }));
+      elegir(resultado.punto, t("encontrado", { texto: resultado.texto }), resultado.texto);
     } catch {
       mensaje(t("busquedaSinRespuesta"), true);
     } finally {
@@ -1072,7 +1180,7 @@ async function iniciar() {
     boton.disabled = true;
     mensaje(t("buscandoUbicacion"));
     try {
-      elegir(await miUbicacion(), t("usandoUbicacion"));
+      elegir(await miUbicacion(), t("usandoUbicacion"), t("tuUbicacion"));
     } catch (error) {
       mensaje(error.message, true);
     } finally {
@@ -1115,6 +1223,14 @@ async function iniciar() {
     } finally {
       if (boton) boton.disabled = false;
     }
+  });
+
+  // Navegación por secciones y fichas del resumen.
+  $("respuesta").addEventListener("click", irASeccion);
+  $("cambiar-punto").addEventListener("click", () => {
+    $("buscar").scrollIntoView({ behavior: SIN_MOVIMIENTO ? "auto" : "smooth", block: "center" });
+    $("direccion").focus({ preventScroll: true });
+    $("direccion").select();
   });
 
   // Los ejemplos rellenan la búsqueda y la lanzan.

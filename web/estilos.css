@@ -1176,3 +1176,372 @@ button.opcion-ruta[aria-pressed="true"] {
     animation: none !important;
   }
 }
+
+/* =====================================================================
+   Rediseño: banda de azulejo, buscador elevado, fichas por servicio y
+   tarjetas de sección. Cada servicio tiene su color:
+   basura (azul cúpula), luz (ámbar), farmacias (rojo), buses (pizarra).
+   ===================================================================== */
+
+:root {
+  --c-basura: var(--cupula);
+  --c-luz: #c98a10;
+  --c-farmacias: #c23b45;
+  --c-buses: #3d4d5f;
+  --sombra-tarjeta: 0 1px 2px rgb(20 40 70 / 0.06), 0 8px 24px rgb(20 40 70 / 0.08);
+  --patron-azulejo: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.1' stroke-width='1.5'%3E%3Cpath d='M22 4c5 6 5 12 0 18-5-6-5-12 0-18zM22 40c5-6 5-12 0-18-5 6-5 12 0 18zM4 22c6-5 12-5 18 0-6 5-12 5-18 0zM40 22c-6-5-12-5-18 0 6 5 12 5 18 0z'/%3E%3Cpath d='M0 0h44v44H0z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --c-luz: #f0b546;
+    --c-farmacias: #f07a83;
+    --c-buses: #a9b8c8;
+    --sombra-tarjeta: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px rgb(0 0 0 / 0.25);
+  }
+}
+:root[data-theme="dark"] {
+  --c-luz: #f0b546;
+  --c-farmacias: #f07a83;
+  --c-buses: #a9b8c8;
+  --sombra-tarjeta: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px rgb(0 0 0 / 0.25);
+}
+
+.servicio-basura { --c: var(--c-basura); }
+.servicio-luz { --c: var(--c-luz); }
+.servicio-farmacias { --c: var(--c-farmacias); }
+.servicio-buses { --c: var(--c-buses); }
+
+/* ---------- Banda de la portada ---------- */
+
+.consulta > .banda {
+  max-width: none;
+}
+
+.banda {
+  margin: -1.25rem -1rem 0;
+  padding: 1.75rem 1.25rem 4rem;
+  color: #fff;
+  background-color: var(--tarjeta);
+  background-image:
+    linear-gradient(170deg, transparent 35%, var(--tarjeta-hondo) 100%),
+    var(--patron-azulejo);
+  /* Las cúpulas toman estos colores sobre el azul. */
+  --superficie: rgb(255 255 255 / 0.14);
+  --tinta-suave: rgb(255 255 255 / 0.75);
+  --cupula: #8ccbea;
+  --cupula-hondo: #ffffff;
+  --funda-celeste: #ffffff;
+}
+
+@media (min-width: 900px) {
+  .banda {
+    margin: -1.75rem -2.25rem 0;
+    padding: 2.25rem 2.25rem 4.5rem;
+  }
+}
+
+.banda .cupulas {
+  width: min(17rem, 78%);
+  margin-bottom: 1rem;
+}
+
+.banda .cupulas .nave {
+  fill: rgb(255 255 255 / 0.14);
+  stroke: rgb(255 255 255 / 0.75);
+}
+
+.banda .cupulas .suelo {
+  fill: #fff;
+  opacity: 0.45;
+}
+
+.banda h1 {
+  color: #fff;
+  max-width: 13ch;
+}
+
+.banda .entrada {
+  color: rgb(255 255 255 / 0.85);
+}
+
+/* Con respuesta, la banda se reduce a una franja tras el buscador. */
+.con-respuesta .banda {
+  padding-top: 0.75rem;
+  padding-bottom: 3.25rem;
+}
+
+.con-respuesta .portada {
+  display: none;
+}
+
+/* ---------- Buscador elevado ---------- */
+
+.tarjeta-busqueda {
+  position: relative;
+  margin-top: -2.75rem;
+  padding: 1rem 1rem 0.85rem;
+  border-radius: var(--radio-tarjeta);
+  background: var(--superficie);
+  box-shadow: var(--sombra-tarjeta);
+}
+
+.tarjeta-busqueda .campo {
+  background: var(--cal);
+}
+
+.tarjeta-busqueda .otras-formas {
+  font-size: var(--t-0);
+}
+
+/* ---------- Lo que vas a saber ---------- */
+
+.servicios {
+  list-style: none;
+  padding: 0;
+  margin: 1.75rem 0 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13.5rem, 1fr));
+  gap: 0.65rem;
+}
+
+.servicio {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.75rem;
+  align-items: start;
+  padding: 0.9rem;
+  border: 1px solid var(--linea);
+  border-radius: 14px;
+  background: var(--superficie);
+  color: var(--tinta-suave);
+  font-size: var(--t-0);
+}
+
+.servicio strong {
+  display: block;
+  margin-bottom: 0.15rem;
+  color: var(--tinta);
+  font-size: var(--t-1);
+}
+
+/* El icono de cada servicio, en un círculo de su color. */
+.servicio .icono,
+.ficha .icono,
+.tarjeta-seccion h2 .icono,
+.tu-punto .icono {
+  box-sizing: content-box;
+  width: 1.15rem;
+  height: 1.15rem;
+  padding: 0.45rem;
+  border-radius: 50%;
+  color: var(--c, var(--cupula));
+  background: color-mix(in srgb, var(--c, var(--cupula)) 14%, transparent);
+}
+
+/* ---------- Tu punto ---------- */
+
+.respuesta {
+  margin-top: 1.25rem;
+  scroll-margin-top: 0.75rem;
+}
+
+.tu-punto {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.9rem;
+  border-radius: 14px;
+  background: var(--superficie);
+  border: 1px solid var(--linea);
+}
+
+.tu-punto .icono {
+  --c: var(--aviso);
+  fill: none;
+}
+
+.tu-punto-texto {
+  flex: 1;
+  min-width: 0;
+}
+
+.tu-punto-etiqueta {
+  font-size: var(--t-0);
+  color: var(--tinta-suave);
+}
+
+.punto-nombre {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.punto-zona {
+  display: block;
+  font-weight: 400;
+  font-size: var(--t-0);
+  color: var(--tinta-suave);
+}
+
+/* ---------- Hoy en tu calle ---------- */
+
+.titulo-hoy {
+  margin-top: 1.5rem;
+  font-size: var(--t-3);
+  letter-spacing: -0.01em;
+}
+
+.resumen {
+  list-style: none;
+  padding: 0;
+  margin: 0.75rem 0 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+a.ficha {
+  display: grid;
+  gap: 0.35rem;
+  height: 100%;
+  padding: 0.85rem;
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--c) 28%, var(--linea));
+  background: color-mix(in srgb, var(--c) 7%, var(--superficie));
+  color: var(--tinta);
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+a.ficha:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--sombra-tarjeta);
+}
+
+a.ficha.con-aviso {
+  border-color: var(--c-luz);
+}
+
+.ficha-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--t-0);
+  font-weight: 700;
+  color: var(--tinta-suave);
+}
+
+.ficha .icono {
+  width: 0.95rem;
+  height: 0.95rem;
+  padding: 0.35rem;
+}
+
+.ficha-valor {
+  font-size: 1.075rem;
+  line-height: 1.25;
+}
+
+.ficha-detalle {
+  font-size: var(--t-0);
+  color: var(--tinta-suave);
+}
+
+.ficha-detalle:empty {
+  display: none;
+}
+
+/* ---------- Navegación por secciones ---------- */
+
+.secciones {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  gap: 0.4rem;
+  margin: 1.25rem -0.25rem 0;
+  padding: 0.6rem 0.25rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  background: var(--cal);
+  border-bottom: 1px solid var(--linea);
+}
+
+.secciones a {
+  flex: none;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  border: 1.5px solid color-mix(in srgb, var(--c) 40%, var(--linea));
+  color: var(--tinta);
+  font-size: var(--t-0);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.secciones a:hover {
+  background: color-mix(in srgb, var(--c) 12%, transparent);
+}
+
+/* Las secciones quedan visibles bajo la navegación fija al saltar a ellas. */
+#s-basura,
+.tarjeta-seccion {
+  scroll-margin-top: 3.75rem;
+}
+
+/* ---------- Tarjetas de sección ---------- */
+
+.respuesta .basura {
+  margin-top: 1rem;
+}
+
+.tarjeta-seccion {
+  margin-top: 1rem;
+  padding: 1.15rem 1.15rem 1.25rem;
+  border-radius: var(--radio-tarjeta);
+  border: 1px solid var(--linea);
+  border-top: 4px solid var(--c);
+  background: var(--superficie);
+  box-shadow: var(--sombra-tarjeta);
+}
+
+.tarjeta-seccion h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: var(--t-2);
+}
+
+.tarjeta-seccion .aviso {
+  background: color-mix(in srgb, var(--c-luz) 12%, var(--superficie));
+  border-left-color: var(--c-luz);
+}
+
+.tarjeta-seccion input[type="search"] {
+  background: var(--cal);
+}
+
+.pie {
+  margin-top: 1.75rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  a.ficha:hover {
+    transform: none;
+  }
+}
+
+/* El título de la banda, más contenido para que el buscador quede a la vista. */
+.banda h1 {
+  font-size: var(--t-5);
+  max-width: 15ch;
+}
+
+.banda .cupulas {
+  width: min(15rem, 70%);
+}
+
+@media (min-width: 900px) {
+  .banda h1 {
+    font-size: 2.6rem;
+  }
+}
