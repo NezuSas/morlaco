@@ -51,6 +51,24 @@ Parque Calderón está en la zona 4.
 - **Cortes de agua (ETAPA).** Todavía no están. ETAPA los anuncia en redes sociales y en prensa, no en un
   formato que se pueda leer de forma fiable.
 
+## La página web
+
+En [`web/`](web/) hay una página que usa estos datos: escribes tu dirección, compartes tu ubicación o tocas
+el mapa, y te dice cuándo pasa el recolector (y si toca funda celeste), si hay cortes de luz programados y
+qué paradas de bus tienes cerca. El punto elegido queda en la dirección de la página
+(`web/#-2.89733,-79.00454`), así que se puede compartir.
+
+Para verla en tu computadora, sirve la carpeta del proyecto (no solo `web/`, porque lee los datos de
+`datos/`) y abre <http://127.0.0.1:8765/web/>:
+
+```bash
+.venv/Scripts/python -m http.server 8765 --bind 127.0.0.1
+```
+
+Usa [Leaflet](https://leafletjs.com) y los mapas de OpenStreetMap. Las direcciones se ubican con
+[Nominatim](https://nominatim.org) de OpenStreetMap, limitado a la ciudad de Cuenca; la página lo avisa al
+pie. No usa cookies ni analítica: solo recuerda en el navegador el último punto elegido.
+
 ## Uso
 
 Requiere Python 3.10 o superior.
@@ -82,10 +100,12 @@ fecha de generación, así que solo cambian cuando cambia la fuente.
 .venv/Scripts/python -m pytest
 .venv/Scripts/python -m ruff check .
 .venv/Scripts/python -m ruff format --check .
+node --test "tests/web/*.test.mjs"
 ```
 
 Las pruebas no usan la red: el parseo de cada fuente son funciones puras que se prueban con ejemplos (el PDF
-de Centro Sur de `tests/fixtures` es uno real).
+de Centro Sur de `tests/fixtures` es uno real). En la web pasa lo mismo: `web/logica.js` no toca el DOM ni la
+red, y sus pruebas corren con Node 20 o superior.
 
 ```
 src/morlaco/
@@ -97,6 +117,11 @@ src/morlaco/
     emac.py           zonas de recolección (KML)
     centrosur.py      suspensiones de luz (PDF)
     buses.py          rutas, recorridos y paradas (API CKAN del portal municipal)
+web/
+  index.html          la página
+  logica.js           zonas, próxima recolección, cortes de hoy, paradas cercanas (sin DOM)
+  app.js              mapa, búsqueda y pintado de la respuesta
+  estilos.css
 ```
 
 Para añadir una fuente: crea un módulo en `fuentes/` con una función `obtener(descargar) -> Resultado`,
@@ -104,7 +129,7 @@ regístrala en `FUENTES` de `cli.py` y añade sus pruebas.
 
 ## Próximos pasos
 
-- Una página web con mapa: escribes tu dirección y te dice cuándo pasa la basura y si hay corte de luz.
+- Publicar la página web para que se pueda abrir sin instalar nada.
 - Un bot de Telegram con los mismos datos.
 - Convertir las rutas de bus al formato GTFS para que puedan usarlas las apps de transporte.
 - Cortes de agua de ETAPA.

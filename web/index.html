@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Morlaco: tu calle hoy en Cuenca</title>
+    <meta
+      name="description"
+      content="Cuándo pasa el recolector de basura, si hay cortes de luz programados y qué paradas de bus tienes cerca, en Cuenca, Ecuador."
+    />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="icono.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <link rel="stylesheet" href="estilos.css" />
+  </head>
+  <body>
+    <header class="barra">
+      <a class="marca" href="./" aria-label="Morlaco, inicio">
+        <img src="icono.svg" alt="" width="28" height="28" />
+        <span>Morlaco</span>
+      </a>
+      <a class="enlace-datos" href="https://github.com/NezuSas/morlaco">Datos y código</a>
+    </header>
+
+    <main class="disposicion">
+      <section class="consulta" aria-labelledby="titulo">
+        <h1 id="titulo">¿Qué pasa hoy en tu calle?</h1>
+        <p class="entrada">
+          Cuándo pasa el recolector, si hay cortes de luz programados y qué paradas de bus tienes
+          cerca, en Cuenca.
+        </p>
+
+        <form id="buscar" class="buscar" role="search">
+          <label for="direccion">Tu dirección o barrio</label>
+          <div class="campo">
+            <input
+              id="direccion"
+              name="direccion"
+              type="search"
+              autocomplete="street-address"
+              placeholder="Av. Solano y Remigio Crespo"
+              required
+            />
+            <button type="submit">Buscar</button>
+          </div>
+          <div class="otras-formas">
+            <button type="button" id="ubicarme" class="secundario">Usar mi ubicación</button>
+            <span>o toca tu calle en el mapa.</span>
+          </div>
+          <p id="mensaje" class="mensaje" role="status" aria-live="polite"></p>
+        </form>
+
+        <div id="respuesta" class="respuesta" hidden>
+          <section class="bloque basura" aria-labelledby="t-basura">
+            <h2 id="t-basura">Recolección de basura</h2>
+            <p id="basura-cuando" class="cuando"></p>
+            <ol id="semana" class="semana" aria-label="Días de recolección en tu zona"></ol>
+            <p id="basura-fundas" class="fundas"></p>
+            <p id="basura-zona" class="detalle"></p>
+          </section>
+
+          <section class="bloque luz" aria-labelledby="t-luz">
+            <h2 id="t-luz">Cortes de luz programados</h2>
+            <div id="luz-estado"></div>
+          </section>
+
+          <section class="bloque buses" aria-labelledby="t-buses">
+            <h2 id="t-buses">Paradas de bus cercanas</h2>
+            <ul id="paradas" class="paradas"></ul>
+            <p id="paradas-nota" class="detalle"></p>
+          </section>
+        </div>
+      </section>
+
+      <section class="mapa-contenedor" aria-label="Mapa de zonas de recolección">
+        <div id="mapa" class="mapa"></div>
+        <div class="leyenda" aria-hidden="true">
+          <span><i class="muestra lmv"></i>Lunes, miércoles y viernes</span>
+          <span><i class="muestra mjs"></i>Martes, jueves y sábado</span>
+        </div>
+      </section>
+    </main>
+
+    <footer class="pie">
+      <p>
+        Datos de <a href="https://emac.gob.ec/mapa-zonas-de-recoleccion/">EMAC EP</a>,
+        <a href="https://www.centrosur.gob.ec/suspensiones-programadas/">Centro Sur</a> y el portal
+        <a href="https://cuencaendatos.cuenca.gob.ec">Cuenca en Datos</a> del GAD Municipal.
+        <span id="actualizado"></span>
+      </p>
+      <p>
+        Morlaco no es un servicio oficial. Ante cualquier duda, consulta la fuente. Las direcciones
+        que buscas se envían a OpenStreetMap (Nominatim) para ubicarlas en el mapa.
+      </p>
+    </footer>
+
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

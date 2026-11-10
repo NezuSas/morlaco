@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Una cúpula de la Catedral Nueva de Cuenca, en azul. -->
+  <rect width="32" height="32" rx="7" fill="#2D63A8"/>
+  <path d="M7 24h18v2H7z" fill="#F6F8F7"/>
+  <path d="M9 24c0-6.2 3.1-10.5 7-11.6 3.9 1.1 7 5.4 7 11.6z" fill="#8CCBEA"/>
+  <path d="M15.2 8h1.6v4.6h-1.6z M13.8 9.4h4.4v1.4h-4.4z" fill="#F6F8F7"/>
+  <path d="M12.6 24c.3-4.2 1.5-7.6 3.4-9.6 1.9 2 3.1 5.4 3.4 9.6" fill="none" stroke="#2D63A8" stroke-width="1.2"/>
+</svg>
