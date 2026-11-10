@@ -585,7 +585,15 @@ button.ejemplo:hover {
 
 .fundas {
   margin-top: 1.1rem;
-  max-width: 40ch;
+  max-width: 46ch;
+}
+
+.funda-linea {
+  display: block;
+}
+
+.funda-linea + .funda-linea {
+  margin-top: 0.45rem;
 }
 
 .funda {

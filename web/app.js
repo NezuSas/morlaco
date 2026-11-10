@@ -22,6 +22,7 @@ import {
   proximaRecoleccion,
   puntoDesdeHash,
   puntoEnGeometria,
+  revisarUbicacion,
   zonaDe,
 } from "./logica.js";
 import {
@@ -51,6 +52,8 @@ import { etiquetaIdioma, idioma, idiomaInicial, listar, t, usarIdioma } from "./
 
 const DATOS = "../datos/";
 const NOMINATIM = "https://nominatim.openstreetmap.org/search";
+// Con más margen que esto, la ubicación del navegador se usa pero se avisa de que es aproximada.
+const PRECISION_EXACTA_M = 150;
 // Rectángulo de la ciudad para que la búsqueda no devuelva otra Cuenca.
 const CAJA_CUENCA = "-79.10,-2.82,-78.92,-2.98";
 const CLAVE_ULTIMO_PUNTO = "morlaco:ultimo-punto";
@@ -84,14 +87,6 @@ function aplicarTextos() {
   for (const nodo of document.querySelectorAll("[data-t-aria-label]")) {
     nodo.setAttribute("aria-label", t(nodo.dataset.tAriaLabel));
   }
-}
-
-/** Convierte "Saca la [negra]funda negra..." en nodos, con la muestra de color de cada funda. */
-function conFundas(texto, fundas) {
-  return texto
-    .split(/(\[negra\]|\[celeste\])/)
-    .filter(Boolean)
-    .map((parte) => (parte === "[negra]" ? fundas.negra : parte === "[celeste]" ? fundas.celeste : parte));
 }
 
 function color(nombre) {
@@ -519,16 +514,24 @@ function pintarBasura(zona) {
     );
   }
 
-  const muestras = {
-    negra: elemento("i", { class: "funda negra", "aria-hidden": "true" }),
-    celeste: elemento("i", { class: "funda celeste", "aria-hidden": "true" }),
-  };
-  const texto = proxima.conReciclaje
-    ? t("fundasConCeleste")
-    : reciclaje
-      ? t("fundasNormal", { dia: nombreDia(reciclaje) })
-      : t("fundasSoloNegra");
-  fundas.replaceChildren(...conFundas(texto, muestras));
+  // Qué va en cada funda y si la celeste sale en la próxima recolección (la de arriba).
+  const linea = (color, nombre, ...texto) =>
+    elemento(
+      "span",
+      { class: "funda-linea" },
+      elemento("i", { class: `funda ${color}`, "aria-hidden": "true" }),
+      elemento("strong", {}, t(nombre)),
+      " ",
+      ...texto,
+    );
+  const lineas = [linea("negra", "fundaNegra", t("fundaNegraQue"))];
+  if (reciclaje) {
+    const cuando = proxima.conReciclaje
+      ? t("fundaCelesteVa")
+      : t("fundaCelesteGuarda", { dia: nombreDia(reciclaje) });
+    lineas.push(linea("celeste", "fundaCeleste", t("fundaCelesteQue"), " ", elemento("strong", {}, cuando)));
+  }
+  fundas.replaceChildren(...lineas);
   detalle.textContent = t("zonaDetalle", { zona: p.zona });
   pintarCalendario(p.zona);
 }
@@ -1252,23 +1255,48 @@ async function buscarDireccion(texto) {
   return lugar ? { lat: Number(lugar.lat), lon: Number(lugar.lon), nombre: lugar.display_name } : null;
 }
 
-function miUbicacion() {
+/**
+ * Pide la ubicación al navegador y escucha unos segundos: la primera lectura suele ser la
+ * aproximada (por la red) y el GPS o el wifi afinan después. Se queda con la más precisa.
+ */
+function miUbicacion({ suficiente = 100, espera = 8000 } = {}) {
   return new Promise((resolver, rechazar) => {
     if (!navigator.geolocation) {
       rechazar(new Error(t("geoNoSoportado")));
       return;
     }
-    navigator.geolocation.getCurrentPosition(
-      (pos) => resolver({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
-      (error) =>
-        rechazar(
-          new Error(
-            error.code === error.PERMISSION_DENIED ? t("geoSinPermiso") : t("geoError"),
-          ),
-        ),
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 },
+    let mejor = null;
+    let listo = false;
+    let vigilancia = null;
+    const terminar = (error) => {
+      if (listo) return;
+      listo = true;
+      clearTimeout(reloj);
+      if (vigilancia !== null) navigator.geolocation.clearWatch(vigilancia);
+      if (mejor && !error) resolver(mejor);
+      else rechazar(error ?? new Error(t("geoError")));
+    };
+    const reloj = setTimeout(() => terminar(), espera);
+    vigilancia = navigator.geolocation.watchPosition(
+      (pos) => {
+        const lectura = { lat: pos.coords.latitude, lon: pos.coords.longitude, precision: pos.coords.accuracy };
+        if (!mejor || lectura.precision < mejor.precision) mejor = lectura;
+        if (lectura.precision <= suficiente) terminar();
+      },
+      (error) => {
+        if (error.code === error.PERMISSION_DENIED) terminar(new Error(t("geoSinPermiso")));
+        else if (!mejor) terminar(new Error(t("geoError")));
+      },
+      { enableHighAccuracy: true, timeout: espera, maximumAge: 0 },
     );
   });
+}
+
+/** El aviso cuando la ubicación del navegador no sirve. */
+function textoProblemaUbicacion({ problema, km, metros }) {
+  return problema === "lejos"
+    ? t("geoLejos", { km: km.toLocaleString(etiquetaIdioma()) })
+    : t("geoImprecisa", { margen: formatoDistancia(metros) });
 }
 
 // ---------- Arranque ----------
@@ -1456,7 +1484,18 @@ async function iniciar() {
     boton.disabled = true;
     mensaje(t("buscandoUbicacion"));
     try {
-      elegir(await miUbicacion(), t("usandoUbicacion"), t("tuUbicacion"), { nombrar: true });
+      const lectura = await miUbicacion();
+      const problema = revisarUbicacion(lectura);
+      if (problema) {
+        mensaje(textoProblemaUbicacion(problema), true);
+        return;
+      }
+      const punto = { lat: lectura.lat, lon: lectura.lon };
+      elegir(punto, t("usandoUbicacion"), t("tuUbicacion"), { nombrar: true });
+      // Sirve, pero puede no ser la calle exacta: se dice cuánto margen tiene.
+      if (lectura.precision > PRECISION_EXACTA_M) {
+        mensaje(t("geoAproximada", { margen: formatoDistancia(lectura.precision) }));
+      }
     } catch (error) {
       mensaje(error.message, true);
     } finally {

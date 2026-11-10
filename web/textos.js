@@ -147,9 +147,12 @@ const TEXTOS = {
     fueraZonas: "Fuera de las zonas urbanas",
     fueraZonasDetalle:
       "Ese punto no está en ninguna de las 8 zonas urbanas de EMAC. En el área rural la recolección tiene otros horarios: consulta con EMAC EP.",
-    fundasConCeleste: "Ese día saca la [negra]funda negra y también la [celeste]funda celeste con los reciclables.",
-    fundasNormal: "Saca la [negra]funda negra. La [celeste]funda celeste, con reciclables, va el {dia}.",
-    fundasSoloNegra: "Saca la [negra]funda negra antes de la hora.",
+    fundaNegra: "Funda negra:",
+    fundaNegraQue: "restos de comida y todo lo que no se recicla. Va en cada recolección.",
+    fundaCeleste: "Funda celeste:",
+    fundaCelesteQue: "papel, cartón, plástico, vidrio y latas, limpios y secos.",
+    fundaCelesteVa: "Esta vez sácala también.",
+    fundaCelesteGuarda: "Esta vez no: guárdala hasta el {dia}.",
     zonaDetalle: "Zona {zona} de EMAC. Deja las fundas antes de que empiece el horario.",
     zonaTooltip: "Zona {zona}: {dias}, de {desde} a {hasta}",
     calendarioTitulo: "Recibe un aviso antes de cada recolección",
@@ -237,6 +240,12 @@ const TEXTOS = {
     geoNoSoportado: "Este navegador no permite compartir la ubicación.",
     geoSinPermiso: "El navegador no dio permiso para usar tu ubicación. Escribe tu dirección o toca el mapa.",
     geoError: "No se pudo obtener tu ubicación. Escribe tu dirección o toca el mapa.",
+    geoLejos:
+      "Tu navegador te ubica a {km} km de Cuenca. Eso pasa cuando calcula la ubicación por tu conexión a internet y no por GPS o wifi. Activa la ubicación del dispositivo (en el celular, el GPS; en Windows, Configuración › Privacidad y seguridad › Ubicación) y vuelve a intentarlo, o escribe tu dirección.",
+    geoAproximada:
+      "Tu ubicación es aproximada (margen de {margen}). Si el punto no está en tu calle, toca el mapa donde estás o escribe tu dirección.",
+    geoImprecisa:
+      "Tu navegador solo sabe dónde estás con un margen de {margen}, y así no se puede saber tu calle. Activa la ubicación precisa del dispositivo y vuelve a intentarlo, o escribe tu dirección o toca el mapa.",
   },
 
   en: {
@@ -379,9 +388,12 @@ const TEXTOS = {
     fueraZonas: "Outside the urban zones",
     fueraZonasDetalle:
       "That point isn’t in any of EMAC’s 8 urban zones. Rural areas have other collection times: check with EMAC EP.",
-    fundasConCeleste: "That day, put out the [negra]black bag and also the [celeste]light-blue bag with recyclables.",
-    fundasNormal: "Put out the [negra]black bag. The [celeste]light-blue bag, with recyclables, goes out on {dia}.",
-    fundasSoloNegra: "Put out the [negra]black bag before the collection time.",
+    fundaNegra: "Black bag:",
+    fundaNegraQue: "food scraps and anything that isn’t recycled. It goes out every collection.",
+    fundaCeleste: "Light-blue bag:",
+    fundaCelesteQue: "paper, cardboard, plastic, glass and cans, clean and dry.",
+    fundaCelesteVa: "Put it out this time too.",
+    fundaCelesteGuarda: "Not this time: keep it until {dia}.",
     zonaDetalle: "EMAC zone {zona}. Put the bags out before the collection window starts.",
     zonaTooltip: "Zone {zona}: {dias}, {desde} to {hasta}",
     calendarioTitulo: "Get a reminder before every collection",
@@ -469,6 +481,12 @@ const TEXTOS = {
     geoNoSoportado: "This browser can’t share your location.",
     geoSinPermiso: "The browser didn’t allow access to your location. Type your address or tap the map.",
     geoError: "Your location couldn’t be found. Type your address or tap the map.",
+    geoLejos:
+      "Your browser places you {km} km from Cuenca. That happens when it works out your location from your internet connection instead of GPS or Wi-Fi. Turn on your device’s location (GPS on a phone; on Windows, Settings › Privacy & security › Location) and try again, or type your address.",
+    geoAproximada:
+      "Your location is approximate (within {margen}). If the pin isn’t on your street, tap the map where you are or type your address.",
+    geoImprecisa:
+      "Your browser only knows where you are to within {margen}, which isn’t enough to find your street. Turn on precise location on your device and try again, or type your address or tap the map.",
   },
 };
 

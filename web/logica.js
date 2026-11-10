@@ -158,6 +158,23 @@ export function distanciaMetros(a, b) {
   return 2 * radio * Math.asin(Math.sqrt(h));
 }
 
+/** A más de esto del centro, una ubicación no es de Cuenca (el cantón llega a unos 30 km). */
+export const LEJOS_DE_CUENCA_KM = 40;
+/** Con un margen mayor, la ubicación no sirve para saber en qué calle está alguien. */
+export const PRECISION_MAXIMA_M = 1000;
+
+/**
+ * Revisa lo que dio el navegador ({lat, lon, precision} en metros). Devuelve null si sirve,
+ * o el problema: muy lejos de Cuenca (típico de la ubicación por la conexión a internet,
+ * que en Ecuador suele caer en Quito o Guayaquil) o con demasiado margen de error.
+ */
+export function revisarUbicacion(lectura) {
+  const km = distanciaMetros(lectura, CENTRO_CUENCA) / 1000;
+  if (km > LEJOS_DE_CUENCA_KM) return { problema: "lejos", km: Math.round(km) };
+  if (lectura.precision > PRECISION_MAXIMA_M) return { problema: "imprecisa", metros: lectura.precision };
+  return null;
+}
+
 /** El elemento (punto GeoJSON) más cercano, con su distancia en metros, o null si está a más de `maximoMetros`. */
 export function masCercano(punto, coleccion, maximoMetros = 1500) {
   let mejor = null;

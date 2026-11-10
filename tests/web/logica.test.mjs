@@ -21,6 +21,7 @@ import {
   proximaRecoleccion,
   puntoDesdeHash,
   puntoEnGeometria,
+  revisarUbicacion,
   VERSION_CALENDARIOS,
   zonaDe,
 } from "../../web/logica.js";
@@ -250,4 +251,20 @@ test("filtrarFarmacias busca en el nombre y la dirección", () => {
   assert.equal(filtrarFarmacias(lista, "ordonez").length, 1);
   assert.equal(filtrarFarmacias(lista, "MUNOZ")[0].nombre, "Soy Formulador");
   assert.equal(filtrarFarmacias(lista, "").length, 2);
+});
+
+test("revisarUbicacion descarta la ubicación por internet y la muy imprecisa", () => {
+  // En el Parque Calderón, con el margen de un celular o un wifi.
+  assert.equal(revisarUbicacion({ lat: -2.8974, lon: -79.0045, precision: 25 }), null);
+  // Baños, a unos 7 km del centro, sigue siendo Cuenca.
+  assert.equal(revisarUbicacion({ lat: -2.9196, lon: -79.0661, precision: 60 }), null);
+  // Quito: lo que da el navegador cuando solo se basa en la conexión a internet.
+  const quito = revisarUbicacion({ lat: -0.2201, lon: -78.5123, precision: 20000 });
+  assert.equal(quito.problema, "lejos");
+  assert.ok(quito.km > 290 && quito.km < 310, String(quito.km));
+  // En Cuenca, pero con varios kilómetros de margen: no sirve para saber la calle.
+  assert.deepEqual(revisarUbicacion({ lat: -2.9, lon: -79.0, precision: 5000 }), {
+    problema: "imprecisa",
+    metros: 5000,
+  });
 });
