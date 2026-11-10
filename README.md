@@ -99,6 +99,9 @@ Parque Calderón está en la zona 4.
 
 ### Lo que hay que saber de cada fuente
 
+En [`docs/fuentes.md`](docs/fuentes.md) está el mapa completo: para cada servicio, dónde se publica hoy, qué
+tan al día está, si se puede leer automáticamente y qué no tiene fuente.
+
 - **Recolección (EMAC).** Viene del mapa de Google que EMAC publica en su web. Según EMAC, la funda
   celeste (reciclables) se recoge los miércoles o los jueves; `dia_reciclaje` indica cuál toca en cada zona.
   Con las mismas zonas se generan los calendarios `.ics`: quien se suscribe recibe los cambios de horario
