@@ -1,17 +1,35 @@
 // Página de datos abiertos: pinta el catálogo (datos/indice.json) con la última
-// actualización de cada fuente (datos/estado.json).
+// actualización de cada fuente (datos/estado.json), en español o en inglés.
 
-const TEMAS = {
-  basura: "Basura",
-  luz: "Luz",
-  agua: "Agua",
-  salud: "Farmacias",
-  transporte: "Buses y tranvía",
-  ciudad: "Calles y movilidad",
-  control: "Control",
-};
+import { etiquetaIdioma, idioma, idiomaInicial, t, usarIdioma } from "./textos.js";
+
+const CLAVE_IDIOMA = "morlaco:idioma"; // la misma que la página principal
 
 const $ = (id) => document.getElementById(id);
+
+function leer(clave) {
+  try {
+    return localStorage.getItem(clave);
+  } catch {
+    return null;
+  }
+}
+
+function guardar(clave, valor) {
+  try {
+    localStorage.setItem(clave, valor);
+  } catch {
+    // Sin almacenamiento (modo privado, por ejemplo): no pasa nada.
+  }
+}
+
+function aplicarTextos() {
+  document.documentElement.lang = etiquetaIdioma();
+  document.title = t("dtTituloPagina");
+  for (const nodo of document.querySelectorAll("[data-t]")) nodo.textContent = t(nodo.dataset.t);
+  for (const nodo of document.querySelectorAll("[data-t-html]")) nodo.innerHTML = t(nodo.dataset.tHtml);
+  for (const nodo of document.querySelectorAll("[data-t-aria-label]")) nodo.setAttribute("aria-label", t(nodo.dataset.tAriaLabel));
+}
 
 function elemento(etiqueta, atributos = {}, ...hijos) {
   const nodo = document.createElement(etiqueta);
@@ -23,27 +41,28 @@ function elemento(etiqueta, atributos = {}, ...hijos) {
   return nodo;
 }
 
-const fecha = new Intl.DateTimeFormat("es-EC", { dateStyle: "long", timeStyle: "short", timeZone: "America/Guayaquil" });
-
 /** "Actualizado el …" de un conjunto, si su fuente de Morlaco aparece en estado.json. */
 function actualizado(conjunto, estado) {
-  if (!conjunto.fuente_morlaco) return conjunto.frecuencia === "a mano" ? "Se revisa a mano." : null;
+  if (!conjunto.fuente_morlaco) return conjunto.frecuencia === "a mano" ? t("dtSeRevisaAMano") : null;
   const e = estado?.[conjunto.fuente_morlaco];
   if (!e?.actualizado) return null;
+  const fecha = new Intl.DateTimeFormat(etiquetaIdioma(), { dateStyle: "long", timeStyle: "short", timeZone: "America/Guayaquil" });
   // "7:37 a. m." ya termina en punto: no se añade otro.
   const cuando = fecha.format(new Date(e.actualizado));
-  const texto = `Actualizado el ${cuando}${cuando.endsWith(".") ? "" : "."}`;
-  return e.ok ? texto : `${texto} El último intento falló: se muestran los datos anteriores.`;
+  const texto = t("dtActualizado", { fecha: `${cuando}${cuando.endsWith(".") ? "" : "."}` });
+  return e.ok ? texto : `${texto} ${t("dtFallo")}`;
 }
 
 function pintarConjunto(c, estado) {
+  // En inglés, la descripción del catálogo en inglés; los campos y las rutas no se traducen.
+  const texto = idioma() === "en" && c.en ? { ...c, ...c.en } : c;
   const enlace = c.archivo.includes(",") || c.archivo.includes("zona-N") ? null : c.url;
-  const campos = Object.entries(c.campos ?? {});
+  const campos = Object.entries(texto.campos ?? {});
   return elemento(
     "article",
     { class: "conjunto", id: c.id },
-    elemento("h4", {}, c.titulo),
-    elemento("p", {}, c.descripcion),
+    elemento("h4", {}, texto.titulo),
+    elemento("p", {}, texto.descripcion),
     elemento(
       "p",
       { class: "conjunto-url" },
@@ -52,21 +71,21 @@ function pintarConjunto(c, estado) {
     elemento(
       "dl",
       { class: "conjunto-ficha" },
-      elemento("dt", {}, "Formato"),
-      elemento("dd", {}, c.formato),
-      elemento("dt", {}, "Se actualiza"),
-      elemento("dd", {}, c.frecuencia),
-      elemento("dt", {}, "Fuente"),
-      elemento("dd", {}, c.fuente),
-      elemento("dt", {}, "Licencia"),
-      elemento("dd", {}, c.licencia),
+      elemento("dt", {}, t("dtFormato")),
+      elemento("dd", {}, texto.formato),
+      elemento("dt", {}, t("dtFrecuencia")),
+      elemento("dd", {}, texto.frecuencia),
+      elemento("dt", {}, t("fuente")),
+      elemento("dd", {}, texto.fuente),
+      elemento("dt", {}, t("dtLicencia")),
+      elemento("dd", {}, texto.licencia),
     ),
     campos.length
       ? elemento(
           "details",
           { class: "conjunto-campos" },
-          elemento("summary", {}, `Campos principales (${campos.length})`),
-          elemento("dl", {}, ...campos.flatMap(([nombre, texto]) => [elemento("dt", {}, elemento("code", {}, nombre)), elemento("dd", {}, texto)])),
+          elemento("summary", {}, t("dtCampos", { n: campos.length })),
+          elemento("dl", {}, ...campos.flatMap(([nombre, descripcion]) => [elemento("dt", {}, elemento("code", {}, nombre)), elemento("dd", {}, descripcion)])),
         )
       : null,
     elemento("p", { class: "detalle" }, actualizado(c, estado)),
@@ -74,6 +93,13 @@ function pintarConjunto(c, estado) {
 }
 
 async function iniciar() {
+  usarIdioma(idiomaInicial(leer(CLAVE_IDIOMA), navigator.languages ?? [navigator.language]));
+  aplicarTextos();
+  $("idioma").addEventListener("click", () => {
+    guardar(CLAVE_IDIOMA, idioma() === "en" ? "es" : "en");
+    location.reload();
+  });
+
   try {
     const [indice, estado] = await Promise.all(
       ["../datos/indice.json", "../datos/estado.json"].map((r) => fetch(r).then((x) => (x.ok ? x.json() : null))),
@@ -84,15 +110,15 @@ async function iniciar() {
       if (!porTema.has(c.tema)) porTema.set(c.tema, []);
       porTema.get(c.tema).push(c);
     }
+    const temas = t("dtTemas");
     $("datos-lista").replaceChildren(
       ...[...porTema].map(([tema, conjuntos]) =>
-        elemento("section", { class: "tema" }, elemento("h3", {}, TEMAS[tema] ?? tema), ...conjuntos.map((c) => pintarConjunto(c, estado))),
+        elemento("section", { class: "tema" }, elemento("h3", {}, temas[tema] ?? tema), ...conjuntos.map((c) => pintarConjunto(c, estado))),
       ),
     );
     $("datos-cargando").remove();
   } catch {
-    $("datos-cargando").textContent = "No se pudo cargar el catálogo. Está en ";
-    $("datos-cargando").append(elemento("a", { href: "../datos/indice.json" }, "indice.json"), ".");
+    $("datos-cargando").innerHTML = t("dtSinCatalogo");
   }
 }
 

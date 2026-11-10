@@ -93,6 +93,60 @@ const TEXTOS = {
     aguaNota: "Cortes anunciados por ETAPA EP y publicados en prensa. Para confirmar, llama a la línea 188.",
     aguaError: "No se pudieron cargar los cortes de agua. Consulta a",
     fuente: "Fuente",
+    // Página de datos abiertos (datos.html).
+    dtTituloPagina: "Datos abiertos de Morlaco",
+    dtVolver: "Volver a la página",
+    dtTitulo: "Datos abiertos de Cuenca",
+    dtEntrada:
+      "Todo lo que muestra Morlaco está aquí en archivos abiertos: basura, luz, agua, farmacias de turno, buses y calles. Se actualizan solos cada día y cualquiera puede usarlos en su app, su bot, su mapa o su investigación.",
+    dtUsarTitulo: "Cómo usarlos",
+    dtUsar:
+      'Son archivos estáticos en direcciones fijas, sin claves ni registro. Se pueden leer desde cualquier programa y también desde otra página web: el servidor lo permite (<abbr title="Cross-Origin Resource Sharing">CORS</abbr> abierto).',
+    dtBase: "Dirección base",
+    dtCatalogo: "Catálogo",
+    dtCatalogoTexto:
+      '<a href="../datos/indice.json"><code>indice.json</code></a>: la lista de todos los archivos, con sus campos, su frecuencia y su licencia.',
+    dtActualizacion: "Última actualización",
+    dtActualizacionTexto: '<a href="../datos/estado.json"><code>estado.json</code></a>: cuándo se actualizó cada fuente y si falló.',
+    dtHoras: "Horas",
+    dtHorasTexto: "Las horas sin zona son de Cuenca (UTC-5, sin horario de verano). Las de <code>estado.json</code> van en UTC.",
+    dtIdiomas: "Idiomas",
+    dtIdiomasTexto:
+      "Los nombres de campos van en español. Los textos para personas traen versión en inglés donde existe (<code>es</code> y <code>en</code>), y el catálogo describe cada archivo en los dos idiomas.",
+    dtEjemploJs: "Por ejemplo, los días de recolección de cada zona, desde JavaScript:",
+    dtEjemploCurl: "O desde la terminal:",
+    dtDatosTitulo: "Los datos",
+    dtCargando: 'Cargando el catálogo… Si no aparece, está en <a href="../datos/indice.json">indice.json</a>.',
+    dtSinCatalogo: 'No se pudo cargar el catálogo. Está en <a href="../datos/indice.json">indice.json</a>.',
+    dtTemas: { basura: "Basura", luz: "Luz", agua: "Agua", salud: "Farmacias", transporte: "Buses y tranvía", ciudad: "Calles y movilidad", control: "Control" },
+    dtFormato: "Formato",
+    dtFrecuencia: "Se actualiza",
+    dtLicencia: "Licencia",
+    dtCampos: ({ n }) => `Campos principales (${n})`,
+    dtActualizado: "Actualizado el {fecha}",
+    dtFallo: "El último intento falló: se muestran los datos anteriores.",
+    dtSeRevisaAMano: "Se revisa a mano.",
+    dtEstabilidadTitulo: "Estabilidad",
+    dtEstabilidad:
+      'Esta es la <strong>versión 1</strong> de los datos. Los campos que lista el catálogo no cambian de nombre ni de tipo, ni desaparecen, sin aviso. Se pueden añadir campos nuevos en cualquier momento, así que tu programa debe ignorar los que no conozca. Un cambio incompatible sube la versión y se anuncia en el <a href="https://github.com/NezuSas/morlaco#readme">README</a> al menos 30 días antes.',
+    dtEstabilidadFuentes:
+      "Los datos son tan buenos como sus fuentes: cada archivo dice de dónde sale en su <code>metadata</code>. Si una fuente deja de publicar, el archivo conserva lo último que publicó y <code>estado.json</code> lo indica.",
+    dtLicenciasTitulo: "Licencias",
+    dtLicenciaPortal:
+      "<strong>Datos del portal Cuenca en Datos</strong> (zonas de recolección, buses, paradas, GTFS): Creative Commons Atribución-NoComercial. Úsalos citando la fuente y sin fines comerciales.",
+    dtLicenciaOsm:
+      "<strong>Datos de OpenStreetMap</strong> (calles, BiciPública, ciclovías, carga eléctrica): ODbL. Cita «© colaboradores de OpenStreetMap».",
+    dtLicenciaPublica:
+      "<strong>Datos de Centro Sur, ARCSA, el tranvía y la prensa</strong>: información pública de cada institución o medio. Cita la fuente que indica cada archivo.",
+    dtLicenciaMorlaco:
+      "<strong>Lo que Morlaco recopila a mano</strong> (pasaje, cambios de líneas, cortes de agua, feriados): Creative Commons Atribución 4.0. Cita «Morlaco».",
+    dtLicenciaCodigo: "El código de Morlaco es software libre con licencia MIT.",
+    dtNoOficial: "Morlaco no es un servicio oficial ni tiene relación con las instituciones que publican los datos.",
+    dtContactoTitulo: "¿Construyes algo con estos datos?",
+    dtContacto:
+      'Cuéntanos en <a href="mailto:nezu.ec@nezuecuador.com">nezu.ec@nezuecuador.com</a> o en <a href="https://github.com/NezuSas/morlaco/issues/new/choose">GitHub</a>: nos ayuda a saber qué no puede cambiar y a avisarte antes. Si un dato está mal, avísanos igual.',
+    dtAutoria:
+      'Hecho en Cuenca por <a href="https://www.nezuecuador.com/">Nezu S.A.S.</a> Código en <a href="https://github.com/NezuSas/morlaco">GitHub</a>.',
     navAire: "Aire",
     tituloAire: "Calidad del aire",
     aireNiveles: ["Buena", "Moderada", "Insalubre para grupos sensibles", "Insalubre", "Muy insalubre", "Peligrosa"],
@@ -402,6 +456,60 @@ const TEXTOS = {
     aguaNota: "Cuts announced by ETAPA EP and reported in the press. To confirm, call 188.",
     aguaError: "Water cuts couldn’t be loaded. Check with",
     fuente: "Source",
+    // Open data page (datos.html).
+    dtTituloPagina: "Morlaco open data",
+    dtVolver: "Back to the page",
+    dtTitulo: "Open data for Cuenca",
+    dtEntrada:
+      "Everything Morlaco shows is here in open files: garbage, power, water, on-duty pharmacies, buses and streets. They update themselves every day and anyone can use them in their app, bot, map or research.",
+    dtUsarTitulo: "How to use them",
+    dtUsar:
+      'They are static files at fixed addresses, with no keys or sign-up. Any program can read them, including another website: the server allows it (open <abbr title="Cross-Origin Resource Sharing">CORS</abbr>).',
+    dtBase: "Base address",
+    dtCatalogo: "Catalogue",
+    dtCatalogoTexto:
+      '<a href="../datos/indice.json"><code>indice.json</code></a>: the list of every file, with its fields, update frequency and license.',
+    dtActualizacion: "Last update",
+    dtActualizacionTexto: '<a href="../datos/estado.json"><code>estado.json</code></a>: when each source was last updated and whether it failed.',
+    dtHoras: "Times",
+    dtHorasTexto: "Times without a zone are Cuenca time (UTC-5, no daylight saving). Those in <code>estado.json</code> are UTC.",
+    dtIdiomas: "Languages",
+    dtIdiomasTexto:
+      "Field names are in Spanish. Text meant for people comes with an English version where available (<code>es</code> and <code>en</code>), and the catalogue describes every file in both languages.",
+    dtEjemploJs: "For example, each zone's collection days, from JavaScript:",
+    dtEjemploCurl: "Or from the terminal:",
+    dtDatosTitulo: "The data",
+    dtCargando: 'Loading the catalogue… If it doesn’t appear, it’s at <a href="../datos/indice.json">indice.json</a>.',
+    dtSinCatalogo: 'The catalogue couldn’t be loaded. It’s at <a href="../datos/indice.json">indice.json</a>.',
+    dtTemas: { basura: "Garbage", luz: "Power", agua: "Water", salud: "Pharmacies", transporte: "Buses and tram", ciudad: "Streets and mobility", control: "Status" },
+    dtFormato: "Format",
+    dtFrecuencia: "Updated",
+    dtLicencia: "License",
+    dtCampos: ({ n }) => `Main fields (${n})`,
+    dtActualizado: "Updated on {fecha}",
+    dtFallo: "The last attempt failed: the previous data is shown.",
+    dtSeRevisaAMano: "Reviewed by hand.",
+    dtEstabilidadTitulo: "Stability",
+    dtEstabilidad:
+      'This is <strong>version 1</strong> of the data. Fields listed in the catalogue will not be renamed, change type or disappear without notice. New fields may be added at any time, so your program should ignore the ones it doesn’t know. An incompatible change bumps the version and is announced in the <a href="https://github.com/NezuSas/morlaco#readme">README</a> at least 30 days ahead.',
+    dtEstabilidadFuentes:
+      "The data is only as good as its sources: each file says where it comes from in its <code>metadata</code>. If a source stops publishing, the file keeps the last thing it published and <code>estado.json</code> says so.",
+    dtLicenciasTitulo: "Licenses",
+    dtLicenciaPortal:
+      "<strong>Data from the Cuenca en Datos portal</strong> (collection zones, buses, stops, GTFS): Creative Commons Attribution-NonCommercial. Use it citing the source and not for commercial purposes.",
+    dtLicenciaOsm:
+      "<strong>OpenStreetMap data</strong> (streets, BiciPública, bike lanes, EV charging): ODbL. Credit “© OpenStreetMap contributors”.",
+    dtLicenciaPublica:
+      "<strong>Data from Centro Sur, ARCSA, the tram and the press</strong>: public information from each institution or outlet. Cite the source each file names.",
+    dtLicenciaMorlaco:
+      "<strong>What Morlaco compiles by hand</strong> (fares, line changes, water cuts, holidays): Creative Commons Attribution 4.0. Credit “Morlaco”.",
+    dtLicenciaCodigo: "Morlaco’s code is free software under the MIT license.",
+    dtNoOficial: "Morlaco is not an official service and has no relationship with the institutions that publish the data.",
+    dtContactoTitulo: "Building something with this data?",
+    dtContacto:
+      'Tell us at <a href="mailto:nezu.ec@nezuecuador.com">nezu.ec@nezuecuador.com</a> or on <a href="https://github.com/NezuSas/morlaco/issues/new/choose">GitHub</a>: it helps us know what must not change and warn you ahead of time. If something is wrong, let us know too.',
+    dtAutoria:
+      'Made in Cuenca by <a href="https://www.nezuecuador.com/">Nezu S.A.S.</a> Code on <a href="https://github.com/NezuSas/morlaco">GitHub</a>.',
     navAire: "Air",
     tituloAire: "Air quality",
     aireNiveles: ["Good", "Moderate", "Unhealthy for sensitive groups", "Unhealthy", "Very unhealthy", "Hazardous"],
@@ -469,7 +577,7 @@ const TEXTOS = {
     pieFuentes:
       'Data from <a href="https://emac.gob.ec/mapa-zonas-de-recoleccion/">EMAC EP</a>, <a href="https://www.centrosur.gob.ec/suspensiones-programadas/">Centro Sur</a> and the city’s <a href="https://cuencaendatos.cuenca.gob.ec">Cuenca en Datos</a> portal. Streets: © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors (ODbL).',
     pieColaborar:
-      'Is something wrong, or can’t it find your corner? Email us at <a data-aviso href="mailto:nezu.ec@nezuecuador.com">nezu.ec@nezuecuador.com</a> or, if you have a GitHub account, <a href="https://github.com/NezuSas/morlaco/issues/new/choose">open an issue</a>. Do you code? <a href="https://github.com/NezuSas/morlaco/blob/main/CONTRIBUTING.md">Help build Morlaco</a>. All the data is open: <a href="datos.html">use it in your app or research</a> (page in Spanish).',
+      'Is something wrong, or can’t it find your corner? Email us at <a data-aviso href="mailto:nezu.ec@nezuecuador.com">nezu.ec@nezuecuador.com</a> or, if you have a GitHub account, <a href="https://github.com/NezuSas/morlaco/issues/new/choose">open an issue</a>. Do you code? <a href="https://github.com/NezuSas/morlaco/blob/main/CONTRIBUTING.md">Help build Morlaco</a>. All the data is open: <a href="datos.html">use it in your app or research</a>.',
     pieAviso:
       "Streets are searched on this page; only when you search for a place (like a park or a mall) is the text sent to OpenStreetMap (Nominatim) to find it. Air quality is requested from EMOV’s website, without sending it your location.",
     sobreTitulo:

@@ -57,6 +57,20 @@ una app o un análisis.
 > Morlaco **no es un servicio oficial** ni está afiliado a EMAC EP, Centro Sur, ETAPA EP ni al GAD
 > Municipal de Cuenca. Cada archivo indica de dónde salió. Ante cualquier duda, manda la fuente oficial.
 
+## In English
+
+Morlaco tells you what's happening today on your street in Cuenca, Ecuador: when the garbage truck comes,
+planned power and water cuts, on-duty pharmacies, nearby buses, the tram and air quality. The
+[website](https://nezusas.github.io/morlaco/web/) is available in Spanish and English.
+
+All the data is open: static JSON, GeoJSON, GTFS and iCalendar files at
+`https://nezusas.github.io/morlaco/datos/`, readable from any program or website (open CORS) and updated
+every day. The [open data page](https://nezusas.github.io/morlaco/web/datos.html) explains how to use them,
+and the [catalogue](https://nezusas.github.io/morlaco/datos/indice.json) describes every file in Spanish and
+English. Field names are in Spanish. Each file keeps its source's license (see below); what Morlaco compiles by
+hand is CC BY 4.0. Morlaco is built and maintained by [Nezu S.A.S.](https://www.nezuecuador.com/) in Cuenca
+and is not an official service.
+
 ## Qué datos hay
 
 | Archivo | Qué contiene | Fuente |

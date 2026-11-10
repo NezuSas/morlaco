@@ -24,6 +24,23 @@ def test_cada_conjunto_esta_completo():
         assert c["fuente_morlaco"] is None or c["fuente_morlaco"] in cli.FUENTES, c["id"]
 
 
+def test_cada_conjunto_tiene_su_version_en_ingles():
+    assert set(catalogo.EN) == {c["id"] for c in catalogo.CONJUNTOS}
+    for c in catalogo.CONJUNTOS:
+        en = catalogo.EN[c["id"]]
+        for clave in ("titulo", "descripcion", "frecuencia"):
+            assert en[clave].strip(), (c["id"], clave)
+        assert set(en["campos"]) == set(c["campos"]), c["id"]
+        assert c["licencia"] in catalogo.LICENCIAS_EN
+    # En inglés no queda ningún formato ni fuente con palabras en español.
+    for conjunto in catalogo.indice()["conjuntos"]:
+        for clave in ("formato", "fuente"):
+            texto = conjunto["en"][clave]
+            assert not any(
+                p in texto for p in ("polígonos", "líneas", "puntos", " y ", "portal Cuenca")
+            ), texto
+
+
 def test_los_archivos_del_catalogo_existen():
     for c in catalogo.CONJUNTOS:
         for archivo in _archivos(c):

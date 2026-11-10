@@ -26,20 +26,21 @@
     <link rel="stylesheet" href="estilos.css" />
   </head>
   <body class="pagina-datos">
-    <a class="saltar" href="#contenido">Saltar al contenido</a>
+    <a class="saltar" href="#contenido" data-t="saltar">Saltar al contenido</a>
     <header class="barra">
       <a class="marca" href="./" aria-label="Morlaco, inicio">
         <img src="icono.svg" alt="" width="30" height="30" />
         <span>Morlaco</span>
       </a>
       <div class="barra-acciones">
-        <a class="enlace-datos" href="./">Volver a la página</a>
+        <button type="button" id="idioma" class="idioma" lang="en" data-t="cambiarIdioma" data-t-aria-label="cambiarIdiomaAria">English</button>
+        <a class="enlace-datos" href="./" data-t="dtVolver">Volver a la página</a>
       </div>
     </header>
 
     <div class="muro muro-datos">
-      <h1>Datos abiertos de Cuenca</h1>
-      <p class="entrada">
+      <h1 data-t="dtTitulo">Datos abiertos de Cuenca</h1>
+      <p class="entrada" data-t="dtEntrada">
         Todo lo que muestra Morlaco está aquí en archivos abiertos: basura, luz, agua, farmacias de turno,
         buses y calles. Se actualizan solos cada día y cualquiera puede usarlos en su app, su bot, su mapa o
         su investigación.
@@ -48,50 +49,52 @@
 
     <main id="contenido" class="datos-contenido" tabindex="-1">
       <section aria-labelledby="t-usar">
-        <h2 id="t-usar">Cómo usarlos</h2>
-        <p>
+        <h2 id="t-usar" data-t="dtUsarTitulo">Cómo usarlos</h2>
+        <p data-t-html="dtUsar">
           Son archivos estáticos en direcciones fijas, sin claves ni registro. Se pueden leer desde cualquier
           programa y también desde otra página web: el servidor lo permite (<abbr title="Cross-Origin Resource Sharing">CORS</abbr> abierto).
         </p>
         <dl class="datos-claves">
-          <dt>Dirección base</dt>
+          <dt data-t="dtBase">Dirección base</dt>
           <dd><code>https://nezusas.github.io/morlaco/datos/</code></dd>
-          <dt>Catálogo</dt>
-          <dd><a href="../datos/indice.json"><code>indice.json</code></a>: la lista de todos los archivos, con sus campos, su frecuencia y su licencia.</dd>
-          <dt>Última actualización</dt>
-          <dd><a href="../datos/estado.json"><code>estado.json</code></a>: cuándo se actualizó cada fuente y si falló.</dd>
-          <dt>Horas</dt>
-          <dd>Las horas sin zona son de Cuenca (UTC-5, sin horario de verano). Las de <code>estado.json</code> van en UTC.</dd>
+          <dt data-t="dtCatalogo">Catálogo</dt>
+          <dd data-t-html="dtCatalogoTexto"><a href="../datos/indice.json"><code>indice.json</code></a>: la lista de todos los archivos, con sus campos, su frecuencia y su licencia.</dd>
+          <dt data-t="dtActualizacion">Última actualización</dt>
+          <dd data-t-html="dtActualizacionTexto"><a href="../datos/estado.json"><code>estado.json</code></a>: cuándo se actualizó cada fuente y si falló.</dd>
+          <dt data-t="dtHoras">Horas</dt>
+          <dd data-t-html="dtHorasTexto">Las horas sin zona son de Cuenca (UTC-5, sin horario de verano). Las de <code>estado.json</code> van en UTC.</dd>
+          <dt data-t="dtIdiomas">Idiomas</dt>
+          <dd data-t-html="dtIdiomasTexto">Los nombres de campos van en español. Los textos para personas traen versión en inglés donde existe (<code>es</code> y <code>en</code>), y el catálogo describe cada archivo en los dos idiomas.</dd>
         </dl>
-        <p>Por ejemplo, la zona de recolección de un punto, desde JavaScript:</p>
+        <p data-t="dtEjemploJs">Por ejemplo, los días de recolección de cada zona, desde JavaScript:</p>
         <pre><code>const zonas = await fetch("https://nezusas.github.io/morlaco/datos/recoleccion/zonas.geojson")
   .then((r) =&gt; r.json());
 for (const zona of zonas.features) {
   const { zona: numero, dias, desde, hasta } = zona.properties;
   console.log(`Zona ${numero}: ${dias.join(", ")}, de ${desde} a ${hasta}`);
 }</code></pre>
-        <p>O desde la terminal:</p>
+        <p data-t="dtEjemploCurl">O desde la terminal:</p>
         <pre><code>curl -s https://nezusas.github.io/morlaco/datos/farmacias/turnos.json</code></pre>
       </section>
 
       <section aria-labelledby="t-datos">
-        <h2 id="t-datos">Los datos</h2>
-        <p id="datos-cargando" class="detalle">
+        <h2 id="t-datos" data-t="dtDatosTitulo">Los datos</h2>
+        <p id="datos-cargando" class="detalle" data-t-html="dtCargando">
           Cargando el catálogo… Si no aparece, está en <a href="../datos/indice.json">indice.json</a>.
         </p>
         <div id="datos-lista"></div>
       </section>
 
       <section aria-labelledby="t-estabilidad">
-        <h2 id="t-estabilidad">Estabilidad</h2>
-        <p>
+        <h2 id="t-estabilidad" data-t="dtEstabilidadTitulo">Estabilidad</h2>
+        <p data-t-html="dtEstabilidad">
           Esta es la <strong>versión 1</strong> de los datos. Los campos que lista el catálogo no cambian de
           nombre ni de tipo, ni desaparecen, sin aviso. Se pueden añadir campos nuevos en cualquier momento,
           así que tu programa debe ignorar los que no conozca. Un cambio incompatible sube la versión y se
           anuncia en el <a href="https://github.com/NezuSas/morlaco#readme">README</a> al menos 30 días
           antes.
         </p>
-        <p>
+        <p data-t-html="dtEstabilidadFuentes">
           Los datos son tan buenos como sus fuentes: cada archivo dice de dónde sale en su
           <code>metadata</code>. Si una fuente deja de publicar, el archivo conserva lo último que publicó y
           <code>estado.json</code> lo indica.
@@ -99,39 +102,27 @@ for (const zona of zonas.features) {
       </section>
 
       <section aria-labelledby="t-licencias">
-        <h2 id="t-licencias">Licencias</h2>
+        <h2 id="t-licencias" data-t="dtLicenciasTitulo">Licencias</h2>
         <ul class="datos-licencias">
-          <li>
-            <strong>Datos del portal Cuenca en Datos</strong> (zonas de recolección, buses, paradas, GTFS):
-            Creative Commons Atribución-NoComercial. Úsalos citando la fuente y sin fines comerciales.
-          </li>
-          <li>
-            <strong>Datos de OpenStreetMap</strong> (calles, BiciPública, ciclovías, carga eléctrica): ODbL.
-            Cita «© colaboradores de OpenStreetMap».
-          </li>
-          <li>
-            <strong>Datos de Centro Sur, ARCSA, el tranvía y la prensa</strong>: información pública de cada
-            institución o medio. Cita la fuente que indica cada archivo.
-          </li>
-          <li>
-            <strong>Lo que Morlaco recopila a mano</strong> (pasaje, cambios de líneas, cortes de agua,
-            feriados): Creative Commons Atribución 4.0. Cita «Morlaco».
-          </li>
-          <li>El código de Morlaco es software libre con licencia MIT.</li>
+          <li data-t-html="dtLicenciaPortal"><strong>Datos del portal Cuenca en Datos</strong> (zonas de recolección, buses, paradas, GTFS): Creative Commons Atribución-NoComercial. Úsalos citando la fuente y sin fines comerciales.</li>
+          <li data-t-html="dtLicenciaOsm"><strong>Datos de OpenStreetMap</strong> (calles, BiciPública, ciclovías, carga eléctrica): ODbL. Cita «© colaboradores de OpenStreetMap».</li>
+          <li data-t-html="dtLicenciaPublica"><strong>Datos de Centro Sur, ARCSA, el tranvía y la prensa</strong>: información pública de cada institución o medio. Cita la fuente que indica cada archivo.</li>
+          <li data-t-html="dtLicenciaMorlaco"><strong>Lo que Morlaco recopila a mano</strong> (pasaje, cambios de líneas, cortes de agua, feriados): Creative Commons Atribución 4.0. Cita «Morlaco».</li>
+          <li data-t="dtLicenciaCodigo">El código de Morlaco es software libre con licencia MIT.</li>
         </ul>
-        <p class="detalle">
+        <p class="detalle" data-t="dtNoOficial">
           Morlaco no es un servicio oficial ni tiene relación con las instituciones que publican los datos.
         </p>
       </section>
 
       <section aria-labelledby="t-contacto">
-        <h2 id="t-contacto">¿Construyes algo con estos datos?</h2>
-        <p>
+        <h2 id="t-contacto" data-t="dtContactoTitulo">¿Construyes algo con estos datos?</h2>
+        <p data-t-html="dtContacto">
           Cuéntanos en <a href="mailto:nezu.ec@nezuecuador.com">nezu.ec@nezuecuador.com</a> o en
           <a href="https://github.com/NezuSas/morlaco/issues/new/choose">GitHub</a>: nos ayuda a saber qué
           no puede cambiar y a avisarte antes. Si un dato está mal, avísanos igual.
         </p>
-        <p class="autoria">
+        <p class="autoria" data-t-html="dtAutoria">
           Hecho en Cuenca por <a href="https://www.nezuecuador.com/">Nezu S.A.S.</a>
           Código en <a href="https://github.com/NezuSas/morlaco">GitHub</a>.
         </p>

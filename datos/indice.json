@@ -3,6 +3,12 @@
   "descripcion": "Servicios públicos de Cuenca, Ecuador: basura, luz, agua, farmacias, buses y calles. Archivos estáticos que cualquiera puede leer, también desde otra página web (CORS).",
   "version": 1,
   "estabilidad": "Los campos listados no cambian de nombre ni de tipo, ni desaparecen, sin aviso. Se pueden añadir campos nuevos. Un cambio incompatible sube la versión y se anuncia en el README al menos 30 días antes.",
+  "en": {
+    "titulo": "Morlaco open data",
+    "descripcion": "Public services in Cuenca, Ecuador: garbage, power, water, pharmacies, buses and streets. Static files anyone can read, including from another website (CORS).",
+    "estabilidad": "Listed fields will not be renamed, change type or disappear without notice. New fields may be added. An incompatible change bumps the version and is announced in the README at least 30 days ahead.",
+    "zona_horaria": "America/Guayaquil (UTC-5); times without a zone are Cuenca time"
+  },
   "base": "https://nezusas.github.io/morlaco/datos/",
   "documentacion": "https://nezusas.github.io/morlaco/web/datos.html",
   "estado": "https://nezusas.github.io/morlaco/datos/estado.json",
@@ -28,7 +34,22 @@
       "frecuencia": "diaria",
       "fuente": "EMAC EP",
       "licencia": "CC BY-NC (Creative Commons Atribución-NoComercial), según el portal Cuenca en Datos",
-      "url": "https://nezusas.github.io/morlaco/datos/recoleccion/zonas.geojson"
+      "url": "https://nezusas.github.io/morlaco/datos/recoleccion/zonas.geojson",
+      "en": {
+        "titulo": "Garbage collection zones",
+        "descripcion": "EMAC EP's 8 urban zones with their days, hours and light-blue (recycling) bag day.",
+        "frecuencia": "daily",
+        "campos": {
+          "zona": "Zone number (1 to 8)",
+          "dias": "Collection days, in Spanish",
+          "dias_iso": "The same days as ISO numbers (1 = Monday)",
+          "desde / hasta": "Hours, HH:MM in Cuenca time (UTC-5); 24:00 is midnight",
+          "dia_reciclaje": "Light-blue bag day"
+        },
+        "formato": "GeoJSON (polygons)",
+        "fuente": "EMAC EP",
+        "licencia": "CC BY-NC (Creative Commons Attribution-NonCommercial), per the Cuenca en Datos portal"
+      }
     },
     {
       "id": "recoleccion-calendarios",
@@ -42,7 +63,16 @@
       "frecuencia": "diaria",
       "fuente": "EMAC EP",
       "licencia": "CC BY-NC (Creative Commons Atribución-NoComercial), según el portal Cuenca en Datos",
-      "url": "https://nezusas.github.io/morlaco/datos/recoleccion/calendarios/zona-N.ics"
+      "url": "https://nezusas.github.io/morlaco/datos/recoleccion/calendarios/zona-N.ics",
+      "en": {
+        "titulo": "Collection calendars by zone",
+        "descripcion": "One calendar per zone (replace N with the number) to subscribe from Google Calendar, Apple or Outlook, with a reminder one hour before.",
+        "frecuencia": "daily",
+        "campos": {},
+        "formato": "iCalendar (.ics)",
+        "fuente": "EMAC EP",
+        "licencia": "CC BY-NC (Creative Commons Attribution-NonCommercial), per the Cuenca en Datos portal"
+      }
     },
     {
       "id": "basura-manual",
@@ -60,7 +90,20 @@
       "frecuencia": "a mano",
       "fuente": "EMAC EP, ETAPA EP y El Mercurio",
       "licencia": "CC BY 4.0 (Morlaco); los datos de cada fuente conservan su licencia",
-      "url": "https://nezusas.github.io/morlaco/datos/manual/basura.json"
+      "url": "https://nezusas.github.io/morlaco/datos/manual/basura.json",
+      "en": {
+        "titulo": "Holidays and where to take things",
+        "descripcion": "What happens to collection on public holidays, what goes in the light-blue bag and where to take organic waste, glass, rubble, batteries and bulky items. In Spanish and English.",
+        "frecuencia": "by hand",
+        "campos": {
+          "feriados": "Text (es, en), validity (desde, hasta) and source",
+          "donde_llevar[]": "id, what (es/en), where (es/en) and source",
+          "contacto": "EMAC's line, phone and page"
+        },
+        "formato": "JSON",
+        "fuente": "EMAC EP, ETAPA EP and El Mercurio",
+        "licencia": "CC BY 4.0 (Morlaco); each source's data keeps its own license"
+      }
     },
     {
       "id": "luz-suspensiones",
@@ -78,7 +121,20 @@
       "frecuencia": "diaria",
       "fuente": "Centro Sur C.A.",
       "licencia": "Información pública de la institución; cita la fuente",
-      "url": "https://nezusas.github.io/morlaco/datos/luz/suspensiones.json"
+      "url": "https://nezusas.github.io/morlaco/datos/luz/suspensiones.json",
+      "en": {
+        "titulo": "Planned power cuts",
+        "descripcion": "The cuts Centro Sur publishes by day and the recent stand-alone schedules. Check metadata.ultima_publicacion: in November 2026 Centro Sur had not published for Cuenca since July.",
+        "frecuencia": "daily",
+        "campos": {
+          "publicaciones[]": "pdf, date and cuts[] (feeder, address, from, to, work)",
+          "otras_publicaciones[]": "pdf, date, provinces and whether it mentions Cuenca",
+          "metadata.ultima_publicacion": "Date of the last daily PDF"
+        },
+        "formato": "JSON",
+        "fuente": "Centro Sur C.A.",
+        "licencia": "Public information from the institution; cite the source"
+      }
     },
     {
       "id": "agua-cortes",
@@ -95,7 +151,19 @@
       "frecuencia": "a mano, el mismo día del aviso",
       "fuente": "El Mercurio, citando a ETAPA EP",
       "licencia": "CC BY 4.0 (Morlaco); los datos de cada fuente conservan su licencia",
-      "url": "https://nezusas.github.io/morlaco/datos/manual/agua.json"
+      "url": "https://nezusas.github.io/morlaco/datos/manual/agua.json",
+      "en": {
+        "titulo": "Confirmed water cuts",
+        "descripcion": "ETAPA EP cuts announced in the press and reviewed by a person. A cut is valid until its date and end time.",
+        "frecuencia": "by hand, the same day as the notice",
+        "campos": {
+          "cortes[]": "date, from, to, sectors and reason (es/en) and source (name, url)",
+          "descartados[]": "Reviewed articles that were not ETAPA cuts in Cuenca"
+        },
+        "formato": "JSON",
+        "fuente": "El Mercurio, quoting ETAPA EP",
+        "licencia": "CC BY 4.0 (Morlaco); each source's data keeps its own license"
+      }
     },
     {
       "id": "agua-avisos",
@@ -111,7 +179,18 @@
       "frecuencia": "diaria",
       "fuente": "El Mercurio",
       "licencia": "Información pública de la institución; cita la fuente",
-      "url": "https://nezusas.github.io/morlaco/datos/agua/avisos.json"
+      "url": "https://nezusas.github.io/morlaco/datos/agua/avisos.json",
+      "en": {
+        "titulo": "Water cut notices to confirm",
+        "descripcion": "Press articles from the last three weeks whose headline announces a water cut. Not reviewed: to show cuts, use manual/agua.json.",
+        "frecuencia": "daily",
+        "campos": {
+          "avisos[]": "published, title, link, summary and whether it mentions ETAPA"
+        },
+        "formato": "JSON",
+        "fuente": "El Mercurio",
+        "licencia": "Public information from the institution; cite the source"
+      }
     },
     {
       "id": "farmacias-turnos",
@@ -127,7 +206,18 @@
       "frecuencia": "diaria (ARCSA publica un PDF al mes)",
       "fuente": "ARCSA",
       "licencia": "Información pública de la institución; cita la fuente",
-      "url": "https://nezusas.github.io/morlaco/datos/farmacias/turnos.json"
+      "url": "https://nezusas.github.io/morlaco/datos/farmacias/turnos.json",
+      "en": {
+        "titulo": "On-duty pharmacies",
+        "descripcion": "Pharmacies open 24 hours in Cuenca, by week. Each shift runs from 06:00 on the start day to 06:00 on the end day. The source has errors: call before you go.",
+        "frecuencia": "daily (ARCSA publishes one PDF a month)",
+        "campos": {
+          "turnos[]": "start, end and pharmacies[] (name, address, phone, tel to dial)"
+        },
+        "formato": "JSON",
+        "fuente": "ARCSA",
+        "licencia": "Public information from the institution; cite the source"
+      }
     },
     {
       "id": "buses-lineas",
@@ -147,7 +237,22 @@
       "frecuencia": "semanal",
       "fuente": "GAD Municipal de Cuenca, portal Cuenca en Datos",
       "licencia": "CC BY-NC (Creative Commons Atribución-NoComercial), según el portal Cuenca en Datos",
-      "url": "https://nezusas.github.io/morlaco/datos/buses/lineas.geojson"
+      "url": "https://nezusas.github.io/morlaco/datos/buses/lineas.geojson",
+      "en": {
+        "titulo": "Bus and tram routes",
+        "descripcion": "The path of each line in each direction, with its extensions. Route maps from 2022.",
+        "frecuencia": "weekly",
+        "campos": {
+          "linea": "Line number, or Tranvía (tram)",
+          "tipo": "linea (line), alargue (extension) or tranvia (tram)",
+          "hacia": "Destination in that direction",
+          "sentido": "ida (outbound) or retorno (return)",
+          "longitud_km": "Length of the path"
+        },
+        "formato": "GeoJSON (lines)",
+        "fuente": "City of Cuenca, Cuenca en Datos portal",
+        "licencia": "CC BY-NC (Creative Commons Attribution-NonCommercial), per the Cuenca en Datos portal"
+      }
     },
     {
       "id": "buses-rutas",
@@ -165,7 +270,20 @@
       "frecuencia": "semanal",
       "fuente": "GAD Municipal de Cuenca, portal Cuenca en Datos",
       "licencia": "CC BY-NC (Creative Commons Atribución-NoComercial), según el portal Cuenca en Datos",
-      "url": "https://nezusas.github.io/morlaco/datos/buses/rutas.json"
+      "url": "https://nezusas.github.io/morlaco/datos/buses/rutas.json",
+      "en": {
+        "titulo": "Line timetables and frequency",
+        "descripcion": "Company, origin, destination and, for weekdays, Saturdays and Sundays, the first and last departure and how many minutes between buses. null: no service that day.",
+        "frecuencia": "weekly",
+        "campos": {
+          "linea, sentido": "Line and outbound or return",
+          "compania, origen, destino": "Route details",
+          "horarios": "lunes_viernes, sabados, domingos: {inicio, fin, intervalo_min} or null"
+        },
+        "formato": "JSON",
+        "fuente": "City of Cuenca, Cuenca en Datos portal",
+        "licencia": "CC BY-NC (Creative Commons Attribution-NonCommercial), per the Cuenca en Datos portal"
+      }
     },
     {
       "id": "buses-recorridos",
@@ -183,7 +301,20 @@
       "frecuencia": "semanal",
       "fuente": "GAD Municipal de Cuenca, portal Cuenca en Datos",
       "licencia": "CC BY-NC (Creative Commons Atribución-NoComercial), según el portal Cuenca en Datos",
-      "url": "https://nezusas.github.io/morlaco/datos/buses/recorridos.json"
+      "url": "https://nezusas.github.io/morlaco/datos/buses/recorridos.json",
+      "en": {
+        "titulo": "Where each line goes",
+        "descripcion": "The points each line passes, in order, outbound and return (April 2026).",
+        "frecuencia": "weekly",
+        "campos": {
+          "linea": "Line number",
+          "sentidos": "ida and retorno: points as published by the city",
+          "pasa_por": "The same points with polished names"
+        },
+        "formato": "JSON",
+        "fuente": "City of Cuenca, Cuenca en Datos portal",
+        "licencia": "CC BY-NC (Creative Commons Attribution-NonCommercial), per the Cuenca en Datos portal"
+      }
     },
     {
       "id": "buses-paradas",
@@ -202,7 +333,21 @@
       "frecuencia": "semanal",
       "fuente": "GAD Municipal de Cuenca, portal Cuenca en Datos",
       "licencia": "CC BY-NC (Creative Commons Atribución-NoComercial), según el portal Cuenca en Datos",
-      "url": "https://nezusas.github.io/morlaco/datos/buses/paradas.geojson"
+      "url": "https://nezusas.github.io/morlaco/datos/buses/paradas.geojson",
+      "en": {
+        "titulo": "Bus stops",
+        "descripcion": "Stops from the city's registry with corrected coordinates. Not every stop is included.",
+        "frecuencia": "weekly",
+        "campos": {
+          "id": "Stop identifier",
+          "nombre": "Readable name",
+          "ubicacion": "Address as published by the city",
+          "tiene_paleta": "Whether it has a stop sign"
+        },
+        "formato": "GeoJSON (points)",
+        "fuente": "City of Cuenca, Cuenca en Datos portal",
+        "licencia": "CC BY-NC (Creative Commons Attribution-NonCommercial), per the Cuenca en Datos portal"
+      }
     },
     {
       "id": "buses-gtfs",
@@ -216,7 +361,16 @@
       "frecuencia": "semanal",
       "fuente": "Generado por Morlaco con los datos del portal Cuenca en Datos",
       "licencia": "CC BY-NC (Creative Commons Atribución-NoComercial), según el portal Cuenca en Datos",
-      "url": "https://nezusas.github.io/morlaco/datos/gtfs/cuenca-buses.zip"
+      "url": "https://nezusas.github.io/morlaco/datos/gtfs/cuenca-buses.zip",
+      "en": {
+        "titulo": "Bus GTFS feed",
+        "descripcion": "The 38 lines in the standard format used by transit apps, with frequencies by day type. Validated with MobilityData's validator.",
+        "frecuencia": "weekly",
+        "campos": {},
+        "formato": "GTFS (ZIP)",
+        "fuente": "Generated by Morlaco from the Cuenca en Datos portal",
+        "licencia": "CC BY-NC (Creative Commons Attribution-NonCommercial), per the Cuenca en Datos portal"
+      }
     },
     {
       "id": "tranvia-estaciones",
@@ -234,7 +388,20 @@
       "frecuencia": "diaria",
       "fuente": "Tranvía de Cuenca",
       "licencia": "Información pública de la institución; cita la fuente",
-      "url": "https://nezusas.github.io/morlaco/datos/buses/tranvia.geojson"
+      "url": "https://nezusas.github.io/morlaco/datos/buses/tranvia.geojson",
+      "en": {
+        "titulo": "Tram stations",
+        "descripcion": "The 20 stations, with one point per platform and the direction the tram stops in.",
+        "frecuencia": "daily",
+        "campos": {
+          "id": "Station code",
+          "nombre": "Name",
+          "hacia": "Directions that stop there"
+        },
+        "formato": "GeoJSON (points)",
+        "fuente": "Tranvía de Cuenca",
+        "licencia": "Public information from the institution; cite the source"
+      }
     },
     {
       "id": "transporte-manual",
@@ -252,7 +419,20 @@
       "frecuencia": "a mano",
       "fuente": "Comunicados del municipio publicados en El Mercurio",
       "licencia": "CC BY 4.0 (Morlaco); los datos de cada fuente conservan su licencia",
-      "url": "https://nezusas.github.io/morlaco/datos/manual/transporte.json"
+      "url": "https://nezusas.github.io/morlaco/datos/manual/transporte.json",
+      "en": {
+        "titulo": "Fares, line changes and tram frequency",
+        "descripcion": "Data the city only announces in the press: the current fare, the 2026 line changes (with an expiry date) and how often the tram runs.",
+        "frecuencia": "by hand",
+        "campos": {
+          "tarifas": "bus and tram, in US dollars, with their source",
+          "avisos[]": "lines, from, until, text (es, en) and source",
+          "tranvia.frecuencia_min": "lunes_viernes (weekdays) and fin_de_semana (weekends)"
+        },
+        "formato": "JSON",
+        "fuente": "City announcements published in El Mercurio",
+        "licencia": "CC BY 4.0 (Morlaco); each source's data keeps its own license"
+      }
     },
     {
       "id": "calles",
@@ -271,7 +451,21 @@
       "frecuencia": "semanal",
       "fuente": "OpenStreetMap",
       "licencia": "ODbL 1.0 (© colaboradores de OpenStreetMap)",
-      "url": "https://nezusas.github.io/morlaco/datos/calles/calles.geojson"
+      "url": "https://nezusas.github.io/morlaco/datos/calles/calles.geojson",
+      "en": {
+        "titulo": "Named streets",
+        "descripcion": "About 2,800 streets in Cuenca with their simplified path and alternative names.",
+        "frecuencia": "weekly",
+        "campos": {
+          "nombre": "Street name",
+          "otros_nombres": "Other names for it",
+          "tipo": "Road type according to OpenStreetMap",
+          "rango": "Road importance (higher is more important)"
+        },
+        "formato": "GeoJSON (lines)",
+        "fuente": "OpenStreetMap",
+        "licencia": "ODbL 1.0 (© OpenStreetMap contributors)"
+      }
     },
     {
       "id": "movilidad",
@@ -289,7 +483,20 @@
       "frecuencia": "semanal",
       "fuente": "OpenStreetMap",
       "licencia": "ODbL 1.0 (© colaboradores de OpenStreetMap)",
-      "url": "https://nezusas.github.io/morlaco/datos/movilidad/"
+      "url": "https://nezusas.github.io/morlaco/datos/movilidad/",
+      "en": {
+        "titulo": "Bike share, EV charging and bike lanes",
+        "descripcion": "BiciPública bike-share stations, electric-car charging points (with their access) and bike lanes (separated or painted).",
+        "frecuencia": "weekly",
+        "campos": {
+          "bicicletas": "id, name, capacity",
+          "carga": "id, name, operator, access, connectors",
+          "ciclovias": "id, name, type"
+        },
+        "formato": "GeoJSON",
+        "fuente": "OpenStreetMap",
+        "licencia": "ODbL 1.0 (© OpenStreetMap contributors)"
+      }
     },
     {
       "id": "estado",
@@ -307,7 +514,20 @@
       "frecuencia": "diaria",
       "fuente": "Morlaco",
       "licencia": "CC BY 4.0 (Morlaco); los datos de cada fuente conservan su licencia",
-      "url": "https://nezusas.github.io/morlaco/datos/estado.json"
+      "url": "https://nezusas.github.io/morlaco/datos/estado.json",
+      "en": {
+        "titulo": "Status of each source",
+        "descripcion": "When each source was last updated, which files it wrote and whether it failed.",
+        "frecuencia": "daily",
+        "campos": {
+          "<fuente>.ok": "true if the last update went well",
+          "<fuente>.actualizado": "Date and time (UTC) of the last good update",
+          "<fuente>.error": "Last error, if any"
+        },
+        "formato": "JSON",
+        "fuente": "Morlaco",
+        "licencia": "CC BY 4.0 (Morlaco); each source's data keeps its own license"
+      }
     }
   ]
 }

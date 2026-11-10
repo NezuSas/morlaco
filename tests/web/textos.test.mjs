@@ -14,14 +14,26 @@ test("los dos idiomas tienen las mismas claves", () => {
   assert.deepEqual(clavesQueFaltan(), []);
 });
 
-test("todas las claves que usa index.html existen", () => {
-  const html = readFileSync(new URL("../../web/index.html", import.meta.url), "utf8");
-  const claves = [...html.matchAll(/data-t(?:-html|-aria-label|-placeholder)?="(\w+)"/g)].map((m) => m[1]);
-  assert.ok(claves.length > 15, `solo ${claves.length} textos marcados`);
-  for (const idiomaPrueba of ["es", "en"]) {
-    usarIdioma(idiomaPrueba);
-    for (const clave of claves) assert.doesNotThrow(() => t(clave), `falta ${idiomaPrueba}:${clave}`);
-  }
+for (const pagina of ["index.html", "datos.html"]) {
+  test(`todas las claves que usa ${pagina} existen`, () => {
+    const html = readFileSync(new URL(`../../web/${pagina}`, import.meta.url), "utf8");
+    const claves = [...html.matchAll(/data-t(?:-html|-aria-label|-placeholder)?="(\w+)"/g)].map((m) => m[1]);
+    assert.ok(claves.length > 15, `solo ${claves.length} textos marcados`);
+    for (const idiomaPrueba of ["es", "en"]) {
+      usarIdioma(idiomaPrueba);
+      for (const clave of claves) assert.doesNotThrow(() => t(clave), `falta ${idiomaPrueba}:${clave}`);
+    }
+  });
+}
+
+test("datos.html no deja texto visible sin traducir", () => {
+  const html = readFileSync(new URL("../../web/datos.html", import.meta.url), "utf8");
+  const cuerpo = html.slice(html.indexOf("<body"), html.indexOf("<script"));
+  // Cada párrafo, título, término o elemento de lista lleva su clave de texto (salvo el código).
+  const sinClave = [...cuerpo.matchAll(/<(h1|h2|p|dt|li)\b(?![^>]*data-t)[^>]*>([^<]*[a-záéíóúñ][^<]*)</gi)]
+    .map((m) => m[2].trim())
+    .filter((texto) => texto && texto !== "Morlaco");
+  assert.deepEqual(sinClave, []);
 });
 
 test("idiomaInicial: lo guardado manda; si no, el navegador; por defecto, español", () => {
