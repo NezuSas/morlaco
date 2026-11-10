@@ -71,6 +71,9 @@
       <symbol id="i-aire" viewBox="0 0 24 24">
         <path d="M3 9h10.5a2.5 2.5 0 1 0-2.4-3.2M3 13h15a2.5 2.5 0 1 1-2.4 3.2M3 17h7.5a2 2 0 1 1-1.9 2.6" />
       </symbol>
+      <symbol id="i-mensaje" viewBox="0 0 24 24">
+        <path d="M20.5 11.5a8.5 8.5 0 0 1-12.6 7.4L3.5 20.5l1.6-4.3A8.5 8.5 0 1 1 20.5 11.5z" />
+      </symbol>
       <symbol id="i-compartir" viewBox="0 0 24 24">
         <circle cx="6" cy="12" r="2.5" />
         <circle cx="17.5" cy="6" r="2.5" />
@@ -175,6 +178,10 @@
             <p id="punto-zona" class="punto-zona"></p>
             <div class="punto-acciones">
               <button type="button" id="cambiar-punto" class="en-muro" data-t="cambiarPunto">Cambiar de lugar</button>
+              <button type="button" id="whatsapp" class="en-muro con-icono">
+                <svg class="icono" aria-hidden="true"><use href="#i-mensaje" /></svg>
+                <span data-t="whatsapp">WhatsApp</span>
+              </button>
               <button type="button" id="compartir" class="en-muro con-icono">
                 <svg class="icono" aria-hidden="true"><use href="#i-compartir" /></svg>
                 <span data-t="compartir">Compartir</span>

@@ -10,6 +10,7 @@ import {
   CORREO_AVISOS,
   enlaceCorreoAviso,
   enlaceReporteDireccion,
+  enlaceWhatsApp,
   enlacesCalendario,
   estadoLuz,
   filtrarCortes,
@@ -1775,7 +1776,14 @@ async function iniciar() {
     $("direccion").select();
   });
 
-  // Compartir tu calle: el menú del teléfono (WhatsApp, etc.) o, si no hay, copiar el enlace.
+  // Por WhatsApp, con el mensaje ya escrito: ahí sí sale la tarjeta con la imagen.
+  $("whatsapp").addEventListener("click", () => {
+    const nombre = nombreProvisional ? null : nombreActual;
+    const texto = nombre ? t("compartirTexto", { calle: nombre }) : t("compartirTextoSinCalle");
+    window.open(enlaceWhatsApp(texto, location.href), "_blank", "noopener");
+  });
+
+  // Compartir tu calle: el menú del teléfono (otras apps) o, si no hay, copiar el enlace.
   $("compartir").addEventListener("click", async () => {
     const nombre = nombreProvisional ? null : nombreActual;
     const texto = nombre ? t("compartirTexto", { calle: nombre }) : t("compartirTextoSinCalle");

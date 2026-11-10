@@ -9,6 +9,7 @@ import {
   nombreParada,
   enlaceCorreoAviso,
   enlaceReporteDireccion,
+  enlaceWhatsApp,
   enlacesCalendario,
   estadoLuz,
   filtrarCortes,
@@ -210,6 +211,18 @@ test("enlaceCorreoAviso abre un correo con el asunto y el cuerpo ya escritos", (
   assert.ok(!enlace.includes("+"), enlace);
   assert.equal(url.searchParams.get("subject"), "Morlaco no encuentra: Sucre & Borrero");
   assert.equal(url.searchParams.get("body"), "Escribí “Sucre”.\n¿Dónde queda?");
+});
+
+test("enlaceWhatsApp lleva el texto y el enlace completo, con su punto", () => {
+  const enlace = enlaceWhatsApp("Mira qué pasa hoy en Sucre y Borrero.", "https://nezusas.github.io/morlaco/web/#-2.89826,-79.00314");
+  const url = new URL(enlace);
+  assert.equal(url.origin + url.pathname, "https://wa.me/");
+  // El "#" va codificado: si no, WhatsApp recibiría el enlace cortado, sin el punto.
+  assert.equal(url.hash, "");
+  assert.equal(
+    url.searchParams.get("text"),
+    "Mira qué pasa hoy en Sucre y Borrero.\nhttps://nezusas.github.io/morlaco/web/#-2.89826,-79.00314",
+  );
 });
 
 test("enlaceReporteDireccion rellena la plantilla con lo escrito", () => {

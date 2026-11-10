@@ -253,6 +253,15 @@ export function enlaceCorreoAviso({ asunto, cuerpo }) {
   return `mailto:${CORREO_AVISOS}?${parametros.join("&")}`;
 }
 
+/**
+ * Enlace que abre WhatsApp con el mensaje ya escrito, para elegir a quién mandarlo.
+ * Así el enlace pasa por la caja de escritura, donde WhatsApp arma la tarjeta con la imagen
+ * (por el menú de compartir del teléfono lo envía directo, sin tarjeta).
+ */
+export function enlaceWhatsApp(texto, enlace) {
+  return `https://wa.me/?text=${encodeURIComponent(`${texto}\n${enlace}`)}`;
+}
+
 /** Enlace a la plantilla "No encuentra mi dirección", con lo escrito ya rellenado. */
 export function enlaceReporteDireccion(texto) {
   const parametros = new URLSearchParams({ template: "direccion.yml", title: `Dirección: ${texto}`, escribi: texto });
