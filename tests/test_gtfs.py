@@ -170,6 +170,8 @@ def test_a_zip_no_cambia_si_no_cambian_los_datos():
     with zipfile.ZipFile(io.BytesIO(primero)) as z:
         assert sorted(z.namelist()) == sorted(archivos)
         assert z.read("routes.txt").decode() == archivos["routes.txt"]
+        # Igual en Windows que en Linux (la actualización automática corre en Linux).
+        assert {i.create_system for i in z.infolist()} == {3}
 
 
 def test_nombre_parada_quita_calle_delante_de_avenida():

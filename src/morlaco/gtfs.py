@@ -410,11 +410,13 @@ def construir(
 
 
 def a_zip(archivos: dict[str, str]) -> bytes:
-    """Empaqueta el feed. Fecha fija en cada entrada: el ZIP solo cambia si cambian los datos."""
+    """Empaqueta el feed. El ZIP solo cambia si cambian los datos: cada entrada lleva una fecha
+    fija y dice que se creó en Unix (si no, en Windows quedaría distinto que en GitHub)."""
     salida = io.BytesIO()
     with zipfile.ZipFile(salida, "w", zipfile.ZIP_DEFLATED) as archivo:
         for nombre in sorted(archivos):
             info = zipfile.ZipInfo(nombre, date_time=(2026, 1, 1, 0, 0, 0))
             info.compress_type = zipfile.ZIP_DEFLATED
+            info.create_system = 3  # Unix
             archivo.writestr(info, archivos[nombre].encode("utf-8"))
     return salida.getvalue()
