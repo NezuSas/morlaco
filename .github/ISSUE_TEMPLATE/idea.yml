@@ -1,0 +1,16 @@
+name: Una idea para Morlaco
+description: Algo que ayudaría a la gente de Cuenca y que Morlaco podría añadir.
+title: "Idea: "
+labels: ["idea"]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: ¿Qué te gustaría que hiciera Morlaco?
+    validations:
+      required: true
+  - type: input
+    id: fuente
+    attributes:
+      label: ¿Hay datos públicos para eso?
+      description: Si sabes dónde se publica la información (una web, un PDF, un portal), déjalo aquí.

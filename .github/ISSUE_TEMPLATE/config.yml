@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Abrir Morlaco
+    url: https://nezusas.github.io/morlaco/web/
+    about: Consulta cuándo pasa el recolector, los cortes de luz y las paradas de tu calle.

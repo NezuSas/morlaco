@@ -1,0 +1,38 @@
+name: No encuentra mi dirección
+description: La búsqueda no encuentra tu esquina o la ubica en un lugar equivocado.
+title: "Dirección: "
+labels: ["búsqueda"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Gracias por avisar. Con estos datos podemos mejorar la búsqueda para todo Cuenca.
+        No escribas tu número de casa ni datos personales: basta con la esquina.
+  - type: input
+    id: escribi
+    attributes:
+      label: ¿Qué escribiste?
+      placeholder: Sucre y Borrero
+    validations:
+      required: true
+  - type: dropdown
+    id: paso
+    attributes:
+      label: ¿Qué pasó?
+      options:
+        - No encontró nada
+        - Encontró otra calle o un lugar equivocado
+        - Dice que las calles no se cruzan, pero sí se cruzan
+        - Otra cosa
+    validations:
+      required: true
+  - type: input
+    id: esperado
+    attributes:
+      label: ¿Dónde debería estar?
+      description: Un barrio, un lugar conocido cercano o un enlace de Google Maps.
+      placeholder: Junto al Parque Calderón
+  - type: textarea
+    id: detalles
+    attributes:
+      label: Algo más que quieras contarnos

@@ -5,6 +5,7 @@ import { test } from "node:test";
 import {
   describirRecoleccion,
   direccionLegible,
+  enlaceReporteDireccion,
   enlacesCalendario,
   estadoLuz,
   filtrarCortes,
@@ -166,6 +167,14 @@ test("enlacesCalendario apunta al .ics de la zona y lo ofrece por webcal y Googl
   );
   // El parámetro de versión se mantiene dentro del cid y no rompe la dirección de Google.
   assert.ok(enlaces.google.includes("zona-4.ics%3Fv%3D"));
+});
+
+test("enlaceReporteDireccion rellena la plantilla con lo escrito", () => {
+  const url = new URL(enlaceReporteDireccion("Sucre y Borrero"));
+  assert.equal(url.origin + url.pathname, "https://github.com/NezuSas/morlaco/issues/new");
+  assert.equal(url.searchParams.get("template"), "direccion.yml");
+  assert.equal(url.searchParams.get("escribi"), "Sucre y Borrero");
+  assert.equal(url.searchParams.get("title"), "Dirección: Sucre y Borrero");
 });
 
 test("formatoDistancia", () => {

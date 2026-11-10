@@ -4,6 +4,7 @@ import {
   CENTRO_CUENCA,
   describirRecoleccion,
   direccionLegible,
+  enlaceReporteDireccion,
   enlacesCalendario,
   estadoLuz,
   filtrarCortes,
@@ -430,12 +431,15 @@ async function ubicarTexto(texto) {
   if (indice && calles.length === 2) {
     const [a, b] = calles.map((c) => buscarCalles(c, indice));
     const falta = !a.length ? calles[0] : !b.length ? calles[1] : null;
-    if (falta) return { error: `No encontré la calle “${falta}” en Cuenca. Revisa cómo está escrita.` };
+    if (falta) {
+      return { error: `No encontré la calle “${falta}” en Cuenca. Revisa cómo está escrita.`, reportable: true };
+    }
     const cruce = cruceDeCalles(a, b);
     if (!cruce) {
       return {
         error: `Según el mapa, ${a[0].nombre} y ${b[0].nombre} no se cruzan. Revisa los nombres o toca el mapa.`,
         resaltar: [a[0].feature, b[0].feature],
+        reportable: true,
       };
     }
     return { punto: cruce.punto, texto: `${cruce.a.nombre} y ${cruce.b.nombre}` };
@@ -459,7 +463,10 @@ async function ubicarTexto(texto) {
 
   const lugar = await buscarDireccion(texto);
   if (!lugar) {
-    return { error: "No encontré ese lugar en Cuenca. Prueba con dos calles que se crucen, como “Sucre y Borrero”, o toca el mapa." };
+    return {
+      error: "No encontré ese lugar en Cuenca. Prueba con dos calles que se crucen, como “Sucre y Borrero”, o toca el mapa.",
+      reportable: true,
+    };
   }
   return { punto: lugar, texto: lugar.nombre.split(",").slice(0, 3).join(",") };
 }
@@ -565,6 +572,14 @@ async function iniciar() {
         $("inicio").hidden = false;
         if (resultado.resaltar) mapa.resaltar(resultado.resaltar);
         mensaje(resultado.error, true);
+        if (resultado.reportable) {
+          // Si la búsqueda falla con una dirección real, que la persona pueda avisar.
+          $("mensaje").append(
+            " ",
+            elemento("a", { href: enlaceReporteDireccion(texto), target: "_blank", rel: "noopener" }, "¿Es un error? Avísanos"),
+            ".",
+          );
+        }
         return;
       }
       elegir(resultado.punto, `Encontrado: ${resultado.texto}.`);

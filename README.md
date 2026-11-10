@@ -1,14 +1,40 @@
-# Morlaco
+<h1 align="center">
+  <img src="web/icono.svg" alt="" width="72" height="72"><br>
+  Morlaco
+</h1>
 
-**Datos abiertos de los servicios públicos de Cuenca, Ecuador, en un solo lugar y en formatos fáciles de usar.**
+<h3 align="center">¿Qué pasa hoy en tu calle? Basura, cortes de luz y buses de Cuenca, Ecuador.</h3>
 
-¿A qué hora pasa el recolector por mi casa? ¿Hay corte de luz programado en mi sector? ¿Cada cuánto pasa
-la línea 7? La información existe, pero está repartida entre la web de cada empresa, mapas de Google, PDFs
-y hojas de cálculo. Morlaco la recoge de las fuentes oficiales, la limpia y la publica como JSON y GeoJSON
-para que cualquiera pueda construir encima: una web, un bot, una app o un análisis.
+<p align="center">
+  <a href="https://nezusas.github.io/morlaco/web/"><b>Abrir Morlaco</b></a> ·
+  <a href="#qué-datos-hay">Los datos</a> ·
+  <a href="CONTRIBUTING.md">Colaborar</a> ·
+  <a href="https://github.com/NezuSas/morlaco/issues/new/choose">Avisar de un error</a>
+</p>
 
-**Pruébalo: [nezusas.github.io/morlaco/web](https://nezusas.github.io/morlaco/web/)**: escribe tu dirección y
-mira cuándo pasa el recolector, si hay cortes de luz programados y qué paradas de bus tienes cerca.
+<p align="center">
+  <a href="https://nezusas.github.io/morlaco/web/">
+    <img src="docs/imagenes/busqueda.gif" alt="Se escribe «Calle Larga y Hermano Miguel» en Morlaco y aparece cuándo pasa el recolector, la semana de recolección y las paradas cercanas en el mapa" width="880">
+  </a>
+</p>
+
+Escribe tu esquina como se dan las direcciones en Cuenca ("Sucre y Borrero") y Morlaco te dice:
+
+- **Cuándo pasa el recolector** por tu calle, qué funda sacar y qué día va la funda celeste. Con un toque te
+  suscribes al **calendario de tu zona** y recibes un aviso antes de cada recolección.
+- **Si hay cortes de luz programados** por Centro Sur para hoy.
+- **Qué paradas de bus tienes cerca** y a cuántos metros están.
+
+Todo sale de **fuentes oficiales y públicas** (EMAC EP, Centro Sur, el portal Cuenca en Datos del municipio y
+OpenStreetMap), y los datos limpios quedan aquí, abiertos, para que cualquiera construya encima: una web, un bot,
+una app o un análisis.
+
+<table>
+  <tr>
+    <td width="68%"><img src="docs/imagenes/escritorio.webp" alt="Morlaco en el escritorio: tarjeta azul con la recolección de basura de la zona 4 y el mapa de zonas de Cuenca"></td>
+    <td width="32%"><img src="docs/imagenes/movil-oscuro.webp" alt="Morlaco en el móvil con el modo oscuro: recolección de basura y suscripción al calendario"></td>
+  </tr>
+</table>
 
 > Morlaco **no es un servicio oficial** ni está afiliado a EMAC EP, Centro Sur, ETAPA EP ni al GAD
 > Municipal de Cuenca. Cada archivo indica de dónde salió. Ante cualquier duda, manda la fuente oficial.
@@ -155,9 +181,22 @@ regístrala en `FUENTES` de `cli.py` y añade sus pruebas.
 
 ## Próximos pasos
 
-- Un bot de Telegram con los mismos datos.
-- Convertir las rutas de bus al formato GTFS para que puedan usarlas las apps de transporte.
-- Cortes de agua de ETAPA.
+- Convertir las rutas de bus al formato GTFS: dibujar cada línea en el mapa, responder "¿qué bus me lleva?" y
+  que Cuenca tenga rutas de bus en las apps de transporte.
+- Versión en inglés para la comunidad extranjera de Cuenca.
+- Instalar la página en el móvil y usarla sin conexión.
+- Capas del portal municipal: BiciPública, ciclovías y carga de autos eléctricos.
+- Farmacias de turno, si hay una fuente pública fiable.
+- Cortes de agua de ETAPA y un bot de Telegram.
+
+## Colaborar
+
+Puedes ayudar sin programar: [avisa si no encuentra tu esquina](https://github.com/NezuSas/morlaco/issues/new?template=direccion.yml),
+[si un dato está mal](https://github.com/NezuSas/morlaco/issues/new?template=dato.yml) o
+[propón una idea](https://github.com/NezuSas/morlaco/issues/new?template=idea.yml). Si programas, la
+[guía para colaborar](CONTRIBUTING.md) explica cómo preparar el proyecto y tiene tareas para empezar.
+
+Las universidades de Cuenca piden horas de vinculación con la sociedad: Morlaco es un buen lugar para hacerlas.
 
 ## Licencia de los datos
 

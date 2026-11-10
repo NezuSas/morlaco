@@ -195,6 +195,15 @@ export function direccionLegible(texto) {
 
 export const VERSION_CALENDARIOS = 2;
 
+const REPORTES = "https://github.com/NezuSas/morlaco/issues/new";
+
+/** Enlace a la plantilla "No encuentra mi dirección", con lo escrito ya rellenado. */
+export function enlaceReporteDireccion(texto) {
+  const parametros = new URLSearchParams({ template: "direccion.yml", title: `Dirección: ${texto}`, escribi: texto });
+  return `${REPORTES}?${parametros}`;
+}
+
+
 /**
  * Enlaces para suscribirse al calendario de recolección de una zona.
  * `base` es la dirección de la página; los .ics están en ../datos/ respecto a web/.

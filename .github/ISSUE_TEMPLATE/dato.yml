@@ -1,0 +1,38 @@
+name: Un dato está mal
+description: Un horario de recolección, un corte de luz, una parada o una ruta de bus no coincide con la realidad.
+title: "Dato: "
+labels: ["datos"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Morlaco publica los datos tal como los dan EMAC EP, Centro Sur y el municipio. Si algo no
+        coincide con lo que ves en tu calle, cuéntanos: revisaremos si el error está en la fuente
+        o en Morlaco.
+  - type: dropdown
+    id: tipo
+    attributes:
+      label: ¿Qué dato?
+      options:
+        - Recolección de basura (días u horario)
+        - Calendario de recolección
+        - Cortes de luz
+        - Paradas o rutas de bus
+        - Calles del mapa
+        - Otro
+    validations:
+      required: true
+  - type: input
+    id: donde
+    attributes:
+      label: ¿En qué zona o esquina?
+      placeholder: Zona 6, Remigio Crespo y Solano
+    validations:
+      required: true
+  - type: textarea
+    id: diferencia
+    attributes:
+      label: ¿Qué dice Morlaco y qué pasa en realidad?
+      placeholder: Morlaco dice martes de 13:00 a 17:00, pero el recolector pasa los lunes por la noche.
+    validations:
+      required: true
