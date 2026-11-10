@@ -6,7 +6,7 @@
 //   desde la caché, porque no cambian.
 // - La búsqueda de lugares (Nominatim) nunca se guarda.
 
-const CACHE_PAGINA = "morlaco-pagina-v1";
+const CACHE_PAGINA = "morlaco-pagina-v2";
 const CACHE_EXTERNOS = "morlaco-externos-v1";
 const CACHE_MAPA = "morlaco-mapa-v2";
 const CACHES = [CACHE_PAGINA, CACHE_EXTERNOS, CACHE_MAPA];
@@ -64,7 +64,14 @@ function conLimite(promesa, ms) {
 async function redPrimero(peticion) {
   const cache = await caches.open(CACHE_PAGINA);
   try {
-    const respuesta = await conLimite(fetch(peticion), ESPERA_RED_MS);
+    // "no-cache": el navegador confirma con el servidor que su copia sigue al día (si no
+    // cambió, la respuesta es mínima). Así la página y su código nunca quedan desparejados
+    // tras una actualización.
+    const fresca =
+      peticion.mode === "navigate"
+        ? fetch(peticion.url, { cache: "no-cache", credentials: "same-origin" })
+        : fetch(peticion, { cache: "no-cache" });
+    const respuesta = await conLimite(fresca, ESPERA_RED_MS);
     if (respuesta.ok) cache.put(peticion, respuesta.clone());
     return respuesta;
   } catch (error) {
