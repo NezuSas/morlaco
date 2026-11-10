@@ -35,8 +35,10 @@ Escribe tu esquina como se dan las direcciones en Cuenca ("Sucre y Borrero") y M
   pie, con los pasos y el tiempo estimado, y la dibuja en el mapa.
 - **Qué buses pasan por una calle**: escribe solo la calle ("Av. Solano") y ves las líneas que la recorren y
   por dónde pasa cada una según el recorrido oficial.
-- **Cómo está el aire**: el índice de calidad del aire de la estación de la EMOV más cercana, con su
-  recomendación.
+- **Cómo está el aire y el sol**: el índice de calidad del aire de la estación de la EMOV más cercana, el
+  índice UV con su recomendación y la temperatura.
+- **Qué tienes cerca**: la zona WiFi gratis, el mercado, el punto para dejar pilas y el destacamento de la
+  Guardia Ciudadana más cercanos, con su horario o su teléfono.
 - **Dónde está la BiciPública más cercana**, y en el mapa las estaciones del tranvía, las ciclovías y los
   puntos de carga para autos eléctricos.
 
@@ -87,6 +89,7 @@ and is not an official service.
 | [`datos/buses/paradas.geojson`](datos/buses/paradas.geojson) | Paradas de bus con coordenadas corregidas y si tienen señal (paleta) | [Cuenca en Datos](https://cuencaendatos.cuenca.gob.ec/dataset/d98292ca-7c70-422a-ac6f-1b43194ff5ba) |
 | [`datos/buses/tranvia.geojson`](datos/buses/tranvia.geojson) | Las 20 estaciones del tranvía, con un punto por andén y el sentido en que para en cada una | [Tranvía de Cuenca](https://tranvia.cuenca.gob.ec/) |
 | [`datos/manual/transporte.json`](datos/manual/transporte.json) | **Mantenido a mano**: pasaje del bus y del tranvía, cambios de líneas de 2026 (con fecha de caducidad) y frecuencia del tranvía, cada dato con su fuente | Comunicados del municipio publicados en [El Mercurio](https://elmercurio.com.ec/cuenca/) |
+| [`datos/ciudad/cerca.geojson`](datos/ciudad/cerca.geojson) | Zonas WiFi gratis, mercados (con horario), puntos para dejar pilas usadas y destacamentos de la Guardia Ciudadana (con teléfono), con las coordenadas corregidas | [Cuenca en Datos](https://cuencaendatos.cuenca.gob.ec) |
 | [`datos/agua/avisos.json`](datos/agua/avisos.json) | Notas de prensa de las últimas tres semanas que anuncian un corte de agua, **por confirmar** (la página no las muestra) | [El Mercurio](https://elmercurio.com.ec/cuenca/) |
 | [`datos/manual/agua.json`](datos/manual/agua.json) | **Mantenido a mano**: cortes de agua confirmados (fecha, horario, sectores y la nota de prensa que cita a ETAPA) y las notas descartadas | El Mercurio, a partir de [`datos/agua/avisos.json`](datos/agua/avisos.json) |
 | [`datos/manual/basura.json`](datos/manual/basura.json) | **Mantenido a mano**: qué pasa con la recolección en feriados, qué va en la funda celeste y dónde llevar orgánicos, vidrio, escombros, pilas y objetos grandes, cada dato con su fuente | Páginas de [EMAC EP](https://emac.gob.ec) y [ETAPA EP](https://www.etapa.net.ec) y comunicados en prensa |
@@ -172,7 +175,14 @@ tan al día está, si se puede leer automáticamente y qué no tiene fuente.
   la web de la [Red de Monitoreo de la EMOV EP](https://caire.emov.gob.ec/) (una API sin documentar, con CORS
   abierto). Se muestra la estación más cercana que mide partículas, con la hora del dato; si la EMOV no
   responde en 6 segundos o el dato tiene más de 4 horas, "Aire" no aparece. Su servidor envía el certificado
-  sin el intermedio, así que algunos programas (Python, Node) no lo aceptan aunque los navegadores sí.
+  sin el intermedio, así que algunos programas (Python, Node) no lo aceptan aunque los navegadores sí. De la
+  misma web salen el índice UV y la temperatura, medidos en el Centro Histórico; se muestran si tienen menos
+  de dos horas.
+- **Cerca de ti (municipio).** WiFi, mercados, pilas y Guardia Ciudadana salen de cuatro CSV del portal Cuenca
+  en Datos, cada uno con sus propios errores de coordenadas: `-291,509` por `-2.91509`, UTM con puntos de miles,
+  longitudes a las que les falta una cifra. Morlaco recupera lo que puede; los mercados con la longitud rota se
+  ubican por su esquina con el índice de calles, y lo que no cae en Cuenca se descarta y se cuenta en
+  `metadata.fuentes.<tipo>.descartados`.
 - **Cortes de agua (ETAPA y prensa).** ETAPA los anuncia en redes sociales; su web no publica nada desde
   febrero de 2025. El Mercurio sí publica cada aviso. Cada día, `morlaco actualizar agua` busca en su API las
   notas cuyo título anuncia un corte de agua en Cuenca y las guarda en `datos/agua/avisos.json` **sin
@@ -283,7 +293,7 @@ Actualizar todos los datos (escribe en `datos/`):
 ```
 
 O solo algunas fuentes: `recoleccion`, `luz`, `buses`, `calles`, `movilidad`, `farmacias`, `tranvia`,
-`agua`.
+`agua`, `cerca`.
 
 ```bash
 .venv/Scripts/python -m morlaco actualizar recoleccion buses
@@ -340,6 +350,7 @@ src/morlaco/
     movilidad.py      BiciPública, ciclovías y carga eléctrica (API Overpass)
     farmacias.py      farmacias de turno (PDF mensual de ARCSA)
     agua.py           avisos de cortes de agua en la prensa, por confirmar (API de El Mercurio)
+    cerca.py          WiFi, mercados, pilas y Guardia Ciudadana (CSV del portal Cuenca en Datos)
     tranvia.py        estaciones del tranvía (API de su web)
     calles.py         índice de calles (API Overpass de OpenStreetMap)
 web/

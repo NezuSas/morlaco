@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { aireCercano, leerAire, nivelAire } from "../../web/aire.js";
+import { aireCercano, leerAire, leerClima, leerUv, nivelAire, nivelUv } from "../../web/aire.js";
 
 // Recorte de una respuesta real de caire.emov.gob.ec/datos/ica/obtener (10 de noviembre de 2026).
 const estacion = (nombre, lat, lon, valor, parametros, fecha = "2026-11-10T13:00:00.000+00:00") => ({
@@ -71,4 +71,26 @@ test("aireCercano prefiere la estación más cercana que mide partículas", () =
   const soloSur = estaciones.filter((e) => !e.mideParticulas);
   assert.equal(aireCercano({ lat: -2.9, lon: -79.0 }, soloSur).nombre, "Sector Control Sur");
   assert.equal(aireCercano({ lat: -2.9, lon: -79.0 }, []), null);
+});
+
+test("nivelUv sigue la escala de la OMS", () => {
+  assert.deepEqual([0, 2, 3, 5, 6, 7, 8, 10, 11, 14].map(nivelUv), [1, 1, 2, 2, 3, 3, 4, 4, 5, 5]);
+});
+
+test("leerUv y leerClima: el último dato si es reciente; si no, nada", () => {
+  // Respuestas reales de la EMOV (10 de noviembre de 2026).
+  const uv = { fecha: "2026-11-10T16:53:00.000+00:00", fechaString: "2026/11/10 11:53", iuvValor: 5, escalaIuv: { condicion: "MODERADO" } };
+  const clima = { fecha: "2026-11-10T17:00:00.000+00:00", fechaString: null, temperatura: 18.1, humedad: 51.0 };
+  const a_las_1230 = new Date("2026-11-10T17:30:00Z");
+  assert.deepEqual(leerUv(uv, a_las_1230), { valor: 5, nivel: 2, fecha: new Date(uv.fecha) });
+  assert.deepEqual(leerClima(clima, a_las_1230), { temperatura: 18, humedad: 51, fecha: new Date(clima.fecha) });
+  // Tres horas después ya no dice cómo está el sol.
+  const tarde = new Date("2026-11-10T20:30:00Z");
+  assert.equal(leerUv(uv, tarde), null);
+  assert.equal(leerClima(clima, tarde), null);
+  // Respuestas rotas.
+  assert.equal(leerUv(null), null);
+  assert.equal(leerUv({ ...uv, iuvValor: "5" }, a_las_1230), null);
+  assert.equal(leerClima({ ...clima, temperatura: 99 }, a_las_1230), null);
+  assert.deepEqual(leerClima({ ...clima, humedad: null }, a_las_1230).humedad, null);
 });

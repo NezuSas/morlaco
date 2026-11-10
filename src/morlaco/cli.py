@@ -11,7 +11,17 @@ from pathlib import Path
 
 from morlaco import cambios, catalogo, red
 from morlaco.comun import Resultado
-from morlaco.fuentes import agua, buses, calles, centrosur, emac, farmacias, movilidad, tranvia
+from morlaco.fuentes import (
+    agua,
+    buses,
+    calles,
+    centrosur,
+    cerca,
+    emac,
+    farmacias,
+    movilidad,
+    tranvia,
+)
 from morlaco.salida import escribir, escribir_json
 
 # Cuenca está en UTC-5 todo el año (Ecuador no cambia la hora).
@@ -28,6 +38,7 @@ FUENTES: dict[str, Fuente] = {
     "farmacias": farmacias.obtener,
     "tranvia": tranvia.obtener,
     "agua": agua.obtener,
+    "cerca": cerca.obtener,
 }
 
 

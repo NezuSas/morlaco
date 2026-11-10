@@ -47,6 +47,20 @@
       "tramos": 6776
     }
   },
+  "cerca": {
+    "ok": true,
+    "actualizado": "2026-11-10T17:13:46+00:00",
+    "archivos": [
+      "ciudad/cerca.geojson"
+    ],
+    "resumen": {
+      "wifi": 113,
+      "wifi_descartados": 10,
+      "mercados": 19,
+      "pilas": 130,
+      "guardia": 19
+    }
+  },
   "farmacias": {
     "ok": true,
     "actualizado": "2026-11-10T13:49:20+00:00",

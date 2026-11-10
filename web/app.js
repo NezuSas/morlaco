@@ -8,6 +8,7 @@ import {
   horaLegible,
   nombreParada,
   CORREO_AVISOS,
+  cercanosPorTipo,
   cortesAgua,
   enlaceCorreoAviso,
   enlaceReporteDireccion,
@@ -52,7 +53,7 @@ import {
   pasajeDeOpcion,
 } from "./buses.js";
 import { planificar, prepararLineas } from "./rutas.js";
-import { PAGINA_AIRE, URL_AIRE, aireCercano, leerAire } from "./aire.js";
+import { PAGINA_AIRE, URL_AIRE, URL_CLIMA, URL_UV, aireCercano, leerAire, leerClima, leerUv } from "./aire.js";
 import { LUGARES, cambiarLugar, leerLugar, leerLugares, lugarDe, textoDeLugar } from "./lugares.js";
 import { etiquetaIdioma, idioma, idiomaInicial, listar, t, usarIdioma } from "./textos.js";
 
@@ -568,6 +569,54 @@ function pintarBasura(zona) {
   });
   detalle.textContent = t("zonaDetalle", { zona: p.zona });
   pintarCalendario(p.zona);
+}
+
+const ICONO_CERCA = { wifi: "#i-wifi", mercado: "#i-mercado", pilas: "#i-pila", guardia: "#i-escudo" };
+
+/** "Cerca de ti": la WiFi gratis, el mercado, el punto de pilas y la Guardia Ciudadana más cercanos. */
+function pintarCerca(punto, coleccion) {
+  const lista = $("cerca-lista");
+  const nota = $("cerca-nota");
+  if (!coleccion) {
+    lista.replaceChildren(elemento("li", { class: "sin-lineas" }, t("cercaError")));
+    nota.textContent = "";
+    return;
+  }
+  const cercanos = cercanosPorTipo(punto, coleccion);
+  if (!cercanos.length) {
+    lista.replaceChildren(elemento("li", { class: "sin-lineas" }, t("cercaNinguno")));
+    nota.textContent = t("cercaNota");
+    return;
+  }
+  lista.replaceChildren(
+    ...cercanos.map((c) => {
+      const horario = c.horario?.[idioma()] ?? c.horario?.es;
+      const telefono = c.telefono?.replace(/\D/g, "");
+      return elemento(
+        "li",
+        {},
+        icono(ICONO_CERCA[c.tipo]),
+        elemento(
+          "span",
+          { class: "cerca-texto" },
+          elemento("span", { class: "cerca-tipo" }, t("cercaTipos")[c.tipo]),
+          elemento("strong", {}, c.nombre),
+          c.direccion && c.direccion !== c.nombre ? elemento("span", { class: "frecuencia" }, c.direccion) : null,
+          horario ? elemento("span", { class: "frecuencia" }, horario) : null,
+          c.red ? elemento("span", { class: "frecuencia" }, t("cercaRed", { red: c.red })) : null,
+        ),
+        elemento(
+          "span",
+          { class: "cerca-acciones" },
+          elemento("span", { class: "metros" }, formatoDistancia(c.metros)),
+          telefono && telefono.length >= 7
+            ? elemento("a", { class: "llamar", href: `tel:${telefono}`, "aria-label": t("llamar", { telefono: c.telefono }) }, c.telefono)
+            : null,
+        ),
+      );
+    }),
+  );
+  nota.textContent = t("cercaNota");
 }
 
 /** Los cortes de agua confirmados de hoy y de los próximos días, con su fuente. */
@@ -1128,17 +1177,59 @@ const nombreContaminante = (clave) => {
  * "Aire hoy": un renglón en el resumen y su sección, con la estación de la EMOV más cercana.
  * Sin dato reciente (o sin conexión con la EMOV) no se muestra nada.
  */
-function pintarAire(estacion) {
+function pintarAire(estacion, { uv = null, clima = null } = {}) {
   $("resumen").querySelector(".ficha-aire")?.remove();
-  $("s-aire").hidden = !estacion;
-  $("nav-aire").hidden = !estacion;
-  if (!estacion) return;
+  const hay = Boolean(estacion || uv || clima);
+  $("s-aire").hidden = !hay;
+  $("nav-aire").hidden = !hay;
+  if (!hay) return;
 
-  const nivel = t("aireNiveles")[estacion.nivel - 1];
-  const hora = new Intl.DateTimeFormat(etiquetaIdioma(), { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "America/Guayaquil" }).format(estacion.fecha);
-  const { li } = ficha("aire", nivel, t("resumenAire", { valor: estacion.valor, estacion: estacion.nombre }), { aviso: estacion.nivel >= 3 });
+  const horaDe = (fecha) =>
+    new Intl.DateTimeFormat(etiquetaIdioma(), { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "America/Guayaquil" }).format(fecha);
+  const nivelUv = uv ? t("uvNiveles")[uv.nivel - 1] : null;
+  // En el resumen: el aire y, al lado, el sol y la temperatura.
+  const extras = [uv ? t("resumenUv", { valor: uv.valor, nivel: nivelUv.toLowerCase() }) : null, clima ? `${clima.temperatura} °C` : null]
+    .filter(Boolean)
+    .join(" · ");
+  const valorFicha = estacion ? t("aireNiveles")[estacion.nivel - 1] : t("resumenUv", { valor: uv?.valor, nivel: nivelUv?.toLowerCase() ?? "" });
+  const detalleFicha = estacion ? [t("resumenAire", { valor: estacion.valor, estacion: estacion.nombre }), extras].filter(Boolean).join(". ") : extras;
+  const { li } = ficha("aire", valorFicha, detalleFicha, { aviso: (estacion?.nivel ?? 0) >= 3 || (uv?.nivel ?? 0) >= 4 });
   li.classList.add("ficha-aire");
   $("resumen").append(li);
+
+  const bloquesSol = [];
+  if (uv) {
+    bloquesSol.push(
+      elemento("h3", { class: "subtitulo" }, t("uvTitulo")),
+      elemento(
+        "p",
+        { class: "luz-resumen" },
+        elemento("i", { class: `nivel-uv n${uv.nivel}`, "aria-hidden": "true" }),
+        t("uvResumen", { valor: uv.valor, nivel: nivelUv.toLowerCase() }),
+      ),
+      elemento("p", { class: "aire-recomendacion" }, t("uvRecomendaciones")[uv.nivel - 1]),
+    );
+  }
+  if (clima) {
+    bloquesSol.push(
+      elemento(
+        "p",
+        { class: uv ? "detalle" : "luz-resumen" },
+        clima.humedad === null ? t("climaSinHumedad", { temperatura: clima.temperatura }) : t("clima", { temperatura: clima.temperatura, humedad: clima.humedad }),
+      ),
+    );
+  }
+  if (uv || clima) {
+    bloquesSol.push(elemento("p", { class: "detalle" }, t("uvFuente", { hora: horaDe((uv ?? clima).fecha) })));
+  }
+
+  if (!estacion) {
+    $("aire-estado").replaceChildren(...bloquesSol);
+    return;
+  }
+
+  const nivel = t("aireNiveles")[estacion.nivel - 1];
+  const hora = horaDe(estacion.fecha);
 
   // La recomendación oficial viene en español; en inglés, su traducción.
   const recomendacion = idioma() === "en" ? t("aireRecomendaciones")[estacion.nivel - 1] : (estacion.recomendacion ?? t("aireRecomendaciones")[estacion.nivel - 1]);
@@ -1173,6 +1264,7 @@ function pintarAire(estacion) {
       elemento("a", { href: PAGINA_AIRE, target: "_blank", rel: "noopener" }, t("aireFuenteEnlace")),
       ".",
     ),
+    ...bloquesSol,
   );
 }
 
@@ -1556,7 +1648,7 @@ async function iniciar() {
     mensaje(t("errorDatos"), true);
     return;
   }
-  const [suspensiones, paradas, estado, lineas, rutas, bicicletas, turnosFarmacias, transporte, estacionesTranvia, basura, agua] = await Promise.all(
+  const [suspensiones, paradas, estado, lineas, rutas, bicicletas, turnosFarmacias, transporte, estacionesTranvia, basura, agua, cerca] = await Promise.all(
     [
       "luz/suspensiones.json",
       "buses/paradas.geojson",
@@ -1569,6 +1661,7 @@ async function iniciar() {
       "buses/tranvia.geojson",
       "manual/basura.json",
       "manual/agua.json",
+      "ciudad/cerca.geojson",
     ].map((r) =>
       cargarJson(r).catch(() => null),
     ),
@@ -1598,6 +1691,7 @@ async function iniciar() {
   // Calidad del aire: se pide en vivo a la EMOV (cambia cada hora) y, como mucho, cada media
   // hora. Si no responde a tiempo o el dato es viejo, "Aire" simplemente no aparece.
   let estacionesAire = [];
+  let extrasAire = {};
   let aireLeido = 0;
   const actualizarAire = async () => {
     if (Date.now() - aireLeido < 30 * 60_000) return;
@@ -1605,16 +1699,23 @@ async function iniciar() {
     const control = new AbortController();
     const reloj = setTimeout(() => control.abort(), 6000);
     try {
-      const respuesta = await fetch(URL_AIRE, { signal: control.signal });
-      if (!respuesta.ok) throw new Error(`EMOV: ${respuesta.status}`);
-      estacionesAire = leerAire(await respuesta.json());
+      // Las tres consultas van juntas; si una falla, las otras se muestran igual.
+      const pedir = (url) => fetch(url, { signal: control.signal }).then((r) => (r.ok ? r.json() : null));
+      const [ica, uv, clima] = await Promise.allSettled([URL_AIRE, URL_UV, URL_CLIMA].map(pedir));
+      estacionesAire = ica.status === "fulfilled" ? leerAire(ica.value) : [];
+      extrasAire = {
+        uv: uv.status === "fulfilled" ? leerUv(uv.value) : null,
+        clima: clima.status === "fulfilled" ? leerClima(clima.value) : null,
+      };
+      if (!estacionesAire.length && !extrasAire.uv && !extrasAire.clima) throw new Error("EMOV sin datos");
     } catch {
       estacionesAire = [];
+      extrasAire = {};
       aireLeido = Date.now() - 25 * 60_000; // se reintenta a los cinco minutos
     } finally {
       clearTimeout(reloj);
     }
-    if (puntoActual) pintarAire(aireCercano(puntoActual, estacionesAire));
+    if (puntoActual) pintarAire(aireCercano(puntoActual, estacionesAire), extrasAire);
   };
 
   const ICONO_LUGAR = { casa: "#i-casa", trabajo: "#i-maletin" };
@@ -1708,7 +1809,8 @@ async function iniciar() {
       li.classList.add("ficha-agua");
       $("resumen").append(li);
     }
-    pintarAire(aireCercano(punto, estacionesAire));
+    pintarCerca(punto, cerca);
+    pintarAire(aireCercano(punto, estacionesAire), extrasAire);
     actualizarAire();
     pintarPunto();
     pintarBici(masCercano(punto, bicicletas));

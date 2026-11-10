@@ -215,6 +215,7 @@ p {
 .servicio-buses { --c: var(--c-buses); }
 .servicio-aire { --c: var(--cupula); }
 .servicio-agua { --c: var(--cupula); }
+.servicio-cerca { --c: var(--tomebamba); }
 
 /* ---------- Botones y campos ---------- */
 
@@ -1293,6 +1294,44 @@ a.ficha.con-aviso .ficha-valor {
   border-color: var(--cupula);
 }
 
+/* ---------- Cerca de ti ---------- */
+
+.cerca-lista {
+  list-style: none;
+  padding: 0;
+  margin: 0.6rem 0 0;
+}
+
+.cerca-lista > li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.8rem;
+  align-items: start;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid var(--linea);
+}
+
+.cerca-lista > li > .icono {
+  margin-top: 0.15rem;
+  color: var(--tomebamba);
+}
+
+.cerca-texto {
+  display: grid;
+  min-width: 0;
+}
+
+.cerca-tipo {
+  color: var(--tinta-suave);
+  font-size: var(--t-0);
+}
+
+.cerca-acciones {
+  display: grid;
+  justify-items: end;
+  gap: 0.4rem;
+}
+
 /* ---------- Aire ---------- */
 
 /* El nivel del aire, con su color además de su nombre. */
@@ -1311,6 +1350,22 @@ a.ficha.con-aviso .ficha-valor {
 .nivel-aire.n4 { background: #c62828; }
 .nivel-aire.n5 { background: #8e24aa; }
 .nivel-aire.n6 { background: #7b1026; }
+
+/* El nivel del sol, con los colores de la escala UV. */
+.nivel-uv {
+  display: inline-block;
+  width: 0.62em;
+  height: 0.62em;
+  margin-right: 0.45em;
+  border-radius: 50%;
+  vertical-align: 0.06em;
+  background: #4c9a2a;
+}
+
+.nivel-uv.n2 { background: #d9a400; }
+.nivel-uv.n3 { background: #e07b00; }
+.nivel-uv.n4 { background: #c62828; }
+.nivel-uv.n5 { background: #6a1b9a; }
 
 .aire-recomendacion {
   margin-top: 0.6rem;
@@ -1912,6 +1967,7 @@ button.con-icono {
   .imprimir,
   #s-luz,
   #s-agua,
+  #s-cerca,
   #s-buses,
   #s-aire,
   .sobre-datos,

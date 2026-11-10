@@ -28,7 +28,8 @@ Cómo leer las tablas:
 | Buses: horarios y recorridos | Cuenca en Datos (abril de 2026) | Atrasada | Automática, semanal |
 | Buses: cambios de 2026 y pasaje | El Mercurio | Al día | A mano |
 | Tranvía | API de su web | Al día | Automática, diaria |
-| Calidad del aire | API de la EMOV | Al día (cada hora) | En vivo |
+| Calidad del aire, UV y temperatura | API de la EMOV | Al día (cada hora) | En vivo |
+| WiFi, mercados, pilas, Guardia Ciudadana | Cuenca en Datos (CSV) | WiFi oct-2026; resto 2025 | Automática, semanal |
 | Calles, BiciPública, ciclovías | OpenStreetMap | Al día | Automática, semanal |
 
 ## Recolección de basura (EMAC EP)
@@ -116,10 +117,25 @@ datos propios: ninguna los publica abiertos.
 | Fuente | Qué tiene | Estado | Cómo se lee |
 |---|---|---|---|
 | API de la [Red de Monitoreo](https://caire.emov.gob.ec/) (`/datos/ica/obtener`) | Índice horario de 3 estaciones, con coordenadas y recomendación | Al día, con 1 a 2 horas de retraso | En vivo desde el navegador |
+| Índice UV (`/datos/iuv/obtenerUltimoIuv`) y temperatura (`/datos/datos/obtenerUltimosMeteorologico`) | Último valor de la estación del Centro Histórico | Al día | En vivo desde el navegador |
 | Microsensores (`/datos/ica/obtenerIcaMicro`) | 7 sensores de bajo costo | Al día | No se usa todavía |
 
 **Ojo:** API sin documentar ni licencia explícita; el servidor envía el certificado sin el intermedio (falla en
 Python y Node, funciona en los navegadores); el certificado vence el 24 de enero de 2027.
+
+## Servicios cerca de ti (portal Cuenca en Datos)
+
+| Conjunto | Qué tiene | Estado | Cómo se lee |
+|---|---|---|---|
+| [Zonas Wifi](https://cuencaendatos.cuenca.gob.ec/dataset/zonas-wifi) | 123 puntos con dirección y horario de uso | Octubre de 2026 | Automática, semanal |
+| [Mercados](https://cuencaendatos.cuenca.gob.ec/dataset/mercados) | 19 mercados con horario | Abril de 2025 | Automática, semanal |
+| [Lugares de acopio de pilas usadas](https://cuencaendatos.cuenca.gob.ec/dataset/lugares-de-acopio-de-pilas-usadas-puntos) | 130 puntos con teléfono (coordenadas UTM) | Marzo de 2025 | Automática, semanal |
+| [Equipamiento de Seguridad](https://cuencaendatos.cuenca.gob.ec/dataset/equipamiento-de-seguridad) | Destacamentos de la Guardia Ciudadana con teléfono y horario | Junio de 2025 | Automática, semanal |
+| Centros de salud, Acción Social, Parques | Ubicación, horario y contacto | 2022 a 2025 | No se usan todavía |
+
+**Ojo:** las coordenadas vienen con formatos distintos y errores (separadores de miles, cifras perdidas). Se
+corrigen o se descartan; los mercados se pueden ubicar por su esquina porque su dirección es un cruce de
+calles.
 
 ## Calles y movilidad (OpenStreetMap)
 

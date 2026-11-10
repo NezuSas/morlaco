@@ -7,6 +7,7 @@ import {
   direccionLegible,
   horaLegible,
   nombreParada,
+  cercanosPorTipo,
   cortesAgua,
   enlaceCorreoAviso,
   enlaceReporteDireccion,
@@ -201,6 +202,23 @@ test("enlacesCalendario apunta al .ics de la zona y lo ofrece por webcal y Googl
   );
   // El parámetro de versión se mantiene dentro del cid y no rompe la dirección de Google.
   assert.ok(enlaces.google.includes("zona-4.ics%3Fv%3D"));
+});
+
+test("cercanosPorTipo: lo más cercano de cada tipo, dentro de su alcance", () => {
+  const punto = (tipo, nombre, lon, lat) => ({ type: "Feature", properties: { tipo, nombre }, geometry: { type: "Point", coordinates: [lon, lat] } });
+  const coleccion = {
+    features: [
+      punto("wifi", "lejos", -79.0, -2.92),
+      punto("wifi", "cerca", -79.0, -2.9005),
+      punto("mercado", "10 de Agosto", -79.0075, -2.8999),
+      punto("guardia", "Barranco", -79.0052, -2.9016),
+      punto("pilas", "en Ricaurte", -78.96, -2.86), // a más de 2 km: no cuenta
+    ],
+  };
+  const cerca = cercanosPorTipo({ lat: -2.9, lon: -79.0 }, coleccion);
+  assert.deepEqual(cerca.map((c) => `${c.tipo}:${c.nombre}`), ["wifi:cerca", "mercado:10 de Agosto", "guardia:Barranco"]);
+  assert.ok(cerca[0].metros < 100);
+  assert.deepEqual(cercanosPorTipo({ lat: -2.9, lon: -79.0 }, null), []);
 });
 
 test("cortesAgua: los de hoy hasta su hora de fin y los próximos, en orden", () => {

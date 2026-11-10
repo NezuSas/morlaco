@@ -68,6 +68,24 @@
         <rect x="3.5" y="7.5" width="17" height="12" rx="2" />
         <path d="M9 7.5v-2A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5v2M3.5 12.5h17" />
       </symbol>
+      <symbol id="i-cerca" viewBox="0 0 24 24">
+        <path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0C18.5 15.4 12 21 12 21z" />
+        <circle cx="12" cy="10" r="2.3" />
+      </symbol>
+      <symbol id="i-wifi" viewBox="0 0 24 24">
+        <path d="M3.5 9.5a12 12 0 0 1 17 0M6.5 12.8a7.7 7.7 0 0 1 11 0M9.5 16a3.3 3.3 0 0 1 5 0" />
+        <circle cx="12" cy="19" r="0.9" />
+      </symbol>
+      <symbol id="i-mercado" viewBox="0 0 24 24">
+        <path d="M4 9.5 5.5 4h13L20 9.5M4 9.5h16M4 9.5c0 1.4 1.2 2.5 2.7 2.5s2.6-1.1 2.6-2.5c0 1.4 1.2 2.5 2.7 2.5s2.7-1.1 2.7-2.5c0 1.4 1.1 2.5 2.6 2.5S20 10.9 20 9.5M5.5 12v8h13v-8M10 20v-4.5h4V20" />
+      </symbol>
+      <symbol id="i-pila" viewBox="0 0 24 24">
+        <rect x="8" y="5" width="8" height="15" rx="1.5" />
+        <path d="M10.5 3h3v2M12 9.5v4M10 11.5h4" />
+      </symbol>
+      <symbol id="i-escudo" viewBox="0 0 24 24">
+        <path d="M12 3.5 19 6v5.5c0 4.3-3 7.6-7 9-4-1.4-7-4.7-7-9V6z" />
+      </symbol>
       <symbol id="i-gota" viewBox="0 0 24 24">
         <path d="M12 3.5c3.2 4.1 6 7.6 6 10.9a6 6 0 0 1-12 0c0-3.3 2.8-6.8 6-10.9z" />
       </symbol>
@@ -246,6 +264,7 @@
               <a href="#s-agua" class="servicio-agua" data-t="navAgua">Agua</a>
               <a href="#s-farmacias" class="servicio-farmacias" data-t="navFarmacias">Farmacias</a>
               <a href="#s-buses" class="servicio-buses" data-t="navBuses">Buses</a>
+              <a href="#s-cerca" class="servicio-cerca" data-t="navCerca">Cerca</a>
               <a id="nav-aire" href="#s-aire" class="servicio-aire" data-t="navAire" hidden>Aire</a>
             </nav>
 
@@ -336,6 +355,15 @@
               <p id="bici-nota" class="detalle" data-t="bicicletaNota"></p>
             </section>
 
+            <section id="s-cerca" class="servicio-cerca" aria-labelledby="t-cerca">
+              <h2 id="t-cerca">
+                <svg class="icono" aria-hidden="true"><use href="#i-cerca" /></svg>
+                <span data-t="tituloCerca">Cerca de ti</span>
+              </h2>
+              <ul id="cerca-lista" class="cerca-lista"></ul>
+              <p id="cerca-nota" class="detalle"></p>
+            </section>
+
             <section id="s-aire" class="servicio-aire aire" aria-labelledby="t-aire" hidden>
               <h2 id="t-aire">
                 <svg class="icono" aria-hidden="true"><use href="#i-aire" /></svg>
@@ -354,6 +382,7 @@
                 <li data-t-html="sobreBuses"><strong>Buses.</strong> Trazados publicados por el municipio en 2022 y horarios de 2025, del portal <a href="https://cuencaendatos.cuenca.gob.ec">Cuenca en Datos</a>: algunas líneas pueden haber cambiado, confirma con el letrero del bus. Las paradas son las del registro municipal, que no incluye todas. Distancias en línea recta; tiempos estimados con la frecuencia del día, a 15 km/h en bus y 4,5 km/h a pie.</li>
                 <li data-t-html="sobreTransporte"><strong>Pasaje, cambios de líneas y tranvía.</strong> Comunicados del municipio publicados en prensa, revisados a mano.</li>
                 <li data-t-html="sobreAgua"><strong>Agua.</strong> ETAPA EP anuncia sus cortes en redes sociales, no en su web. Morlaco los toma de las notas de El Mercurio que citan a ETAPA, después de que una persona las revisa.</li>
+                <li data-t-html="sobreCerca"><strong>Cerca de ti.</strong> Zonas WiFi, mercados, puntos para pilas y Guardia Ciudadana del portal <a href="https://cuencaendatos.cuenca.gob.ec">Cuenca en Datos</a>. Algunas coordenadas de la fuente están mal: se corrigen o, si no se puede, el punto no se muestra.</li>
                 <li data-t-html="sobreAire"><strong>Aire.</strong> Índice de calidad del aire de la <a href="https://caire.emov.gob.ec/">Red de Monitoreo de la EMOV EP</a>, pedido en vivo a su web cada vez que abres la página. Se muestra la estación más cercana que mide partículas.</li>
                 <li data-t-html="sobreCalles"><strong>Calles, BiciPública, ciclovías y carga eléctrica.</strong> © colaboradores de <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> (ODbL).</li>
               </ul>

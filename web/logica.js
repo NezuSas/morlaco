@@ -188,6 +188,18 @@ export function masCercano(punto, coleccion, maximoMetros = 1500) {
   return mejor;
 }
 
+/** Hasta dónde se busca cada tipo de "Cerca de ti": más lejos lo que hay menos. */
+export const ALCANCE_CERCA = { wifi: 1500, mercado: 3000, pilas: 2000, guardia: 4000 };
+
+/** Lo más cercano de cada tipo (WiFi, mercado, pilas, Guardia), en ese orden; omite lo que queda lejos. */
+export function cercanosPorTipo(punto, coleccion) {
+  return Object.entries(ALCANCE_CERCA).flatMap(([tipo, maximo]) => {
+    const deTipo = { features: (coleccion?.features ?? []).filter((f) => f.properties.tipo === tipo) };
+    const cercano = masCercano(punto, deTipo, maximo);
+    return cercano ? [cercano] : [];
+  });
+}
+
 /**
  * Las paradas más cercanas a un punto, con su distancia en metros. Las paradas
  * con el mismo nombre (una a cada lado de la calle) cuentan una sola vez.

@@ -132,6 +132,8 @@ TILDES = {
     "suenos": "Sueños", "tecnico": "Técnico", "telefonica": "Telefónica",
     "urbanizacion": "Urbanización", "vasquez": "Vásquez", "velez": "Vélez",
     "zoologico": "Zoológico",
+    # La fuente a veces escribe la Ñ como "NI": ESPANIA, BANIOS.
+    "espania": "España", "banios": "Baños", "ingenieria": "Ingeniería",
 }  # fmt: skip
 _MINUSCULAS = {"de", "del", "la", "las", "los", "el", "y", "e", "a", "al", "en"}
 

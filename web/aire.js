@@ -8,6 +8,9 @@
 import { distanciaMetros } from "./logica.js";
 
 export const URL_AIRE = "https://caire.emov.gob.ec/datos/ica/obtener";
+// El índice UV y la temperatura salen de la misma web, de su estación del Centro Histórico.
+export const URL_UV = "https://caire.emov.gob.ec/datos/iuv/obtenerUltimoIuv";
+export const URL_CLIMA = "https://caire.emov.gob.ec/datos/datos/obtenerUltimosMeteorologico";
 export const PAGINA_AIRE = "https://caire.emov.gob.ec/";
 
 /** Un dato más viejo que esto no se muestra: ya no dice cómo está el aire ahora. */
@@ -60,6 +63,39 @@ export function leerAire(respuesta, ahora = new Date()) {
       },
     ];
   });
+}
+
+/** El nivel del índice UV (1 bajo … 5 extremo), con la escala de la OMS que usa la EMOV. */
+export function nivelUv(valor) {
+  if (valor <= 2) return 1;
+  if (valor <= 5) return 2;
+  if (valor <= 7) return 3;
+  if (valor <= 10) return 4;
+  return 5;
+}
+
+const reciente = (fecha, ahora, horas) => {
+  const t = new Date(fecha).getTime();
+  return Number.isFinite(t) && ahora - t <= horas * 3_600_000 && t - ahora <= 3_600_000;
+};
+
+/** El último índice UV, o null si falta o tiene más de dos horas (cambia mucho en poco tiempo). */
+export function leerUv(respuesta, ahora = new Date()) {
+  const valor = respuesta?.iuvValor;
+  if (!Number.isFinite(valor) || valor < 0 || !reciente(respuesta?.fecha, ahora, 2)) return null;
+  return { valor: Math.round(valor), nivel: nivelUv(valor), fecha: new Date(respuesta.fecha) };
+}
+
+/** La última temperatura y humedad, o null si faltan o tienen más de dos horas. */
+export function leerClima(respuesta, ahora = new Date()) {
+  const { temperatura, humedad } = respuesta ?? {};
+  if (!Number.isFinite(temperatura) || temperatura < -10 || temperatura > 40) return null;
+  if (!reciente(respuesta?.fecha, ahora, 2)) return null;
+  return {
+    temperatura: Math.round(temperatura),
+    humedad: Number.isFinite(humedad) ? Math.round(humedad) : null,
+    fecha: new Date(respuesta.fecha),
+  };
 }
 
 /** La estación más cercana al punto, prefiriendo las que miden partículas; null si no hay. */
