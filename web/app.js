@@ -144,6 +144,8 @@ function crearMapa(zonas, alElegir) {
   // Mapa de OpenStreetMap; la hoja de estilos lo pasa a grises (y lo invierte en modo oscuro).
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
+    // Con CORS, el service worker puede guardar las teselas vistas para usarlas sin conexión.
+    crossOrigin: true,
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
   }).addTo(mapa);
 
@@ -729,4 +731,41 @@ async function iniciar() {
   if (inicial) elegir(inicial);
 }
 
+/** Aviso sin conexión, registro del service worker y botón "Instalar". */
+function prepararApp() {
+  const aviso = $("sin-conexion");
+  const actualizarConexion = () => {
+    aviso.hidden = navigator.onLine;
+  };
+  window.addEventListener("online", actualizarConexion);
+  window.addEventListener("offline", actualizarConexion);
+  actualizarConexion();
+
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("sw.js").catch(() => {
+      // Sin service worker la página funciona igual, solo que no sin conexión.
+    });
+  }
+
+  // Chrome y Edge ofrecen instalar la app; el botón aparece solo cuando se puede.
+  let solicitud = null;
+  const boton = $("instalar");
+  window.addEventListener("beforeinstallprompt", (evento) => {
+    evento.preventDefault();
+    solicitud = evento;
+    boton.hidden = false;
+  });
+  boton.addEventListener("click", async () => {
+    if (!solicitud) return;
+    solicitud.prompt();
+    await solicitud.userChoice;
+    solicitud = null;
+    boton.hidden = true;
+  });
+  window.addEventListener("appinstalled", () => {
+    boton.hidden = true;
+  });
+}
+
+prepararApp();
 iniciar();

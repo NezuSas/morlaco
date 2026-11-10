@@ -128,6 +128,12 @@ qué paradas de bus tienes cerca. El punto elegido queda en la dirección de la 
 (`web/#-2.89733,-79.00454`), así que se puede compartir. Desde la respuesta te puedes suscribir al
 calendario de recolección de tu zona.
 
+**Se puede instalar como app** en el móvil o el computador: en Android y en Chrome o Edge aparece el botón
+"Instalar"; en el iPhone, desde Safari con Compartir → "Añadir a pantalla de inicio". Funciona **sin conexión**
+con los últimos datos descargados (útil en un corte de luz o sin datos): el service worker (`web/sw.js`) pide
+primero la página y los datos a la red y, si no hay conexión, usa la copia guardada. Guarda también las
+teselas del mapa ya vistas (hasta 300) y nunca las búsquedas de lugares.
+
 La página está en **español e inglés**: elige el idioma del navegador y tiene un botón para cambiarlo. Lo que
 viene de las fuentes (nombres de calles, paradas y destinos) se queda como se dice en Cuenca.
 
@@ -206,6 +212,8 @@ web/
   index.html          la página
   logica.js           zonas, próxima recolección, cortes de hoy, paradas cercanas (sin DOM)
   textos.js           textos de la interfaz en español e inglés
+  sw.js               service worker: la página y los datos sin conexión
+  manifest.webmanifest  datos para instalar la página como app
   calles.js           búsqueda de calles e intersecciones (sin DOM)
   buses.js            líneas cercanas y su frecuencia del día (sin DOM)
   app.js              mapa, búsqueda y pintado de la respuesta
@@ -218,7 +226,6 @@ regístrala en `FUENTES` de `cli.py` y añade sus pruebas.
 ## Próximos pasos
 
 - Responder "¿qué bus me lleva de aquí a allá?" con el GTFS.
-- Instalar la página en el móvil y usarla sin conexión.
 - Capas del portal municipal: BiciPública, ciclovías y carga de autos eléctricos.
 - Farmacias de turno, si hay una fuente pública fiable.
 - Cortes de agua de ETAPA y un bot de Telegram.

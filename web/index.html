@@ -29,11 +29,15 @@
     />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" href="icono.svg" type="image/svg+xml" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="iconos/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Morlaco" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap"
+      crossorigin="anonymous"
     />
     <link
       rel="stylesheet"
@@ -65,10 +69,14 @@
         <span>Morlaco</span>
       </a>
       <div class="barra-acciones">
+        <button type="button" id="instalar" class="idioma" data-t="instalar" data-t-aria-label="instalarAria" hidden>Instalar</button>
         <button type="button" id="idioma" class="idioma" lang="en" data-t="cambiarIdioma" data-t-aria-label="cambiarIdiomaAria">English</button>
         <a class="enlace-datos" href="https://github.com/NezuSas/morlaco" data-t="enlaceDatos">Datos abiertos y código</a>
       </div>
     </header>
+    <p id="sin-conexion" class="sin-conexion" role="status" data-t="sinConexion" hidden>
+      Sin conexión: ves los últimos datos guardados en este dispositivo.
+    </p>
 
     <main class="disposicion">
       <div class="columna">

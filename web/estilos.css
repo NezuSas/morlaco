@@ -179,6 +179,15 @@ button.idioma:hover {
   }
 }
 
+.sin-conexion {
+  margin: 0;
+  padding: 0.5rem 1rem;
+  background: var(--aviso-fondo);
+  border-bottom: 1px solid var(--aviso);
+  font-size: var(--t-0);
+  font-weight: 700;
+}
+
 /* ---------- Disposición ----------
    Móvil: todo en columna. Pantallas anchas: la consulta a la izquierda (con su
    propio desplazamiento) y el mapa a la derecha, ocupando el alto de la ventana. */

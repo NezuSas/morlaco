@@ -12,6 +12,9 @@ const TEXTOS = {
     cambiarIdioma: "English",
     cambiarIdiomaAria: "Switch to English",
     enlaceDatos: "Datos abiertos y código",
+    instalar: "Instalar",
+    instalarAria: "Instalar Morlaco como app en este dispositivo",
+    sinConexion: "Sin conexión: ves los últimos datos guardados en este dispositivo.",
     portadaTitulo: "¿Qué pasa hoy en tu calle?",
     portadaEntrada:
       "Cuándo pasa el recolector, si hay cortes de luz programados y qué paradas de bus tienes cerca, en Cuenca.",
@@ -126,6 +129,9 @@ const TEXTOS = {
     cambiarIdioma: "Español",
     cambiarIdiomaAria: "Cambiar a español",
     enlaceDatos: "Open data and code",
+    instalar: "Install",
+    instalarAria: "Install Morlaco as an app on this device",
+    sinConexion: "You’re offline: showing the last data saved on this device.",
     portadaTitulo: "What’s happening on your street today?",
     portadaEntrada:
       "When the garbage truck comes, whether there are scheduled power cuts and which buses stop near you, in Cuenca.",
