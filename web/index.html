@@ -64,6 +64,18 @@
         <rect x="4.5" y="3.5" width="15" height="14" rx="3" />
         <path d="M4.5 11h15M8 20.5v-3M16 20.5v-3M8.5 14.5h.01M15.5 14.5h.01" />
       </symbol>
+      <symbol id="i-casa" viewBox="0 0 24 24">
+        <path d="M3.5 11.5 12 4l8.5 7.5M6 9.5V20h12V9.5M10 20v-5.5h4V20" />
+      </symbol>
+      <symbol id="i-maletin" viewBox="0 0 24 24">
+        <rect x="3.5" y="7.5" width="17" height="12" rx="2" />
+        <path d="M9 7.5v-2A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5v2M3.5 12.5h17" />
+      </symbol>
+      <symbol id="i-ubicar" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="6.5" />
+        <circle cx="12" cy="12" r="2" />
+        <path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3" />
+      </symbol>
     </svg>
 
     <header class="barra">
@@ -120,15 +132,27 @@
                 id="direccion"
                 name="direccion"
                 type="search"
-                autocomplete="street-address"
+                autocomplete="off"
+                role="combobox"
+                aria-autocomplete="list"
+                aria-expanded="false"
+                aria-controls="sug-direccion"
                 placeholder="Sucre y Borrero"
                 required
               />
               <button type="submit" data-t="buscar">Buscar</button>
+              <ul id="sug-direccion" class="sugerencias" role="listbox" hidden data-t-aria-label="sugerenciasCalles" aria-label="Calles sugeridas"></ul>
             </div>
             <div class="otras-formas">
-              <button type="button" id="ubicarme" class="secundario" data-t="ubicarme">Usar mi ubicación</button>
+              <button type="button" id="ubicarme" class="ubicarme">
+                <svg class="icono" aria-hidden="true"><use href="#i-ubicar" /></svg>
+                <span data-t="ubicarme">Usar mi ubicación</span>
+              </button>
               <span data-t="tocaMapa">o toca tu calle en el mapa.</span>
+            </div>
+            <div id="mis-lugares" class="mis-lugares" hidden>
+              <p id="t-mis-lugares" data-t="tusLugares">Tus lugares</p>
+              <ul aria-labelledby="t-mis-lugares"></ul>
             </div>
             <p id="mensaje" class="mensaje" role="status" aria-live="polite"></p>
           </form>
@@ -171,10 +195,22 @@
                 <p id="punto-nombre" class="punto-nombre" aria-live="polite"></p>
               </div>
               <button type="button" id="cambiar-punto" class="secundario" data-t="cambiarPunto">Cambiar</button>
+              <div class="guardar-lugar" role="group" aria-labelledby="t-guardar-como">
+                <span id="t-guardar-como" data-t="guardarComo">Guardar como</span>
+                <button type="button" class="lugar-boton" data-lugar="casa" aria-pressed="false">
+                  <svg class="icono" aria-hidden="true"><use href="#i-casa" /></svg>
+                  <span data-t="lugarCasa">Casa</span>
+                </button>
+                <button type="button" class="lugar-boton" data-lugar="trabajo" aria-pressed="false">
+                  <svg class="icono" aria-hidden="true"><use href="#i-maletin" /></svg>
+                  <span data-t="lugarTrabajo">Trabajo</span>
+                </button>
+              </div>
             </div>
 
             <h2 class="titulo-hoy" data-t="hoyEnTuCalle">Hoy en tu calle</h2>
             <ul id="resumen" class="resumen"></ul>
+            <p id="resumen-nota" class="resumen-nota" hidden></p>
 
             <nav class="secciones" aria-label="Secciones de la respuesta" data-t-aria-label="seccionesAria">
               <a href="#s-basura" class="servicio-basura" data-t="navBasura">Basura</a>
@@ -220,8 +256,18 @@
               <form id="ruta" class="ruta" role="search">
                 <label for="destino" data-t="etiquetaDestino">¿A dónde vas? Escribe una esquina o un lugar</label>
                 <div class="campo">
-                  <input id="destino" name="destino" type="search" placeholder="Mall del Río" required />
+                  <input
+                    id="destino"
+                    name="destino"
+                    type="search"
+                    autocomplete="off"
+                    role="combobox" aria-autocomplete="list" aria-expanded="false"
+                    aria-controls="sug-destino"
+                    placeholder="Mall del Río"
+                    required
+                  />
                   <button type="submit" data-t="buscarRuta">Buscar ruta</button>
+                  <ul id="sug-destino" class="sugerencias" role="listbox" hidden data-t-aria-label="sugerenciasCalles" aria-label="Calles sugeridas"></ul>
                 </div>
                 <p id="ruta-mensaje" class="mensaje" role="status" aria-live="polite"></p>
               </form>
@@ -232,11 +278,22 @@
               <p id="lineas-nota" class="detalle"></p>
               <h3 class="subtitulo" data-t="subtituloParadas">Paradas registradas más cerca</h3>
               <ol id="paradas" class="paradas"></ol>
-              <p id="paradas-nota" class="detalle"></p>
               <h3 class="subtitulo" data-t="subtituloBici">BiciPública más cercana</h3>
               <p id="bici" class="bici-cercana"></p>
               <p id="bici-nota" class="detalle" data-t="bicicletaNota"></p>
             </section>
+
+            <details id="sobre-datos" class="sobre-datos">
+              <summary data-t="sobreTitulo">Sobre estos datos</summary>
+              <p data-t="sobreIntro">Morlaco junta datos públicos de varias instituciones; no es un servicio oficial. Ante cualquier duda, consulta la fuente.</p>
+              <ul>
+                <li data-t-html="sobreBasura"><strong>Recolección.</strong> Zonas y horarios del <a href="https://emac.gob.ec/mapa-zonas-de-recoleccion/">mapa de EMAC EP</a>. Si EMAC los cambia, el calendario se actualiza solo.</li>
+                <li data-t-html="sobreLuz"><strong>Cortes de luz.</strong> Los cortes programados que <a href="https://www.centrosur.gob.ec/suspensiones-programadas/">Centro Sur</a> publica en su web. Si no publica, no sabemos si hay cortes: revisa también sus redes sociales.</li>
+                <li data-t-html="sobreFarmacias"><strong>Farmacias de turno.</strong> La lista mensual de <a href="https://www.controlsanitario.gob.ec/turnos-de-farmacias/">ARCSA</a> para Azuay, que puede tener errores. La cercanía se calcula con la dirección que publica, así que es aproximada.</li>
+                <li data-t-html="sobreBuses"><strong>Buses.</strong> Trazados publicados por el municipio en 2022 y horarios de 2025, del portal <a href="https://cuencaendatos.cuenca.gob.ec">Cuenca en Datos</a>: algunas líneas pueden haber cambiado, confirma con el letrero del bus. Las paradas son las del registro municipal, que no incluye todas. Distancias en línea recta; tiempos estimados con la frecuencia del día, a 15 km/h en bus y 4,5 km/h a pie.</li>
+                <li data-t-html="sobreCalles"><strong>Calles, BiciPública, ciclovías y carga eléctrica.</strong> © colaboradores de <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> (ODbL).</li>
+              </ul>
+            </details>
           </div>
 
         </section>

@@ -19,6 +19,7 @@ from typing import Any
 
 import shapefile
 
+from morlaco import comun
 from morlaco.comun import limpiar
 from morlaco.fuentes.calles import simplificar
 from morlaco.geo import utm_a_geograficas
@@ -39,13 +40,7 @@ def zip_mas_reciente(paquete: dict[str, Any]) -> dict[str, Any]:
     return max(zips, key=lambda r: r.get("created") or "")
 
 
-def nombre_propio(texto: str) -> str:
-    """'MALL DEL RIO' o 'Mall del Rio' -> 'Mall del Rio'."""
-    minusculas = {"de", "del", "la", "las", "los", "el", "y"}
-    palabras = limpiar(texto).lower().split()
-    return " ".join(
-        p if i and p in minusculas else p[:1].upper() + p[1:] for i, p in enumerate(palabras)
-    )
+nombre_propio = comun.nombre_propio  # se mantiene el nombre para quien lo importe de aquí
 
 
 def describir(registro: dict[str, Any]) -> dict[str, Any]:

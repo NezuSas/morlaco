@@ -28,7 +28,7 @@ def test_utm_a_geograficas_coincide_con_pyproj():
     [
         (
             {"linename": "7", "name": "L7 Mall del Rio", "direction": ">", "empresa": "UNCOMETRO"},
-            {"linea": "7", "tipo": "linea", "hacia": "Mall del Rio", "sentido": "ida"},
+            {"linea": "7", "tipo": "linea", "hacia": "Mall del Río", "sentido": "ida"},
         ),
         (
             {"linename": "11B", "name": "L11B San Pedro", "direction": "<", "empresa": "TOMEBAMBA"},
@@ -50,7 +50,7 @@ def test_utm_a_geograficas_coincide_con_pyproj():
                 "direction": "<",
                 "empresa": "SIT",
             },
-            {"linea": "A1", "tipo": "alimentador", "hacia": "Banos", "sentido": "retorno"},
+            {"linea": "A1", "tipo": "alimentador", "hacia": "Baños", "sentido": "retorno"},
         ),
         (
             {

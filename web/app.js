@@ -5,6 +5,8 @@ import {
   describirRecoleccion,
   distanciaMetros,
   direccionLegible,
+  horaLegible,
+  nombreParada,
   enlaceReporteDireccion,
   enlacesCalendario,
   estadoLuz,
@@ -25,14 +27,17 @@ import {
 import {
   buscarCalles,
   cruceDeCalles,
+  esquinaCercana,
   interpretarBusqueda,
   longitudMetros,
   prepararIndice,
   puntoMedio,
+  sugerirCalles,
   ubicarEsquina,
 } from "./calles.js";
 import { describirDestinos, describirFrecuencia, lineasCercanas } from "./buses.js";
 import { planificar, prepararLineas } from "./rutas.js";
+import { LUGARES, cambiarLugar, leerLugar, leerLugares, lugarDe, textoDeLugar } from "./lugares.js";
 import { etiquetaIdioma, idioma, idiomaInicial, listar, t, usarIdioma } from "./textos.js";
 
 const DATOS = "../datos/";
@@ -40,6 +45,7 @@ const NOMINATIM = "https://nominatim.openstreetmap.org/search";
 // Rectángulo de la ciudad para que la búsqueda no devuelva otra Cuenca.
 const CAJA_CUENCA = "-79.10,-2.82,-78.92,-2.98";
 const CLAVE_ULTIMO_PUNTO = "morlaco:ultimo-punto";
+const CLAVE_LUGARES = "morlaco:lugares";
 const CLAVE_IDIOMA = "morlaco:idioma";
 const SIN_MOVIMIENTO = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -172,7 +178,7 @@ function crearMapa(zonas, alElegir) {
     onEachFeature: (zona, capa) => {
       const p = zona.properties;
       const dias = listar(p.dias_iso.map(nombreDia));
-      capa.bindTooltip(t("zonaTooltip", { zona: p.zona, dias, desde: p.desde, hasta: p.hasta }), {
+      capa.bindTooltip(t("zonaTooltip", { zona: p.zona, dias, desde: p.desde, hasta: horaLegible(p.hasta) }), {
         sticky: true,
       });
       capas.set(p.zona, { zona, capa });
@@ -305,7 +311,7 @@ function crearMapa(zonas, alElegir) {
             iconAnchor: [11, 11],
           }),
         })
-          .bindTooltip(direccionLegible(parada.ubicacion))
+          .bindTooltip(nombreParada(parada))
           .addTo(marcasParadas);
       });
       if (!marcador) {
@@ -566,7 +572,7 @@ function pintarLuz(suspensiones) {
             elemento(
               "li",
               {},
-              elemento("span", { class: "horario" }, t("corteHorario", { desde: c.desde, hasta: c.hasta })),
+              elemento("span", { class: "horario" }, t("corteHorario", { desde: c.desde, hasta: horaLegible(c.hasta) })),
               direccionLegible(c.direccion),
             ),
           )
@@ -689,7 +695,6 @@ function pintarFarmacias(datos, punto, alUbicar = () => {}) {
 
 function pintarParadas(cercanas) {
   const lista = $("paradas");
-  const nota = $("paradas-nota");
   if (!cercanas.length) {
     lista.replaceChildren(
       elemento("li", { class: "sin-numero" }, t("paradasNinguna")),
@@ -700,13 +705,12 @@ function pintarParadas(cercanas) {
         elemento(
           "li",
           {},
-          elemento("span", {}, direccionLegible(p.ubicacion)),
+          elemento("span", {}, nombreParada(p)),
           elemento("span", { class: "metros" }, formatoDistancia(p.metros)),
         ),
       ),
     );
   }
-  nota.textContent = t("paradasNota");
 }
 
 /** Lista de líneas cercanas; al tocar una se resalta su recorrido en el mapa. */
@@ -778,18 +782,23 @@ function pintarLineas(cercanas, mapa) {
 const SVG_NS = "http://www.w3.org/2000/svg";
 const ICONO_SERVICIO = { basura: "#i-funda", luz: "#i-rayo", farmacias: "#i-cruz", buses: "#i-bus" };
 
-function iconoServicio(servicio) {
+/** Un icono del sprite de la página (#i-...). */
+function icono(href) {
   const svg = document.createElementNS(SVG_NS, "svg");
   svg.setAttribute("class", "icono");
   svg.setAttribute("aria-hidden", "true");
   const use = document.createElementNS(SVG_NS, "use");
-  use.setAttribute("href", ICONO_SERVICIO[servicio]);
+  use.setAttribute("href", href);
   svg.append(use);
   return svg;
 }
 
+function iconoServicio(servicio) {
+  return icono(ICONO_SERVICIO[servicio]);
+}
+
 /** Una ficha del resumen; tocarla lleva a su sección. Devuelve el nodo del detalle para actualizarlo. */
-function ficha(servicio, valor, detalle, { aviso = false } = {}) {
+function ficha(servicio, valor, detalle, { aviso = false, ancha = false } = {}) {
   const nodoDetalle = elemento("span", { class: "ficha-detalle" }, detalle ?? "");
   const enlace = elemento(
     "a",
@@ -798,12 +807,21 @@ function ficha(servicio, valor, detalle, { aviso = false } = {}) {
     elemento("strong", { class: "ficha-valor" }, valor),
     nodoDetalle,
   );
-  return { li: elemento("li", {}, enlace), detalle: nodoDetalle };
+  return { li: elemento("li", ancha ? { class: "ficha-ancha" } : {}, enlace), detalle: nodoDetalle };
 }
 
 /** Las cuatro fichas de "Hoy en tu calle". Devuelve cómo actualizar la de farmacias. */
 function pintarResumen({ zona, suspensiones, turnos, cercanas }) {
   const fichas = [];
+
+  // Sin datos de luz al día, la ficha de luz no aporta: se queda en una línea bajo
+  // el resumen y la de basura ocupa todo el ancho.
+  const luz = suspensiones ? estadoLuz(suspensiones) : null;
+  let notaLuz = null;
+  if (!luz) notaLuz = t("resumenLuzNotaError");
+  else if (!luz.publicadoHoy && luz.diasSinPublicar !== null && luz.diasSinPublicar > 2) {
+    notaLuz = t("resumenLuzNota", { fecha: fechaLarga().format(new Date(luz.ultima)) });
+  }
 
   const p = zona?.properties;
   fichas.push(
@@ -811,22 +829,24 @@ function pintarResumen({ zona, suspensiones, turnos, cercanas }) {
       "basura",
       p ? describirRecoleccion(proximaRecoleccion(p)) : t("fueraZonas"),
       p ? t("zonaRecoleccion", { zona: p.zona }) : "",
+      { ancha: Boolean(notaLuz) },
     ),
   );
 
-  if (!suspensiones) {
-    fichas.push(ficha("luz", t("sinDatos"), ""));
-  } else {
-    const luz = estadoLuz(suspensiones);
+  if (!notaLuz) {
     if (luz.publicadoHoy) {
       fichas.push(ficha("luz", t("resumenLuzHoy", { n: luz.cortesHoy.length }), t("resumenLuzFuente"), { aviso: luz.cortesHoy.length > 0 }));
-    } else if (luz.diasSinPublicar !== null && luz.diasSinPublicar > 2) {
-      const fecha = fechaLarga().format(new Date(luz.ultima));
-      fichas.push(ficha("luz", t("resumenLuzSinDatos"), t("resumenLuzDesde", { fecha }), { aviso: true }));
     } else {
       fichas.push(ficha("luz", t("resumenLuzSinCortes"), t("resumenLuzFuente")));
     }
   }
+  const nota = $("resumen-nota");
+  nota.hidden = !notaLuz;
+  nota.replaceChildren(
+    ...(notaLuz
+      ? [iconoServicio("luz"), elemento("span", {}, notaLuz, " ", elemento("a", { href: "#s-luz" }, t("verDetalle")))]
+      : []),
+  );
 
   const turno = turnoActual(turnos?.turnos);
   let fichaFarmacias;
@@ -876,7 +896,7 @@ function irASeccion(evento) {
 function pasosDeOpcion(opcion, paradas) {
   const cerca = (punto) => {
     const parada = paradas ? masCercano(punto, paradas, 250) : null;
-    return parada ? t("pasoCerca", { parada: direccionLegible(parada.ubicacion) }) : "";
+    return parada ? t("pasoCerca", { parada: nombreParada(parada) }) : "";
   };
   const pasos = [];
   const { tramos } = opcion;
@@ -962,6 +982,118 @@ function cargarIndiceCalles() {
       throw error;
     });
   return indiceCalles;
+}
+
+// ---------- Autocompletado de calles ----------
+
+/**
+ * Sugerencias de calles bajo un campo de búsqueda (un combobox accesible: flechas,
+ * Enter y Esc). Al elegir la segunda calle de una esquina, se busca directamente.
+ */
+function autocompletar(campo, lista, alCompletar) {
+  let sugerencias = [];
+  let activa = -1;
+  let espera = null;
+  let version = 0;
+
+  const cerrar = () => {
+    version++;
+    sugerencias = [];
+    activa = -1;
+    lista.hidden = true;
+    lista.replaceChildren();
+    campo.setAttribute("aria-expanded", "false");
+    campo.removeAttribute("aria-activedescendant");
+  };
+
+  const marcar = (i) => {
+    activa = i;
+    [...lista.children].forEach((li, j) => li.setAttribute("aria-selected", String(j === i)));
+    const elegida = lista.children[i];
+    if (!elegida) return campo.removeAttribute("aria-activedescendant");
+    campo.setAttribute("aria-activedescendant", elegida.id);
+    elegida.scrollIntoView({ block: "nearest" });
+  };
+
+  const usar = (sugerencia) => {
+    campo.value = sugerencia.texto;
+    cerrar();
+    campo.focus();
+    // Con las dos calles ya se puede buscar; con una sola, se sigue escribiendo ("y ...").
+    if (interpretarBusqueda(sugerencia.texto).calles.length === 2) alCompletar();
+  };
+
+  const pintar = () => {
+    if (!sugerencias.length) return cerrar();
+    lista.replaceChildren(
+      ...sugerencias.map((sugerencia, i) => {
+        const li = elemento("li", { id: `${lista.id}-${i}`, role: "option", "aria-selected": "false" }, sugerencia.nombre);
+        // mousedown sin efecto: así el campo no pierde el foco antes del clic.
+        li.addEventListener("mousedown", (evento) => evento.preventDefault());
+        li.addEventListener("click", () => usar(sugerencia));
+        return li;
+      }),
+    );
+    activa = -1;
+    lista.hidden = false;
+    campo.setAttribute("aria-expanded", "true");
+  };
+
+  const actualizar = async () => {
+    const pedido = ++version;
+    let indice;
+    try {
+      indice = await cargarIndiceCalles();
+    } catch {
+      return;
+    }
+    if (pedido !== version || document.activeElement !== campo) return;
+    const texto = campo.value;
+    sugerencias = sugerirCalles(texto, indice);
+    // Si lo escrito ya es la única sugerencia, no hace falta mostrarla.
+    if (sugerencias.length === 1 && sugerencias[0].texto === texto) sugerencias = [];
+    pintar();
+  };
+
+  // El índice de calles se pide al entrar en el campo, antes de la primera letra.
+  campo.addEventListener("focus", () => cargarIndiceCalles().catch(() => {}));
+  campo.addEventListener("input", () => {
+    clearTimeout(espera);
+    espera = setTimeout(actualizar, 120);
+  });
+  campo.addEventListener("keydown", (evento) => {
+    if (lista.hidden) return;
+    if (evento.key === "ArrowDown") {
+      evento.preventDefault();
+      marcar((activa + 1) % sugerencias.length);
+    } else if (evento.key === "ArrowUp") {
+      evento.preventDefault();
+      marcar(activa <= 0 ? sugerencias.length - 1 : activa - 1);
+    } else if (evento.key === "Enter" && activa >= 0) {
+      evento.preventDefault();
+      usar(sugerencias[activa]);
+    } else if (evento.key === "Escape") {
+      // Sin esto, Esc en un campo de búsqueda también borra lo escrito.
+      evento.preventDefault();
+      cerrar();
+    } else if (evento.key === "Tab") {
+      cerrar();
+    }
+  });
+  campo.addEventListener("blur", () => setTimeout(cerrar, 150));
+  campo.form.addEventListener("submit", () => {
+    clearTimeout(espera);
+    cerrar();
+  });
+}
+
+/** Un nombre para un punto sin nombre (del mapa o del GPS): la esquina más cercana. */
+async function nombreDeEsquina(punto) {
+  const esquina = esquinaCercana(punto, await cargarIndiceCalles());
+  if (!esquina) return null;
+  return esquina.cruce
+    ? t("esquinaNombre", { calle: esquina.calle, cruce: esquina.cruce })
+    : t("cercaDe", { calle: esquina.calle });
 }
 
 const LARGO_MAXIMO_SIN_CRUCE = 600;
@@ -1102,14 +1234,76 @@ async function iniciar() {
   }
 
   let puntoActual = null;
+  let zonaActual = null;
+  let nombreActual = null;
+  // Un nombre provisional ("Tu ubicación") se muestra, pero no se guarda.
+  let nombreProvisional = false;
+  let lugares = leerLugares(leer(CLAVE_LUGARES));
   let recorridos = null;
-  const elegir = (punto, origen, nombre) => {
+
+  const ICONO_LUGAR = { casa: "#i-casa", trabajo: "#i-maletin" };
+  const nombreLugar = (clave) => t(clave === "casa" ? "lugarCasa" : "lugarTrabajo");
+
+  const pintarPunto = () => {
+    if (!puntoActual) return;
+    const clave = lugarDe(puntoActual, lugares);
+    const z = zonaActual?.properties.zona;
+    $("punto-nombre").replaceChildren(
+      clave ? elemento("span", { class: "punto-lugar" }, nombreLugar(clave)) : "",
+      nombreActual ?? t("puntoGuardado"),
+      z ? elemento("span", { class: "punto-zona" }, t("zonaRecoleccion", { zona: z })) : "",
+    );
+    for (const boton of document.querySelectorAll(".lugar-boton")) {
+      boton.setAttribute("aria-pressed", String(boton.dataset.lugar === clave));
+    }
+  };
+
+  /** Los lugares guardados, junto al buscador, para volver a ellos con un toque. */
+  const pintarLugares = () => {
+    const guardados = LUGARES.filter((clave) => lugares[clave]);
+    $("mis-lugares").hidden = !guardados.length;
+    $("mis-lugares")
+      .querySelector("ul")
+      .replaceChildren(
+        ...guardados.map((clave) => {
+          const lugar = lugares[clave];
+          const boton = elemento(
+            "button",
+            { type: "button", class: "lugar" },
+            icono(ICONO_LUGAR[clave]),
+            elemento("span", {}, nombreLugar(clave)),
+            lugar.nombre ? elemento("span", { class: "lugar-nombre" }, lugar.nombre) : null,
+          );
+          boton.addEventListener("click", () => elegir(lugar, nombreLugar(clave), lugar.nombre, { nombrar: !lugar.nombre }));
+          return elemento("li", {}, boton);
+        }),
+      );
+  };
+
+  /** Busca la esquina más cercana y, si la persona sigue en ese punto, la pone como nombre. */
+  const nombrarPunto = async (punto) => {
+    try {
+      const nombre = await nombreDeEsquina(punto);
+      if (!nombre || puntoActual !== punto) return;
+      nombreActual = nombre;
+      nombreProvisional = false;
+      pintarPunto();
+      guardar(CLAVE_ULTIMO_PUNTO, textoDeLugar(punto, nombre));
+    } catch {
+      // Sin índice de calles se queda el nombre provisional.
+    }
+  };
+
+  const elegir = (punto, origen, nombre, { nombrar = false } = {}) => {
     puntoActual = punto;
+    nombreActual = nombre ?? null;
+    nombreProvisional = nombrar;
     $("ruta-opciones").replaceChildren();
     $("ruta-nota").hidden = true;
     mensaje("");
     $("ruta-mensaje").textContent = "";
     const zona = zonaDe(punto.lon, punto.lat, zonas);
+    zonaActual = zona;
     const cercanas = paradas ? paradasCercanas(punto, paradas) : [];
     $("respuesta").hidden = false;
     $("inicio").hidden = true;
@@ -1121,15 +1315,12 @@ async function iniciar() {
     pintarLineas(cercanasLineas, mapa);
     const resumen = pintarResumen({ zona, suspensiones, turnos: turnosFarmacias, cercanas: cercanasLineas });
     pintarFarmacias(turnosFarmacias, punto, (f) => resumen.farmaciaCercana(f));
-    const z = zona?.properties.zona;
-    $("punto-nombre").replaceChildren(
-      nombre ?? t("puntoGuardado"),
-      z ? elemento("span", { class: "punto-zona" }, t("zonaRecoleccion", { zona: z })) : "",
-    );
+    pintarPunto();
     pintarBici(masCercano(punto, bicicletas));
     mapa.mostrar(punto, zona, cercanas);
     history.replaceState(null, "", hashDesdePunto(punto));
-    guardar(CLAVE_ULTIMO_PUNTO, hashDesdePunto(punto));
+    guardar(CLAVE_ULTIMO_PUNTO, textoDeLugar(punto, nombrar ? null : nombreActual));
+    if (nombrar) nombrarPunto(punto);
     if (origen) {
       // "Tu punto" ya dice dónde: el mensaje de la búsqueda sobra. Tras una acción de la
       // persona, la vista baja a la respuesta.
@@ -1138,7 +1329,7 @@ async function iniciar() {
     }
   };
 
-  const mapa = crearMapa(zonas, (punto) => elegir(punto, t("puntoMapa"), t("puntoMapaNombre")));
+  const mapa = crearMapa(zonas, (punto) => elegir(punto, t("puntoMapa"), t("puntoMapaNombre"), { nombrar: true }));
   agregarCapas(mapa.leaflet, bicicletas);
 
   $("buscar").addEventListener("submit", async (evento) => {
@@ -1180,7 +1371,7 @@ async function iniciar() {
     boton.disabled = true;
     mensaje(t("buscandoUbicacion"));
     try {
-      elegir(await miUbicacion(), t("usandoUbicacion"), t("tuUbicacion"));
+      elegir(await miUbicacion(), t("usandoUbicacion"), t("tuUbicacion"), { nombrar: true });
     } catch (error) {
       mensaje(error.message, true);
     } finally {
@@ -1233,6 +1424,23 @@ async function iniciar() {
     $("direccion").select();
   });
 
+  autocompletar($("direccion"), $("sug-direccion"), () => $("buscar").requestSubmit());
+  autocompletar($("destino"), $("sug-destino"), () => $("ruta").requestSubmit());
+
+  // "Guardar como Casa / Trabajo": tocar el botón marcado lo quita.
+  for (const boton of document.querySelectorAll(".lugar-boton")) {
+    boton.addEventListener("click", () => {
+      if (!puntoActual) return;
+      const clave = boton.dataset.lugar;
+      const quitar = lugarDe(puntoActual, lugares) === clave;
+      const nombre = nombreProvisional ? null : nombreActual;
+      lugares = cambiarLugar(lugares, clave, quitar ? null : puntoActual, nombre);
+      guardar(CLAVE_LUGARES, JSON.stringify(lugares));
+      pintarPunto();
+      pintarLugares();
+    });
+  }
+
   // Los ejemplos rellenan la búsqueda y la lanzan.
   for (const boton of document.querySelectorAll(".ejemplo")) {
     boton.addEventListener("click", () => {
@@ -1242,13 +1450,26 @@ async function iniciar() {
   }
 
   // Un enlace compartido (#lat,lon) abierto con la página ya cargada.
+  // Al abrir, el último punto consultado (con su nombre) o el del enlace.
+  const ultimo = leerLugar(leer(CLAVE_ULTIMO_PUNTO));
+  const nombreConocido = (punto) => {
+    if (ultimo?.nombre && distanciaMetros(punto, ultimo) < 15) return ultimo.nombre;
+    const clave = lugarDe(punto, lugares);
+    return clave ? lugares[clave].nombre : null;
+  };
+  const abrir = (punto, provisional) => {
+    const nombre = nombreConocido(punto);
+    elegir(punto, null, nombre ?? provisional, { nombrar: !nombre });
+  };
   window.addEventListener("hashchange", () => {
     const punto = puntoDesdeHash(location.hash);
-    if (punto) elegir(punto);
+    if (punto) abrir(punto, t("puntoEnlace"));
   });
 
-  const inicial = puntoDesdeHash(location.hash) ?? puntoDesdeHash(leer(CLAVE_ULTIMO_PUNTO));
-  if (inicial) elegir(inicial);
+  pintarLugares();
+  const enlace = puntoDesdeHash(location.hash);
+  if (enlace) abrir(enlace, ultimo && distanciaMetros(enlace, ultimo) < 15 ? t("puntoGuardado") : t("puntoEnlace"));
+  else if (ultimo) abrir({ lat: ultimo.lat, lon: ultimo.lon }, t("puntoGuardado"));
 }
 
 /** Aviso sin conexión, registro del service worker y botón "Instalar". */

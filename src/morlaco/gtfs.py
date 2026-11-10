@@ -103,10 +103,12 @@ def _clave(texto: str) -> str:
 
 
 def nombre_parada(ubicacion: str) -> str:
-    """'CALLE SANGURIMA INTERSECCION LUIS CORDERO' -> 'Calle Sangurima y Luis Cordero'."""
-    return nombre_propio(
-        re.sub(r"\s+INTERSECCI[OÓ]N\s+", " y ", limpiar(ubicacion), flags=re.IGNORECASE)
-    )
+    """'CALLE SANGURIMA INTERSECCION LUIS CORDERO' -> 'Calle Sangurima y Luis Cordero'.
+
+    "CALLE AV. REMIGIO CRESPO" se queda en "Av. Remigio Crespo"."""
+    texto = re.sub(r"\s+INTERSECCI[OÓ]N\s+", " y ", limpiar(ubicacion), flags=re.IGNORECASE)
+    texto = re.sub(r"\bCALLE\s+(?=AV\b|AVENIDA\b)", "", texto, flags=re.IGNORECASE)
+    return nombre_propio(texto)
 
 
 def _parecido(a: str, b: str) -> int:
@@ -157,7 +159,7 @@ def _terminal(
         parada_id = base if n == 1 else f"{base}-{n}"
         existente = paradas.get(parada_id)
         if existente is None:
-            return [parada_id, f"{nombre_propio(nombre)} (terminal)", punto[1], punto[0]]
+            return [parada_id, f"Terminal {nombre_propio(nombre)}", punto[1], punto[0]]
         cerca = (
             _distancia(_a_metros(punto[0], punto[1]), _a_metros(existente[3], existente[2])) < 150
         )

@@ -99,6 +99,7 @@ def test_parsear_paradas_descarta_rotas_y_fuera_de_cuenca():
     assert primera["properties"] == {
         "id": 1,
         "ubicacion": "AV 3 DE NOVIEMBRE INTERSECCION RAMON BORRERO",
+        "nombre": "Av. 3 de Noviembre y Ramón Borrero",
         "tiene_paleta": True,
     }
     assert segunda["properties"]["tiene_paleta"] is False

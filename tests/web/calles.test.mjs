@@ -6,6 +6,8 @@ import {
   buscarCalles,
   cruceDeCalles,
   encuentroDeCalles,
+  esquinaCercana,
+  sugerirCalles,
   interpretarBusqueda,
   longitudMetros,
   palabras,
@@ -150,4 +152,77 @@ test("ubicarEsquina ubica direcciones de esquina y descarta las demás", () => {
   assert.ok(Math.abs(punto.lat - -2.897) < 1e-6 && Math.abs(punto.lon - -79.0045) < 1e-6);
   assert.equal(ubicarEsquina("Vía a San Fermín km 5", indice), null);
   assert.equal(ubicarEsquina("Ordóñez Lasso y Benigno Malo", indice), null); // no se cruzan
+});
+
+test("esquinaCercana nombra la calle más cercana y la que la cruza", () => {
+  // Cerca del cruce de la Solano (vertical en -79.01) con la Remigio Crespo (horizontal en -2.905).
+  const esquina = esquinaCercana({ lat: -2.9051, lon: -79.0101 }, indice);
+  assert.deepEqual(
+    [esquina.calle, esquina.cruce].sort(),
+    ["Avenida Fray Vicente Solano", "Avenida Remigio Crespo Toral"],
+  );
+  // A mitad de cuadra, solo una calle.
+  const tramo = esquinaCercana({ lat: -2.9152, lon: -79.0101 }, indice);
+  assert.equal(tramo.calle, "Avenida Fray Vicente Solano");
+  assert.equal(tramo.cruce, null);
+  // Lejos de todo, nada.
+  assert.equal(esquinaCercana({ lat: -2.7, lon: -78.8 }, indice), null);
+});
+
+test("esquinaCercana con las calles reales: el Parque Calderón", (t) => {
+  let datos;
+  try {
+    datos = JSON.parse(readFileSync(new URL("../../datos/calles/calles.geojson", import.meta.url)));
+  } catch {
+    t.skip("falta datos/calles/calles.geojson (morlaco actualizar calles)");
+    return;
+  }
+  const real = prepararIndice(datos);
+  const inicio = performance.now();
+  const esquina = esquinaCercana({ lat: -2.89735, lon: -79.00445 }, real);
+  assert.ok(performance.now() - inicio < 500, "debería ser rápido");
+  const nombres = [esquina.calle, esquina.cruce];
+  assert.ok(nombres.includes("Simón Bolívar") || nombres.includes("Benigno Malo"), nombres.join(" / "));
+});
+
+test("sugerirCalles completa la calle que se escribe", () => {
+  assert.deepEqual(sugerirCalles("Bo", indice), []); // muy poco escrito
+  const nombres = sugerirCalles("boli", indice).map((s) => s.nombre);
+  assert.deepEqual(nombres.slice(0, 2), ["Simón Bolívar", "Avenida Simon Bolivar"]);
+  assert.equal(sugerirCalles("boli", indice)[0].texto, "Simón Bolívar");
+});
+
+test("sugerirCalles, después de «y», solo sugiere calles que se cruzan", () => {
+  // La Solano cruza la Remigio Crespo, pero no la Ordóñez Lasso ni Tamariz.
+  const todas = sugerirCalles("Solano y ", indice);
+  assert.deepEqual(todas.map((s) => s.nombre), ["Avenida Remigio Crespo Toral"]);
+  assert.equal(todas[0].texto, "Solano y Avenida Remigio Crespo Toral");
+  // Sin el espacio final también vale, y lo escrito filtra por el comienzo de las palabras.
+  assert.deepEqual(sugerirCalles("Solano y", indice).map((s) => s.nombre), ["Avenida Remigio Crespo Toral"]);
+  assert.deepEqual(sugerirCalles("Solano y Re", indice).map((s) => s.nombre), ["Avenida Remigio Crespo Toral"]);
+  assert.deepEqual(sugerirCalles("Solano y Ord", indice), []);
+  assert.deepEqual(sugerirCalles("Bolívar & Ben", indice).map((s) => s.texto), ["Bolívar & Benigno Malo"]);
+  assert.deepEqual(sugerirCalles("Calle que no existe y ", indice), []);
+});
+
+test("sugerirCalles con las calles reales es rápido", (t) => {
+  let datos;
+  try {
+    datos = JSON.parse(readFileSync(new URL("../../datos/calles/calles.geojson", import.meta.url)));
+  } catch {
+    t.skip("falta datos/calles/calles.geojson (morlaco actualizar calles)");
+    return;
+  }
+  const real = prepararIndice(datos);
+  let inicio = performance.now();
+  const sucre = sugerirCalles("Sucre y ", real, 50).map((s) => s.nombre);
+  const primera = performance.now() - inicio;
+  assert.ok(sucre.includes("Presidente Borrero"), sucre.join(", "));
+  assert.ok(primera < 800, `tardó ${Math.round(primera)} ms`);
+  inicio = performance.now();
+  assert.equal(sugerirCalles("Sucre y Borr", real)[0].nombre, "Presidente Borrero");
+  assert.ok(performance.now() - inicio < 100, "la segunda vez usa lo ya calculado");
+  inicio = performance.now();
+  sugerirCalles("Av. de las Américas y ", real);
+  assert.ok(performance.now() - inicio < 1500, "una avenida larga tampoco tarda mucho");
 });

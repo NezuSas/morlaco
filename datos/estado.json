@@ -1,7 +1,7 @@
 {
   "buses": {
     "ok": true,
-    "actualizado": "2026-11-10T03:18:34+00:00",
+    "actualizado": "2026-11-10T04:49:03+00:00",
     "archivos": [
       "buses/lineas.geojson",
       "buses/paradas.geojson",
@@ -22,7 +22,7 @@
         "paradas": 420,
         "paradas_registradas": 331,
         "sin_trazado": [],
-        "version": "dd68e23dcde2"
+        "version": "5630732b98e5"
       }
     }
   },
@@ -39,7 +39,7 @@
   },
   "farmacias": {
     "ok": true,
-    "actualizado": "2026-11-10T04:09:24+00:00",
+    "actualizado": "2026-11-10T04:49:06+00:00",
     "archivos": [
       "farmacias/turnos.json"
     ],

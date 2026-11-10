@@ -89,10 +89,18 @@ export function proximaRecoleccion(zona, fecha = new Date()) {
   return null;
 }
 
-/** "Hoy, de 20:00 a 24:00", "Mañana, de 08:00 a 12:00", "El viernes, de ...". */
+/** "24:00" (o "00:00" como final de una franja) se lee mejor como "medianoche". */
+export function horaLegible(hora) {
+  return hora === "24:00" || hora === "00:00" ? t("medianoche") : hora;
+}
+
+/** "Hoy, de 20:00 a medianoche", "Mañana, de 08:00 a 12:00", "El viernes, de ...". */
 export function describirRecoleccion(proxima) {
-  const { desde, hasta } = proxima;
-  if (proxima.estado === "ahora") return t("recoleccionAhora", { hasta });
+  const desde = proxima.desde;
+  const hasta = horaLegible(proxima.hasta);
+  if (proxima.estado === "ahora") {
+    return hasta === proxima.hasta ? t("recoleccionAhora", { hasta }) : t("recoleccionAhoraMedianoche");
+  }
   if (proxima.estado === "hoy") return t("recoleccionHoy", { desde, hasta });
   if (proxima.enDias === 1) return t("recoleccionManana", { desde, hasta });
   return t("recoleccionDia", { dia: nombreDia(proxima.diaIso), desde, hasta });
@@ -190,6 +198,7 @@ export function direccionLegible(texto) {
   return (texto ?? "")
     .trim()
     .replace(/\s+INTERSECCI[OÓ]N\s+/gi, " y ")
+    .replace(/\bCALLE\s+(?=AV\b|AVENIDA\b)/gi, "")
     .toLowerCase()
     .split(/\s+/)
     .map((palabra, i) => {
@@ -198,6 +207,11 @@ export function direccionLegible(texto) {
       return palabra.charAt(0).toUpperCase() + palabra.slice(1);
     })
     .join(" ");
+}
+
+/** El nombre de una parada: el que viene pulido en los datos o, si no, su dirección. */
+export function nombreParada(parada) {
+  return parada.nombre || direccionLegible(parada.ubicacion);
 }
 
 export const VERSION_CALENDARIOS = 2;

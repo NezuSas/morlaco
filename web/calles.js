@@ -180,9 +180,12 @@ function cruceDeSegmentos([a, b], [c, d]) {
 
 /** El punto donde más se acercan dos calles y a cuántos metros están. */
 export function encuentroDeCalles(featureA, featureB) {
+  return encuentroDeSegmentos(segmentos(featureA), segmentos(featureB));
+}
+
+function encuentroDeSegmentos(segA, segB) {
   let mejor = { metros: Infinity, punto: null };
-  const segB = segmentos(featureB);
-  for (const sa of segmentos(featureA)) {
+  for (const sa of segA) {
     for (const sb of segB) {
       const cruce = cruceDeSegmentos(sa, sb);
       if (cruce) return { metros: 0, punto: aGrados(cruce) };
@@ -242,6 +245,138 @@ export function distanciaALinea(punto, geometria) {
     }
   }
   return minima;
+}
+
+// ---------- Sugerencias mientras se escribe ----------
+
+const MARGEN_CRUCE_GRADOS = 0.0004; // unos 45 m
+const crucesCalculados = new WeakMap();
+
+/** Las calles del índice que cruzan (o casi, a 40 m) la de esta entrada. Se calcula una vez. */
+function callesQueCruzan(entrada, indice) {
+  if (crucesCalculados.has(entrada)) return crucesCalculados.get(entrada);
+  entrada.caja ??= cajaDe(entrada.feature);
+  const [oeste, sur, este, norte] = entrada.caja;
+  const m = MARGEN_CRUCE_GRADOS;
+  const propios = segmentos(entrada.feature);
+  // Solo se comparan los tramos que quedan cerca de la caja de la otra calle: una
+  // avenida larga tiene cientos de tramos y casi todos están lejos de cada cruce.
+  const cerca = (segs, [o, s, e, n]) => {
+    const [x0, y0] = aMetros([o, s]);
+    const [x1, y1] = aMetros([e, n]);
+    const margen = 45;
+    return segs.filter(
+      ([a, b]) =>
+        Math.max(a[0], b[0]) >= x0 - margen &&
+        Math.min(a[0], b[0]) <= x1 + margen &&
+        Math.max(a[1], b[1]) >= y0 - margen &&
+        Math.min(a[1], b[1]) <= y1 + margen,
+    );
+  };
+  const cruces = indice.filter((otra) => {
+    if (otra === entrada || otra.nombre === entrada.nombre) return false;
+    otra.caja ??= cajaDe(otra.feature);
+    const [o, s, e, n] = otra.caja;
+    if (e < oeste - m || o > este + m || n < sur - m || s > norte + m) return false;
+    const segA = cerca(propios, otra.caja);
+    if (!segA.length) return false;
+    const segB = cerca(segmentos(otra.feature), entrada.caja);
+    return segB.length > 0 && encuentroDeSegmentos(segA, segB).metros <= 40;
+  });
+  crucesCalculados.set(entrada, cruces);
+  return cruces;
+}
+
+/** ¿Cada palabra escrita es el comienzo de alguna palabra del nombre (o casi igual)? */
+function empiezaComo(buscadas, entrada) {
+  return entrada.variantes.some((variante) =>
+    buscadas.every((b) => variante.some((p) => p.startsWith(b) || parecido(b, p) !== null)),
+  );
+}
+
+function sinRepetir(entradas) {
+  const vistos = new Set();
+  return entradas.filter((e) => !vistos.has(e.nombre) && vistos.add(e.nombre));
+}
+
+/**
+ * Sugerencias para el buscador mientras se escribe. Completa la calle que se está
+ * escribiendo; después de "y" (o "&", "esquina"...) solo sugiere las calles que
+ * cruzan la primera, para que la intersección exista. Devuelve [{nombre, texto}],
+ * donde `texto` es lo que queda en el campo al elegirla.
+ */
+export function sugerirCalles(texto, indice, maximo = 6) {
+  let entrada = (texto ?? "").replace(/^\s+/, "");
+  // "Sucre y" (sin espacio final) ya anuncia la segunda calle.
+  if (/\s(?:y|e|&)$/i.test(entrada)) entrada += " ";
+  const separadores = [...entrada.matchAll(new RegExp(SEPARADOR.source, "gi"))];
+  if (separadores.length > 1) return [];
+
+  if (!separadores.length) {
+    const buscadas = palabras(entrada);
+    if (buscadas.join("").length < 3) return [];
+    return sinRepetir(buscarCalles(entrada, indice, maximo * 3))
+      .slice(0, maximo)
+      .map((c) => ({ nombre: c.nombre, texto: c.nombre }));
+  }
+
+  const [separador] = separadores;
+  const primera = entrada.slice(0, separador.index);
+  const prefijo = entrada.slice(0, separador.index + separador[0].length);
+  const buscadas = palabras(entrada.slice(prefijo.length));
+  // Las que mejor encajan con la primera calle (puede haber tramos con el mismo nombre).
+  const [mejor, ...resto] = buscarCalles(primera, indice, 4);
+  if (!mejor) return [];
+  const candidatas = [mejor, ...resto.filter((c) => c.sobrantes === mejor.sobrantes && c.inexactas === mejor.inexactas)];
+  const nombresPrimera = new Set(candidatas.map((c) => c.nombre));
+  const cruces = sinRepetir(candidatas.flatMap((c) => callesQueCruzan(c, indice)))
+    .filter((c) => !nombresPrimera.has(c.nombre) && (!buscadas.length || empiezaComo(buscadas, c)))
+    .sort((a, b) => b.rango - a.rango || b.largo - a.largo || a.nombre.localeCompare(b.nombre));
+  return cruces.slice(0, maximo).map((c) => ({ nombre: c.nombre, texto: `${prefijo}${c.nombre}` }));
+}
+
+/**
+ * La calle más cercana a un punto y, si hay otra a pocos metros, la que la cruza:
+ * sirve para nombrar un punto del mapa o del GPS ("Sucre y Presidente Borrero").
+ * Devuelve null si no hay ninguna calle a `maximo` metros.
+ */
+export function esquinaCercana(punto, indice, { maximo = 120, cruce = 45 } = {}) {
+  // Un recorte rápido por coordenadas antes de medir con cuidado (0,002° son unos 220 m).
+  const margen = 0.002;
+  const candidatas = [];
+  for (const entrada of indice) {
+    entrada.caja ??= cajaDe(entrada.feature);
+    const [oeste, sur, este, norte] = entrada.caja;
+    if (punto.lon < oeste - margen || punto.lon > este + margen || punto.lat < sur - margen || punto.lat > norte + margen) {
+      continue;
+    }
+    const metros = distanciaALinea(punto, entrada.feature.geometry);
+    if (metros <= maximo) candidatas.push({ nombre: entrada.nombre, metros, rango: entrada.rango });
+  }
+  if (!candidatas.length) return null;
+  candidatas.sort((a, b) => a.metros - b.metros || b.rango - a.rango);
+  const [primera] = candidatas;
+  const segunda = candidatas.find(
+    (c) => c.metros <= cruce && palabras(c.nombre).join(" ") !== palabras(primera.nombre).join(" "),
+  );
+  return { calle: primera.nombre, cruce: segunda?.nombre ?? null, metros: Math.round(primera.metros) };
+}
+
+function cajaDe(feature) {
+  let oeste = Infinity;
+  let sur = Infinity;
+  let este = -Infinity;
+  let norte = -Infinity;
+  const lineas = feature.geometry.type === "LineString" ? [feature.geometry.coordinates] : feature.geometry.coordinates;
+  for (const linea of lineas) {
+    for (const [lon, lat] of linea) {
+      oeste = Math.min(oeste, lon);
+      este = Math.max(este, lon);
+      sur = Math.min(sur, lat);
+      norte = Math.max(norte, lat);
+    }
+  }
+  return [oeste, sur, este, norte];
 }
 
 export function longitudMetros(feature) {

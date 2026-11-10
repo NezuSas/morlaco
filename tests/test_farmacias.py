@@ -68,8 +68,8 @@ def test_telefono_para_llamar(texto, esperado):
     [
         ("CALLE: VEGA MUÑOZ 6-72 BORRERO", "Vega Muñoz 6-72 y Borrero"),
         ("CALLE: MARISCAL SUCRE SN HERMANO MIGUEL", "Mariscal Sucre y Hermano Miguel"),
-        ("CALLE: AV.HURTADO DE MENDOZA 11-73 AV. PASEO DE LOS CANARIS", "Av. Hurtado de Mendoza 11-73 y Av. Paseo de los Canaris"),
-        ("CALLE: BELLA UNION S/N SIN INTERSECCION", "Bella Union"),
+        ("CALLE: AV.HURTADO DE MENDOZA 11-73 AV. PASEO DE LOS CANARIS", "Av. Hurtado de Mendoza 11-73 y Av. Paseo de los Cañaris"),
+        ("CALLE: BELLA UNION S/N SIN INTERSECCION", "Bella Unión"),
     ],
 )  # fmt: skip
 def test_direccion_legible(texto, esperado):
@@ -114,3 +114,17 @@ def test_agrupar_cuenca_descarta_otros_cantones():
     }
     # Paute no es Cuenca.
     assert all(f["nombre"] != "Farmacia Amiga" for t in turnos for f in t["farmacias"])
+
+
+@pytest.mark.parametrize(
+    ("texto", "esperado"),
+    [
+        ("FARMACIAS MIA MCU01", "Farmacias Mia"),
+        ("FARMCIA CRUZ AZUL CUE TURUHUAYCO", "Farmacia Cruz Azul Turuhuayco"),
+        ("POPULAR UNIDAS N:16", "Popular Unidas 16"),
+        ("FARMACIA FARMA7", "Farmacia Farma7"),
+        ("FARMACIA SANTA INES 2", "Farmacia Santa Inés 2"),
+    ],
+)
+def test_nombre_farmacia(texto, esperado):
+    assert farmacias.nombre_farmacia(texto) == esperado

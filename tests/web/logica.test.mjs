@@ -5,6 +5,8 @@ import { test } from "node:test";
 import {
   describirRecoleccion,
   direccionLegible,
+  horaLegible,
+  nombreParada,
   enlaceReporteDireccion,
   enlacesCalendario,
   estadoLuz,
@@ -82,6 +84,16 @@ test("describirRecoleccion", () => {
     describirRecoleccion({ ...base, estado: "proxima", enDias: 3, diaIso: 6 }),
     "El sábado, de 08:00 a 12:00",
   );
+  const noche = { desde: "20:00", hasta: "24:00" };
+  assert.equal(describirRecoleccion({ ...noche, estado: "hoy", enDias: 0 }), "Hoy, de 20:00 a medianoche");
+  assert.equal(describirRecoleccion({ ...noche, estado: "ahora", enDias: 0 }), "Pasando ahora, hasta la medianoche");
+});
+
+test("horaLegible y nombreParada", () => {
+  assert.equal(horaLegible("24:00"), "medianoche");
+  assert.equal(horaLegible("18:30"), "18:30");
+  assert.equal(nombreParada({ nombre: "Av. España y Sevilla", ubicacion: "AV ESPANA INTERSECCION SEVILLA" }), "Av. España y Sevilla");
+  assert.equal(nombreParada({ ubicacion: "CALLE AV. LOJA INTERSECCION ROTARY" }), "Av. Loja y Rotary");
 });
 
 test("puntoEnGeometria respeta los huecos y los multipolígonos", () => {

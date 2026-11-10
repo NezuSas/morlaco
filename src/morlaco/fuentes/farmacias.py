@@ -125,6 +125,16 @@ def direccion_legible(texto: str) -> str:
     return nombre_propio(limpio)
 
 
+_CODIGO_SUCURSAL = re.compile(r"\b(?:[A-Za-z]{2,4}\d{2,}|CUE)(?=\s|$)|\bN:\s*", re.IGNORECASE)
+
+
+def nombre_farmacia(texto: str) -> str:
+    """'FARMACIAS MIA MCU01' -> 'Farmacias Mia'; quita códigos internos de sucursal y erratas."""
+    limpio = _CODIGO_SUCURSAL.sub(" ", texto or "")
+    limpio = re.sub(r"\bFARMCIA\b", "FARMACIA", limpio, flags=re.IGNORECASE)
+    return nombre_propio(limpio)
+
+
 def _celdas(fila: list[Any]) -> list[str]:
     return [limpiar(c) for c in fila]
 
@@ -232,11 +242,15 @@ def agrupar_cuenca(farmacias: list[dict[str, Any]]) -> tuple[list[dict[str, Any]
             descartadas += 1
             continue
         lista = semanas.setdefault(f["semana"], [])
-        if any(x["nombre"] == nombre_propio(f["nombre"]) and x["direccion"] for x in lista):
+        if any(
+            x["nombre"] == nombre_farmacia(f["nombre"])
+            and x["direccion"] == direccion_legible(f["direccion"])
+            for x in lista
+        ):
             continue
         lista.append(
             {
-                "nombre": nombre_propio(f["nombre"]),
+                "nombre": nombre_farmacia(f["nombre"]),
                 "direccion": direccion_legible(f["direccion"]),
                 "telefono": f["telefono"] if telefono_para_llamar(f["telefono"]) else None,
                 "tel": telefono_para_llamar(f["telefono"]),

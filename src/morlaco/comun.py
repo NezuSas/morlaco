@@ -77,3 +77,67 @@ def hora(texto: str | None) -> str | None:
         return None
     horas, minutos = coincidencia.groups()
     return f"{int(horas):02d}:{minutos}"
+
+
+# Palabras que en los datos vienen abreviadas, sin tilde o en minúsculas.
+ABREVIATURAS = {
+    "sta": "Santa", "sta.": "Santa", "sto": "Santo", "sto.": "Santo", "gral": "General",
+    "gral.": "General", "pdte": "Presidente", "pdte.": "Presidente", "cdla": "Ciudadela",
+    "cdla.": "Ciudadela", "univ": "Universidad", "univ.": "Universidad", "av": "Av.",
+}  # fmt: skip
+SIGLAS = {"iess", "ups", "sit", "etapa", "emac", "sas", "uda", "ucuenca", "gad", "ii", "iii"}
+TILDES = {
+    "banos": "Baños", "rio": "Río", "rios": "Ríos", "sayausi": "Sayausí", "joaquin": "Joaquín",
+    "jose": "José", "tomas": "Tomás", "ordonez": "Ordóñez", "ordoniez": "Ordóñez",
+    "maria": "María",
+    "roldos": "Roldós", "tixan": "Tixán", "corazon": "Corazón", "tablon": "Tablón",
+    "duran": "Durán",
+    "politecnica": "Politécnica", "rocio": "Rocío", "llatcon": "Llatcón", "daran": "Darán",
+    "capulies": "Capulíes", "orquideas": "Orquídeas", "carcel": "Cárcel",
+    "economicas": "Económicas",
+    "davila": "Dávila", "ramirez": "Ramírez", "davalos": "Dávalos", "ines": "Inés", "sion": "Sión",
+    "victor": "Víctor", "bolivar": "Bolívar", "simon": "Simón", "cordova": "Córdova",
+    "panama": "Panamá", "ramon": "Ramón", "garcia": "García", "martinez": "Martínez",
+    "fermin": "Fermín", "union": "Unión", "via": "Vía", "paraiso": "Paraíso", "huayna": "Huayna",
+    "capac": "Cápac", "canaris": "Cañaris", "espana": "España", "mexico": "México",
+    "americas": "Américas", "heroes": "Héroes", "cesar": "César", "proano": "Proaño",
+    "monsenor": "Monseñor", "leon": "León", "batallon": "Batallón",
+}  # fmt: skip
+_MINUSCULAS = {"de", "del", "la", "las", "los", "el", "y", "e", "a", "al", "en"}
+
+
+def arreglar_codificacion(texto: str) -> str:
+    """Repara textos con la codificación rota ('BaÃ±os' -> 'Baños', 'PROA?O' -> 'PROAÑO')."""
+    # Un "?" entre dos letras es una Ñ que se perdió al exportar.
+    texto = re.sub(r"(?<=[A-Z])\?(?=[A-Z])", "Ñ", texto)
+    texto = re.sub(r"(?<=[a-z])\?(?=[a-z])", "ñ", texto)
+    if "Ã" in texto or "Â" in texto:
+        try:
+            return texto.encode("cp1252").decode("utf-8")
+        except (UnicodeEncodeError, UnicodeDecodeError):
+            return texto
+    return texto
+
+
+def pulir_palabra(palabra: str, primera: bool) -> str:
+    """Una palabra en nombre propio, con su abreviatura expandida, su tilde y sus siglas."""
+    if "-" in palabra and len(palabra) > 2:
+        return "-".join(
+            pulir_palabra(p, primera or i > 0) for i, p in enumerate(palabra.split("-"))
+        )
+    clave = palabra.lower()
+    if clave in ABREVIATURAS:
+        return ABREVIATURAS[clave]
+    if clave in SIGLAS:
+        return clave.upper()
+    if clave in TILDES:
+        return TILDES[clave]
+    if not primera and clave in _MINUSCULAS:
+        return clave
+    return clave[:1].upper() + clave[1:]
+
+
+def nombre_propio(texto: str) -> str:
+    """'STA. MARIA DEL VERGEL' -> 'Santa María del Vergel'; 'IESS' se queda en siglas."""
+    palabras = limpiar(arreglar_codificacion(texto or "")).split()
+    return " ".join(pulir_palabra(p, i == 0) for i, p in enumerate(palabras))

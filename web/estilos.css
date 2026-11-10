@@ -319,6 +319,41 @@ h1 {
   border-color: var(--cupula);
 }
 
+/* Sugerencias de calles bajo el campo. */
+.campo {
+  position: relative;
+}
+
+.sugerencias {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 6px);
+  left: -2px;
+  right: -2px;
+  max-height: 18rem;
+  overflow-y: auto;
+  list-style: none;
+  margin: 0;
+  padding: 0.35rem;
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-tarjeta);
+  background: var(--superficie);
+  box-shadow: var(--sombra-tarjeta);
+}
+
+.sugerencias li {
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--radio-control);
+  color: var(--tinta);
+  cursor: pointer;
+}
+
+.sugerencias li:hover,
+.sugerencias li[aria-selected="true"] {
+  background: var(--cal-hondo);
+  color: var(--cupula);
+}
+
 input[type="search"] {
   flex: 1;
   min-width: 0;
@@ -1294,6 +1329,89 @@ button.opcion-ruta[aria-pressed="true"] {
   font-size: var(--t-0);
 }
 
+/* "Usar mi ubicación": la forma más rápida, bien a la vista. */
+button.ubicarme {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 0.95rem 0.5rem 0.75rem;
+  border-color: transparent;
+  background: color-mix(in srgb, var(--cupula) 11%, var(--superficie));
+  color: var(--cupula);
+  font-size: var(--t-1);
+}
+
+button.ubicarme:hover {
+  border-color: transparent;
+  background: color-mix(in srgb, var(--cupula) 20%, var(--superficie));
+}
+
+.ubicarme .icono {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+/* Tus lugares (Casa, Trabajo), junto al buscador. */
+.mis-lugares {
+  margin-top: 0.85rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--linea);
+}
+
+.mis-lugares p {
+  font-size: var(--t-0);
+  color: var(--tinta-suave);
+  margin-bottom: 0.4rem;
+}
+
+.mis-lugares ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.mis-lugares li {
+  min-width: 0;
+  max-width: 100%;
+}
+
+button.lugar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  max-width: 100%;
+  padding: 0.4rem 0.85rem 0.4rem 0.6rem;
+  border: 1.5px solid var(--linea);
+  border-radius: 999px;
+  background: var(--superficie);
+  color: var(--tinta);
+  text-align: left;
+}
+
+button.lugar:hover {
+  border-color: var(--cupula);
+  background: var(--superficie);
+  color: var(--cupula);
+}
+
+button.lugar .icono {
+  width: 1.1rem;
+  height: 1.1rem;
+  color: var(--cupula);
+}
+
+.lugar-nombre {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 400;
+  color: var(--tinta-suave);
+}
+
 /* ---------- Lo que vas a saber ---------- */
 
 .servicios {
@@ -1348,6 +1466,7 @@ button.opcion-ruta[aria-pressed="true"] {
 
 .tu-punto {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem 0.9rem;
@@ -1374,6 +1493,62 @@ button.opcion-ruta[aria-pressed="true"] {
 .punto-nombre {
   font-weight: 700;
   overflow-wrap: anywhere;
+}
+
+.punto-lugar {
+  display: inline-block;
+  margin-right: 0.4rem;
+  padding: 0.05rem 0.5rem;
+  border-radius: 999px;
+  background: var(--cupula);
+  color: var(--sobre-cupula);
+  font-size: var(--t-0);
+  vertical-align: 0.1em;
+}
+
+/* Guardar como Casa / Trabajo. */
+.guardar-lugar {
+  flex-basis: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.5rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid var(--linea);
+  font-size: var(--t-0);
+  color: var(--tinta-suave);
+}
+
+button.lugar-boton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.75rem 0.3rem 0.55rem;
+  border: 1.5px solid var(--linea);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--tinta);
+  font-size: var(--t-0);
+}
+
+button.lugar-boton:hover {
+  border-color: var(--cupula);
+  background: transparent;
+  color: var(--cupula);
+}
+
+button.lugar-boton[aria-pressed="true"] {
+  border-color: var(--cupula);
+  background: var(--cupula);
+  color: var(--sobre-cupula);
+}
+
+.tu-punto .lugar-boton .icono {
+  width: 1rem;
+  height: 1rem;
+  padding: 0;
+  background: none;
+  color: inherit;
 }
 
 .punto-zona {
@@ -1449,6 +1624,60 @@ a.ficha.con-aviso {
 
 .ficha-detalle:empty {
   display: none;
+}
+
+.resumen > .ficha-ancha {
+  grid-column: 1 / -1;
+}
+
+/* La luz, en una línea, cuando Centro Sur no tiene datos al día. */
+.resumen-nota {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-top: 0.65rem;
+  font-size: var(--t-0);
+  color: var(--tinta-suave);
+}
+
+.resumen-nota .icono {
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.1rem;
+  color: var(--c-luz);
+}
+
+/* Sobre estos datos: las fuentes y sus límites, en un solo sitio. */
+.sobre-datos {
+  margin-top: 1.25rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--linea);
+  border-radius: 14px;
+  background: var(--superficie);
+  font-size: var(--t-0);
+  color: var(--tinta-suave);
+}
+
+.sobre-datos summary {
+  cursor: pointer;
+  font-size: var(--t-1);
+  font-weight: 700;
+  color: var(--tinta);
+}
+
+.sobre-datos[open] summary {
+  margin-bottom: 0.5rem;
+}
+
+.sobre-datos ul {
+  margin: 0.6rem 0 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.sobre-datos strong {
+  color: var(--tinta);
 }
 
 /* ---------- Navegación por secciones ---------- */

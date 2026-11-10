@@ -109,7 +109,7 @@ def test_construir_arma_un_feed_de_frecuencias():
     }  # fmt: skip
     (ruta,) = tabla(archivos["routes.txt"])
     assert (ruta["route_id"], ruta["route_short_name"], ruta["route_type"]) == ("L7", "7", "3")
-    assert ruta["route_long_name"] == "Trigales - Mall del Rio"
+    assert ruta["route_long_name"] == "Trigales - Mall del Río"
 
     viajes = tabla(archivos["trips.txt"])
     # Ida y retorno, de lunes a viernes y sábados (los domingos no hay servicio).
@@ -119,7 +119,7 @@ def test_construir_arma_un_feed_de_frecuencias():
         "L7-retorno-LV",
         "L7-retorno-SA",
     ]
-    assert {v["trip_headsign"] for v in viajes} == {"Mall del Rio", "Trigales Altos"}
+    assert {v["trip_headsign"] for v in viajes} == {"Mall del Río", "Trigales Altos"}
 
     frecuencia = next(f for f in tabla(archivos["frequencies.txt"]) if f["trip_id"] == "L7-ida-LV")
     assert frecuencia == {
@@ -148,7 +148,7 @@ def test_construir_comparte_terminales_cercanas_y_omite_paradas_sin_uso():
     paradas = {p["stop_id"]: p for p in tabla(archivos["stops.txt"])}
     # La llegada de la ida y la salida del retorno están a 11 m: son la misma terminal.
     assert "T-L7-mall-del-rio" in paradas and "T-L7-mall-del-rio-2" not in paradas
-    assert paradas["T-L7-mall-del-rio"]["stop_name"] == "Mall del Rio (terminal)"
+    assert paradas["T-L7-mall-del-rio"]["stop_name"] == "Terminal Mall del Río"
     assert paradas["P10"]["stop_name"] == "Av. X y Calle Zeta"
     assert "P11" not in paradas  # a más de 25 m del recorrido
 
@@ -170,3 +170,12 @@ def test_a_zip_no_cambia_si_no_cambian_los_datos():
     with zipfile.ZipFile(io.BytesIO(primero)) as z:
         assert sorted(z.namelist()) == sorted(archivos)
         assert z.read("routes.txt").decode() == archivos["routes.txt"]
+
+
+def test_nombre_parada_quita_calle_delante_de_avenida():
+    assert gtfs.nombre_parada("CALLE AV. REMIGIO CRESPO INTERSECCION AGUSTIN CUEVA") == (
+        "Av. Remigio Crespo y Agustin Cueva"
+    )
+    assert gtfs.nombre_parada("CALLE SANGURIMA INTERSECCION LUIS CORDERO") == (
+        "Calle Sangurima y Luis Cordero"
+    )

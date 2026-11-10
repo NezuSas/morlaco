@@ -141,6 +141,7 @@ def parsear_paradas(texto: str) -> tuple[dict[str, Any], int]:
                 "properties": {
                     "id": int(identificador) if identificador.isdigit() else identificador,
                     "ubicacion": fila.get("UBICACION", ""),
+                    "nombre": gtfs.nombre_parada(fila.get("UBICACION", "")),
                     "tiene_paleta": fila.get("PALETA", "").upper() == "SI",
                 },
                 "geometry": {"type": "Point", "coordinates": [longitud, latitud]},

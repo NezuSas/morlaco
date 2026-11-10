@@ -41,11 +41,20 @@ const TEXTOS = {
     puntoMapaNombre: "Punto elegido en el mapa",
     tuUbicacion: "Tu ubicación",
     puntoGuardado: "Tu último punto",
+    puntoEnlace: "Punto compartido",
+    esquinaNombre: "{calle} y {cruce}",
+    cercaDe: "Cerca de {calle}",
+    tusLugares: "Tus lugares",
+    sugerenciasCalles: "Calles sugeridas",
+    guardarComo: "Guardar como",
+    lugarCasa: "Casa",
+    lugarTrabajo: "Trabajo",
     zonaRecoleccion: "Zona {zona} de recolección",
     sinDatos: "Sin datos",
     resumenLuzHoy: ({ n }) => `${n} ${n === 1 ? "corte hoy" : "cortes hoy"}`,
-    resumenLuzSinDatos: "Sin datos recientes",
-    resumenLuzDesde: "Centro Sur no publica desde el {fecha}",
+    resumenLuzNota: "Luz: Centro Sur no publica cortes programados desde el {fecha}.",
+    resumenLuzNotaError: "Luz: no se pudieron cargar los cortes programados.",
+    verDetalle: "Ver detalle",
     resumenLuzSinCortes: "Sin cortes publicados",
     resumenLuzFuente: "Según Centro Sur",
     resumenFarmacias: ({ n }) => `${n} de turno`,
@@ -82,8 +91,7 @@ const TEXTOS = {
     pasoSoloPie: "Camina unos {distancia}",
     rutaFueraHorario: "A esta hora no pasa",
     rutaTranviaHorario: "Horario del tranvía en tranvia.cuenca.gob.ec",
-    rutaNota:
-      "Tiempos estimados con la frecuencia de hoy, a 15 km/h en bus y 4,5 km/h a pie. Recorridos del municipio de 2022: confirma con el letrero del bus. Toca una opción para verla en el mapa.",
+    rutaNota: "Tiempos aproximados. Toca una opción para verla en el mapa.",
     subtituloParadas: "Paradas registradas más cerca",
     mapaAria: "Mapa de zonas de recolección",
     leyendaLmv: "Lunes, miércoles y viernes",
@@ -99,13 +107,27 @@ const TEXTOS = {
     subtituloBici: "BiciPública más cercana",
     bicicletaAnclajes: ({ n }) => `${n} ${n === 1 ? "anclaje" : "anclajes"}`,
     bicicletaNinguna: "No hay estaciones de BiciPública a menos de 1,5 km.",
-    bicicletaNota: "Ubicación de OpenStreetMap. Activa las capas del mapa (arriba a la derecha) para ver las estaciones, las ciclovías y los puntos de carga.",
+    bicicletaNota: "Más estaciones, ciclovías y puntos de carga en las capas del mapa (arriba a la derecha).",
     pieFuentes:
       'Datos de <a href="https://emac.gob.ec/mapa-zonas-de-recoleccion/">EMAC EP</a>, <a href="https://www.centrosur.gob.ec/suspensiones-programadas/">Centro Sur</a> y el portal <a href="https://cuencaendatos.cuenca.gob.ec">Cuenca en Datos</a> del GAD Municipal. Calles: © colaboradores de <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> (ODbL).',
     pieColaborar:
       '¿Un dato está mal o no encuentra tu esquina? <a href="https://github.com/NezuSas/morlaco/issues/new/choose">Avísanos</a> (necesitas una cuenta de GitHub, es gratis). ¿Programas? <a href="https://github.com/NezuSas/morlaco/blob/main/CONTRIBUTING.md">Colabora con Morlaco</a>. Las rutas de bus también están en <a href="../datos/gtfs/cuenca-buses.zip">formato GTFS</a> para apps de transporte.',
     pieAviso:
-      "Morlaco no es un servicio oficial. Ante cualquier duda, consulta la fuente. Las calles se buscan en esta página; solo cuando buscas un lugar (como un parque o un centro comercial), el texto se envía a OpenStreetMap (Nominatim) para ubicarlo.",
+      "Las calles se buscan en esta página; solo cuando buscas un lugar (como un parque o un centro comercial), el texto se envía a OpenStreetMap (Nominatim) para ubicarlo.",
+    sobreTitulo:
+      "Sobre estos datos",
+    sobreIntro:
+      "Morlaco junta datos públicos de varias instituciones; no es un servicio oficial. Ante cualquier duda, consulta la fuente.",
+    sobreBasura:
+      "<strong>Recolección.</strong> Zonas y horarios del <a href=\"https://emac.gob.ec/mapa-zonas-de-recoleccion/\">mapa de EMAC EP</a>. Si EMAC los cambia, el calendario se actualiza solo.",
+    sobreLuz:
+      "<strong>Cortes de luz.</strong> Los cortes programados que <a href=\"https://www.centrosur.gob.ec/suspensiones-programadas/\">Centro Sur</a> publica en su web. Si no publica, no sabemos si hay cortes: revisa también sus redes sociales.",
+    sobreFarmacias:
+      "<strong>Farmacias de turno.</strong> La lista mensual de <a href=\"https://www.controlsanitario.gob.ec/turnos-de-farmacias/\">ARCSA</a> para Azuay, que puede tener errores. La cercanía se calcula con la dirección que publica, así que es aproximada.",
+    sobreBuses:
+      "<strong>Buses.</strong> Trazados publicados por el municipio en 2022 y horarios de 2025, del portal <a href=\"https://cuencaendatos.cuenca.gob.ec\">Cuenca en Datos</a>: algunas líneas pueden haber cambiado, confirma con el letrero del bus. Las paradas son las del registro municipal, que no incluye todas. Distancias en línea recta; tiempos estimados con la frecuencia del día, a 15 km/h en bus y 4,5 km/h a pie.",
+    sobreCalles:
+      "<strong>Calles, BiciPública, ciclovías y carga eléctrica.</strong> © colaboradores de <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> (ODbL).",
     actualizado: "Datos actualizados el {fecha}.",
 
     dias: ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"],
@@ -113,6 +135,8 @@ const TEXTOS = {
     y: "y",
     hoy: "hoy",
     recoleccionAhora: "Pasando ahora, hasta las {hasta}",
+    recoleccionAhoraMedianoche: "Pasando ahora, hasta la medianoche",
+    medianoche: "medianoche",
     recoleccionHoy: "Hoy, de {desde} a {hasta}",
     recoleccionManana: "Mañana, de {desde} a {hasta}",
     recoleccionDia: "El {dia}, de {desde} a {hasta}",
@@ -156,18 +180,16 @@ const TEXTOS = {
     farmaciasFiltroAria: "Filtrar farmacias por nombre, calle o barrio",
     farmaciasNinguna: "Ninguna farmacia de turno coincide con eso.",
     farmaciasPdf: "PDF oficial de ARCSA",
-    farmaciasOrden: "Ordenadas por cercanía aproximada a tu punto, según la dirección que publica ARCSA.",
+    farmaciasOrden: "Ordenadas por cercanía aproximada a tu punto.",
     farmaciasFuente: "Fuente: ",
     llamar: "Llamar al {telefono}",
     aproximado: "a unos {distancia}",
     verMasFarmacias: ({ n }) => `Ver ${n} ${n === 1 ? "farmacia más" : "farmacias más"}`,
 
     paradasNinguna: "No hay paradas registradas a menos de 1,5 km.",
-    paradasNota: "Según el registro de paradas del municipio, que no incluye todas. Las distancias son en línea recta.",
     lineasError: "No se pudieron cargar las líneas de bus.",
     lineasNinguna: "Ninguna línea pasa a menos de 350 m de este punto.",
-    lineasNota:
-      "Toca una línea para verla en el mapa. Trazados publicados por el municipio en 2022 y horarios de 2025: algunas líneas pueden haber cambiado.",
+    lineasNota: "Toca una línea para verla en el mapa.",
     tranvia: "Tranvía",
     tranviaDetalle: "Próximos trenes en tranvia.cuenca.gob.ec",
     linea: "Línea {linea}",
@@ -236,11 +258,20 @@ const TEXTOS = {
     puntoMapaNombre: "Point chosen on the map",
     tuUbicacion: "Your location",
     puntoGuardado: "Your last spot",
+    puntoEnlace: "Shared spot",
+    esquinaNombre: "{calle} & {cruce}",
+    cercaDe: "Near {calle}",
+    tusLugares: "Your places",
+    sugerenciasCalles: "Suggested streets",
+    guardarComo: "Save as",
+    lugarCasa: "Home",
+    lugarTrabajo: "Work",
     zonaRecoleccion: "Garbage zone {zona}",
     sinDatos: "No data",
     resumenLuzHoy: ({ n }) => `${n} ${n === 1 ? "outage today" : "outages today"}`,
-    resumenLuzSinDatos: "No recent data",
-    resumenLuzDesde: "Centro Sur hasn’t published since {fecha}",
+    resumenLuzNota: "Power: Centro Sur hasn’t published planned outages since {fecha}.",
+    resumenLuzNotaError: "Power: planned outages couldn’t be loaded.",
+    verDetalle: "Details",
     resumenLuzSinCortes: "No outages published",
     resumenLuzFuente: "According to Centro Sur",
     resumenFarmacias: ({ n }) => `${n} on duty`,
@@ -277,8 +308,7 @@ const TEXTOS = {
     pasoSoloPie: "Walk about {distancia}",
     rutaFueraHorario: "Not running at this hour",
     rutaTranviaHorario: "Tram hours at tranvia.cuenca.gob.ec",
-    rutaNota:
-      "Estimated times using today’s frequency, 15 km/h by bus and 4.5 km/h on foot. City routes from 2022: check the sign on the bus. Tap an option to see it on the map.",
+    rutaNota: "Approximate times. Tap an option to see it on the map.",
     subtituloParadas: "Closest registered stops",
     mapaAria: "Map of garbage collection zones",
     leyendaLmv: "Monday, Wednesday and Friday",
@@ -294,13 +324,27 @@ const TEXTOS = {
     subtituloBici: "Closest BiciPública station",
     bicicletaAnclajes: ({ n }) => `${n} ${n === 1 ? "dock" : "docks"}`,
     bicicletaNinguna: "There are no BiciPública stations within 1.5 km.",
-    bicicletaNota: "Location from OpenStreetMap. Turn on the map layers (top right) to see stations, bike lanes and charging points.",
+    bicicletaNota: "More stations, bike lanes and charging points in the map layers (top right).",
     pieFuentes:
       'Data from <a href="https://emac.gob.ec/mapa-zonas-de-recoleccion/">EMAC EP</a>, <a href="https://www.centrosur.gob.ec/suspensiones-programadas/">Centro Sur</a> and the city’s <a href="https://cuencaendatos.cuenca.gob.ec">Cuenca en Datos</a> portal. Streets: © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors (ODbL).',
     pieColaborar:
       'Is something wrong, or can’t it find your corner? <a href="https://github.com/NezuSas/morlaco/issues/new/choose">Let us know</a> (you need a free GitHub account). Do you code? <a href="https://github.com/NezuSas/morlaco/blob/main/CONTRIBUTING.md">Help build Morlaco</a>. Bus routes are also available in <a href="../datos/gtfs/cuenca-buses.zip">GTFS format</a> for transit apps.',
     pieAviso:
-      "Morlaco is not an official service. If in doubt, check the source. Streets are searched on this page; only when you search for a place (like a park or a mall) is the text sent to OpenStreetMap (Nominatim) to find it.",
+      "Streets are searched on this page; only when you search for a place (like a park or a mall) is the text sent to OpenStreetMap (Nominatim) to find it.",
+    sobreTitulo:
+      "About this data",
+    sobreIntro:
+      "Morlaco brings together public data from several institutions; it is not an official service. If in doubt, check the source.",
+    sobreBasura:
+      "<strong>Garbage collection.</strong> Zones and times from the <a href=\"https://emac.gob.ec/mapa-zonas-de-recoleccion/\">EMAC EP map</a>. If EMAC changes them, the calendar updates itself.",
+    sobreLuz:
+      "<strong>Power outages.</strong> The planned outages <a href=\"https://www.centrosur.gob.ec/suspensiones-programadas/\">Centro Sur</a> publishes on its website. If it doesn’t publish, we can’t know whether there are outages: check its social media too.",
+    sobreFarmacias:
+      "<strong>Pharmacies on duty.</strong> The monthly list from <a href=\"https://www.controlsanitario.gob.ec/turnos-de-farmacias/\">ARCSA</a> for Azuay, which may contain errors. Distance is worked out from the address it publishes, so it is approximate.",
+    sobreBuses:
+      "<strong>Buses.</strong> Routes published by the city in 2022 and timetables from 2025, from the <a href=\"https://cuencaendatos.cuenca.gob.ec\">Cuenca en Datos</a> portal: some lines may have changed, so check the sign on the bus. Stops are those in the city’s register, which doesn’t include all of them. Distances in a straight line; times estimated with the day’s frequency, at 15 km/h by bus and 4.5 km/h on foot.",
+    sobreCalles:
+      "<strong>Streets, BiciPública, bike lanes and EV charging.</strong> © <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors (ODbL).",
     actualizado: "Data updated on {fecha}.",
 
     dias: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
@@ -308,6 +352,8 @@ const TEXTOS = {
     y: "and",
     hoy: "today",
     recoleccionAhora: "Passing now, until {hasta}",
+    recoleccionAhoraMedianoche: "Passing now, until midnight",
+    medianoche: "midnight",
     recoleccionHoy: "Today, {desde} to {hasta}",
     recoleccionManana: "Tomorrow, {desde} to {hasta}",
     recoleccionDia: "On {dia}, {desde} to {hasta}",
@@ -351,18 +397,16 @@ const TEXTOS = {
     farmaciasFiltroAria: "Filter pharmacies by name, street or neighborhood",
     farmaciasNinguna: "No pharmacy on duty matches that.",
     farmaciasPdf: "official ARCSA PDF",
-    farmaciasOrden: "Sorted by approximate distance from your point, based on the address ARCSA publishes.",
+    farmaciasOrden: "Sorted by approximate distance from your spot.",
     farmaciasFuente: "Source: ",
     llamar: "Call {telefono}",
     aproximado: "about {distancia} away",
     verMasFarmacias: ({ n }) => `Show ${n} more ${n === 1 ? "pharmacy" : "pharmacies"}`,
 
     paradasNinguna: "There are no registered stops within 1.5 km.",
-    paradasNota: "From the city’s register of stops, which doesn’t include all of them. Distances are in a straight line.",
     lineasError: "Bus lines couldn’t be loaded.",
     lineasNinguna: "No line passes within 350 m of this point.",
-    lineasNota:
-      "Tap a line to see it on the map. Routes published by the city in 2022 and timetables from 2025: some lines may have changed.",
+    lineasNota: "Tap a line to see it on the map.",
     tranvia: "Tram",
     tranviaDetalle: "Next trains at tranvia.cuenca.gob.ec",
     linea: "Line {linea}",

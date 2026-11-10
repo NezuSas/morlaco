@@ -14,7 +14,7 @@
 
 <p align="center">
   <a href="https://nezusas.github.io/morlaco/web/">
-    <img src="docs/imagenes/busqueda.gif" alt="Se escribe «Calle Larga y Hermano Miguel» en Morlaco y aparece cuándo pasa el recolector, la semana de recolección y las paradas cercanas en el mapa" width="880">
+    <img src="docs/imagenes/busqueda.gif" alt="Se escribe «Calle Larga y Her» en Morlaco, se elige la sugerencia «Hermano Miguel» y aparece cuándo pasa el recolector, la semana de recolección y las paradas cercanas en el mapa" width="880">
   </a>
 </p>
 
@@ -158,6 +158,11 @@ el mapa, y te dice cuándo pasa el recolector (y si toca funda celeste), si hay 
 qué paradas de bus tienes cerca. El punto elegido queda en la dirección de la página
 (`web/#-2.89733,-79.00454`), así que se puede compartir. Desde la respuesta te puedes suscribir al
 calendario de recolección de tu zona.
+
+Mientras escribes, **sugiere calles** del índice; después de "y" solo propone las que cruzan la primera, así que
+la esquina siempre existe. La página abre con el último punto que consultaste y puedes guardar dos lugares,
+**Casa** y **Trabajo**, para volver a ellos con un toque; se guardan solo en tu navegador. Si tocas el mapa o
+usas tu ubicación, el punto toma el nombre de la esquina más cercana.
 
 **Se puede instalar como app** en el móvil o el computador: en Android y en Chrome o Edge aparece el botón
 "Instalar"; en el iPhone, desde Safari con Compartir → "Añadir a pantalla de inicio". Funciona **sin conexión**
