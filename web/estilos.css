@@ -2060,6 +2060,14 @@ button.con-icono {
   margin-top: 0.5rem;
 }
 
+/* Quién hace Morlaco: discreto, al final. */
+.pie .autoria {
+  margin-top: 1.1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--linea);
+  color: var(--tinta);
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     transition: none !important;

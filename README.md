@@ -322,6 +322,12 @@ regístrala en `FUENTES` de `cli.py` y añade sus pruebas.
 
 - Cortes de agua de ETAPA y un bot de Telegram.
 
+## Quién lo hace
+
+Morlaco lo hace y lo mantiene [Nezu S.A.S.](https://www.nezuecuador.com/), una empresa de Cuenca, como aporte a
+la ciudad: el código y los datos son abiertos y cualquiera puede usarlos. No es un servicio oficial ni tiene
+relación con las instituciones que publican los datos. Para escribirnos: <nezu.ec@nezuecuador.com>.
+
 ## Colaborar
 
 Puedes ayudar sin programar: [avisa si no encuentra tu esquina](https://github.com/NezuSas/morlaco/issues/new?template=direccion.yml),

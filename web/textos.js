@@ -156,7 +156,8 @@ const TEXTOS = {
     sobreTitulo:
       "Sobre estos datos",
     sobreIntro:
-      "Morlaco junta datos públicos de varias instituciones; no es un servicio oficial. Ante cualquier duda, consulta la fuente.",
+      'Morlaco lo hace y lo mantiene <a href="https://www.nezuecuador.com/">Nezu S.A.S.</a>, en Cuenca. Junta datos públicos de varias instituciones; no es un servicio oficial. Ante cualquier duda, consulta la fuente.',
+    pieAutoria: 'Hecho en Cuenca por <a href="https://www.nezuecuador.com/">Nezu S.A.S.</a> Código y datos abiertos.',
     sobreBasura:
       "<strong>Recolección.</strong> Zonas y horarios del <a href=\"https://emac.gob.ec/mapa-zonas-de-recoleccion/\">mapa de EMAC EP</a>. Si EMAC los cambia, el calendario se actualiza solo.",
     sobreLuz:
@@ -452,7 +453,8 @@ const TEXTOS = {
     sobreTitulo:
       "About this data",
     sobreIntro:
-      "Morlaco brings together public data from several institutions; it is not an official service. If in doubt, check the source.",
+      'Morlaco is built and maintained by <a href="https://www.nezuecuador.com/">Nezu S.A.S.</a>, in Cuenca. It brings together public data from several institutions; it is not an official service. If in doubt, check the source.',
+    pieAutoria: 'Made in Cuenca by <a href="https://www.nezuecuador.com/">Nezu S.A.S.</a> Open code and open data.',
     sobreBasura:
       "<strong>Garbage collection.</strong> Zones and times from the <a href=\"https://emac.gob.ec/mapa-zonas-de-recoleccion/\">EMAC EP map</a>. If EMAC changes them, the calendar updates itself.",
     sobreLuz:
