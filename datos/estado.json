@@ -1,7 +1,7 @@
 {
   "agua": {
     "ok": true,
-    "actualizado": "2026-11-10T16:00:58+00:00",
+    "actualizado": "2026-11-11T18:17:38+00:00",
     "archivos": [
       "agua/avisos.json"
     ],
@@ -63,7 +63,7 @@
   },
   "farmacias": {
     "ok": true,
-    "actualizado": "2026-11-10T13:49:20+00:00",
+    "actualizado": "2026-11-11T18:17:32+00:00",
     "archivos": [
       "farmacias/turnos.json"
     ],
@@ -75,7 +75,7 @@
   },
   "luz": {
     "ok": true,
-    "actualizado": "2026-11-10T12:37:52+00:00",
+    "actualizado": "2026-11-11T18:17:27+00:00",
     "archivos": [
       "luz/suspensiones.json"
     ],
@@ -104,7 +104,7 @@
   },
   "recoleccion": {
     "ok": true,
-    "actualizado": "2026-11-10T12:37:41+00:00",
+    "actualizado": "2026-11-11T18:17:03+00:00",
     "archivos": [
       "recoleccion/calendarios/zona-1.ics",
       "recoleccion/calendarios/zona-2.ics",
@@ -133,7 +133,7 @@
   },
   "tranvia": {
     "ok": true,
-    "actualizado": "2026-11-10T13:49:20+00:00",
+    "actualizado": "2026-11-11T18:17:35+00:00",
     "archivos": [
       "buses/tranvia.geojson"
     ],
