@@ -4,7 +4,7 @@
     "fuente": "El Mercurio (Cuenca)",
     "pagina": "https://elmercurio.com.ec/cuenca/",
     "datos": "https://elmercurio.com.ec/wp-json/wp/v2/posts",
-    "desde": "2026-10-22",
+    "desde": "2026-10-23",
     "nota": "Notas cuyo título anuncia un corte de agua. No se muestran en la página: una persona las lee y copia los cortes confirmados a datos/manual/agua.json."
   },
   "avisos": []
