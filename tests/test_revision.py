@@ -36,6 +36,14 @@ def _datos(carpeta, *, fin_farmacias="2026-11-28", hasta_aviso="2026-11-25", rev
         "manual/basura.json",
         {"metadata": {"revisado": revisado}, "feriados": {"hasta": "2027-03-31"}},
     )
+    _escribir(
+        carpeta,
+        "manual/feriados.json",
+        {
+            "metadata": {"revisado": revisado},
+            "dias": [{"fecha": "2026-12-25"}, {"fecha": "2027-05-24"}],
+        },
+    )
 
 
 def test_todo_al_dia_no_pide_nada(tmp_path):
@@ -62,7 +70,7 @@ def test_los_avisos_del_mismo_dia_van_juntos_y_los_vencidos_no_cuentan(tmp_path)
     assert len(transporte) == 1  # el de la 11 ya venció; el 1 y el 5, juntos
     assert "líneas 1, 5 vence el 2027-03-31" in transporte[0]["mensaje"]
     assert any(p["tema"] == "basura" for p in pendientes)
-    assert sum(p["tema"] == "manual" for p in pendientes) == 2  # más de 90 días sin revisar
+    assert sum(p["tema"] == "manual" for p in pendientes) == 3  # más de 90 días sin revisar
 
 
 def test_fuente_que_falla_y_farmacias_sin_turnos(tmp_path):
@@ -85,3 +93,15 @@ def test_fuente_que_falla_y_farmacias_sin_turnos(tmp_path):
         "mensaje": "La fuente `farmacias` falla desde el 2026-11-01: HTTPError: 404",
     }
     assert pendientes[1]["mensaje"] == "No hay turnos de farmacias publicados."
+
+
+def test_avisa_cuando_se_acaba_la_lista_de_feriados(tmp_path):
+    _datos(tmp_path, fin_farmacias="2027-06-30", revisado="2027-04-20")
+    assert not any(p["tema"] == "feriados" for p in revision.revisar(tmp_path, date(2027, 4, 23)))
+    feriados = [p for p in revision.revisar(tmp_path, date(2027, 4, 24)) if p["tema"] == "feriados"]
+    assert len(feriados) == 1 and "termina el 2027-05-24" in feriados[0]["mensaje"]
+    _escribir(
+        tmp_path, "manual/feriados.json", {"metadata": {"revisado": "2027-04-20"}, "dias": []}
+    )
+    feriados = [p for p in revision.revisar(tmp_path, date(2027, 4, 24)) if p["tema"] == "feriados"]
+    assert "está vacía" in feriados[0]["mensaje"]

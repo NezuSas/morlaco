@@ -106,6 +106,33 @@
       }
     },
     {
+      "id": "feriados-manual",
+      "archivo": "manual/feriados.json",
+      "formato": "JSON",
+      "tema": "basura",
+      "titulo": "Próximos días de descanso",
+      "descripcion": "Los próximos feriados y días de descanso por decreto en Cuenca, ya en el día en que se descansa según la Ley de Feriados de 2016, con el feriado local de Cuenca. En español e inglés.",
+      "campos": {
+        "dias[]": "fecha (día de descanso), tipo (nacional, local o suspension), nombre (es, en) y fuente"
+      },
+      "fuente_morlaco": null,
+      "frecuencia": "a mano",
+      "fuente": "Decretos y calendario oficial publicados en prensa",
+      "licencia": "CC BY 4.0 (Morlaco); los datos de cada fuente conservan su licencia",
+      "url": "https://nezusas.github.io/morlaco/datos/manual/feriados.json",
+      "en": {
+        "titulo": "Upcoming days off",
+        "descripcion": "The next public holidays and days off by decree in Cuenca, already moved to the day people actually rest under the 2016 holiday law, including Cuenca's local holiday. In Spanish and English.",
+        "frecuencia": "by hand",
+        "campos": {
+          "dias[]": "fecha (rest day), tipo (nacional, local or suspension), name (es, en) and source"
+        },
+        "formato": "JSON",
+        "fuente": "Decrees and the official calendar, as published in the press",
+        "licencia": "CC BY 4.0 (Morlaco); each source's data keeps its own license"
+      }
+    },
+    {
       "id": "luz-suspensiones",
       "archivo": "luz/suspensiones.json",
       "formato": "JSON",

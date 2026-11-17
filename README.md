@@ -95,6 +95,7 @@ and is not an official service.
 | [`datos/agua/avisos.json`](datos/agua/avisos.json) | Notas de prensa de las últimas tres semanas que anuncian un corte de agua, **por confirmar** (la página no las muestra) | [El Mercurio](https://elmercurio.com.ec/cuenca/) |
 | [`datos/manual/agua.json`](datos/manual/agua.json) | **Mantenido a mano**: cortes de agua confirmados (fecha, horario, sectores y la nota de prensa que cita a ETAPA) y las notas descartadas | El Mercurio, a partir de [`datos/agua/avisos.json`](datos/agua/avisos.json) |
 | [`datos/manual/basura.json`](datos/manual/basura.json) | **Mantenido a mano**: qué pasa con la recolección en feriados, qué va en la funda celeste y dónde llevar orgánicos, vidrio, escombros, pilas y objetos grandes, cada dato con su fuente | Páginas de [EMAC EP](https://emac.gob.ec) y [ETAPA EP](https://www.etapa.net.ec) y comunicados en prensa |
+| [`datos/manual/feriados.json`](datos/manual/feriados.json) | **Mantenido a mano**: los próximos días de descanso en Cuenca (feriados nacionales, el local de Cuenca y las suspensiones de jornada por decreto), ya en el día en que se descansa, cada uno con su fuente | Decretos y calendario oficial publicados en prensa |
 | [`datos/calles/calles.geojson`](datos/calles/calles.geojson) | Las calles de Cuenca con nombre (unas 2.800), con su trazado simplificado y sus nombres alternativos, para buscar direcciones e intersecciones | [OpenStreetMap](https://www.openstreetmap.org) |
 | [`datos/farmacias/turnos.json`](datos/farmacias/turnos.json) | Farmacias de turno de Cuenca por semana (de 06:00 a 06:00), con dirección legible y teléfono para llamar | [ARCSA, turnos de farmacias](https://www.controlsanitario.gob.ec/turnos-de-farmacias/) |
 | [`datos/movilidad/`](datos/movilidad/) | Estaciones de BiciPública (BiciCuenca) con su capacidad, ciclovías (separadas o carriles pintados) y puntos de carga para autos eléctricos (públicos, para clientes o privados) | [OpenStreetMap](https://www.openstreetmap.org) |
@@ -143,6 +144,10 @@ tan al día está, si se puede leer automáticamente y qué no tiene fuente.
   [`datos/manual/basura.json`](datos/manual/basura.json) se edita a mano a partir de sus páginas, las de ETAPA
   y lo que informa a la prensa antes de cada feriado. El aviso de feriados tiene fecha `hasta`. Lo que la
   fuente no dice (por ejemplo, un servicio para muebles viejos) se dice tal cual, sin completar.
+- **Próximos días de descanso (a mano).** [`datos/manual/feriados.json`](datos/manual/feriados.json) lista
+  cada día en que se descansa, ya trasladado según la Ley de Feriados, con su fuente. La página muestra el
+  próximo en la sección de basura cuando faltan tres semanas o menos, y la revisión diaria avisa un mes
+  antes de que se acabe la lista.
 - **Cortes de luz (Centro Sur).** Se leen de los PDF diarios que Centro Sur publica. Las direcciones son texto
   tal como lo escribe Centro Sur, sin coordenadas. **En noviembre de 2026 la página no se actualizaba desde
   julio**: revisa `metadata.ultima_publicacion` antes de fiarte de estos datos. Desde octubre de 2026 Centro

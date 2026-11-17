@@ -16,6 +16,7 @@ from typing import Any
 
 DIAS_FARMACIAS = 7  # aviso si los turnos publicados se acaban en menos de esto
 DIAS_AVISOS = 14  # aviso si un cambio de línea o los feriados vencen en menos de esto
+DIAS_FERIADOS = 30  # aviso si la lista de próximos feriados se acaba antes de esto
 DIAS_REVISION = 90  # aviso si un dato a mano lleva más de esto sin revisarse
 
 
@@ -99,10 +100,25 @@ def revisar(datos: Path, hoy: date) -> list[dict[str, str]]:
             }
         )
 
-    # 5. Datos a mano que llevan mucho sin revisarse.
+    # 5. Próximos días de descanso: que la lista no se acabe.
+    dias = (_leer(datos / "manual" / "feriados.json") or {}).get("dias")
+    if dias is not None:
+        ultima = max((f for d in dias if (f := _fecha(d.get("fecha")))), default=None)
+        if ultima is None or ultima - hoy <= timedelta(days=DIAS_FERIADOS):
+            cuando = f"termina el {ultima.isoformat()}" if ultima else "está vacía"
+            pendientes.append(
+                {
+                    "tema": "feriados",
+                    "mensaje": f"La lista de próximos feriados {cuando}. "
+                    "Añade los siguientes días de descanso, con su fuente.",
+                }
+            )
+
+    # 6. Datos a mano que llevan mucho sin revisarse.
     for archivo, que in (
         ("transporte.json", "el pasaje y los cambios de líneas"),
         ("basura.json", "los feriados y dónde llevar cada cosa"),
+        ("feriados.json", "los próximos días de descanso"),
     ):
         revisado = _fecha(
             (_leer(datos / "manual" / archivo) or {}).get("metadata", {}).get("revisado")

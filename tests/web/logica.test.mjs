@@ -23,6 +23,7 @@ import {
   horaCuenca,
   paradasCercanas,
   proximaRecoleccion,
+  proximoFeriado,
   puntoDesdeHash,
   puntoEnGeometria,
   revisarUbicacion,
@@ -346,4 +347,19 @@ test("todos los datos del mapa caen dentro de los límites de Cuenca", async () 
     }
   }
   assert.ok(l.sur < -2.8975 && l.norte > -2.8975, "el centro queda dentro");
+});
+
+test("proximoFeriado: el próximo día de descanso si está cerca, y Carnaval como un solo feriado", () => {
+  const dia = (fecha, es) => ({ fecha, es, en: es, fuente: {} });
+  const datos = { dias: [dia("2027-02-09", "Carnaval"), dia("2026-11-20", "Decreto"), dia("2027-02-08", "Carnaval"), dia("2027-02-10", "Otro")] };
+  const resultado = proximoFeriado(datos, new Date("2026-11-17T09:00:00-05:00"));
+  assert.deepEqual([resultado.dia.fecha, resultado.hasta, resultado.faltan], ["2026-11-20", "2026-11-20", 3]);
+  // A las 23:00 del 19 en Cuenca ya es 20 en UTC, pero todavía falta un día.
+  assert.equal(proximoFeriado(datos, new Date("2026-11-19T23:00:00-05:00")).faltan, 1);
+  assert.equal(proximoFeriado(datos, new Date("2026-11-20T08:00:00-05:00")).faltan, 0);
+  // Demasiado lejos: no se muestra.
+  assert.equal(proximoFeriado(datos, new Date("2026-11-21T08:00:00-05:00")), null);
+  const carnaval = proximoFeriado(datos, new Date("2027-02-01T08:00:00-05:00"));
+  assert.deepEqual([carnaval.dia.fecha, carnaval.hasta, carnaval.faltan], ["2027-02-08", "2027-02-09", 7]);
+  assert.equal(proximoFeriado(null), null);
 });

@@ -58,6 +58,18 @@ def test_basura_donde_llevar_completo_en_los_dos_idiomas(basura):
     assert basura["contacto"]["linea"] == "139"
 
 
+def test_feriados_completos_ordenados_y_con_fuente():
+    datos = json.loads((MANUAL / "feriados.json").read_text(encoding="utf-8"))
+    fechas = [dia["fecha"] for dia in datos["dias"]]
+    assert fechas and fechas == sorted(set(fechas)), "fechas en orden y sin repetir"
+    for dia in datos["dias"]:
+        _fecha(dia["fecha"])
+        assert dia["tipo"] in ("nacional", "local", "suspension")
+        assert dia["es"].strip() and dia["en"].strip()
+        assert dia["fuente"]["nombre"] and dia["fuente"]["url"].startswith("https://")
+    _fecha(datos["metadata"]["revisado"])
+
+
 def test_tarifas_con_fuente_y_valores_razonables(transporte):
     bus, tranvia = transporte["tarifas"]["bus"], transporte["tarifas"]["tranvia"]
     assert 0 < bus["personalizada_preferencial"] < bus["personalizada"] < bus["sin_subsidio"] < 1

@@ -346,6 +346,25 @@ export function cortesAgua(datos, fecha = new Date()) {
     .sort((a, b) => (a.fecha + (a.desde ?? "")).localeCompare(b.fecha + (b.desde ?? "")));
 }
 
+/**
+ * El próximo día de descanso (datos/manual/feriados.json) desde hoy, en hora de Cuenca,
+ * si cae dentro de los próximos `maximoDias`. Devuelve { dia, hasta, faltan } (faltan = 0 si es
+ * hoy) o null. Los días seguidos con el mismo nombre (Carnaval) se cuentan como uno.
+ */
+export function proximoFeriado(datos, fecha = new Date(), maximoDias = 21) {
+  const { fecha: hoy } = horaCuenca(fecha);
+  const dias = (datos?.dias ?? []).filter((d) => d.fecha >= hoy).sort((a, b) => a.fecha.localeCompare(b.fecha));
+  if (!dias.length) return null;
+  const faltan = diasEntre(hoy, dias[0].fecha);
+  if (faltan > maximoDias) return null;
+  const seguidos = [dias[0]];
+  for (const d of dias.slice(1)) {
+    if (d.es !== dias[0].es || diasEntre(seguidos.at(-1).fecha, d.fecha) !== 1) break;
+    seguidos.push(d);
+  }
+  return { dia: dias[0], hasta: seguidos.at(-1).fecha, faltan };
+}
+
 /** Farmacias cuyo nombre o dirección contiene el texto, sin importar tildes ni mayúsculas. */
 export function filtrarFarmacias(farmacias, texto) {
   const buscado = normalizar(texto);

@@ -26,6 +26,7 @@ import {
   nombreDia,
   paradasCercanas,
   proximaRecoleccion,
+  proximoFeriado,
   puntoDesdeHash,
   puntoEnGeometria,
   revisarUbicacion,
@@ -683,15 +684,28 @@ function pintarAgua(datos) {
   return cortes;
 }
 
-/** Feriados y dónde llevar lo que no va en las fundas (datos/manual/basura.json). */
-function pintarBasuraManual(basura) {
+/**
+ * El próximo día de descanso (datos/manual/feriados.json), qué pasa con la recolección en
+ * feriados y dónde llevar lo que no va en las fundas (datos/manual/basura.json).
+ */
+function pintarBasuraManual(basura, diasFeriado) {
   const feriados = basura?.feriados;
   const hoy = horaCuenca().fecha;
   const vigente = feriados && feriados.desde <= hoy && hoy <= feriados.hasta;
-  $("basura-feriados").hidden = !vigente;
-  if (vigente) {
-    $("basura-feriados").textContent = feriados[idioma()] ?? feriados.es;
+  const proximo = proximoFeriado(diasFeriado);
+  const aviso = $("basura-feriados");
+  aviso.hidden = !vigente && !proximo;
+  aviso.replaceChildren();
+  if (proximo) {
+    const nombre = proximo.dia[idioma()] ?? proximo.dia.es;
+    const fecha =
+      proximo.hasta === proximo.dia.fecha
+        ? fechaDia(proximo.dia.fecha)
+        : t("feriadoVariosDias", { desde: fechaDia(proximo.dia.fecha), hasta: fechaDia(proximo.hasta) });
+    const clave = proximo.faltan === 0 ? "feriadoHoy" : proximo.faltan === 1 ? "feriadoManana" : "feriadoProximo";
+    aviso.append(elemento("strong", {}, t(clave, { fecha, nombre })), " ");
   }
+  if (vigente) aviso.append(feriados[idioma()] ?? feriados.es);
 
   const destinos = basura?.donde_llevar ?? [];
   const caja = $("donde-llevar");
@@ -1665,7 +1679,7 @@ async function iniciar() {
     mensaje(t("errorDatos"), true);
     return;
   }
-  const [suspensiones, paradas, estado, lineas, rutas, bicicletas, turnosFarmacias, transporte, estacionesTranvia, basura, agua, cerca] = await Promise.all(
+  const [suspensiones, paradas, estado, lineas, rutas, bicicletas, turnosFarmacias, transporte, estacionesTranvia, basura, agua, cerca, diasFeriado] = await Promise.all(
     [
       "luz/suspensiones.json",
       "buses/paradas.geojson",
@@ -1679,6 +1693,7 @@ async function iniciar() {
       "manual/basura.json",
       "manual/agua.json",
       "ciudad/cerca.geojson",
+      "manual/feriados.json",
     ].map((r) =>
       cargarJson(r).catch(() => null),
     ),
@@ -1845,7 +1860,7 @@ async function iniciar() {
 
   const mapa = crearMapa(zonas, (punto) => elegir(punto, t("puntoMapa"), t("puntoMapaNombre"), { nombrar: true }));
   mapa.capas = agregarCapas(mapa.leaflet, bicicletas, estacionesTranvia);
-  pintarBasuraManual(basura);
+  pintarBasuraManual(basura, diasFeriado);
 
   $("buscar").addEventListener("submit", async (evento) => {
     evento.preventDefault();

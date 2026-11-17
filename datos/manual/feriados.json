@@ -1,0 +1,99 @@
+{
+  "metadata": {
+    "titulo": "Próximos días de descanso en Cuenca",
+    "nota": "Se mantiene a mano. Cada fecha es el día en que se descansa, ya con el traslado de la Ley de Feriados (Registro Oficial Suplemento 906, 2016), y lleva su fuente. Incluye los feriados nacionales, el local de Cuenca y las suspensiones de jornada decretadas para todo el país. Hay que añadir fechas antes de que se acabe la lista.",
+    "revisado": "2026-11-17"
+  },
+  "dias": [
+    {
+      "fecha": "2026-11-20",
+      "tipo": "suspension",
+      "es": "suspensión de la jornada laboral (Decreto Ejecutivo 507)",
+      "en": "work suspended by Executive Decree 507",
+      "fuente": {
+        "nombre": "Vistazo (7 de noviembre de 2026)",
+        "url": "https://www.vistazo.com/actualidad/2026-11-07-por-que-ecuador-tendra-dia-descanso-20-noviembre-feriado-nacional-ecuador-decreto-BD11308180"
+      }
+    },
+    {
+      "fecha": "2026-12-25",
+      "tipo": "nacional",
+      "es": "Navidad",
+      "en": "Christmas",
+      "fuente": {
+        "nombre": "Primicias (4 de noviembre de 2026)",
+        "url": "https://www.primicias.ec/sociedad/feriados-ecuador-fiestas-quito-navidad-loja-ano-nuevo-136312/"
+      }
+    },
+    {
+      "fecha": "2027-01-01",
+      "tipo": "nacional",
+      "es": "Año Nuevo",
+      "en": "New Year's Day",
+      "fuente": {
+        "nombre": "Primicias, calendario oficial de 2027",
+        "url": "https://www.primicias.ec/sociedad/feriados-ecuador2027-calendario-turismo-carnaval-semana-santa-136547/"
+      }
+    },
+    {
+      "fecha": "2027-02-08",
+      "tipo": "nacional",
+      "es": "Carnaval",
+      "en": "Carnival",
+      "fuente": {
+        "nombre": "Primicias, calendario oficial de 2027",
+        "url": "https://www.primicias.ec/sociedad/feriados-ecuador2027-calendario-turismo-carnaval-semana-santa-136547/"
+      }
+    },
+    {
+      "fecha": "2027-02-09",
+      "tipo": "nacional",
+      "es": "Carnaval",
+      "en": "Carnival",
+      "fuente": {
+        "nombre": "Primicias, calendario oficial de 2027",
+        "url": "https://www.primicias.ec/sociedad/feriados-ecuador2027-calendario-turismo-carnaval-semana-santa-136547/"
+      }
+    },
+    {
+      "fecha": "2027-03-26",
+      "tipo": "nacional",
+      "es": "Viernes Santo",
+      "en": "Good Friday",
+      "fuente": {
+        "nombre": "Primicias, calendario oficial de 2027",
+        "url": "https://www.primicias.ec/sociedad/feriados-ecuador2027-calendario-turismo-carnaval-semana-santa-136547/"
+      }
+    },
+    {
+      "fecha": "2027-04-12",
+      "tipo": "local",
+      "es": "Fundación de Cuenca (solo en el cantón)",
+      "en": "Foundation of Cuenca (only in the canton)",
+      "fuente": {
+        "nombre": "El Mercurio, el feriado de 2026 (en 2027 cae lunes y no se traslada)",
+        "url": "https://elmercurio.com.ec/cuenca/2026/04/06/cuenca-feriados-abril/"
+      }
+    },
+    {
+      "fecha": "2027-04-30",
+      "tipo": "nacional",
+      "es": "Día del Trabajo (trasladado del sábado 1 de mayo)",
+      "en": "Labour Day (moved from Saturday 1 May)",
+      "fuente": {
+        "nombre": "Primicias, calendario oficial de 2027",
+        "url": "https://www.primicias.ec/sociedad/feriados-ecuador2027-calendario-turismo-carnaval-semana-santa-136547/"
+      }
+    },
+    {
+      "fecha": "2027-05-24",
+      "tipo": "nacional",
+      "es": "Batalla de Pichincha",
+      "en": "Battle of Pichincha",
+      "fuente": {
+        "nombre": "Primicias, calendario oficial de 2027",
+        "url": "https://www.primicias.ec/sociedad/feriados-ecuador2027-calendario-turismo-carnaval-semana-santa-136547/"
+      }
+    }
+  ]
+}
