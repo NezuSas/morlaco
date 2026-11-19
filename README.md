@@ -412,7 +412,9 @@ regístrala en `FUENTES` de `cli.py` y añade sus pruebas.
 ## Próximos pasos
 
 - Horarios de recolección de las parroquias rurales (EMAC solo publica la regla general).
-- Comparar el servicio de mapas del municipio (`ide.cuenca.gob.ec`) con los datos de buses actuales.
+- Validar el GTFS en cada actualización y avisar en la revisión diaria si aparece un error.
+- Tomar más trazados de la IDE del Municipio cuando confirme las condiciones de uso de sus capas (hoy solo
+  se usan las líneas 4 y 27).
 - Un bot de Telegram o WhatsApp que responda con tu calle.
 
 ## Quién lo hace
