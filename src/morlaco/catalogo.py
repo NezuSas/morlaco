@@ -124,7 +124,7 @@ EN: dict[str, dict[str, Any]] = {
     },
     "buses-lineas": {
         "titulo": "Bus and tram routes",
-        "descripcion": "The path of each line in each direction, with its extensions. Route maps from 2022; line 4 from the city's spatial data portal (IDE), which matches the 2026 route.",
+        "descripcion": "The path of each line in each direction, with its extensions. Route maps from 2022; lines 4 and 27 from the city's spatial data portal (IDE), which matches the 2026 route.",
         "frecuencia": "weekly",
         "campos": {
             "linea": "Line number, or Tranvía (tram)",
@@ -380,7 +380,7 @@ CONJUNTOS: list[dict[str, Any]] = [
         "formato": "GeoJSON (líneas)",
         "tema": "transporte",
         "titulo": "Recorrido de las líneas de bus y del tranvía",
-        "descripcion": "El trazado de cada línea en cada sentido, con sus alargues. Trazados de 2022; la línea 4, de la IDE del Municipio, que coincide con el recorrido de 2026.",
+        "descripcion": "El trazado de cada línea en cada sentido, con sus alargues. Trazados de 2022; las líneas 4 y 27, de la IDE del Municipio, que coincide con el recorrido de 2026.",
         "campos": {
             "linea": "Número de línea, o Tranvía",
             "tipo": "linea, alargue o tranvia",

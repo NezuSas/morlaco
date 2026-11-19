@@ -11,8 +11,10 @@ rutas, que sí está más al día.
 
 Para las líneas de LINEAS_IDE el trazado se toma del servicio WFS de la IDE del
 Municipio, que publica la misma capa con esas líneas ya corregidas: la línea 4 de
-la IDE pasa por el Mall del Río y el IESS, como el recorrido de abril de 2026; la
-del shapefile todavía pasa por la Feria Libre.
+la IDE pasa por el Mall del Río y el IESS, como el recorrido de abril de 2026, y la
+del shapefile todavía pasa por la Feria Libre; la 27 de la IDE sube por la Tarqui
+hasta la Pío Bravo ("Tarqui y Sangurima" en el recorrido), y la del shapefile se
+desvía por la Estévez de Toral.
 """
 
 from __future__ import annotations
@@ -37,7 +39,7 @@ _PREFIJO_LINEA = re.compile(r"^(L|A|T)(\d+[A-Z]?)\s+(.*)$")
 IDE_WFS = "https://ide.cuenca.gob.ec/geoserver/ows"
 IDE_PAGINA = f"{IDE_WFS}?service=WFS&request=GetCapabilities"
 # Líneas cuyo trazado de la IDE es más nuevo que el del shapefile (comparado el 2026-11-19).
-LINEAS_IDE = ("4",)
+LINEAS_IDE = ("4", "27")
 _ORDEN_TIPO = {"linea": 0, "alimentador": 1, "tranvia": 2, "alargue": 3}
 
 

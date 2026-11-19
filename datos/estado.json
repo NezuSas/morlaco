@@ -11,7 +11,7 @@
   },
   "buses": {
     "ok": true,
-    "actualizado": "2026-11-19T14:28:05+00:00",
+    "actualizado": "2026-11-19T14:46:39+00:00",
     "archivos": [
       "buses/lineas.geojson",
       "buses/paradas.geojson",
@@ -32,7 +32,7 @@
         "paradas": 420,
         "paradas_registradas": 331,
         "sin_trazado": [],
-        "version": "e3fc91556dda"
+        "version": "03e9658dfe36"
       }
     }
   },

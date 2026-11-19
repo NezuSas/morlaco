@@ -123,10 +123,10 @@ def test_csv_mas_reciente():
         buses.csv_mas_reciente({"name": "vacio", "resources": []})
 
 
-def _entidad_ide(nombre, direccion):
+def _entidad_ide(linea, nombre, direccion):
     return {
         "type": "Feature",
-        "properties": {"linename": "4", "name": nombre, "direction": direccion,
+        "properties": {"linename": linea, "name": f"L{linea} {nombre}", "direction": direccion,
                        "length": "16.9km", "empresa": "SIT"},
         "geometry": {"type": "MultiLineString",
                      "coordinates": [[[-79.04, -2.9275], [-79.01, -2.92], [-78.99, -2.89]]]},
@@ -150,15 +150,18 @@ def test_obtener_consulta_la_api_de_ckan():
         ]
     )
 
-    ide = json.dumps({"features": [
-        _entidad_ide("L4 Terminal Terrestre", ">"), _entidad_ide("L4 Plataforma Narancay", "<"),
-    ]}).encode()  # fmt: skip
+    capas_ide = {
+        trazados.url_ide(linea): json.dumps({"features": [
+            _entidad_ide(linea, "Norte", ">"), _entidad_ide(linea, "Sur", "<"),
+        ]}).encode()
+        for linea in trazados.LINEAS_IDE
+    }  # fmt: skip
 
     def falso(url):
         if url == "zip/rutas":
             return shapefile_zip
-        if url == trazados.url_ide("4"):
-            return ide
+        if url in capas_ide:
+            return capas_ide[url]
         for clave, identificador in buses.DATASETS.items():
             if url.endswith(f"package_show?id={identificador}"):
                 paquete = {
@@ -179,7 +182,7 @@ def test_obtener_consulta_la_api_de_ckan():
 
     resultado = buses.obtener(falso)
     assert resultado.resumen == {
-        "trazados": 3,
+        "trazados": 1 + 2 * len(trazados.LINEAS_IDE),
         "rutas": 3,
         "lineas": 2,
         "lineas_con_recorrido": 3,
@@ -194,5 +197,6 @@ def test_obtener_consulta_la_api_de_ckan():
     lineas = resultado.archivos["buses/lineas.geojson"]
     assert lineas["features"][0]["properties"]["linea"] == "1"
     assert "2022" in lineas["metadata"]["nota"]
-    linea4 = [f["properties"] for f in lineas["features"] if f["properties"]["linea"] == "4"]
-    assert [(p["sentido"], p["fuente"]) for p in linea4] == [("ida", "ide"), ("retorno", "ide")]
+    for linea in trazados.LINEAS_IDE:
+        de_ide = [f["properties"] for f in lineas["features"] if f["properties"]["linea"] == linea]
+        assert [(p["sentido"], p["fuente"]) for p in de_ide] == [("ida", "ide"), ("retorno", "ide")]
