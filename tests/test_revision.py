@@ -1,7 +1,9 @@
 import json
 from datetime import date
 
-from morlaco import revision
+from test_gtfs import LINEAS, PARADAS, RUTAS
+
+from morlaco import gtfs, revision
 
 
 def _escribir(carpeta, ruta, datos):
@@ -11,6 +13,9 @@ def _escribir(carpeta, ruta, datos):
 
 
 def _datos(carpeta, *, fin_farmacias="2026-11-28", hasta_aviso="2026-11-25", revisado="2026-11-10"):
+    archivos, _ = gtfs.construir(RUTAS, LINEAS, PARADAS)
+    (carpeta / "gtfs").mkdir(parents=True, exist_ok=True)
+    (carpeta / "gtfs" / "cuenca-buses.zip").write_bytes(gtfs.a_zip(archivos))
     _escribir(
         carpeta, "estado.json", {"luz": {"ok": True, "actualizado": "2026-11-10T12:00:00+00:00"}}
     )
@@ -124,3 +129,17 @@ def test_avisa_de_las_notas_de_descanso_sin_revisar(tmp_path):
     assert len(feriados) == 1  # la vieja es anterior a la última revisión (2026-11-10)
     assert "«Noboa decreta descanso el 24 de diciembre»" in feriados[0]["mensaje"]
     assert "https://elmercurio.com.ec/decreto-24/" in feriados[0]["mensaje"]
+
+
+def test_avisa_si_el_gtfs_tiene_problemas_o_falta(tmp_path):
+    _datos(tmp_path)
+    archivos, _ = gtfs.construir(RUTAS, LINEAS, PARADAS)
+    archivos["trips.txt"] = archivos["trips.txt"].replace("L7-ida-LV", "L7-ida-XX", 1)
+    (tmp_path / "gtfs" / "cuenca-buses.zip").write_bytes(gtfs.a_zip(archivos))
+    pendientes = revision.revisar(tmp_path, date(2026, 11, 10))
+    assert {p["tema"] for p in pendientes} == {"gtfs"}
+    assert any("L7-ida-LV" in p["mensaje"] for p in pendientes)
+
+    (tmp_path / "gtfs" / "cuenca-buses.zip").unlink()
+    (pendiente,) = revision.revisar(tmp_path, date(2026, 11, 10))
+    assert "No se ha publicado" in pendiente["mensaje"]

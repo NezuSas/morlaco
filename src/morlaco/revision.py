@@ -14,6 +14,7 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
+from morlaco import revisar_gtfs
 from morlaco.fuentes import feriados
 
 DIAS_FARMACIAS = 7  # aviso si los turnos publicados se acaban en menos de esto
@@ -129,6 +130,14 @@ def revisar(datos: Path, hoy: date) -> list[dict[str, str]]:
                 "`descartados` en ese archivo.",
             }
         )
+
+    # 5c. El feed GTFS que usan las apps de transporte.
+    feed = datos / "gtfs" / "cuenca-buses.zip"
+    if feed.exists():
+        problemas_gtfs = revisar_gtfs.problemas(feed.read_bytes(), hoy)
+    else:
+        problemas_gtfs = ["No se ha publicado el feed `datos/gtfs/cuenca-buses.zip`."]
+    pendientes += [{"tema": "gtfs", "mensaje": f"GTFS: {problema}"} for problema in problemas_gtfs]
 
     # 6. Datos a mano que llevan mucho sin revisarse.
     for archivo, que in (
