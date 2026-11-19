@@ -102,10 +102,27 @@ turno y lo dice.
 | Cuenca en Datos: rutas y horarios | Horario e intervalo de cada línea | Marzo de 2025 | Automática, semanal |
 | Cuenca en Datos: trazados (shapefile) | Geometría de cada línea | Septiembre de 2022 | Automática, semanal |
 | Cuenca en Datos: paradas | Paradas con coordenadas | Abril de 2025 | Automática, semanal |
-| [IDE del Municipio](https://ide.cuenca.gob.ec/geoserver/ows?service=WFS&request=GetCapabilities) (WFS, capas `ide:dmt_lineaN` y `dahp_movilidad:paradas_bus_total`) | 38 líneas con trazado, horario e intervalos; 1.303 paradas | Sin fecha; no tiene los cambios de septiembre de 2026 | Se podría leer (pendiente de comparar con lo actual) |
+| [IDE del Municipio](https://ide.cuenca.gob.ec/geoserver/ows?service=WFS&request=GetCapabilities) (WFS, capas `ide:dmt_lineaN` y `dahp_movilidad:paradas_bus_total`) | 38 líneas con trazado, horario e intervalos; 1.303 paradas | Sin fecha; no tiene los cambios de septiembre de 2026 | Comparada el 2026-11-19 (ver abajo); no se usa |
 | [PDF de cada línea](https://www.cuenca.gob.ec/content/recorrido-linea-de-buses) en la web del Municipio | Mapa de cada recorrido | Abril de 2025 | Consulta |
 | El Mercurio | Ampliaciones de septiembre de 2026, cambios de octubre, pasaje | Al día | A mano |
 | [API del tranvía](https://tranvia.cuenca.gob.ec/) | Estaciones con coordenadas | Al día | Automática, diaria |
+
+**IDE frente a Cuenca en Datos (comparado el 2026-11-19):**
+
+- **Trazados.** Los 78 trazados principales de la IDE coinciden con los del shapefile de 2022: mismos nombres,
+  misma longitud y menos de 6 m de diferencia. La IDE no trae los 104 alargues y variantes del shapefile. Hay dos
+  excepciones. La línea 4 de la IDE pasa por el Mall del Río y el IESS, como el recorrido de abril de 2026. La del
+  shapefile pasa por la Feria Libre y mide 23,5 km aunque su atributo dice 16,9 km. La línea 27 difiere en unos
+  230 m.
+- **Horarios.** Coinciden en 34 de 38 líneas. Difieren en la 7, la 11B, la 17 y la 100; el CSV de marzo de 2025
+  parece más nuevo (la 100 tiene intervalos más cortos).
+- **Paradas.** Son conjuntos distintos. La IDE tiene 1.303 paradas, con foto, número de líneas y frecuencia, pero
+  sin decir qué líneas paran (solo la capa `dahp_paradas_de_bus_ch` lo dice, para 140 paradas del Centro
+  Histórico). Solo 141 de las 382 paradas del portal tienen una de la IDE a menos de 30 m. La licencia de la IDE
+  no está indicada.
+- **Sentidos.** En la IDE cada trazado lleva el horario del sentido hacia el que va. En las líneas 10, 13, 13B y
+  27, el CSV de horarios llama "ida" al sentido que el shapefile llama "retorno". Desde el 2026-11-19 el GTFS
+  empareja cada horario con el trazado que termina en su destino, no por la etiqueta.
 
 **Sin fuente abierta:** las ampliaciones de siete líneas desde el 1 de septiembre de 2026 y los cambios de
 octubre (solo descritos en prensa); posiciones de buses en tiempo real; un feed GTFS oficial (no hay ninguno de

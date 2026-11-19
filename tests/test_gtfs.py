@@ -90,6 +90,34 @@ def test_elegir_trazados_reparte_dos_retornos_por_destino():
     assert elegidos[("11B", "retorno")]["properties"]["hacia"] == "San Pedro"
 
 
+def test_elegir_trazados_cruza_los_sentidos_si_el_csv_los_llama_al_reves():
+    # En el shapefile la "ida" de la 13B va al Mall del Río; en el CSV, la "ida" va al IESS.
+    lineas = [
+        forma("13B", "ida", "Mall del Río", IDA),
+        forma("13B", "retorno", "IESS", RETORNO),
+    ]
+    rutas = [
+        {"linea": "13B", "sentido": "ida", "origen": "MALL DEL RIO", "destino": "IESS"},
+        {"linea": "13B", "sentido": "retorno", "origen": "IESS", "destino": "MALL DEL RIO"},
+    ]
+    elegidos = gtfs.elegir_trazados(lineas, rutas)
+    assert elegidos[("13B", "ida")]["properties"]["hacia"] == "IESS"
+    assert elegidos[("13B", "retorno")]["properties"]["hacia"] == "Mall del Río"
+    # Si ya coinciden, o si no hay pistas en el CSV, se quedan como están.
+    rutas_bien = [{**r, "sentido": "retorno" if r["sentido"] == "ida" else "ida"} for r in rutas]
+    assert (
+        gtfs.elegir_trazados(lineas, rutas_bien)[("13B", "ida")]["properties"]["hacia"]
+        == "Mall del Río"
+    )
+    sin_nombres = [
+        {"linea": "13B", "sentido": s, "origen": "", "destino": ""} for s in ("ida", "retorno")
+    ]
+    assert (
+        gtfs.elegir_trazados(lineas, sin_nombres)[("13B", "ida")]["properties"]["hacia"]
+        == "Mall del Río"
+    )
+
+
 def test_extremos_completa_lo_que_falta_con_el_trazado():
     trazados = gtfs.elegir_trazados(LINEAS, RUTAS)
     assert gtfs.extremos("7", "retorno", RUTAS[1], trazados) == ("MALL DEL RIO", "Trigales Altos")

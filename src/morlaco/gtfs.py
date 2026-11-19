@@ -140,7 +140,34 @@ def elegir_trazados(
             if mejor is elegidos[(linea, otro_sentido)]:
                 elegidos[(linea, otro_sentido)] = sobrantes[0]
             elegidos[(linea, falta)] = mejor
+        if (linea, "ida") in elegidos and (linea, "retorno") in elegidos:
+            _ordenar_por_destino(linea, elegidos, rutas)
     return elegidos
+
+
+def _ordenar_por_destino(
+    linea: str, elegidos: dict[tuple[str, str], dict], rutas: list[dict[str, Any]]
+) -> None:
+    """El CSV de horarios y el shapefile no siempre llaman "ida" al mismo sentido (pasa con
+    la 10, la 13, la 13B y la 27). Cada horario va con el trazado que termina en su destino
+    y empieza donde nace su origen; si encajan mejor cruzados, se intercambian."""
+    filas = {r["sentido"]: r for r in rutas if r["linea"] == linea}
+    hacia = {s: elegidos[(linea, s)]["properties"]["hacia"] for s in ("ida", "retorno")}
+    otro = {"ida": "retorno", "retorno": "ida"}
+
+    def encaje(cruzado: bool) -> int:
+        total = 0
+        for sentido, fila in filas.items():
+            forma = otro[sentido] if cruzado else sentido
+            total += _parecido(hacia[forma], fila.get("destino") or "")
+            total += _parecido(hacia[otro[forma]], fila.get("origen") or "")
+        return total
+
+    if encaje(cruzado=True) > encaje(cruzado=False):
+        elegidos[(linea, "ida")], elegidos[(linea, "retorno")] = (
+            elegidos[(linea, "retorno")],
+            elegidos[(linea, "ida")],
+        )
 
 
 def _linea_principal(geometria: dict[str, Any]) -> list[list[float]]:
