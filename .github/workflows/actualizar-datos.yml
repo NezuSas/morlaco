@@ -10,8 +10,9 @@
 # una persona lo lea y, si es real, lo copie a datos/manual/agua.json.
 #
 # Y revisa lo que se está quedando viejo (farmacias que se acaban, avisos que
-# vencen, datos a mano sin revisar, fuentes que fallan) en un aviso que se
-# actualiza cada día y se cierra solo cuando todo está al día.
+# vencen, datos a mano sin revisar, fuentes que fallan, errores del GTFS según el
+# validador oficial) en un aviso que se actualiza cada día y se cierra solo cuando
+# todo está al día.
 name: Actualizar datos
 
 on:
@@ -136,12 +137,29 @@ jobs:
               )
           EOF
 
+      # El validador oficial de GTFS (MobilityData) necesita Java. Si la descarga o la
+      # validación fallan, la revisión siguiente avisa de que no se pudo ejecutar.
+      - uses: actions/setup-java@v5
+        if: always()
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Validar el GTFS
+        if: always()
+        continue-on-error: true
+        env:
+          VERSION: "8.0.1"
+        run: |
+          curl -fsSL -o "$RUNNER_TEMP/validador.jar"             "https://github.com/MobilityData/gtfs-validator/releases/download/v$VERSION/gtfs-validator-$VERSION-cli.jar"
+          java -jar "$RUNNER_TEMP/validador.jar" -i datos/gtfs/cuenca-buses.zip             -o "$RUNNER_TEMP/validacion" -c ec --skip_validator_update
+
       - name: Revisar lo que se queda viejo
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          morlaco revisar > "$RUNNER_TEMP/revision.md"
+          morlaco revisar --validacion "$RUNNER_TEMP/validacion" > "$RUNNER_TEMP/revision.md"
           gh label create revisar-datos --color b97a12 --description "Datos que se quedan viejos" --force
           abierto=$(gh issue list --label revisar-datos --state open --limit 1 --json number --jq '.[0].number // empty')
           if [ -s "$RUNNER_TEMP/revision.md" ]; then

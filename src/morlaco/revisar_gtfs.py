@@ -1,17 +1,19 @@
 """Comprobaciones del feed GTFS publicado, para la revisión diaria.
 
-El validador oficial (MobilityData) necesita Java y una descarga en cada ejecución.
-Esto no lo sustituye: revisa en Python lo que más se rompe cuando cambian los datos
-del portal o de la IDE. Revisa que estén los archivos y que cada referencia apunte
-a algo que existe, que no haya rutas, viajes ni recorridos vacíos, que el orden y
-las distancias de las paradas avancen, que las paradas caigan en Cuenca y que el
-feed no esté por vencer.
+Dos niveles. `problemas` revisa en Python lo que más se rompe cuando cambian los
+datos del portal o de la IDE: que estén los archivos y que cada referencia apunte a
+algo que existe, que no haya rutas, viajes ni recorridos vacíos, que el orden y las
+distancias de las paradas avancen, que las paradas caigan en Cuenca y que el feed no
+esté por vencer. `avisos_del_validador` lee el informe del validador oficial de
+MobilityData, que el workflow ejecuta con Java antes de la revisión, y que cubre
+todas las reglas de la especificación.
 """
 
 from __future__ import annotations
 
 import csv
 import io
+import json
 import zipfile
 from collections import Counter, defaultdict
 from datetime import date, datetime, timedelta
@@ -33,6 +35,21 @@ LATITUD = (-3.35, -2.5)
 LONGITUD = (-79.65, -78.7)
 DIAS_VIGENCIA = 60  # aviso si el feed vence en menos de esto
 EJEMPLOS = 3
+REGLAS = "https://gtfs-validator.mobilitydata.org/rules.html"
+GRAVEDAD = {"ERROR": "error", "WARNING": "aviso"}  # los INFO no se listan
+# Lo que mejor identifica un caso en las muestras del informe, en este orden.
+_CLAVES_MUESTRA = (
+    "filename",
+    "childFilename",
+    "fieldName",
+    "childFieldName",
+    "fieldValue",
+    "routeId",
+    "tripId",
+    "stopId",
+    "shapeId",
+    "csvRowNumber",
+)
 
 
 def _tablas(contenido: bytes) -> dict[str, list[dict[str, str]]]:
@@ -201,4 +218,49 @@ def problemas(contenido: bytes, hoy: date) -> list[str]:
             f"El calendario del feed {cuando} el {fin.isoformat()}: alarga `FIN` en "
             "`src/morlaco/gtfs.py`."
         )
+    return salida
+
+
+def _muestra(caso: dict[str, Any]) -> str:
+    partes = [f"{k}={caso[k]}" for k in _CLAVES_MUESTRA if k in caso]
+    return ", ".join(partes[:3])
+
+
+def avisos_del_validador(informe: bytes | None, errores_sistema: bytes | None = None) -> list[str]:
+    """Los errores y avisos del informe del validador oficial (report.json), en frases.
+
+    Sin informe, el validador no llegó a ejecutarse (la descarga o Java fallaron)."""
+    if informe is None:
+        return [
+            "El validador oficial de MobilityData no se pudo ejecutar: revisa el paso "
+            "«Validar el GTFS» del workflow."
+        ]
+    try:
+        avisos = json.loads(informe).get("notices", [])
+    except (ValueError, AttributeError):
+        return ["El informe del validador oficial no se puede leer."]
+    salida = []
+    for aviso in sorted(avisos, key=lambda a: (a.get("severity") != "ERROR", a.get("code", ""))):
+        gravedad = GRAVEDAD.get(aviso.get("severity", ""))
+        if not gravedad:
+            continue
+        codigo = aviso.get("code", "desconocido")
+        total = aviso.get("totalNotices", 0)
+        muestras = aviso.get("sampleNotices") or []
+        ejemplo = (
+            f"; por ejemplo, {_muestra(muestras[0])}" if muestras and _muestra(muestras[0]) else ""
+        )
+        veces = "1 caso" if total == 1 else f"{total} casos"
+        salida.append(
+            f"El validador oficial da un {gravedad} `{codigo}` ({veces}{ejemplo}). "
+            f"Qué significa: {REGLAS}#{codigo}-rule"
+        )
+    if errores_sistema:
+        try:
+            fallos = json.loads(errores_sistema).get("notices", [])
+        except (ValueError, AttributeError):
+            fallos = []
+        if fallos:
+            codigos = ", ".join(sorted({f.get("code", "desconocido") for f in fallos}))
+            salida.append(f"El validador oficial tuvo errores internos: {codigos}.")
     return salida

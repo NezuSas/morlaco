@@ -212,9 +212,10 @@ tan al día está, si se puede leer automáticamente y qué no tiene fuente.
 [`datos/gtfs/cuenca-buses.zip`](https://nezusas.github.io/morlaco/datos/gtfs/cuenca-buses.zip) es un feed
 [GTFS](https://gtfs.org/es/), el formato estándar de horarios que usan las apps de transporte, con las 38 líneas
 de bus urbano de Cuenca. Pasa el [validador oficial de MobilityData](https://gtfs-validator.mobilitydata.org/)
-sin errores ni avisos. Además, la revisión diaria comprueba el feed publicado
-([`revisar_gtfs.py`](src/morlaco/revisar_gtfs.py)): que no falte ningún archivo, que cada referencia lleve a
-algo que existe, que las paradas avancen en orden y caigan en Cuenca, y que el calendario no esté por vencer.
+sin errores ni avisos, y el workflow lo vuelve a pasar cada día (versión 8.0.1). Además, la revisión diaria hace
+sus propias comprobaciones ([`revisar_gtfs.py`](src/morlaco/revisar_gtfs.py)): que no falte ningún archivo,
+que cada referencia lleve a algo que existe, que las paradas avancen en orden y caigan en Cuenca, y que el
+calendario no esté por vencer. Cualquier error o aviso del validador sale en «Datos por revisar».
 
 Cómo está hecho, con lo que publica el municipio:
 
@@ -354,7 +355,8 @@ El workflow [`actualizar-datos.yml`](.github/workflows/actualizar-datos.yml) lo 
   - el pasaje o los feriados llevan más de 90 días sin revisarse;
   - una fuente sigue fallando;
   - la prensa anuncia un día de descanso por decreto que aún no está en la lista;
-  - el feed GTFS tiene un problema o su calendario vence en menos de 60 días.
+  - el feed GTFS tiene un problema, el validador oficial da un error o un aviso, o el calendario vence en
+    menos de 60 días.
 - También se puede lanzar a mano desde la pestaña *Actions*, con todas las fuentes o solo algunas.
 
 ## Desarrollo
@@ -416,9 +418,7 @@ regístrala en `FUENTES` de `cli.py` y añade sus pruebas.
 ## Próximos pasos
 
 - Días de recolección de cada parroquia rural. EMAC solo publica la regla general, que la página ya muestra;
-  habría que pedírselos con una solicitud de acceso a la información pública.
-- Pasar también el validador oficial de MobilityData en cada actualización (hoy la revisión diaria hace
-  comprobaciones propias, más sencillas).
+  se los pedimos el 19 de noviembre de 2026 con una solicitud de acceso a la información pública.
 - Tomar más trazados de la IDE del Municipio cuando confirme las condiciones de uso de sus capas (hoy solo
   se usan las líneas 4 y 27).
 - Un bot de Telegram o WhatsApp que responda con tu calle.

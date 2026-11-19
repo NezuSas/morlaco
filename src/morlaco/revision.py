@@ -30,6 +30,13 @@ def _leer(ruta: Path) -> dict[str, Any] | None:
         return None
 
 
+def _bytes(ruta: Path) -> bytes | None:
+    try:
+        return ruta.read_bytes()
+    except FileNotFoundError:
+        return None
+
+
 def _fecha(texto: str | None) -> date | None:
     try:
         return date.fromisoformat(str(texto)[:10])
@@ -37,8 +44,11 @@ def _fecha(texto: str | None) -> date | None:
         return None
 
 
-def revisar(datos: Path, hoy: date) -> list[dict[str, str]]:
-    """Lo que necesita atención, de lo más urgente a lo menos. Cada punto: tema y mensaje."""
+def revisar(datos: Path, hoy: date, validacion: Path | None = None) -> list[dict[str, str]]:
+    """Lo que necesita atención, de lo más urgente a lo menos. Cada punto: tema y mensaje.
+
+    `validacion` es la carpeta donde el validador oficial de GTFS dejó su informe; sin ella
+    (por ejemplo, en local) no se mira."""
     pendientes: list[dict[str, str]] = []
 
     # 1. Fuentes que fallan: la página sigue mostrando lo último bueno, que puede envejecer.
@@ -137,6 +147,10 @@ def revisar(datos: Path, hoy: date) -> list[dict[str, str]]:
         problemas_gtfs = revisar_gtfs.problemas(feed.read_bytes(), hoy)
     else:
         problemas_gtfs = ["No se ha publicado el feed `datos/gtfs/cuenca-buses.zip`."]
+    if validacion is not None:
+        problemas_gtfs += revisar_gtfs.avisos_del_validador(
+            _bytes(validacion / "report.json"), _bytes(validacion / "system_errors.json")
+        )
     pendientes += [{"tema": "gtfs", "mensaje": f"GTFS: {problema}"} for problema in problemas_gtfs]
 
     # 6. Datos a mano que llevan mucho sin revisarse.

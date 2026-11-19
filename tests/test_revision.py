@@ -143,3 +143,20 @@ def test_avisa_si_el_gtfs_tiene_problemas_o_falta(tmp_path):
     (tmp_path / "gtfs" / "cuenca-buses.zip").unlink()
     (pendiente,) = revision.revisar(tmp_path, date(2026, 11, 10))
     assert "No se ha publicado" in pendiente["mensaje"]
+
+
+def test_lee_el_informe_del_validador_oficial_si_se_le_pasa(tmp_path):
+    _datos(tmp_path)
+    validacion = tmp_path / "validacion"
+    # En local no se pasa carpeta y no se mira.
+    assert revision.revisar(tmp_path, date(2026, 11, 10)) == []
+    # El workflow la pasa: si el validador no dejó informe, avisa.
+    (pendiente,) = revision.revisar(tmp_path, date(2026, 11, 10), validacion)
+    assert "no se pudo ejecutar" in pendiente["mensaje"]
+    validacion.mkdir()
+    (validacion / "report.json").write_text(
+        json.dumps({"notices": [{"code": "x_error", "severity": "ERROR", "totalNotices": 2}]}),
+        encoding="utf-8",
+    )
+    (pendiente,) = revision.revisar(tmp_path, date(2026, 11, 10), validacion)
+    assert pendiente["tema"] == "gtfs" and "`x_error` (2 casos)" in pendiente["mensaje"]

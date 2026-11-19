@@ -1,3 +1,4 @@
+import json
 from datetime import date
 
 from test_gtfs import LINEAS, PARADAS, RUTAS
@@ -67,3 +68,48 @@ def test_avisa_antes_de_que_venza_el_calendario():
         "El calendario del feed vence el 2027-12-31: alarga `FIN` en `src/morlaco/gtfs.py`."
     ]
     assert "venció" in _problemas(_feed(), date(2028, 1, 2))[0]
+
+
+INFORME = {
+    "summary": {"validatorVersion": "8.0.1"},
+    "notices": [
+        {
+            "code": "stop_too_far_from_shape",
+            "severity": "WARNING",
+            "totalNotices": 18,
+            "sampleNotices": [{"tripId": "L13-retorno-LV", "stopId": "P1", "match": [0, 0]}],
+        },
+        {
+            "code": "foreign_key_violation",
+            "severity": "ERROR",
+            "totalNotices": 1,
+            "sampleNotices": [
+                {"childFilename": "trips.txt", "childFieldName": "route_id", "fieldValue": "LX"}
+            ],
+        },
+        {"code": "unknown_column", "severity": "INFO", "totalNotices": 3, "sampleNotices": []},
+    ],
+}
+
+
+def test_validador_sin_avisos_no_pide_nada():
+    informe = json.dumps({"summary": {}, "notices": []}).encode()
+    assert revisar_gtfs.avisos_del_validador(informe, b'{"notices": []}') == []
+
+
+def test_validador_lista_errores_primero_y_omite_los_informativos():
+    errores, avisos = revisar_gtfs.avisos_del_validador(json.dumps(INFORME).encode())
+    assert errores.startswith("El validador oficial da un error `foreign_key_violation` (1 caso;")
+    assert "fieldValue=LX" in errores
+    assert errores.endswith("rules.html#foreign_key_violation-rule")
+    assert "un aviso `stop_too_far_from_shape` (18 casos;" in avisos
+
+
+def test_validador_que_no_se_ejecuto_o_fallo_por_dentro():
+    assert "no se pudo ejecutar" in revisar_gtfs.avisos_del_validador(None)[0]
+    assert "no se puede leer" in revisar_gtfs.avisos_del_validador(b"{")[0]
+    vacio = json.dumps({"notices": []}).encode()
+    fallo = json.dumps({"notices": [{"code": "runtime_exception_in_validator_error"}]}).encode()
+    assert revisar_gtfs.avisos_del_validador(vacio, fallo) == [
+        "El validador oficial tuvo errores internos: runtime_exception_in_validator_error."
+    ]

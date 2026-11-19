@@ -122,10 +122,10 @@ def actualizar(
     return 1 if errores else 0
 
 
-def revisar_datos(datos: Path) -> int:
+def revisar_datos(datos: Path, validacion: Path | None = None) -> int:
     """Imprime, como lista de tareas, lo que se está quedando viejo (nada si todo está al día)."""
     hoy = revision.hoy_en_cuenca()
-    print(revision.informe(revision.revisar(datos, hoy), hoy), end="")
+    print(revision.informe(revision.revisar(datos, hoy, validacion), hoy), end="")
     return 0
 
 
@@ -182,9 +182,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="Lista lo que se queda viejo: farmacias, avisos que vencen, fuentes que fallan.",
     )
     rev_datos.add_argument("--datos", type=Path, default=Path("datos"), help="Carpeta de datos.")
+    rev_datos.add_argument(
+        "--validacion",
+        type=Path,
+        help="Carpeta con el informe del validador oficial de GTFS (report.json).",
+    )
     args = parser.parse_args(argv)
     if args.comando == "revisar":
-        return revisar_datos(args.datos)
+        return revisar_datos(args.datos, args.validacion)
     if args.comando == "avisos-agua":
         return avisos_de_agua(args.datos)
     if args.comando == "cambios":
