@@ -89,6 +89,12 @@ EN: dict[str, dict[str, Any]] = {
             "dias[]": "fecha (rest day), tipo (nacional, local or suspension), name (es, en) and source",
         },
     },
+    "feriados-avisos": {
+        "titulo": "Days off by decree to review",
+        "descripcion": "Press articles from the last 30 days whose headline announces a day off, a decreed holiday or a moved holiday. Not reviewed: to show days off, use manual/feriados.json.",
+        "frecuencia": "weekly",
+        "campos": {"avisos[]": "published, title, link and summary"},
+    },
     "luz-suspensiones": {
         "titulo": "Planned power cuts",
         "descripcion": "The cuts Centro Sur publishes by day and the recent stand-alone schedules. Check metadata.ultima_publicacion: in November 2026 Centro Sur had not published for Cuenca since July.",
@@ -307,6 +313,21 @@ CONJUNTOS: list[dict[str, Any]] = [
         "frecuencia": "a mano",
         "fuente": "Decretos y calendario oficial publicados en prensa",
         "licencia": MORLACO,
+    },
+    {
+        "id": "feriados-avisos",
+        "archivo": "feriados/avisos.json",
+        "formato": "JSON",
+        "tema": "basura",
+        "titulo": "Avisos de días de descanso por revisar",
+        "descripcion": "Notas de prensa de los últimos 30 días cuyo título anuncia un día de "
+        "descanso, un feriado decretado o un traslado. Sin revisar: para mostrar días de descanso, "
+        "usa manual/feriados.json.",
+        "campos": {"avisos[]": "publicado, titulo, enlace y resumen"},
+        "fuente_morlaco": "feriados",
+        "frecuencia": "semanal",
+        "fuente": "El Mercurio",
+        "licencia": PUBLICO,
     },
     {
         "id": "luz-suspensiones",

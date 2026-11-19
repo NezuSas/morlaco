@@ -1,0 +1,18 @@
+{
+  "metadata": {
+    "titulo": "Avisos de días de descanso por revisar",
+    "fuente": "El Mercurio (Cuenca)",
+    "pagina": "https://elmercurio.com.ec/",
+    "datos": "https://elmercurio.com.ec/wp-json/wp/v2/posts",
+    "desde": "2026-10-20",
+    "nota": "Notas cuyo título anuncia un día de descanso, un feriado decretado o un traslado. No cambian la página: una persona las lee y añade el día a datos/manual/feriados.json, o descarta la nota."
+  },
+  "avisos": [
+    {
+      "publicado": "2026-11-16",
+      "titulo": "Así será la atención del Hospital Vicente Corral Moscoso por la suspensión de la jornada laboral el 20 de noviembre",
+      "enlace": "https://elmercurio.com.ec/salud-noticias/2026/11/16/hospital-vicente-corral-cuenca-atencion-20-noviembre/",
+      "resumen": "El próximo 20 de noviembre se suspenderán las actividades laborales y educativas en todo el Ecuador por disposición del presidente Daniel Noboa a través de decreto. No obstante, el Hospital Vicente Corral Moscoso se mantendrá activo para todas las personas. Por medio de un comunicado, el Ministerio de Salud informó que se mantendrán habilitados sus…"
+    }
+  ]
+}

@@ -73,6 +73,16 @@
       "descartadas": 2
     }
   },
+  "feriados": {
+    "ok": true,
+    "actualizado": "2026-11-19T16:21:37+00:00",
+    "archivos": [
+      "feriados/avisos.json"
+    ],
+    "resumen": {
+      "avisos": 1
+    }
+  },
   "luz": {
     "ok": true,
     "actualizado": "2026-11-19T19:19:01+00:00",

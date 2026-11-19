@@ -68,6 +68,8 @@ def test_feriados_completos_ordenados_y_con_fuente():
         assert dia["es"].strip() and dia["en"].strip()
         assert dia["fuente"]["nombre"] and dia["fuente"]["url"].startswith("https://")
     _fecha(datos["metadata"]["revisado"])
+    for nota in datos.get("descartados", []):
+        assert nota["enlace"].startswith("https://")
 
 
 def test_tarifas_con_fuente_y_valores_razonables(transporte):

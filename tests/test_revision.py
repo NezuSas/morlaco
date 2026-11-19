@@ -105,3 +105,22 @@ def test_avisa_cuando_se_acaba_la_lista_de_feriados(tmp_path):
     )
     feriados = [p for p in revision.revisar(tmp_path, date(2027, 4, 24)) if p["tema"] == "feriados"]
     assert "está vacía" in feriados[0]["mensaje"]
+
+
+def test_avisa_de_las_notas_de_descanso_sin_revisar(tmp_path):
+    _datos(tmp_path)
+    _escribir(
+        tmp_path,
+        "feriados/avisos.json",
+        {"avisos": [
+            {"publicado": "2026-11-12", "titulo": "Noboa decreta descanso el 24 de diciembre",
+             "enlace": "https://elmercurio.com.ec/decreto-24/"},
+            {"publicado": "2026-11-01", "titulo": "Nota vieja", "enlace": "https://x/vieja"},
+        ]},
+    )  # fmt: skip
+    feriados = [
+        p for p in revision.revisar(tmp_path, date(2026, 11, 13)) if p["tema"] == "feriados"
+    ]
+    assert len(feriados) == 1  # la vieja es anterior a la última revisión (2026-11-10)
+    assert "«Noboa decreta descanso el 24 de diciembre»" in feriados[0]["mensaje"]
+    assert "https://elmercurio.com.ec/decreto-24/" in feriados[0]["mensaje"]

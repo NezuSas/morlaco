@@ -14,6 +14,8 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
+from morlaco.fuentes import feriados
+
 DIAS_FARMACIAS = 7  # aviso si los turnos publicados se acaban en menos de esto
 DIAS_AVISOS = 14  # aviso si un cambio de línea o los feriados vencen en menos de esto
 DIAS_FERIADOS = 30  # aviso si la lista de próximos feriados se acaba antes de esto
@@ -101,7 +103,8 @@ def revisar(datos: Path, hoy: date) -> list[dict[str, str]]:
         )
 
     # 5. Próximos días de descanso: que la lista no se acabe.
-    dias = (_leer(datos / "manual" / "feriados.json") or {}).get("dias")
+    lista_feriados = _leer(datos / "manual" / "feriados.json") or {}
+    dias = lista_feriados.get("dias")
     if dias is not None:
         ultima = max((f for d in dias if (f := _fecha(d.get("fecha")))), default=None)
         if ultima is None or ultima - hoy <= timedelta(days=DIAS_FERIADOS):
@@ -113,6 +116,19 @@ def revisar(datos: Path, hoy: date) -> list[dict[str, str]]:
                     "Añade los siguientes días de descanso, con su fuente.",
                 }
             )
+
+    # 5b. La prensa anuncia un día de descanso por decreto que aún no está en la lista.
+    avisos = _leer(datos / "feriados" / "avisos.json") or {}
+    for aviso in feriados.pendientes(avisos, lista_feriados):
+        pendientes.append(
+            {
+                "tema": "feriados",
+                "mensaje": f"El Mercurio publicó el {aviso['publicado']} «{aviso['titulo']}» "
+                f"({aviso['enlace']}). Si anuncia un día de descanso, añádelo a "
+                "`datos/manual/feriados.json` con su fuente; si no, añade el enlace a "
+                "`descartados` en ese archivo.",
+            }
+        )
 
     # 6. Datos a mano que llevan mucho sin revisarse.
     for archivo, que in (

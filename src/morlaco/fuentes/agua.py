@@ -36,8 +36,17 @@ _OTRO_CANTON = re.compile(
 )
 
 
-def _texto(fragmento: str) -> str:
+def texto(fragmento: str) -> str:
+    """El texto plano de un fragmento HTML de WordPress."""
     return re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", fragmento or ""))).strip()
+
+
+def leer_notas(contenido: bytes) -> list[dict[str, Any]]:
+    """Las notas de una página de la API de El Mercurio."""
+    notas = json.loads(decodificar(contenido))
+    if not isinstance(notas, list):
+        raise ValueError("La API de El Mercurio no devolvió una lista")
+    return notas
 
 
 def es_aviso_de_corte(titulo: str, contenido: str = "") -> bool:
@@ -52,13 +61,10 @@ def es_aviso_de_corte(titulo: str, contenido: str = "") -> bool:
 
 def parsear_notas(contenido: bytes) -> list[dict[str, Any]]:
     """Los avisos de corte de agua de una página de la API, del más nuevo al más viejo."""
-    notas = json.loads(decodificar(contenido))
-    if not isinstance(notas, list):
-        raise ValueError("La API de El Mercurio no devolvió una lista")
     avisos = []
-    for nota in notas:
-        titulo = _texto(nota.get("title", {}).get("rendered", ""))
-        cuerpo = _texto(nota.get("content", {}).get("rendered", ""))
+    for nota in leer_notas(contenido):
+        titulo = texto(nota.get("title", {}).get("rendered", ""))
+        cuerpo = texto(nota.get("content", {}).get("rendered", ""))
         if not es_aviso_de_corte(titulo, cuerpo):
             continue
         avisos.append(
@@ -66,7 +72,7 @@ def parsear_notas(contenido: bytes) -> list[dict[str, Any]]:
                 "publicado": str(nota.get("date", ""))[:10],
                 "titulo": titulo,
                 "enlace": nota.get("link"),
-                "resumen": _texto(nota.get("excerpt", {}).get("rendered", ""))[:400],
+                "resumen": texto(nota.get("excerpt", {}).get("rendered", ""))[:400],
                 "menciona_etapa": "etapa" in sin_tildes(cuerpo.lower()),
             }
         )

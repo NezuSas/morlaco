@@ -133,6 +133,33 @@
       }
     },
     {
+      "id": "feriados-avisos",
+      "archivo": "feriados/avisos.json",
+      "formato": "JSON",
+      "tema": "basura",
+      "titulo": "Avisos de días de descanso por revisar",
+      "descripcion": "Notas de prensa de los últimos 30 días cuyo título anuncia un día de descanso, un feriado decretado o un traslado. Sin revisar: para mostrar días de descanso, usa manual/feriados.json.",
+      "campos": {
+        "avisos[]": "publicado, titulo, enlace y resumen"
+      },
+      "fuente_morlaco": "feriados",
+      "frecuencia": "semanal",
+      "fuente": "El Mercurio",
+      "licencia": "Información pública de la institución; cita la fuente",
+      "url": "https://nezusas.github.io/morlaco/datos/feriados/avisos.json",
+      "en": {
+        "titulo": "Days off by decree to review",
+        "descripcion": "Press articles from the last 30 days whose headline announces a day off, a decreed holiday or a moved holiday. Not reviewed: to show days off, use manual/feriados.json.",
+        "frecuencia": "weekly",
+        "campos": {
+          "avisos[]": "published, title, link and summary"
+        },
+        "formato": "JSON",
+        "fuente": "El Mercurio",
+        "licencia": "Public information from the institution; cite the source"
+      }
+    },
+    {
       "id": "luz-suspensiones",
       "archivo": "luz/suspensiones.json",
       "formato": "JSON",

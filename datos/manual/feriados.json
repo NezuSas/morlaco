@@ -1,7 +1,7 @@
 {
   "metadata": {
     "titulo": "Próximos días de descanso en Cuenca",
-    "nota": "Se mantiene a mano. Cada fecha es el día en que se descansa, ya con el traslado de la Ley de Feriados (Registro Oficial Suplemento 906, 2016), y lleva su fuente. Incluye los feriados nacionales, el local de Cuenca y las suspensiones de jornada decretadas para todo el país. Hay que añadir fechas antes de que se acabe la lista.",
+    "nota": "Se mantiene a mano. Cada fecha es el día en que se descansa, ya con el traslado de la Ley de Feriados (Registro Oficial Suplemento 906, 2016), y lleva su fuente. Incluye los feriados nacionales, el local de Cuenca y las suspensiones de jornada decretadas para todo el país. Hay que añadir fechas antes de que se acabe la lista. Las notas de prensa revisadas que no anuncian un día de descanso van en descartados, con su enlace, para que la revisión diaria no las vuelva a pedir.",
     "revisado": "2026-11-17"
   },
   "dias": [
@@ -95,5 +95,6 @@
         "url": "https://www.primicias.ec/sociedad/feriados-ecuador2027-calendario-turismo-carnaval-semana-santa-136547/"
       }
     }
-  ]
+  ],
+  "descartados": []
 }

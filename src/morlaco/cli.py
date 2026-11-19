@@ -20,6 +20,7 @@ from morlaco.fuentes import (
     cerca,
     emac,
     farmacias,
+    feriados,
     movilidad,
     tranvia,
 )
@@ -40,6 +41,7 @@ FUENTES: dict[str, Fuente] = {
     "tranvia": tranvia.obtener,
     "agua": agua.obtener,
     "cerca": cerca.obtener,
+    "feriados": feriados.obtener,
 }
 
 
