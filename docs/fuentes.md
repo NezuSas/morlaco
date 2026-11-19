@@ -49,6 +49,19 @@ objetos grandes; aceite de cocina, focos y fluorescentes; lista oficial vigente 
 celeste. Para los horarios rurales habría que pedirlos a EMAC con una solicitud de acceso a la información
 pública o a cada junta parroquial.
 
+**Recolección rural, revisado el 2026-11-19.** Lo que publica EMAC en su página de servicio:
+
+- **Área consolidada.** Incluye la zona urbana y las cabeceras parroquiales de Ricaurte, San Joaquín, Sayausí,
+  Baños, Turi, El Valle y Santa Ana, que tienen las frecuencias urbanas. Las cabeceras de Ricaurte, San
+  Joaquín, Sayausí, Baños, El Valle y Santa Ana caen dentro de las zonas del mapa; la de Turi no.
+- **Área rural dispersa.** Las 21 parroquias rurales y sus comunidades tienen recolección con vehículos
+  contratados, dos días por semana, entre las 08:00 y las 15:00. EMAC no publica qué días toca en cada
+  parroquia o comunidad.
+
+No se encontraron calendarios por parroquia en la web de EMAC, en El Mercurio (API, búsqueda «recolección
+parroquia») ni en búsquedas generales de las juntas parroquiales. La regla general no aparece hoy en la página
+de Morlaco: fuera de las 8 zonas solo dice que se consulte con EMAC.
+
 **Contradicción conocida:** la web de EMAC dice que BIOEMAC abre todos los feriados; la prensa de 2026 lo
 reporta cerrado en feriados. Manda la prensa reciente.
 

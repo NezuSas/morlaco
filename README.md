@@ -415,7 +415,8 @@ regístrala en `FUENTES` de `cli.py` y añade sus pruebas.
 
 ## Próximos pasos
 
-- Horarios de recolección de las parroquias rurales (EMAC solo publica la regla general).
+- Días de recolección de cada parroquia rural. EMAC solo publica la regla general, que la página ya muestra;
+  habría que pedírselos con una solicitud de acceso a la información pública.
 - Pasar también el validador oficial de MobilityData en cada actualización (hoy la revisión diaria hace
   comprobaciones propias, más sencillas).
 - Tomar más trazados de la IDE del Municipio cuando confirme las condiciones de uso de sus capas (hoy solo

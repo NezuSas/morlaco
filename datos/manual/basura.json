@@ -2,13 +2,21 @@
   "metadata": {
     "titulo": "Basura: feriados y dónde llevar lo que no va en las fundas",
     "nota": "Datos mantenidos a mano a partir de las páginas de EMAC EP y ETAPA EP y de comunicados publicados en prensa. Cada dato lleva su fuente. Hay que revisarlos cuando cambie un horario o al acercarse la fecha «hasta».",
-    "revisado": "2026-11-10"
+    "revisado": "2026-11-19"
   },
   "funda_celeste": {
     "materiales": ["papel", "cartón", "plásticos", "latas", "tetrapak"],
     "fuente": {
       "nombre": "El Mercurio, con un técnico de EMAC EP (28 de octubre de 2024)",
       "url": "https://elmercurio.com.ec/cuenca/2024/10/28/eficiencia-del-reciclaje-en-cuenca-aun-afronta-desafios/"
+    }
+  },
+  "rural": {
+    "es": "Ese punto no está en ninguna de las 8 zonas urbanas de EMAC. En las parroquias rurales y sus comunidades, EMAC recoge la basura dos días por semana entre las 08:00 y las 15:00, con vehículos contratados. No publica qué días toca en cada comunidad: pregunta en tu junta parroquial o en la línea 139.",
+    "en": "That point isn’t in any of EMAC’s 8 urban zones. In the rural parishes and their communities, EMAC collects twice a week between 08:00 and 15:00, with contracted trucks. It doesn’t publish which days each community gets: ask your parish council or call 139.",
+    "fuente": {
+      "nombre": "EMAC EP",
+      "url": "https://emac.gob.ec/servicio-de-recoleccion-de-desechos-y-residuos-solidos/"
     }
   },
   "feriados": {

@@ -502,7 +502,7 @@ function pintarBici(estacion) {
 
 // ---------- Respuesta ----------
 
-function pintarBasura(zona) {
+function pintarBasura(zona, rural) {
   const cuando = $("basura-cuando");
   const semana = $("semana");
   const fundas = $("basura-fundas");
@@ -512,7 +512,16 @@ function pintarBasura(zona) {
   if (!zona) {
     cuando.textContent = t("fueraZonas");
     cuando.classList.remove("ahora");
-    fundas.textContent = t("fueraZonasDetalle");
+    if (rural) {
+      fundas.replaceChildren(
+        rural[idioma()] ?? rural.es,
+        " ",
+        elemento("a", { href: rural.fuente.url, target: "_blank", rel: "noopener" }, rural.fuente.nombre),
+        ".",
+      );
+    } else {
+      fundas.textContent = t("fueraZonasDetalle");
+    }
     detalle.textContent = "";
     $("calendario").replaceChildren();
     return;
@@ -1819,7 +1828,7 @@ async function iniciar() {
     // Con respuesta, el buscador se recoge tras el letrero hasta que se pida cambiar de lugar.
     document.querySelector(".consulta").classList.add("con-respuesta");
     document.querySelector(".consulta").classList.remove("cambiando");
-    pintarBasura(zona);
+    pintarBasura(zona, basura?.rural);
     pintarLuz(suspensiones);
     pintarParadas(cercanas);
     const cercanasLineas = lineas ? lineasCercanas(punto, lineas, rutas?.rutas ?? []) : null;

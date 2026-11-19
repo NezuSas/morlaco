@@ -103,3 +103,9 @@ def test_frecuencia_del_tranvia(transporte):
     frecuencia = transporte["tranvia"]["frecuencia_min"]
     assert 0 < frecuencia["lunes_viernes"] <= frecuencia["fin_de_semana"] <= 60
     assert transporte["tranvia"]["fuente"].startswith("https://")
+
+
+def test_basura_regla_rural_en_los_dos_idiomas_con_fuente(basura):
+    rural = basura["rural"]
+    assert "08:00" in rural["es"] and "08:00" in rural["en"]
+    assert rural["fuente"]["url"].startswith("https://emac.gob.ec/")
