@@ -166,7 +166,10 @@ tan al día está, si se puede leer automáticamente y qué no tiene fuente.
   fuera de Cuenca (`metadata.descartadas`). No hay posiciones de buses en tiempo real: no son públicas.
   El recorrido de cada línea sale del shapefile del mismo conjunto (en UTM 17 Sur, convertido a
   latitud y longitud). **El último publicado es de septiembre de 2022**, así que algunas líneas pueden haber
-  cambiado; los horarios y frecuencias sí son de 2025.
+  cambiado; los horarios y frecuencias sí son de 2025. La línea 4 se toma de la
+  [IDE del Municipio](https://ide.cuenca.gob.ec/geoserver/ows?service=WFS&request=GetCapabilities) (capa
+  `ide:dmt_linea4`), cuyo trazado pasa por el Mall del Río y el IESS como el recorrido de abril de 2026; la del
+  shapefile todavía pasa por la Feria Libre.
 - **Calles (OpenStreetMap).** Se descargan con la API Overpass todas las vías con nombre de la ciudad, se
   agrupan por nombre y se simplifica su trazado con 4 m de tolerancia. Overpass a veces está saturado; si
   falla, basta con volver a correr `morlaco actualizar calles`.
@@ -209,7 +212,7 @@ Cómo está hecho, con lo que publica el municipio:
 
 - **Rutas, sentidos y frecuencias** ("cada 9 min de 05:50 a 21:15"), del CSV de rutas (2025). Es un feed de
   frecuencias (`frequencies.txt`): el municipio no publica horarios exactos por parada.
-- **Recorridos** (`shapes.txt`), del shapefile de rutas (septiembre de 2022).
+- **Recorridos** (`shapes.txt`), del shapefile de rutas (septiembre de 2022), salvo la línea 4, de la IDE.
 - **Paradas**: las terminales de cada recorrido y las paradas registradas por el municipio que quedan a menos
   de 25 m del recorrido, en orden.
 - **Tiempos entre paradas**: estimados a 15 km/h de media, porque no hay tiempos de viaje publicados.

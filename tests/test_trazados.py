@@ -1,4 +1,5 @@
 import io
+import json
 import zipfile
 
 import pytest
@@ -174,3 +175,43 @@ def test_zip_mas_reciente():
     assert trazados.zip_mas_reciente(paquete)["url"] == "geo"
     with pytest.raises(ValueError):
         trazados.zip_mas_reciente({"name": "x", "resources": []})
+
+
+def _ide(nombre, direccion, puntos):
+    return {
+        "type": "Feature",
+        "properties": {"linename": "4", "name": nombre, "direction": direccion,
+                       "length": "16.856km", "empresa": "SIT"},
+        "geometry": {"type": "MultiLineString", "coordinates": [puntos]},
+    }  # fmt: skip
+
+
+def test_parsear_ide_y_reemplazar_la_linea():
+    recta = [[-79.04, -2.92], [-79.02, -2.91], [-79.0, -2.9]]
+    capa = json.dumps({"features": [
+        _ide("L4 Terminal Terrestre", ">", recta),
+        _ide("L4 Plataforma Narancay", "<", recta[::-1]),
+    ]}).encode()  # fmt: skip
+    nuevas = trazados.parsear_ide(capa)
+    assert [(f["properties"]["sentido"], f["properties"]["hacia"]) for f in nuevas] == [
+        ("ida", "Terminal Terrestre"),
+        ("retorno", "Plataforma Narancay"),
+    ]
+    # Tres puntos en línea recta: queda un LineString con los extremos.
+    assert nuevas[0]["geometry"] == {"type": "LineString", "coordinates": [recta[0], recta[-1]]}
+    assert nuevas[0]["properties"]["fuente"] == "ide"
+
+    def vieja(linea, tipo, sentido):
+        return {"properties": {"linea": linea, "tipo": tipo, "sentido": sentido, "hacia": "x"}}
+
+    antes = [vieja("4", "linea", "ida"), vieja("4", "linea", "retorno"),
+             vieja("4", "alargue", "ida"), vieja("1", "linea", "ida")]  # fmt: skip
+    despues = trazados.reemplazar_lineas(antes, nuevas)
+    assert len(despues) == 4
+    assert [f["properties"].get("fuente") for f in despues if f["properties"]["linea"] == "4"
+            and f["properties"]["tipo"] == "linea"] == ["ide", "ide"]  # fmt: skip
+    assert vieja("4", "alargue", "ida") in despues  # los alargues se quedan
+    with pytest.raises(ValueError, match="ida y el retorno"):
+        trazados.reemplazar_lineas(antes, nuevas[:1])
+    url = trazados.url_ide("4")
+    assert "typeNames=ide%3Admt_linea4" in url and "EPSG%3A4326" in url

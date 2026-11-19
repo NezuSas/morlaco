@@ -210,10 +210,16 @@ def obtener(descargar: red.Descargador = red.descargar) -> Resultado:
             **_metadata(paquetes["rutas"], recurso_zip),
             "titulo": "Trazado de las líneas de bus y del tranvía",
             "nota": "Trazado publicado por el municipio en septiembre de 2022; algunas líneas "
-            "han cambiado desde entonces. Simplificado con 4 m de tolerancia.",
+            "han cambiado desde entonces. La línea 4 se toma de la IDE del Municipio, que "
+            "coincide con el recorrido de 2026. Simplificado con 4 m de tolerancia.",
+            "ide": trazados.IDE_PAGINA,
         },
         "features": trazados.parsear_shapefile(descargar(recurso_zip["url"])),
     }
+    for linea in trazados.LINEAS_IDE:
+        lineas["features"] = trazados.reemplazar_lineas(
+            lineas["features"], trazados.parsear_ide(descargar(trazados.url_ide(linea)))
+        )
 
     meta_rutas, texto_rutas = fuentes["rutas"]
     meta_recorridos, texto_recorridos = fuentes["recorridos"]

@@ -252,32 +252,34 @@
       "formato": "GeoJSON (líneas)",
       "tema": "transporte",
       "titulo": "Recorrido de las líneas de bus y del tranvía",
-      "descripcion": "El trazado de cada línea en cada sentido, con sus alargues. Trazados de 2022.",
+      "descripcion": "El trazado de cada línea en cada sentido, con sus alargues. Trazados de 2022; la línea 4, de la IDE del Municipio, que coincide con el recorrido de 2026.",
       "campos": {
         "linea": "Número de línea, o Tranvía",
         "tipo": "linea, alargue o tranvia",
         "hacia": "Destino de ese sentido",
         "sentido": "ida o retorno",
-        "longitud_km": "Largo del trazado"
+        "longitud_km": "Largo del trazado",
+        "fuente": "ide si el trazado viene de la IDE del Municipio (si no, no aparece)"
       },
       "fuente_morlaco": "buses",
       "frecuencia": "semanal",
-      "fuente": "GAD Municipal de Cuenca, portal Cuenca en Datos",
+      "fuente": "GAD Municipal de Cuenca, portal Cuenca en Datos e IDE del Municipio",
       "licencia": "CC BY-NC (Creative Commons Atribución-NoComercial), según el portal Cuenca en Datos",
       "url": "https://nezusas.github.io/morlaco/datos/buses/lineas.geojson",
       "en": {
         "titulo": "Bus and tram routes",
-        "descripcion": "The path of each line in each direction, with its extensions. Route maps from 2022.",
+        "descripcion": "The path of each line in each direction, with its extensions. Route maps from 2022; line 4 from the city's spatial data portal (IDE), which matches the 2026 route.",
         "frecuencia": "weekly",
         "campos": {
           "linea": "Line number, or Tranvía (tram)",
           "tipo": "linea (line), alargue (extension) or tranvia (tram)",
           "hacia": "Destination in that direction",
           "sentido": "ida (outbound) or retorno (return)",
-          "longitud_km": "Length of the path"
+          "longitud_km": "Length of the path",
+          "fuente": "ide if the path comes from the city's IDE (otherwise absent)"
         },
         "formato": "GeoJSON (lines)",
-        "fuente": "City of Cuenca, Cuenca en Datos portal",
+        "fuente": "City of Cuenca, Cuenca en Datos portal and the city's IDE",
         "licencia": "CC BY-NC (Creative Commons Attribution-NonCommercial), per the Cuenca en Datos portal"
       }
     },

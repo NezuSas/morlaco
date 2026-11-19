@@ -8,14 +8,21 @@ más lejanos), los alimentadores y el tranvía.
 Aviso: el último shapefile publicado es de septiembre de 2022; algunas líneas
 han cambiado desde entonces. Los horarios y las frecuencias salen del CSV de
 rutas, que sí está más al día.
+
+Para las líneas de LINEAS_IDE el trazado se toma del servicio WFS de la IDE del
+Municipio, que publica la misma capa con esas líneas ya corregidas: la línea 4 de
+la IDE pasa por el Mall del Río y el IESS, como el recorrido de abril de 2026; la
+del shapefile todavía pasa por la Feria Libre.
 """
 
 from __future__ import annotations
 
 import io
+import json
 import re
 import zipfile
 from typing import Any
+from urllib.parse import urlencode
 
 import shapefile
 
@@ -26,6 +33,12 @@ from morlaco.geo import utm_a_geograficas
 
 _PREFIJO_ALARGUE = re.compile(r"^ALARGUE\s+(?:IDA?N?|RETORNO|ID)?\s*", re.IGNORECASE)
 _PREFIJO_LINEA = re.compile(r"^(L|A|T)(\d+[A-Z]?)\s+(.*)$")
+
+IDE_WFS = "https://ide.cuenca.gob.ec/geoserver/ows"
+IDE_PAGINA = f"{IDE_WFS}?service=WFS&request=GetCapabilities"
+# Líneas cuyo trazado de la IDE es más nuevo que el del shapefile (comparado el 2026-11-19).
+LINEAS_IDE = ("4",)
+_ORDEN_TIPO = {"linea": 0, "alimentador": 1, "tranvia": 2, "alargue": 3}
 
 
 def zip_mas_reciente(paquete: dict[str, Any]) -> dict[str, Any]:
@@ -111,20 +124,15 @@ def parsear_shapefile(contenido_zip: bytes) -> list[dict[str, Any]]:
         forma = forma_registro.shape
         if len(forma.points) < 2:
             continue
-        partes = [*forma.parts, len(forma.points)]
-        lineas = []
-        for inicio, fin in zip(partes, partes[1:], strict=False):
-            puntos = [utm_a_geograficas(x, y) for x, y in forma.points[inicio:fin]]
-            linea = simplificar([[round(lon, 5), round(lat, 5)] for lon, lat in puntos])
-            if len(linea) >= 2:
-                lineas.append(linea)
-        if not lineas:
-            continue
-        geometria = (
-            {"type": "LineString", "coordinates": lineas[0]}
-            if len(lineas) == 1
-            else {"type": "MultiLineString", "coordinates": lineas}
+        cortes = [*forma.parts, len(forma.points)]
+        geometria = _geometria(
+            [
+                [utm_a_geograficas(x, y) for x, y in forma.points[inicio:fin]]
+                for inicio, fin in zip(cortes, cortes[1:], strict=False)
+            ]
         )
+        if geometria is None:
+            continue
         entidades.append(
             {
                 "type": "Feature",
@@ -137,18 +145,91 @@ def parsear_shapefile(contenido_zip: bytes) -> list[dict[str, Any]]:
         )
     if not entidades:
         raise ValueError("El shapefile no tiene líneas")
-    orden_tipo = {"linea": 0, "alimentador": 1, "tranvia": 2, "alargue": 3}
+    return ordenar(entidades)
 
-    def orden(entidad: dict[str, Any]) -> tuple:
-        p = entidad["properties"]
-        numero = re.match(r"\d+", p["linea"])
-        return (
-            orden_tipo[p["tipo"]],
-            int(numero.group()) if numero else 10**6,
-            p["linea"],
-            p["sentido"],
-            p["hacia"],
+
+def _orden(entidad: dict[str, Any]) -> tuple:
+    p = entidad["properties"]
+    numero = re.match(r"\d+", p["linea"])
+    return (
+        _ORDEN_TIPO[p["tipo"]],
+        int(numero.group()) if numero else 10**6,
+        p["linea"],
+        p["sentido"],
+        p["hacia"],
+    )
+
+
+def ordenar(entidades: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return sorted(entidades, key=_orden)
+
+
+def _geometria(partes: list[list[list[float]]]) -> dict[str, Any] | None:
+    lineas = [simplificar([[round(lon, 5), round(lat, 5)] for lon, lat, *_ in p]) for p in partes]
+    lineas = [linea for linea in lineas if len(linea) >= 2]
+    if not lineas:
+        return None
+    if len(lineas) == 1:
+        return {"type": "LineString", "coordinates": lineas[0]}
+    return {"type": "MultiLineString", "coordinates": lineas}
+
+
+def url_ide(linea: str) -> str:
+    """La capa de una línea en la IDE, como GeoJSON en lon/lat."""
+    parametros = {
+        "service": "WFS",
+        "version": "2.0.0",
+        "request": "GetFeature",
+        "typeNames": f"ide:dmt_linea{linea}",
+        "outputFormat": "application/json",
+        "srsName": "EPSG:4326",
+    }
+    return f"{IDE_WFS}?{urlencode(parametros)}"
+
+
+def parsear_ide(contenido: bytes) -> list[dict[str, Any]]:
+    """Las entidades de una capa `ide:dmt_lineaN`, con las mismas propiedades que el shapefile."""
+    datos = json.loads(contenido)
+    entidades = []
+    for f in datos.get("features", []):
+        g = f.get("geometry") or {}
+        partes = g.get("coordinates") or []
+        partes = partes if g.get("type") == "MultiLineString" else [partes]
+        geometria = _geometria(partes)
+        if geometria is None:
+            continue
+        registro = f.get("properties") or {}
+        entidades.append(
+            {
+                "type": "Feature",
+                "properties": {
+                    **describir(registro),
+                    "longitud_km": _longitud_km(registro.get("length")),
+                    "fuente": "ide",
+                },
+                "geometry": geometria,
+            }
         )
-
-    entidades.sort(key=orden)
     return entidades
+
+
+def reemplazar_lineas(
+    entidades: list[dict[str, Any]], nuevas: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    """Cambia, en cada línea que traen `nuevas`, sus trazados principales (ida y retorno) por
+    los nuevos. Los alargues se quedan. Falla si `nuevas` no trae los dos sentidos."""
+    lineas = {f["properties"]["linea"] for f in nuevas if f["properties"]["tipo"] == "linea"}
+    for linea in lineas:
+        sentidos = {
+            f["properties"]["sentido"]
+            for f in nuevas
+            if f["properties"]["linea"] == linea and f["properties"]["tipo"] == "linea"
+        }
+        if sentidos != {"ida", "retorno"}:
+            raise ValueError(f"La IDE no trae la ida y el retorno de la línea {linea}")
+    quedan = [
+        f
+        for f in entidades
+        if not (f["properties"]["tipo"] == "linea" and f["properties"]["linea"] in lineas)
+    ]
+    return ordenar([*quedan, *(f for f in nuevas if f["properties"]["linea"] in lineas)])

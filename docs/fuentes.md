@@ -102,7 +102,7 @@ turno y lo dice.
 | Cuenca en Datos: rutas y horarios | Horario e intervalo de cada línea | Marzo de 2025 | Automática, semanal |
 | Cuenca en Datos: trazados (shapefile) | Geometría de cada línea | Septiembre de 2022 | Automática, semanal |
 | Cuenca en Datos: paradas | Paradas con coordenadas | Abril de 2025 | Automática, semanal |
-| [IDE del Municipio](https://ide.cuenca.gob.ec/geoserver/ows?service=WFS&request=GetCapabilities) (WFS, capas `ide:dmt_lineaN` y `dahp_movilidad:paradas_bus_total`) | 38 líneas con trazado, horario e intervalos; 1.303 paradas | Sin fecha; no tiene los cambios de septiembre de 2026 | Comparada el 2026-11-19 (ver abajo); no se usa |
+| [IDE del Municipio](https://ide.cuenca.gob.ec/geoserver/ows?service=WFS&request=GetCapabilities) (WFS, capas `ide:dmt_lineaN` y `dahp_movilidad:paradas_bus_total`) | 38 líneas con trazado, horario e intervalos; 1.303 paradas | Sin fecha; no tiene los cambios de septiembre de 2026 | Automática, semanal, solo para la línea 4 (ver abajo) |
 | [PDF de cada línea](https://www.cuenca.gob.ec/content/recorrido-linea-de-buses) en la web del Municipio | Mapa de cada recorrido | Abril de 2025 | Consulta |
 | El Mercurio | Ampliaciones de septiembre de 2026, cambios de octubre, pasaje | Al día | A mano |
 | [API del tranvía](https://tranvia.cuenca.gob.ec/) | Estaciones con coordenadas | Al día | Automática, diaria |
@@ -113,7 +113,7 @@ turno y lo dice.
   misma longitud y menos de 6 m de diferencia. La IDE no trae los 104 alargues y variantes del shapefile. Hay dos
   excepciones. La línea 4 de la IDE pasa por el Mall del Río y el IESS, como el recorrido de abril de 2026. La del
   shapefile pasa por la Feria Libre y mide 23,5 km aunque su atributo dice 16,9 km. La línea 27 difiere en unos
-  230 m.
+  230 m. Desde el 2026-11-19 la línea 4 se toma de la IDE.
 - **Horarios.** Coinciden en 34 de 38 líneas. Difieren en la 7, la 11B, la 17 y la 100; el CSV de marzo de 2025
   parece más nuevo (la 100 tiene intervalos más cortos).
 - **Paradas.** Son conjuntos distintos. La IDE tiene 1.303 paradas, con foto, número de líneas y frecuencia, pero
