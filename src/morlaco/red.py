@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import http.client
 import time
 import urllib.error
 import urllib.request
@@ -12,6 +13,9 @@ from morlaco import __version__
 USER_AGENT = f"Morlaco/{__version__} (datos abiertos de Cuenca)"
 
 Descargador = Callable[[str], bytes]
+
+# Fallos de conexión: DNS, servidor que no responde o que corta a medias.
+ERRORES_DE_RED = (urllib.error.URLError, TimeoutError, ConnectionError, http.client.HTTPException)
 
 
 def descargar(url: str, *, timeout: float = 180, intentos: int = 3) -> bytes:
@@ -29,9 +33,16 @@ def descargar(url: str, *, timeout: float = 180, intentos: int = 3) -> bytes:
             if error.code < 500:
                 raise
             ultimo_error = error
-        except (urllib.error.URLError, TimeoutError) as error:
+        except ERRORES_DE_RED as error:
             ultimo_error = error
         if intento < intentos - 1:
             time.sleep(2**intento)
     assert ultimo_error is not None
     raise ultimo_error
+
+
+def es_error_de_red(error: BaseException) -> bool:
+    """Dice si el error viene de la red (vale la pena reintentar) y no de los datos."""
+    if isinstance(error, urllib.error.HTTPError):
+        return error.code >= 500
+    return isinstance(error, ERRORES_DE_RED)

@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import time
 from collections.abc import Callable, Sequence
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -42,6 +43,11 @@ FUENTES: dict[str, Fuente] = {
 }
 
 
+# Si una fuente falla por la red, se vuelve a intentar al final, tras esta pausa
+# (segundos): un DNS o un servidor caído un par de minutos no deja el día sin datos.
+ESPERA_REINTENTO = 120
+
+
 def _ahora() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
@@ -58,38 +64,52 @@ def actualizar(
     salida: Path,
     descargar: red.Descargador = red.descargar,
     fuentes: dict[str, Fuente] | None = None,
+    espera: float = ESPERA_REINTENTO,
 ) -> int:
     """Actualiza las fuentes pedidas. Un fallo en una no impide las demás.
 
+    Las que fallan por la red se reintentan una vez al final, tras `espera` segundos.
     Devuelve 0 si todas salieron bien y 1 si alguna falló. En estado.json queda,
     por fuente, cuándo se actualizó por última vez y el último error, si lo hubo.
     """
     fuentes = fuentes or FUENTES
     ruta_estado = salida / "estado.json"
     estado = _leer_estado(ruta_estado)
-    fallos = 0
-    for nombre in nombres:
+
+    def intentar(nombre: str) -> Exception | None:
         try:
             resultado = fuentes[nombre](descargar)
-            for ruta, contenido in resultado.archivos.items():
-                escribir(salida / ruta, contenido)
-            estado[nombre] = {
-                "ok": True,
-                "actualizado": _ahora(),
-                "archivos": sorted(resultado.archivos),
-                "resumen": resultado.resumen,
-            }
-            print(f"[ok] {nombre}: {json.dumps(resultado.resumen, ensure_ascii=False)}")
         except Exception as error:  # se informa y se sigue con la siguiente fuente
-            fallos += 1
-            anterior = estado.get(nombre, {})
-            estado[nombre] = {
-                **anterior,
-                "ok": False,
-                "ultimo_intento": _ahora(),
-                "error": f"{type(error).__name__}: {error}",
-            }
             print(f"[error] {nombre}: {type(error).__name__}: {error}", file=sys.stderr)
+            return error
+        for ruta, contenido in resultado.archivos.items():
+            escribir(salida / ruta, contenido)
+        estado[nombre] = {
+            "ok": True,
+            "actualizado": _ahora(),
+            "archivos": sorted(resultado.archivos),
+            "resumen": resultado.resumen,
+        }
+        print(f"[ok] {nombre}: {json.dumps(resultado.resumen, ensure_ascii=False)}")
+        return None
+
+    errores = {nombre: error for nombre in nombres if (error := intentar(nombre))}
+    de_red = [nombre for nombre, error in errores.items() if red.es_error_de_red(error)]
+    if de_red:
+        print(f"[reintento] {', '.join(de_red)} en {espera:g} s", file=sys.stderr)
+        time.sleep(espera)
+        for nombre in de_red:
+            if (error := intentar(nombre)) is None:
+                del errores[nombre]
+            else:
+                errores[nombre] = error
+    for nombre, error in errores.items():
+        estado[nombre] = {
+            **estado.get(nombre, {}),
+            "ok": False,
+            "ultimo_intento": _ahora(),
+            "error": f"{type(error).__name__}: {error}",
+        }
     escribir_json(ruta_estado, dict(sorted(estado.items())))
     # El catálogo no lleva fechas: solo cambia si cambia la descripción de los datos.
     catalogo.escribir_indice(salida)
@@ -97,7 +117,7 @@ def actualizar(
     web = salida.resolve().parent / "web"
     if (web / "index.html").exists():
         paginas.escribir(salida, web)
-    return 1 if fallos else 0
+    return 1 if errores else 0
 
 
 def revisar_datos(datos: Path) -> int:

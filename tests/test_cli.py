@@ -1,10 +1,19 @@
 import json
+import urllib.error
 
 import pytest
 
 from morlaco import cli
 from morlaco.comun import Resultado
 from morlaco.salida import a_texto
+
+
+@pytest.fixture(autouse=True)
+def pausas(monkeypatch):
+    """Registra las pausas del reintento en vez de esperar de verdad."""
+    registro = []
+    monkeypatch.setattr(cli.time, "sleep", registro.append)
+    return registro
 
 
 def fuente_ok(descargar):
@@ -27,6 +36,37 @@ def test_un_fallo_no_detiene_las_demas_y_queda_en_estado(tmp_path, capsys):
     assert estado["rota"]["ok"] is False
     assert estado["rota"]["error"] == "ConnectionError: sin red"
     assert "[error] rota" in capsys.readouterr().err
+
+
+def test_un_fallo_de_red_se_reintenta_al_final(tmp_path, pausas, capsys):
+    llamadas = []
+
+    def fuente_intermitente(descargar):
+        llamadas.append(1)
+        if len(llamadas) == 1:
+            raise urllib.error.URLError("[Errno -3] Temporary failure in name resolution")
+        return fuente_ok(descargar)
+
+    codigo = cli.actualizar(
+        ["red", "ok"], tmp_path, fuentes={"red": fuente_intermitente, "ok": fuente_ok}
+    )
+    assert codigo == 0
+    assert pausas == [cli.ESPERA_REINTENTO] and len(llamadas) == 2
+    estado = json.loads((tmp_path / "estado.json").read_text(encoding="utf-8"))
+    assert estado["red"]["ok"] is True and "error" not in estado["red"]
+    assert "[reintento] red" in capsys.readouterr().err
+
+
+def test_los_errores_que_no_son_de_red_no_se_reintentan(tmp_path, pausas):
+    def fuente_mal_formada(descargar):
+        raise ValueError("el PDF cambió de formato")
+
+    def fuente_404(descargar):
+        raise urllib.error.HTTPError("https://x", 404, "Not Found", {}, None)
+
+    fuentes = {"mal": fuente_mal_formada, "404": fuente_404}
+    assert cli.actualizar(["mal", "404"], tmp_path, fuentes=fuentes) == 1
+    assert pausas == []
 
 
 def test_un_fallo_conserva_la_ultima_actualizacion_buena(tmp_path):
