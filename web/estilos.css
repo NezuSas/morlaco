@@ -1447,11 +1447,12 @@ button.opcion-ruta[aria-pressed="true"] {
   box-shadow: inset 3px 0 0 var(--cupula);
 }
 
+/* La cabecera de una opción: minutos, la tira del viaje y el pasaje a la derecha. */
 .opcion-cabecera {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.4rem 0.6rem;
+  gap: 0.4rem 0.8rem;
 }
 
 .opcion-minutos {
@@ -1461,16 +1462,86 @@ button.opcion-ruta[aria-pressed="true"] {
   line-height: 1.1;
 }
 
-.opcion-insignias {
+.opcion-pasaje {
+  margin-left: auto;
+  color: var(--tinta-suave);
+  font-size: var(--t-0);
+  font-variant-numeric: tabular-nums;
+}
+
+/* A pie › bus › a pie, de un vistazo. */
+.opcion-tira {
   display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 0.3rem;
 }
 
-.opcion-pasos {
-  margin: 0;
-  padding-left: 1.2rem;
+.tira-pie {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
   color: var(--tinta-suave);
   font-size: var(--t-0);
+  white-space: nowrap;
+}
+
+.tira-bus {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.tira-variante {
+  color: var(--tinta);
+  font-size: var(--t-0);
+  font-weight: 700;
+}
+
+.tira-flecha {
+  color: var(--tinta-suave);
+  opacity: 0.7;
+}
+
+.opcion-cuando {
+  color: var(--tinta-suave);
+  font-size: var(--t-0);
+}
+
+.opcion-etiquetas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.etiqueta-opcion {
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.etiqueta-opcion.puerta {
+  background: color-mix(in srgb, var(--tomebamba) 16%, transparent);
+  color: var(--tomebamba);
+}
+
+.etiqueta-opcion.variante {
+  background: color-mix(in srgb, var(--bandera-oro) 22%, transparent);
+  color: var(--tinta);
+}
+
+/* Los pasos, solo en la opción elegida: en las demás repetirían lo mismo. */
+.opcion-pasos {
+  margin: 0.2rem 0 0;
+  padding: 0.5rem 0 0 1.2rem;
+  border-top: 1px solid var(--linea);
+  color: var(--tinta-suave);
+  font-size: var(--t-0);
+}
+
+button.opcion-ruta[aria-pressed="false"] .opcion-pasos {
+  display: none;
 }
 
 .opcion-pasos li + li {

@@ -1023,16 +1023,9 @@ function pasosDeOpcion(opcion, paradas) {
   if (opcion.tipo === "pie") return [t("pasoSoloPie", { distancia: formatoDistancia(tramos[0].metros) })];
   tramos.forEach((tramo, i) => {
     if (tramo.modo === "bus") {
-      const frecuencia = tramo.horario?.intervalo_min ? t("pasoFrecuencia", { minutos: tramo.horario.intervalo_min }) : "";
       const datos = { linea: tramo.linea, hacia: tramo.hacia, distancia: formatoDistancia(tramo.metros) };
-      // Como en las apps de transporte: cuánto falta para el próximo, estimado con el horario.
-      // En una variante no se sabe qué buses la hacen: sin minutos al próximo.
-      const faltan =
-        tramo.tipo === "tranvia" || tramo.variante ? null : minutosAlProximo(tramo.horario, tramo.largo, tramo.metrosSubida);
       const variante = tramo.variante ? t("pasoVariante", { lugar: tramo.variante }) : "";
-      const proximo =
-        faltan === null ? "" : faltan < 1.5 ? t("pasoProximoYa") : t("pasoProximo", { minutos: Math.round(faltan) });
-      pasos.push((tramo.tipo === "tranvia" ? t("pasoTomarTranvia", datos) : t("pasoTomar", datos)) + variante + frecuencia + proximo);
+      pasos.push((tramo.tipo === "tranvia" ? t("pasoTomarTranvia", datos) : t("pasoTomar", datos)) + variante);
       return;
     }
     const siguiente = tramos[i + 1];
@@ -1052,29 +1045,71 @@ function pasosDeOpcion(opcion, paradas) {
   return pasos;
 }
 
+const SVG_PIE =
+  '<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><circle cx="13" cy="4" r="2"/><path d="M10.6 8.2 8 10.4V14h2v-2.6l1.3-1-.9 4.4-2.9 5.7 1.8.9 2.7-5.3 1.9 1.9V22h2v-5l-2.2-2.2.6-3 1 1.7H17v-2h-1.6l-1.6-2.8a2 2 0 0 0-1.7-1z"/></svg>';
+
+/** Un tramo de la tira de la opción: a pie (con sus metros) o en bus (su número). */
+function piezaDeTramo(tramo, esUltimo) {
+  if (tramo.modo === "caminar") {
+    const texto = esUltimo && tramo.metros < 30 ? t("rutaEnDestino") : formatoDistancia(tramo.metros);
+    const pieza = elemento("span", { class: "tira-pie" }, texto);
+    pieza.insertAdjacentHTML("afterbegin", SVG_PIE);
+    return pieza;
+  }
+  const esTranvia = tramo.tipo === "tranvia";
+  return elemento(
+    "span",
+    { class: "tira-bus" },
+    elemento("span", { class: `numero-linea${esTranvia ? " tranvia" : ""}` }, esTranvia ? "T" : tramo.linea),
+    tramo.variante ? elemento("span", { class: "tira-variante" }, tramo.variante) : null,
+  );
+}
+
+/**
+ * Las opciones de "¿qué bus me lleva?". Cada una se resume en una línea que se lee de un
+ * vistazo (a pie › bus › a pie), lo que la distingue de las otras y cuándo pasa el bus; los
+ * pasos detallados se abren solo en la opción elegida, para no repetir lo mismo en todas.
+ */
 function pintarOpciones(opciones, destino, mapa, paradas, transporte) {
   const lista = $("ruta-opciones");
   const botones = [];
   lista.replaceChildren(
     ...opciones.map((opcion, i) => {
       const buses = opcion.tramos.filter((tramo) => tramo.modo === "bus");
-      const insignias = buses.length
-        ? buses.map((b) =>
-            elemento("span", { class: `numero-linea${b.tipo === "tranvia" ? " tranvia" : ""}`, "aria-hidden": "true" }, b.tipo === "tranvia" ? "T" : b.linea),
-          )
-        : [elemento("span", { class: "numero-linea pie", "aria-hidden": "true" }, t("rutaPie"))];
-      const conTranvia = buses.some((b) => b.tipo === "tranvia");
+      // Los tramos de menos de 30 m a pie al inicio o en un transbordo no se dibujan.
+      const visibles = opcion.tramos.filter(
+        (tramo, j) => tramo.modo === "bus" || tramo.metros >= 30 || j === opcion.tramos.length - 1,
+      );
+      const tira = elemento("span", { class: "opcion-tira", "aria-hidden": "true" });
+      visibles.forEach((tramo, j) => {
+        if (j) tira.append(elemento("span", { class: "tira-flecha" }, "›"));
+        tira.append(piezaDeTramo(tramo, j === visibles.length - 1 && visibles.length > 1));
+      });
+      if (!buses.length) tira.replaceChildren(piezaDeTramo(opcion.tramos[0], false));
+
+      // Cuándo pasa: del primer bus de la opción (estimado con su horario).
+      const primero = buses[0];
       const minutosTranvia = frecuenciaTranvia(transporte?.tranvia);
+      const cuando = [];
+      if (opcion.fueraDeHorario) {
+        cuando.push(t("rutaFueraHorario"));
+      } else if (primero?.tipo === "tranvia") {
+        cuando.push(minutosTranvia ? t("rutaTranviaCada", { minutos: minutosTranvia }) : t("rutaTranviaHorario"));
+      } else if (primero) {
+        const faltan = primero.variante ? null : minutosAlProximo(primero.horario, primero.largo, primero.metrosSubida);
+        if (faltan !== null) cuando.push(faltan < 1.5 ? t("rutaProximoYa") : t("rutaProximo", { minutos: Math.round(faltan) }));
+        if (primero.horario?.intervalo_min) cuando.push(t("rutaCada", { minutos: primero.horario.intervalo_min }));
+      }
+      if (buses.length > 1) cuando.push(t("rutaTransbordo"));
+
+      // Lo que la distingue de las otras opciones.
+      const ultimo = opcion.tramos.at(-1);
+      const etiquetas = [
+        buses.length && ultimo.modo === "caminar" && ultimo.metros < 30 ? ["puerta", t("rutaALaPuerta")] : null,
+        ...buses.filter((b) => b.variante).map((b) => ["variante", t("rutaVariante", { lugar: b.variante })]),
+      ].filter(Boolean);
+
       const pasaje = pasajeDeOpcion(opcion, transporte?.tarifas);
-      const detalle = [
-        pasaje !== null ? t("rutaPasaje", { valor: dolares(pasaje) }) : null,
-        buses.length > 1 ? t("rutaTransbordo") : null,
-        opcion.fueraDeHorario ? t("rutaFueraHorario") : null,
-        // Sin horario publicado del tranvía: su frecuencia, o se remite a su web.
-        conTranvia ? (minutosTranvia ? t("rutaTranviaCada", { minutos: minutosTranvia }) : t("rutaTranviaHorario")) : null,
-      ]
-        .filter(Boolean)
-        .join(" · ");
       const boton = elemento(
         "button",
         { type: "button", class: "opcion-ruta", "aria-pressed": i === 0 ? "true" : "false" },
@@ -1082,9 +1117,17 @@ function pintarOpciones(opciones, destino, mapa, paradas, transporte) {
           "span",
           { class: "opcion-cabecera" },
           elemento("strong", { class: "opcion-minutos" }, t("rutaMinutos", { n: opcion.minutos })),
-          elemento("span", { class: "opcion-insignias" }, ...insignias),
-          detalle ? elemento("span", { class: "frecuencia" }, detalle) : null,
+          tira,
+          pasaje !== null ? elemento("span", { class: "opcion-pasaje" }, dolares(pasaje)) : null,
         ),
+        cuando.length ? elemento("span", { class: "opcion-cuando" }, cuando.join(" · ")) : null,
+        etiquetas.length
+          ? elemento(
+              "span",
+              { class: "opcion-etiquetas" },
+              ...etiquetas.map(([clase, texto]) => elemento("span", { class: `etiqueta-opcion ${clase}` }, texto)),
+            )
+          : null,
         elemento("ol", { class: "opcion-pasos" }, ...pasosDeOpcion(opcion, paradas).map((paso) => elemento("li", {}, paso))),
       );
       boton.addEventListener("click", () => {
