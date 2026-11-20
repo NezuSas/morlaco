@@ -2068,9 +2068,24 @@ button.linea[aria-pressed="true"] {
   background: var(--cupula-hondo);
 }
 
-.nota-buses {
+.nota-buses,
+.nota-alargue {
   margin: 0;
   color: var(--tinta-suave);
+}
+
+.nota-alargue {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* Una muestra del punteado de los alargues. */
+.muestra-alargue {
+  flex: none;
+  width: 1.2rem;
+  height: 0;
+  border-top: 3px dashed var(--tinta-suave);
 }
 
 /* A y B: dónde empieza y a dónde va la línea. */

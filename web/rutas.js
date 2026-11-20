@@ -248,11 +248,36 @@ export const DISTANCIA_PARADA_M = 25; // la misma regla que usa el GTFS (src/mor
  * Las paradas registradas por las que pasa un recorrido: a menos de 25 m de él y lejos de
  * sus dos extremos (las terminales van aparte), en el orden en que el bus llega a ellas.
  */
-export function paradasDeRecorrido(feature, paradas, maximo = DISTANCIA_PARADA_M) {
+/** Un trazado (LineString o MultiLineString) en metros, con la distancia acumulada. */
+function enMetros(feature) {
   const coords = feature.geometry.type === "LineString" ? feature.geometry.coordinates : feature.geometry.coordinates.flat();
   const puntos = coords.map(aMetros);
   const acumulado = [0];
   for (let i = 1; i < puntos.length; i++) acumulado.push(acumulado[i - 1] + distancia(puntos[i - 1], puntos[i]));
+  return { coords, puntos, acumulado };
+}
+
+export const ALARGUE_UNIDO_M = 150;
+
+/**
+ * Los trazados de una línea sin los alargues que no tocan su recorrido: algunos del trazado
+ * municipal de 2022 ya no empiezan ni terminan cerca de la línea (8 a Dolorosa, 18 a Yunga),
+ * y dibujados sueltos no se entiende por dónde llega el bus hasta ahí.
+ */
+export function alarguesUnidos(trazados, maximo = ALARGUE_UNIDO_M) {
+  const principales = trazados.filter((f) => f.properties.tipo !== "alargue").map(enMetros);
+  return trazados.filter((f) => {
+    if (f.properties.tipo !== "alargue") return true;
+    const { coords } = enMetros(f);
+    if (!coords.length) return false;
+    return [coords[0], coords.at(-1)].some(([lon, lat]) =>
+      principales.some((r) => (proyectar({ lat, lon }, r)?.distancia ?? Infinity) <= maximo),
+    );
+  });
+}
+
+export function paradasDeRecorrido(feature, paradas, maximo = DISTANCIA_PARADA_M) {
+  const { puntos, acumulado } = enMetros(feature);
   const total = acumulado.at(-1) ?? 0;
   const recorrido = { puntos, acumulado };
   const salida = [];

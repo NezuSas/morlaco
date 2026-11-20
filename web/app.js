@@ -51,7 +51,7 @@ import {
   lineasCercanas,
   pasajeDeOpcion,
 } from "./buses.js";
-import { paradasDeRecorrido, planificar, prepararLineas } from "./rutas.js";
+import { alarguesUnidos, paradasDeRecorrido, planificar, prepararLineas } from "./rutas.js";
 import { SVG_BICI, crearMapa } from "./mapa.js";
 import { minutosAlProximo } from "./vehiculos.js";
 import { PAGINA_AIRE, URL_AIRE, URL_CLIMA, URL_UV, aireCercano, leerAire, leerClima, leerUv } from "./aire.js";
@@ -672,7 +672,7 @@ function alTocarLinea(boton, botones, linea, mapa) {
     return;
   }
   boton.setAttribute("aria-pressed", "true");
-  mapa.resaltarLinea(linea.trazados, {
+  mapa.resaltarLinea(alarguesUnidos(linea.trazados), {
     linea: linea.linea,
     horarios: linea.horarios,
     tipo: linea.tipo,

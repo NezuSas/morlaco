@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
 
-import { paradasDeRecorrido, planificar, prepararLineas, proyectar, tramo } from "../../web/rutas.js";
+import { alarguesUnidos, paradasDeRecorrido, planificar, prepararLineas, proyectar, tramo } from "../../web/rutas.js";
 
 const enCuenca = (iso) => new Date(`${iso}-05:00`);
 const lunes10h = enCuenca("2026-11-09T10:00");
@@ -120,4 +120,11 @@ test("las paradas de un recorrido: a menos de 25 m, en orden y sin las de los ex
   const retorno = lineas.features[1]; // al revés: el mismo par, en el otro orden
   assert.deepEqual(paradasDeRecorrido(retorno, paradas).map((p) => p.id), [1, 2]);
   assert.deepEqual(paradasDeRecorrido(ida, null), []);
+});
+
+test("los alargues que no tocan su línea no se dibujan", () => {
+  const unido = recorrido("7", "ida", "Alargue", [[-78.97, -2.9], [-78.96, -2.91]], "alargue"); // sale del final
+  const suelto = recorrido("7", "ida", "Lejos", [[-78.95, -2.95], [-78.94, -2.96]], "alargue"); // a varios km
+  const trazados = [lineas.features[0], lineas.features[1], unido, suelto];
+  assert.deepEqual(alarguesUnidos(trazados).map((f) => f.properties.hacia), ["Este", "Oeste", "Alargue"]);
 });

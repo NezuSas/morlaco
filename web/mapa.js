@@ -702,7 +702,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
     if (lineaActual) moverBuses();
   }
 
-  function mostrarLinea(principales, { linea, horarios, tipo, paradas }) {
+  function mostrarLinea(principales, { linea, horarios, tipo, paradas, alargues = [] }) {
     const de = (sentido) => principales.find((f) => f.properties.sentido === sentido);
     const [ida, retorno] = [de("ida"), de("retorno")];
     // Las paradas registradas de cada sentido, con el color de su sentido.
@@ -774,7 +774,16 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
     }
     const nota = document.createElement("p");
     nota.className = "nota-buses";
-    panel.append(grupo, nota);
+    panel.append(grupo);
+    // El punteado son los alargues: solo algunos buses siguen hasta esos barrios.
+    if (alargues.length) {
+      const punteado = document.createElement("p");
+      punteado.className = "nota-alargue";
+      punteado.innerHTML = '<i class="muestra-alargue" aria-hidden="true"></i>';
+      punteado.append(t("alarguesNota", { lugares: listar(alargues) }));
+      panel.append(punteado);
+    }
+    panel.append(nota);
     panel.hidden = false;
     contenedor.classList.add("con-linea");
 
@@ -933,7 +942,10 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
       if (!trazados) return;
       const principales = trazados.filter((t) => t.properties.tipo !== "alargue");
       trazar("linea", trazados);
-      mostrarLinea(principales, { linea, horarios, tipo, paradas });
+      const alargues = [
+        ...new Set(trazados.filter((t) => t.properties.tipo === "alargue").map((t) => t.properties.hacia)),
+      ].filter(Boolean);
+      mostrarLinea(principales, { linea, horarios, tipo, paradas, alargues });
       // Que el selector de sentido no tape el final del recorrido.
       encuadrar(caja(principales.length ? principales : trazados), {
         top: 40,
