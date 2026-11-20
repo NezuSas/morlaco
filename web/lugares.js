@@ -105,3 +105,28 @@ export function lugarPorNombre(texto, lugares) {
   const buscada = clave(texto);
   return (buscada && lugares?.find((l) => clave(l.nombre) === buscada)) || null;
 }
+
+// ---------- Último destino de "¿qué bus me lleva?" ----------
+
+export const HORAS_DESTINO = 12;
+
+/** El destino escrito, con la hora en que se buscó, para guardarlo en el navegador. */
+export function textoDeDestino(texto, ahora = Date.now()) {
+  return JSON.stringify({ texto, guardado: ahora });
+}
+
+/**
+ * El último destino guardado, si se buscó hace menos de `horas`: así, al recargar la página
+ * en la parada se ve otra vez la ruta, pero al día siguiente no sale la de ayer.
+ */
+export function leerDestino(guardado, ahora = Date.now(), horas = HORAS_DESTINO) {
+  if (!guardado) return null;
+  try {
+    const { texto, guardado: cuando } = JSON.parse(guardado);
+    if (typeof texto !== "string" || !texto.trim() || !Number.isFinite(cuando)) return null;
+    if (cuando > ahora || ahora - cuando > horas * 3_600_000) return null;
+    return texto.trim();
+  } catch {
+    return null;
+  }
+}

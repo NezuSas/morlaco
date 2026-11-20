@@ -55,7 +55,18 @@ import { planificar, prepararLineas } from "./rutas.js";
 import { SVG_BICI, crearMapa } from "./mapa.js";
 import { minutosAlProximo } from "./vehiculos.js";
 import { PAGINA_AIRE, URL_AIRE, URL_CLIMA, URL_UV, aireCercano, leerAire, leerClima, leerUv } from "./aire.js";
-import { LUGARES, cambiarLugar, leerLugar, leerLugares, lugarDe, lugarPorNombre, sugerirLugares, textoDeLugar } from "./lugares.js";
+import {
+  LUGARES,
+  cambiarLugar,
+  leerDestino,
+  leerLugar,
+  leerLugares,
+  lugarDe,
+  lugarPorNombre,
+  sugerirLugares,
+  textoDeDestino,
+  textoDeLugar,
+} from "./lugares.js";
 import { etiquetaIdioma, idioma, idiomaInicial, listar, t, usarIdioma } from "./textos.js";
 
 const DATOS = "../datos/";
@@ -67,6 +78,7 @@ const CAJA_CUENCA = "-79.10,-2.82,-78.92,-2.98";
 const CLAVE_ULTIMO_PUNTO = "morlaco:ultimo-punto";
 const CLAVE_LUGARES = "morlaco:lugares";
 const CLAVE_IDIOMA = "morlaco:idioma";
+const CLAVE_DESTINO = "morlaco:destino";
 const SIN_MOVIMIENTO = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const $ = (id) => document.getElementById(id);
@@ -126,6 +138,14 @@ function guardar(clave, valor) {
     localStorage.setItem(clave, valor);
   } catch {
     // Sin almacenamiento (modo privado, por ejemplo): no pasa nada.
+  }
+}
+
+function borrar(clave) {
+  try {
+    localStorage.removeItem(clave);
+  } catch {
+    // Igual que al guardar.
   }
 }
 
@@ -1654,6 +1674,8 @@ async function iniciar() {
       }
       aviso.textContent = t("rutaDestino", { texto: destino.texto });
       pintarOpciones(opciones, destino.punto, mapa, paradas, transporte);
+      // Para volver a verla si la página se recarga (en la parada, con el teléfono en el bolsillo).
+      guardar(CLAVE_DESTINO, textoDeDestino(texto));
     } catch {
       aviso.textContent = t("busquedaSinRespuesta");
       aviso.classList.add("error");
@@ -1705,6 +1727,10 @@ async function iniciar() {
 
   autocompletar($("direccion"), $("sug-direccion"), () => $("buscar").requestSubmit());
   autocompletar($("destino"), $("sug-destino"), () => $("ruta").requestSubmit());
+  // Borrar el destino (con la × del campo o a mano) también lo olvida.
+  $("destino").addEventListener("input", () => {
+    if (!$("destino").value.trim()) borrar(CLAVE_DESTINO);
+  });
 
   // "Guardar como Casa / Trabajo": tocar el botón marcado lo quita.
   for (const boton of document.querySelectorAll(".lugar-boton")) {
@@ -1749,6 +1775,15 @@ async function iniciar() {
   const enlace = puntoDesdeHash(location.hash);
   if (enlace) abrir(enlace, ultimo && distanciaMetros(enlace, ultimo) < 15 ? t("puntoGuardado") : t("puntoEnlace"));
   else if (ultimo) abrir({ lat: ultimo.lat, lon: ultimo.lon }, t("puntoGuardado"));
+
+  // Y la ruta que se estaba mirando, si fue hace menos de 12 horas.
+  const destinoGuardado = leerDestino(leer(CLAVE_DESTINO));
+  if (destinoGuardado && puntoActual) {
+    $("destino").value = destinoGuardado;
+    $("ruta").requestSubmit();
+  } else if (!destinoGuardado) {
+    borrar(CLAVE_DESTINO);
+  }
 }
 
 /** Aviso sin conexión, registro del service worker y botón "Instalar". */

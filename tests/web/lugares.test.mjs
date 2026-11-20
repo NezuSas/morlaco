@@ -6,8 +6,10 @@ import {
   leerLugar,
   leerLugares,
   lugarDe,
+  leerDestino,
   lugarPorNombre,
   sugerirLugares,
+  textoDeDestino,
   textoDeLugar,
 } from "../../web/lugares.js";
 
@@ -63,4 +65,16 @@ test("un lugar conocido se reconoce por su nombre exacto", () => {
   assert.equal(lugarPorNombre("Parque Calderon", CONOCIDOS)?.nombre, "Parque Calderón");
   assert.equal(lugarPorNombre("Terminal", CONOCIDOS), null);
   assert.equal(lugarPorNombre("", CONOCIDOS), null);
+});
+
+test("el último destino se recuerda 12 horas", () => {
+  const ahora = Date.parse("2026-11-20T15:00:00Z");
+  const guardado = textoDeDestino("Terminal Terrestre", ahora);
+  assert.equal(leerDestino(guardado, ahora + 60_000), "Terminal Terrestre");
+  assert.equal(leerDestino(guardado, ahora + 11.9 * 3_600_000), "Terminal Terrestre");
+  assert.equal(leerDestino(guardado, ahora + 12.1 * 3_600_000), null); // al día siguiente, no
+  assert.equal(leerDestino(guardado, ahora - 60_000), null); // reloj cambiado hacia atrás
+  assert.equal(leerDestino(textoDeDestino("   ", ahora), ahora), null);
+  assert.equal(leerDestino("basura", ahora), null);
+  assert.equal(leerDestino(null, ahora), null);
 });
