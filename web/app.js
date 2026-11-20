@@ -1,8 +1,6 @@
-// Conecta la página con los datos de Morlaco y el mapa (Leaflet, cargado como global L).
+// Conecta la página con los datos de Morlaco y el mapa (mapa.js, con MapLibre).
 
 import {
-  CENTRO_CUENCA,
-  LIMITES_CUENCA,
   describirRecoleccion,
   distanciaMetros,
   direccionLegible,
@@ -28,7 +26,6 @@ import {
   proximaRecoleccion,
   proximoFeriado,
   puntoDesdeHash,
-  puntoEnGeometria,
   revisarUbicacion,
   zonaDe,
 } from "./logica.js";
@@ -55,6 +52,7 @@ import {
   pasajeDeOpcion,
 } from "./buses.js";
 import { planificar, prepararLineas } from "./rutas.js";
+import { SVG_BICI, crearMapa } from "./mapa.js";
 import { PAGINA_AIRE, URL_AIRE, URL_CLIMA, URL_UV, aireCercano, leerAire, leerClima, leerUv } from "./aire.js";
 import { LUGARES, cambiarLugar, leerLugar, leerLugares, lugarDe, textoDeLugar } from "./lugares.js";
 import { etiquetaIdioma, idioma, idiomaInicial, listar, t, usarIdioma } from "./textos.js";
@@ -98,10 +96,6 @@ function aplicarTextos() {
   }
 }
 
-function color(nombre) {
-  return getComputedStyle(document.documentElement).getPropertyValue(nombre).trim();
-}
-
 function mensaje(texto, esError = false) {
   const p = $("mensaje");
   p.textContent = texto;
@@ -138,347 +132,6 @@ async function cargarJson(ruta) {
   const respuesta = await fetch(DATOS + ruta);
   if (!respuesta.ok) throw new Error(`${ruta}: ${respuesta.status}`);
   return respuesta.json();
-}
-
-// ---------- Mapa ----------
-
-const esLmv = (zona) => zona.properties.dias_iso.includes(1);
-
-/** Un punto dentro de la zona para poner su número (el centro de una zona cóncava puede caer fuera). */
-function puntoInterior(zona) {
-  const anillos =
-    zona.geometry.type === "Polygon"
-      ? [zona.geometry.coordinates[0]]
-      : zona.geometry.coordinates.map((p) => p[0]);
-  const anillo = anillos.reduce((a, b) => (b.length > a.length ? b : a));
-  const lons = anillo.map((p) => p[0]);
-  const lats = anillo.map((p) => p[1]);
-  const media = { lon: lons.reduce((s, v) => s + v, 0) / lons.length, lat: lats.reduce((s, v) => s + v, 0) / lats.length };
-  if (puntoEnGeometria(media.lon, media.lat, zona.geometry)) return media;
-  // Si no, el punto interior de una rejilla que quede más cerca de la media.
-  const [oeste, este, sur, norte] = [Math.min(...lons), Math.max(...lons), Math.min(...lats), Math.max(...lats)];
-  let mejor = null;
-  for (let i = 1; i < 24; i++) {
-    for (let j = 1; j < 24; j++) {
-      const p = { lon: oeste + ((este - oeste) * i) / 24, lat: sur + ((norte - sur) * j) / 24 };
-      if (!puntoEnGeometria(p.lon, p.lat, zona.geometry)) continue;
-      const d = (p.lon - media.lon) ** 2 + (p.lat - media.lat) ** 2;
-      if (!mejor || d < mejor.d) mejor = { ...p, d };
-    }
-  }
-  return mejor ?? media;
-}
-
-function crearMapa(zonas, alElegir) {
-  // El mapa no sale de Cuenca: no se aleja más allá de la ciudad ni se arrastra fuera de ella.
-  const { sur, oeste, norte, este } = LIMITES_CUENCA;
-  const mapa = L.map("mapa", {
-    zoomControl: true,
-    minZoom: 11,
-    maxBounds: [
-      [sur, oeste],
-      [norte, este],
-    ],
-    maxBoundsViscosity: 1,
-  }).setView(
-    [CENTRO_CUENCA.lat, CENTRO_CUENCA.lon],
-    13,
-  );
-  // Mapa de OpenStreetMap; la hoja de estilos lo pasa a grises (y lo invierte en modo oscuro).
-  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom: 19,
-    // Con CORS, el service worker puede guardar las teselas vistas para usarlas sin conexión.
-    crossOrigin: true,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-  }).addTo(mapa);
-
-  const estilo = (zona, elegida = false, hayElegida = false) => {
-    const tono = esLmv(zona) ? color("--cupula") : color("--tomebamba");
-    return {
-      color: tono,
-      weight: elegida ? 3 : 1.5,
-      opacity: hayElegida && !elegida ? 0.5 : 0.9,
-      fillColor: tono,
-      fillOpacity: elegida ? 0.3 : hayElegida ? 0.07 : 0.16,
-    };
-  };
-
-  const capas = new Map();
-  L.geoJSON(zonas, {
-    style: (zona) => estilo(zona),
-    onEachFeature: (zona, capa) => {
-      const p = zona.properties;
-      const dias = listar(p.dias_iso.map(nombreDia));
-      capa.bindTooltip(t("zonaTooltip", { zona: p.zona, dias, desde: p.desde, hasta: horaLegible(p.hasta) }), {
-        sticky: true,
-      });
-      capas.set(p.zona, { zona, capa });
-    },
-  }).addTo(mapa);
-
-  for (const zona of zonas.features) {
-    const { lat, lon } = puntoInterior(zona);
-    L.marker([lat, lon], {
-      interactive: false,
-      keyboard: false,
-      icon: L.divIcon({
-        className: "",
-        html: `<span class="etiqueta-zona ${esLmv(zona) ? "lmv" : "mjs"}">${zona.properties.zona}</span>`,
-        iconSize: [30, 30],
-        iconAnchor: [15, 15],
-      }),
-    }).addTo(mapa);
-  }
-
-  mapa.on("click", (evento) => alElegir({ lat: evento.latlng.lat, lon: evento.latlng.lng }));
-
-  let marcador = null;
-  const marcasParadas = L.layerGroup().addTo(mapa);
-  const callesResaltadas = L.layerGroup().addTo(mapa);
-  const lineaResaltada = L.layerGroup().addTo(mapa);
-  const rutaCapa = L.layerGroup().addTo(mapa);
-
-  return {
-    leaflet: mapa,
-    /** Dibuja una o varias calles y encuadra el mapa en ellas. */
-    resaltar(calles) {
-      callesResaltadas.clearLayers();
-      lineaResaltada.clearLayers();
-      marcasParadas.clearLayers();
-      if (marcador) {
-        marcador.remove();
-        marcador = null;
-      }
-      const capa = L.geoJSON(
-        { type: "FeatureCollection", features: calles },
-        { style: { color: color("--cupula-hondo"), weight: 6, opacity: 0.85 }, interactive: false },
-      ).addTo(callesResaltadas);
-      mapa.fitBounds(capa.getBounds(), { padding: [30, 30], animate: !SIN_MOVIMIENTO });
-    },
-    /** Dibuja el recorrido de una línea (o lo quita con null) y encuadra el mapa. */
-    resaltarLinea(trazados) {
-      lineaResaltada.clearLayers();
-      if (!trazados) return;
-      const principales = trazados.filter((t) => t.properties.tipo !== "alargue");
-      const capa = L.geoJSON(
-        { type: "FeatureCollection", features: trazados },
-        {
-          interactive: false,
-          style: (t) => ({
-            color: color("--tinta"),
-            weight: t.properties.tipo === "alargue" ? 3 : 4,
-            opacity: 0.85,
-            dashArray: t.properties.tipo === "alargue" ? "6 6" : null,
-          }),
-        },
-      ).addTo(lineaResaltada);
-      const encuadre = principales.length ? L.geoJSON({ type: "FeatureCollection", features: principales }) : capa;
-      mapa.fitBounds(encuadre.getBounds(), { padding: [30, 30], animate: !SIN_MOVIMIENTO });
-    },
-    /** Dibuja una opción de "¿qué bus me lleva?": tramos a pie punteados y en bus llenos. */
-    dibujarRuta(opcion, destino) {
-      rutaCapa.clearLayers();
-      lineaResaltada.clearLayers();
-      if (!opcion) return;
-      const capas = [];
-      for (const t of opcion.tramos) {
-        if (t.modo === "caminar") {
-          if (t.metros < 5) continue;
-          capas.push(
-            L.polyline(
-              [
-                [t.desde.lat, t.desde.lon],
-                [t.hasta.lat, t.hasta.lon],
-              ],
-              { color: color("--tinta-suave"), weight: 3, dashArray: "2 7", lineCap: "round", interactive: false },
-            ),
-          );
-        } else {
-          capas.push(
-            L.polyline(
-              t.coords.map(([lon, lat]) => [lat, lon]),
-              { color: t.tipo === "tranvia" ? color("--tranvia") : color("--cupula-hondo"), weight: 5, opacity: 0.9, interactive: false },
-            ),
-          );
-          capas.push(
-            L.marker([t.subida.lat, t.subida.lon], {
-              interactive: false,
-              keyboard: false,
-              icon: L.divIcon({
-                className: "",
-                html: `<span class="etiqueta-ruta">${t.tipo === "tranvia" ? "T" : t.linea}</span>`,
-                iconSize: [28, 22],
-                iconAnchor: [14, 11],
-              }),
-            }),
-          );
-        }
-      }
-      capas.push(
-        L.marker([destino.lat, destino.lon], {
-          interactive: false,
-          keyboard: false,
-          zIndexOffset: 900,
-          icon: L.divIcon({ className: "", html: '<span class="punto-destino"></span>', iconSize: [20, 20], iconAnchor: [10, 10] }),
-        }),
-      );
-      const grupo = L.featureGroup(capas).addTo(rutaCapa);
-      mapa.fitBounds(grupo.getBounds(), { padding: [40, 40], animate: !SIN_MOVIMIENTO });
-    },
-    mostrar(punto, zona, paradas) {
-      callesResaltadas.clearLayers();
-      lineaResaltada.clearLayers();
-      rutaCapa.clearLayers();
-      for (const { zona: z, capa } of capas.values()) {
-        capa.setStyle(estilo(z, zona && z.properties.zona === zona.properties.zona, Boolean(zona)));
-      }
-      marcasParadas.clearLayers();
-      paradas.forEach((parada, i) => {
-        L.marker([parada.lat, parada.lon], {
-          icon: L.divIcon({
-            className: "",
-            html: `<span class="etiqueta-parada">${i + 1}</span>`,
-            iconSize: [22, 22],
-            iconAnchor: [11, 11],
-          }),
-        })
-          .bindTooltip(nombreParada(parada))
-          .addTo(marcasParadas);
-      });
-      if (!marcador) {
-        // Por encima de las paradas, para que no lo tapen.
-        marcador = L.marker([punto.lat, punto.lon], {
-          interactive: false,
-          keyboard: false,
-          zIndexOffset: 1000,
-          icon: L.divIcon({
-            className: "",
-            html: '<span class="punto-elegido"></span>',
-            iconSize: [22, 22],
-            iconAnchor: [11, 11],
-          }),
-        }).addTo(mapa);
-      } else {
-        marcador.setLatLng([punto.lat, punto.lon]);
-      }
-      const destino = [punto.lat, punto.lon];
-      const zoom = Math.max(mapa.getZoom(), 15);
-      if (SIN_MOVIMIENTO) mapa.setView(destino, zoom);
-      else mapa.flyTo(destino, zoom, { duration: 0.6 });
-    },
-  };
-}
-
-// ---------- Capas de movilidad (OpenStreetMap) ----------
-
-const SVG_BICI =
-  '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="16" r="3.5"/><circle cx="18" cy="16" r="3.5"/><path d="M6 16l4-7h5l3 7M10 9l2 7M14 6h3"/></svg>';
-const SVG_RAYO =
-  '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M13.5 2.5 5 13.5h6.2l-1 8 8.8-11h-6.3z"/></svg>';
-
-function iconoCapa(clase, svg) {
-  return L.divIcon({
-    className: "",
-    html: `<span class="marca-capa ${clase}">${svg}</span>`,
-    iconSize: [24, 24],
-    iconAnchor: [12, 12],
-  });
-}
-
-function textoAcceso(acceso) {
-  return { publico: t("accesoPublico"), clientes: t("accesoClientes"), privado: t("accesoPrivado") }[acceso] ?? "";
-}
-
-/**
- * Selector de capas: BiciPública, ciclovías y carga eléctrica. Las dos últimas se
- * descargan solo la primera vez que alguien las activa.
- */
-function agregarCapas(mapa, bicicletas, estaciones) {
-  const capaTranvia = L.layerGroup();
-  if (estaciones) {
-    L.geoJSON(estaciones, {
-      pointToLayer: (f, posicion) =>
-        L.marker(posicion, { icon: iconoCapa("tranvia", "T"), keyboard: false }).bindTooltip(
-          t("tranviaEstacionMapa", { estacion: f.properties.nombre, hacia: listar(f.properties.hacia) }),
-        ),
-    }).addTo(capaTranvia);
-  }
-
-  const capaBicis = L.layerGroup();
-  if (bicicletas) {
-    L.geoJSON(bicicletas, {
-      pointToLayer: (f, posicion) =>
-        L.marker(posicion, { icon: iconoCapa("bici", SVG_BICI), keyboard: false }).bindTooltip(
-          [f.properties.nombre, f.properties.capacidad ? t("bicicletaAnclajes", { n: f.properties.capacidad }) : null]
-            .filter(Boolean)
-            .join(" · "),
-        ),
-    }).addTo(capaBicis);
-  }
-
-  const capaCiclovias = L.layerGroup();
-  const capaCarga = L.layerGroup();
-  const pendientes = new Map([
-    [
-      capaCiclovias,
-      async () => {
-        const ciclovias = await cargarJson("movilidad/ciclovias.geojson");
-        L.geoJSON(ciclovias, {
-          style: (f) => ({
-            color: color("--tomebamba"),
-            weight: f.properties.tipo === "separada" ? 4 : 3,
-            opacity: 0.9,
-            dashArray: f.properties.tipo === "separada" ? null : "5 6",
-          }),
-          onEachFeature: (f, capa) =>
-            capa.bindTooltip(
-              [f.properties.nombre, f.properties.tipo === "separada" ? t("cicloviaSeparada") : t("cicloviaCarril")]
-                .filter(Boolean)
-                .join(" · "),
-              { sticky: true },
-            ),
-        }).addTo(capaCiclovias);
-      },
-    ],
-    [
-      capaCarga,
-      async () => {
-        const carga = await cargarJson("movilidad/carga.geojson");
-        L.geoJSON(carga, {
-          pointToLayer: (f, posicion) =>
-            L.marker(posicion, { icon: iconoCapa("carga", SVG_RAYO), keyboard: false }).bindTooltip(
-              [f.properties.nombre, textoAcceso(f.properties.acceso)].filter(Boolean).join(" · "),
-            ),
-        }).addTo(capaCarga);
-      },
-    ],
-  ]);
-
-  const etiqueta = (clase, texto) => `<span class="muestra-capa ${clase}"></span>${texto}`;
-  L.control
-    .layers(
-      null,
-      {
-        ...(estaciones ? { [etiqueta("tranvia", t("capaTranvia"))]: capaTranvia } : {}),
-        [etiqueta("bici", t("capaBicis"))]: capaBicis,
-        [etiqueta("ciclovia", t("capaCiclovias"))]: capaCiclovias,
-        [etiqueta("carga", t("capaCarga"))]: capaCarga,
-      },
-      { collapsed: true, position: "topright" },
-    )
-    .addTo(mapa);
-
-  mapa.on("overlayadd", async (evento) => {
-    const cargar = pendientes.get(evento.layer);
-    if (!cargar) return;
-    pendientes.delete(evento.layer);
-    try {
-      await cargar();
-    } catch {
-      pendientes.set(evento.layer, cargar); // se reintentará la próxima vez
-    }
-  });
-  return { tranvia: capaTranvia };
 }
 
 function pintarBici(estacion) {
@@ -983,7 +636,7 @@ function alTocarLinea(boton, botones, linea, mapa) {
   }
   boton.setAttribute("aria-pressed", "true");
   mapa.resaltarLinea(linea.trazados);
-  if (linea.tipo === "tranvia" && mapa.capas?.tranvia) mapa.leaflet.addLayer(mapa.capas.tranvia);
+  if (linea.tipo === "tranvia") mapa.mostrarCapa("tranvia");
   pintarPasaPor(boton.nextElementSibling, linea.linea);
 }
 
@@ -1867,8 +1520,12 @@ async function iniciar() {
     }
   };
 
-  const mapa = crearMapa(zonas, (punto) => elegir(punto, t("puntoMapa"), t("puntoMapaNombre"), { nombrar: true }));
-  mapa.capas = agregarCapas(mapa.leaflet, bicicletas, estacionesTranvia);
+  const mapa = crearMapa(
+    zonas,
+    (punto) => elegir(punto, t("puntoMapa"), t("puntoMapaNombre"), { nombrar: true }),
+    { cargarJson, sinMovimiento: SIN_MOVIMIENTO },
+  );
+  mapa.agregarCapas(bicicletas, estacionesTranvia);
   pintarBasuraManual(basura, diasFeriado);
 
   $("buscar").addEventListener("submit", async (evento) => {

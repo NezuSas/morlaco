@@ -266,7 +266,7 @@ usas tu ubicación, el punto toma el nombre de la esquina más cercana.
 "Instalar"; en el iPhone, desde Safari con Compartir → "Añadir a pantalla de inicio". Funciona **sin conexión**
 con los últimos datos descargados (útil en un corte de luz o sin datos): el service worker (`web/sw.js`) pide
 primero la página y los datos a la red y, si no hay conexión, usa la copia guardada. Guarda también las
-teselas del mapa ya vistas (hasta 300) y nunca las búsquedas de lugares.
+teselas del mapa ya vistas (hasta 300), con sus letras e iconos, y nunca las búsquedas de lugares.
 
 La página está en **español e inglés**: elige el idioma del navegador y tiene un botón para cambiarlo. Lo que
 viene de las fuentes (nombres de calles, paradas y destinos) se queda como se dice en Cuenca.
@@ -286,7 +286,11 @@ Para verla en tu computadora, sirve la carpeta del proyecto (no solo `web/`, por
 .venv/Scripts/python -m http.server 8765 --bind 127.0.0.1
 ```
 
-Usa [Leaflet](https://leafletjs.com) y los mapas de OpenStreetMap. Los lugares que no son calles se ubican
+El mapa usa [MapLibre GL JS](https://maplibre.org) (licencia BSD) con los mapas vectoriales de
+[OpenFreeMap](https://openfreemap.org), hechos con datos de OpenStreetMap y de uso libre, sin clave ni cuenta.
+Lo dibuja la tarjeta gráfica (WebGL): el zoom es continuo, los recorridos de las líneas se trazan con una
+animación y el modo oscuro tiene su propio mapa; si el sistema pide reducir el movimiento, no se anima nada.
+En un navegador sin WebGL la página avisa y las respuestas salen igual. Los lugares que no son calles se ubican
 con [Nominatim](https://nominatim.org), limitado a la ciudad de Cuenca; la página lo avisa al pie. No usa
 cookies ni analítica: solo recuerda en el navegador el último punto elegido, tus lugares y el idioma. Las tipografías (Alegreya y
 Alegreya Sans, de Huerta Tipográfica, con licencia SIL OFL) van en [`web/fuentes/`](web/fuentes/), así que la

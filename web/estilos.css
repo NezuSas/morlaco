@@ -1722,29 +1722,26 @@ button.linea[aria-pressed="true"] {
   background: var(--tomebamba);
 }
 
-.leaflet-container {
-  font-family: var(--letra);
-  font-size: var(--t-0);
+/* El mapa base es gris (claro u oscuro, según el sistema) para que las zonas sean lo que destaca. */
+.mapa {
+  font: var(--t-0) / 1.4 var(--letra);
 }
 
-.leaflet-bar,
-.leaflet-control-layers {
-  border: 0 !important;
-  box-shadow: 0 1px 4px rgb(0 0 0 / 0.22) !important;
+.mapa .maplibregl-ctrl-group,
+.mapa .control-capas {
+  border: 0;
+  border-radius: var(--radio-control);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.22);
 }
 
-/* El mapa de OpenStreetMap atenuado a grises, para que las zonas sean lo que destaca. */
-.leaflet-tile-pane {
-  filter: grayscale(1) contrast(0.9) brightness(1.05);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .leaflet-tile-pane {
-    filter: grayscale(1) invert(1) brightness(0.82) contrast(0.95);
-  }
-}
-:root[data-theme="dark"] .leaflet-tile-pane {
-  filter: grayscale(1) invert(1) brightness(0.82) contrast(0.95);
+/* Sin WebGL: un aviso en el lugar del mapa. */
+.mapa-ausente {
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  text-align: center;
+  color: var(--tinta-suave);
+  background: var(--superficie);
 }
 
 /* Número de zona sobre el mapa, como un azulejo pequeño. */
@@ -1870,19 +1867,97 @@ button.linea[aria-pressed="true"] {
   background: var(--aviso);
 }
 
-.leaflet-control-layers {
-  font: var(--t-0) / 1.4 var(--letra);
+/* ---------- Animaciones del mapa ----------
+   MapLibre mueve cada marcador con `transform`: las animaciones van en el hijo. */
+
+.marca-gl.pulso .punto-elegido {
+  position: relative;
+}
+
+.marca-gl.pulso .punto-elegido::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2px solid var(--cupula);
+  animation: pulso-gl 2.2s ease-out infinite;
+}
+
+@keyframes pulso-gl {
+  from {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  to {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+.marca-gl.aparece > * {
+  animation: aparece-gl 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) var(--retraso, 0.5s) both;
+}
+
+@keyframes aparece-gl {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marca-gl.pulso .punto-elegido::after,
+  .marca-gl.aparece > * {
+    animation: none;
+  }
+}
+
+.tooltip-gl .maplibregl-popup-content {
+  padding: 0.35rem 0.6rem;
+  font: var(--t-0) / 1.35 var(--letra);
   color: var(--tinta);
   background: var(--superficie);
   border-radius: var(--radio-control);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.25);
 }
 
-.leaflet-control-layers-expanded {
-  padding: 0.5rem 0.75rem;
+.tooltip-gl .maplibregl-popup-tip {
+  display: none;
 }
 
-.leaflet-control-layers label {
+.control-capas {
+  color: var(--tinta);
+  background: var(--superficie);
+}
+
+.control-capas summary {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.control-capas summary::-webkit-details-marker {
+  display: none;
+}
+
+.control-capas[open] summary {
+  margin-left: auto;
+}
+
+.control-capas > div {
+  display: grid;
+  padding: 0 0.75rem 0.5rem;
+}
+
+.control-capas label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
   padding: 0.2rem 0;
+  white-space: nowrap;
 }
 
 /* ---------- Hoja impresa de tu zona ----------

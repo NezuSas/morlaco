@@ -31,3 +31,22 @@ test("index.html enlaza el manifiesto y el icono para iPhone", () => {
   assert.match(html, /<link rel="manifest" href="manifest.webmanifest"/);
   assert.match(html, /<link rel="apple-touch-icon" href="iconos\/apple-touch-icon.png"/);
 });
+
+test("index.html carga MapLibre con versión fija e integridad, sin bloquear la página", () => {
+  const html = readFileSync(new URL("index.html", web), "utf8");
+  assert.doesNotMatch(html, /leaflet/i);
+  const guion = /<script\s+id="maplibre"([\s\S]*?)><\/script>/.exec(html)?.[1] ?? "";
+  const version = /maplibre-gl@(\d+\.\d+\.\d+)\/dist\/maplibre-gl\.js/.exec(guion)?.[1];
+  assert.ok(version, "falta el guion de MapLibre con versión fija");
+  assert.match(guion, /integrity="sha384-/);
+  assert.match(guion, /\sasync\b/);
+  const hoja = /maplibre-gl@(\d+\.\d+\.\d+)\/dist\/maplibre-gl\.css/.exec(html)?.[1];
+  assert.equal(hoja, version, "la hoja y el guion deben ser de la misma versión");
+});
+
+test("el service worker guarda los mapas de OpenFreeMap y precarga el módulo del mapa", () => {
+  const sw = readFileSync(new URL("sw.js", web), "utf8");
+  assert.match(sw, /tiles\.openfreemap\.org/);
+  assert.doesNotMatch(sw, /tile\.openstreetmap\.org/);
+  assert.match(sw, /"mapa\.js"/);
+});

@@ -2,13 +2,14 @@
 //
 // - La página y los datos se piden primero a la red (para tenerlos siempre al día) y,
 //   si no hay conexión, se sirven desde la caché.
-// - Las bibliotecas externas (Leaflet, la tipografía) y los mapas ya vistos se sirven
-//   desde la caché, porque no cambian.
+// - Las bibliotecas externas (MapLibre) y los mapas ya vistos se sirven desde la caché,
+//   porque no cambian. El estilo del mapa se pide primero a la red: dice qué versión de
+//   las teselas de OpenFreeMap toca, y esa versión cambia cada semana.
 // - La búsqueda de lugares (Nominatim) nunca se guarda.
 
-const CACHE_PAGINA = "morlaco-pagina-v19";
-const CACHE_EXTERNOS = "morlaco-externos-v1";
-const CACHE_MAPA = "morlaco-mapa-v2";
+const CACHE_PAGINA = "morlaco-pagina-v20";
+const CACHE_EXTERNOS = "morlaco-externos-v2";
+const CACHE_MAPA = "morlaco-mapa-v3";
 const CACHES = [CACHE_PAGINA, CACHE_EXTERNOS, CACHE_MAPA];
 const MAXIMO_TESELAS = 300;
 const ESPERA_RED_MS = 4000;
@@ -18,6 +19,7 @@ const PRECARGA = [
   "index.html",
   "estilos.css",
   "app.js",
+  "mapa.js",
   "logica.js",
   "calles.js",
   "buses.js",
@@ -47,6 +49,7 @@ const PRECARGA = [
   "../datos/buses/tranvia.geojson",
 ];
 const EXTERNOS = ["unpkg.com"];
+const MAPAS = "tiles.openfreemap.org";
 
 self.addEventListener("install", (evento) => {
   evento.waitUntil(
@@ -72,8 +75,8 @@ function conLimite(promesa, ms) {
 }
 
 /** Red primero; sin red (o si tarda demasiado), la última copia guardada. */
-async function redPrimero(peticion) {
-  const cache = await caches.open(CACHE_PAGINA);
+async function redPrimero(peticion, nombreCache = CACHE_PAGINA) {
+  const cache = await caches.open(nombreCache);
   try {
     // "no-cache": el navegador confirma con el servidor que su copia sigue al día (si no
     // cambió, la respuesta es mínima). Así la página y su código nunca quedan desparejados
@@ -112,6 +115,18 @@ async function cachePrimero(peticion, nombreCache, maximo = Infinity) {
   return respuesta;
 }
 
+/**
+ * OpenFreeMap: el estilo y el índice de teselas (/styles/…, /planet) se piden primero a la
+ * red; las teselas, con su versión en la dirección, y las letras y los iconos, a la caché.
+ */
+function peticionDeMapa(peticion, url) {
+  if (url.pathname.startsWith("/styles/") || url.pathname === "/planet") return redPrimero(peticion, CACHE_EXTERNOS);
+  if (url.pathname.startsWith("/fonts/") || url.pathname.startsWith("/sprites/")) {
+    return cachePrimero(peticion, CACHE_EXTERNOS);
+  }
+  return cachePrimero(peticion, CACHE_MAPA, MAXIMO_TESELAS);
+}
+
 self.addEventListener("fetch", (evento) => {
   const peticion = evento.request;
   if (peticion.method !== "GET") return;
@@ -119,8 +134,8 @@ self.addEventListener("fetch", (evento) => {
 
   if (url.origin === self.location.origin) {
     evento.respondWith(redPrimero(peticion));
-  } else if (url.hostname === "tile.openstreetmap.org") {
-    evento.respondWith(cachePrimero(peticion, CACHE_MAPA, MAXIMO_TESELAS));
+  } else if (url.hostname === MAPAS) {
+    evento.respondWith(peticionDeMapa(peticion, url));
   } else if (EXTERNOS.includes(url.hostname)) {
     evento.respondWith(cachePrimero(peticion, CACHE_EXTERNOS));
   }
