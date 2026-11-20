@@ -36,7 +36,7 @@
   --cal-hondo: #e8ecf2;
   --linea: #d8dee7;
   --tinta: #141d2e;
-  --tinta-suave: #515c6e;
+  --tinta-suave: #465062; /* 8,1:1 sobre blanco: se lee al sol */
 
   /* Azul de cúpula */
   --cupula: #1f4a96;
@@ -50,9 +50,24 @@
 
   /* La bandera de Cuenca: rojo y amarillo. Acentos sobre el azul de las cúpulas. */
   --bandera-rojo: #c8102e;
-  --bandera-rojo-hondo: #a00d25;
-  --sobre-rojo: #ffffff;
   --bandera-oro: #f2b705;
+
+  /* Las acciones van en el azul de las cúpulas: el rojo se lee como "peligro" y le
+     restaría fuerza a un aviso real. El rojo y el amarillo de la bandera quedan como
+     identidad (la franja, las variantes, la ida en el mapa), sin significado de estado. */
+  --accion: #1f4a96;
+  --accion-hondo: #173872;
+  --sobre-accion: #ffffff;
+
+  /* Estados, cada uno con su texto (4,5:1 o más) y su fondo suave. */
+  --ok: #1b6e45;
+  --ok-fondo: #e3f2ea;
+  --atencion: #8a5700;
+  --atencion-fondo: #fdf1d8;
+  --atencion-grafico: #b47c00; /* íconos y puntos: 3,6:1 */
+  --alerta: #b42318;
+  --alerta-fondo: #fdecea;
+
   /* Los buses del mapa, iguales de día y de noche: el bus blanco se lee sobre ellos. */
   --bus-ida: #c8102e;
   --bus-retorno: #1f4a96;
@@ -63,8 +78,8 @@
   --tomebamba: #2e7a57;
   --tranvia: #b3262b;
   --ladrillo: #a8452c;
-  --aviso: #b97a12;
-  --aviso-fondo: #fbf4e4;
+  --aviso: var(--atencion-grafico);
+  --aviso-fondo: var(--atencion-fondo);
   --c-basura: var(--cupula);
   --c-luz: var(--aviso);
   --c-farmacias: var(--tomebamba);
@@ -102,15 +117,23 @@
     --muro: #183a78;
     --muro-hondo: #0f2552;
     --bandera-rojo: #f0646f;
-    --bandera-rojo-hondo: #f68890;
-    --sobre-rojo: #0e1524;
     --bandera-oro: #f6c945;
+    --accion: #93b8f3;
+    --accion-hondo: #bbd3f8;
+    --sobre-accion: #0e1524;
+    --ok: #5fc08f;
+    --ok-fondo: #13261d;
+    --atencion: #f2b84b;
+    --atencion-fondo: #2a2314;
+    --atencion-grafico: #f2b84b;
+    --alerta: #f28b82;
+    --alerta-fondo: #2c1517;
     --funda-negra: #05070a;
     --tomebamba: #6fb593;
     --tranvia: #e8777b;
     --ladrillo: #e79b82;
-    --aviso: #f0b546;
-    --aviso-fondo: #2a2314;
+    --aviso: var(--atencion-grafico);
+    --aviso-fondo: var(--atencion-fondo);
     --sombra-tarjeta: 0 1px 2px rgb(0 0 0 / 0.4), 0 12px 32px rgb(0 0 0 / 0.45);
   }
 }
@@ -127,15 +150,23 @@
   --muro: #183a78;
   --muro-hondo: #0f2552;
   --bandera-rojo: #f0646f;
-  --bandera-rojo-hondo: #f68890;
-  --sobre-rojo: #0e1524;
   --bandera-oro: #f6c945;
+  --accion: #93b8f3;
+  --accion-hondo: #bbd3f8;
+  --sobre-accion: #0e1524;
+  --ok: #5fc08f;
+  --ok-fondo: #13261d;
+  --atencion: #f2b84b;
+  --atencion-fondo: #2a2314;
+  --atencion-grafico: #f2b84b;
+  --alerta: #f28b82;
+  --alerta-fondo: #2c1517;
   --funda-negra: #05070a;
   --tomebamba: #6fb593;
   --tranvia: #e8777b;
   --ladrillo: #e79b82;
-  --aviso: #f0b546;
-  --aviso-fondo: #2a2314;
+  --aviso: var(--atencion-grafico);
+  --aviso-fondo: var(--atencion-fondo);
   --sombra-tarjeta: 0 1px 2px rgb(0 0 0 / 0.4), 0 12px 32px rgb(0 0 0 / 0.45);
 }
 
@@ -242,14 +273,14 @@ button {
   cursor: pointer;
   border-radius: var(--radio-control);
   padding: 0.6rem 1.15rem;
-  border: 1.5px solid var(--bandera-rojo);
-  background: var(--bandera-rojo);
-  color: var(--sobre-rojo);
+  border: 1.5px solid var(--accion);
+  background: var(--accion);
+  color: var(--sobre-accion);
 }
 
 button:hover {
-  background: var(--bandera-rojo-hondo);
-  border-color: var(--bandera-rojo-hondo);
+  background: var(--accion-hondo);
+  border-color: var(--accion-hondo);
 }
 
 button:disabled {
@@ -367,9 +398,9 @@ input[type="search"]:focus {
 
 .mensaje.error {
   padding: 0.75rem 0.9rem;
-  border-left: 3px solid var(--ladrillo);
+  border-left: 3px solid var(--alerta);
   border-radius: 0 var(--radio-control) var(--radio-control) 0;
-  background: var(--cal);
+  background: var(--alerta-fondo);
   color: var(--tinta);
 }
 
@@ -383,9 +414,9 @@ input[type="search"]:focus {
 .aviso {
   margin-top: 0.85rem;
   padding: 0.8rem 1rem;
-  border-left: 3px solid var(--bandera-oro);
+  border-left: 3px solid var(--atencion-grafico);
   border-radius: 0 var(--radio-control) var(--radio-control) 0;
-  background: var(--aviso-fondo);
+  background: var(--atencion-fondo);
   max-width: 62ch;
 }
 
@@ -462,8 +493,8 @@ button.idioma:hover {
 .sin-conexion {
   margin: 0;
   padding: 0.5rem var(--margen);
-  background: var(--aviso-fondo);
-  border-bottom: 2px solid var(--bandera-oro);
+  background: var(--atencion-fondo);
+  border-bottom: 2px solid var(--atencion-grafico);
   font-size: var(--t-0);
   font-weight: 700;
 }
@@ -612,6 +643,9 @@ h1 {
   --cupula: #1f4a96;
   --cupula-hondo: #173872;
   --sobre-cupula: #ffffff;
+  --accion: #1f4a96;
+  --accion-hondo: #173872;
+  --sobre-accion: #ffffff;
 }
 
 .muro .campo:focus-within {
@@ -973,7 +1007,7 @@ a.ficha:hover .ficha-valor {
 }
 
 a.ficha.con-aviso .ficha-valor {
-  color: var(--ladrillo);
+  color: var(--alerta);
 }
 
 /* La luz, en una línea, cuando Centro Sur no tiene datos al día. */
@@ -1078,8 +1112,8 @@ a.ficha.con-aviso .ficha-valor {
   margin-right: 0.35em;
   vertical-align: 0.16em;
   border-radius: 50%;
-  background: var(--tomebamba);
-  box-shadow: 0 0 0 0.16em color-mix(in srgb, var(--tomebamba) 30%, transparent);
+  background: var(--ok);
+  box-shadow: 0 0 0 0.16em color-mix(in srgb, var(--ok) 30%, transparent);
 }
 
 /* La semana, en siete azulejos: cobalto los días que pasa el recolector. */
@@ -1369,10 +1403,10 @@ a.ficha.con-aviso .ficha-valor {
   margin-right: 0.45em;
   border-radius: 50%;
   vertical-align: 0.06em;
-  background: var(--tomebamba);
+  background: var(--ok);
 }
 
-.nivel-aire.n2 { background: #d9a400; }
+.nivel-aire.n2 { background: var(--atencion-grafico); }
 .nivel-aire.n3 { background: #e07b00; }
 .nivel-aire.n4 { background: #c62828; }
 .nivel-aire.n5 { background: #8e24aa; }
@@ -1389,7 +1423,7 @@ a.ficha.con-aviso .ficha-valor {
   background: #4c9a2a;
 }
 
-.nivel-uv.n2 { background: #d9a400; }
+.nivel-uv.n2 { background: var(--atencion-grafico); }
 .nivel-uv.n3 { background: #e07b00; }
 .nivel-uv.n4 { background: #c62828; }
 .nivel-uv.n5 { background: #6a1b9a; }
@@ -1522,13 +1556,14 @@ button.opcion-ruta[aria-pressed="true"] {
 }
 
 .etiqueta-opcion.puerta {
-  background: color-mix(in srgb, var(--tomebamba) 16%, transparent);
-  color: var(--tomebamba);
+  background: var(--ok-fondo);
+  color: var(--ok);
 }
 
 .etiqueta-opcion.variante {
-  background: color-mix(in srgb, var(--bandera-oro) 22%, transparent);
+  background: var(--atencion-fondo);
   color: var(--tinta);
+  box-shadow: inset 3px 0 0 var(--bandera-oro);
 }
 
 /* Los pasos, solo en la opción elegida: en las demás repetirían lo mismo. */
@@ -1701,7 +1736,7 @@ button.linea[aria-pressed="true"] {
   display: block;
   margin-top: 0.35rem;
   padding-left: 0.6rem;
-  border-left: 2px solid var(--ladrillo);
+  border-left: 2px solid var(--atencion-grafico);
   color: var(--tinta);
   font-size: var(--t-0);
   font-weight: 400;
@@ -1709,7 +1744,7 @@ button.linea[aria-pressed="true"] {
 }
 
 .aviso-linea strong {
-  color: var(--ladrillo);
+  color: var(--atencion);
 }
 
 .paradas {
@@ -2350,8 +2385,14 @@ button.con-icono {
     --sobre-cupula: #ffffff;
     --funda-negra: #24272c;
     --tomebamba: #2e7a57;
-    --aviso: #b97a12;
+    --aviso: #b47c00;
     --aviso-fondo: #ffffff;
+    --accion: #1b3f86;
+    --sobre-accion: #ffffff;
+    --ok: #1b6e45;
+    --atencion: #8a5700;
+    --atencion-grafico: #b47c00;
+    --alerta: #b42318;
   }
 
   * {
