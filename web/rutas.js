@@ -241,3 +241,27 @@ export function planificar(origen, destino, recorridos, { fecha = new Date(), aj
     .sort((a, b) => a.fueraDeHorario - b.fueraDeHorario || orden(a) - orden(b))
     .slice(0, ajustes.maximoOpciones);
 }
+
+export const DISTANCIA_PARADA_M = 25; // la misma regla que usa el GTFS (src/morlaco/gtfs.py)
+
+/**
+ * Las paradas registradas por las que pasa un recorrido: a menos de 25 m de él y lejos de
+ * sus dos extremos (las terminales van aparte), en el orden en que el bus llega a ellas.
+ */
+export function paradasDeRecorrido(feature, paradas, maximo = DISTANCIA_PARADA_M) {
+  const coords = feature.geometry.type === "LineString" ? feature.geometry.coordinates : feature.geometry.coordinates.flat();
+  const puntos = coords.map(aMetros);
+  const acumulado = [0];
+  for (let i = 1; i < puntos.length; i++) acumulado.push(acumulado[i - 1] + distancia(puntos[i - 1], puntos[i]));
+  const total = acumulado.at(-1) ?? 0;
+  const recorrido = { puntos, acumulado };
+  const salida = [];
+  for (const p of paradas?.features ?? []) {
+    const [lon, lat] = p.geometry.coordinates;
+    const r = proyectar({ lat, lon }, recorrido);
+    if (r && r.distancia <= maximo && r.recorrido > 30 && r.recorrido < total - 30) {
+      salida.push({ id: p.properties.id, nombre: p.properties.nombre, lat, lon, metros: r.recorrido });
+    }
+  }
+  return salida.sort((a, b) => a.metros - b.metros);
+}

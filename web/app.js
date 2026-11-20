@@ -51,7 +51,7 @@ import {
   lineasCercanas,
   pasajeDeOpcion,
 } from "./buses.js";
-import { planificar, prepararLineas } from "./rutas.js";
+import { paradasDeRecorrido, planificar, prepararLineas } from "./rutas.js";
 import { SVG_BICI, crearMapa } from "./mapa.js";
 import { minutosAlProximo } from "./vehiculos.js";
 import { PAGINA_AIRE, URL_AIRE, URL_CLIMA, URL_UV, aireCercano, leerAire, leerClima, leerUv } from "./aire.js";
@@ -629,15 +629,31 @@ function pintarParadas(cercanas) {
 }
 
 let recorridosOficiales = null;
+let paradasRegistradas = null; // datos/buses/paradas.geojson, para dibujar las de cada línea
 
-/** Por dónde pasa una línea según el recorrido oficial del municipio, bajo su fila. */
+/**
+ * Bajo la fila de una línea: cuántas de sus paradas se ven en el mapa y, plegada, la lista
+ * de lugares por los que pasa según el recorrido oficial (larga: más de 60 en algunas).
+ */
 async function pintarPasaPor(nodo, linea) {
+  const principales = linea.trazados.filter((f) => f.properties.tipo !== "alargue");
+  const nombres = new Set(principales.flatMap((f) => paradasDeRecorrido(f, paradasRegistradas).map((p) => p.id)));
+  const partes = nombres.size ? [elemento("p", {}, t("paradasEnMapa", { n: nombres.size }))] : [];
+  nodo.replaceChildren(...partes);
+  nodo.hidden = !partes.length;
   try {
     recorridosOficiales ??= cargarJson("buses/recorridos.json");
     const { recorridos } = await recorridosOficiales;
-    const puntos = recorridos.find((r) => r.linea === linea)?.pasa_por?.ida;
+    const puntos = recorridos.find((r) => r.linea === linea.linea)?.pasa_por?.ida;
     if (!puntos?.length) return;
-    nodo.replaceChildren(elemento("strong", {}, t("pasaPor"), ": "), `${puntos.join(", ")}.`);
+    nodo.append(
+      elemento(
+        "details",
+        {},
+        elemento("summary", {}, t("pasaPorVer", { n: puntos.length })),
+        elemento("p", {}, `${puntos.join(", ")}.`),
+      ),
+    );
     nodo.hidden = false;
   } catch {
     recorridosOficiales = null; // sin conexión: se intenta de nuevo al tocar otra línea
@@ -656,9 +672,14 @@ function alTocarLinea(boton, botones, linea, mapa) {
     return;
   }
   boton.setAttribute("aria-pressed", "true");
-  mapa.resaltarLinea(linea.trazados, { linea: linea.linea, horarios: linea.horarios, tipo: linea.tipo });
+  mapa.resaltarLinea(linea.trazados, {
+    linea: linea.linea,
+    horarios: linea.horarios,
+    tipo: linea.tipo,
+    paradas: paradasRegistradas,
+  });
   if (linea.tipo === "tranvia") mapa.mostrarCapa("tranvia");
-  pintarPasaPor(boton.nextElementSibling, linea.linea);
+  pintarPasaPor(boton.nextElementSibling, linea);
 }
 
 /** Las líneas que recorren una calle, cuando se busca la calle sola. */
@@ -696,7 +717,7 @@ function pintarBusesDeCalle(calle, lineas, rutas, mapa) {
       );
       boton.addEventListener("click", () => alTocarLinea(boton, botones, l, mapa));
       botones.push(boton);
-      return elemento("li", {}, boton, elemento("p", { class: "pasa-por", hidden: "" }));
+      return elemento("li", {}, boton, elemento("div", { class: "pasa-por", hidden: "" }));
     }),
   );
   caja.replaceChildren(titulo, lista, elemento("p", { class: "detalle" }, t("busesCalleNota")));
@@ -747,7 +768,7 @@ function pintarLineas(cercanas, mapa, { punto, transporte, estaciones } = {}) {
         ),
         elemento("span", { class: "metros" }, formatoDistancia(l.metros)),
       );
-      const pasaPor = elemento("p", { class: "pasa-por", hidden: "" });
+      const pasaPor = elemento("div", { class: "pasa-por", hidden: "" });
       boton.addEventListener("click", () => alTocarLinea(boton, botones, l, mapa));
       botones.push(boton);
       return elemento("li", {}, boton, pasaPor);
@@ -1411,6 +1432,7 @@ async function iniciar() {
       cargarJson(r).catch(() => null),
     ),
   );
+  paradasRegistradas = paradas;
 
   const fechas = Object.values(estado ?? {})
     .map((f) => f.actualizado)

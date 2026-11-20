@@ -1592,8 +1592,18 @@ button.linea[aria-pressed="true"] {
   font-size: var(--t-0);
 }
 
-.pasa-por strong {
-  color: var(--tinta);
+.pasa-por p {
+  margin: 0 0 0.35rem;
+}
+
+.pasa-por summary {
+  cursor: pointer;
+  color: var(--cupula);
+  font-weight: 700;
+}
+
+.pasa-por details p {
+  margin-top: 0.35rem;
 }
 
 /* Buses que pasan por una calle, cuando se busca la calle sola. */

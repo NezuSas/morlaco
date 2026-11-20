@@ -4,6 +4,7 @@
 // resaltarLinea, dibujarRuta, agregarCapas y mostrarCapa.
 
 import { CENTRO_CUENCA, LIMITES_CUENCA, horaLegible, nombreDia, nombreParada, puntoEnGeometria } from "./logica.js";
+import { paradasDeRecorrido } from "./rutas.js";
 import { listar, t } from "./textos.js";
 import { busesEnCamino, medirRecorrido, minutosAlProximo, puntoEnRecorrido, puntosDeTrazado } from "./vehiculos.js";
 
@@ -242,6 +243,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
     linea: vacio(),
     rutaPie: vacio(),
     rutaBus: vacio(),
+    paradasLinea: vacio(),
     ciclovias: vacio(),
   };
   const transicion = { duration: SIN_MOVIMIENTO ? 0 : 450 };
@@ -329,6 +331,40 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
         "line-opacity": 0.85,
         "line-dasharray": [2, 2],
         "line-offset": SEPARACION_SENTIDOS,
+      },
+    },
+    {
+      id: `${PROPIO}linea-paradas`,
+      type: "circle",
+      source: `${PROPIO}paradasLinea`,
+      minzoom: 12,
+      filter: filtroLinea(["has", "sentido"]),
+      paint: {
+        "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 3, 16, 6],
+        "circle-color": color("--superficie"),
+        "circle-stroke-color": colorSentido(),
+        "circle-stroke-width": ["interpolate", ["linear"], ["zoom"], 12, 1.5, 16, 2.5],
+        "circle-translate": [0, 0],
+      },
+    },
+    {
+      id: `${PROPIO}linea-paradas-nombre`,
+      type: "symbol",
+      source: `${PROPIO}paradasLinea`,
+      minzoom: 15,
+      filter: filtroLinea(["has", "sentido"]),
+      layout: {
+        "text-field": ["get", "nombre"],
+        "text-font": ["Noto Sans Regular"],
+        "text-size": 11,
+        "text-offset": [0, 1.1],
+        "text-anchor": "top",
+        "text-max-width": 9,
+      },
+      paint: {
+        "text-color": color("--tinta"),
+        "text-halo-color": color("--superficie"),
+        "text-halo-width": 1.5,
       },
     },
     {
@@ -502,8 +538,25 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
     mapa.getCanvas().style.cursor = "";
     etiquetaFlotante.remove();
   });
+  // Pasar por una parada de la línea dice su nombre y hacia dónde va el bus desde ahí.
+  const textoParada = (f) => t("paradaDeLinea", { parada: f.properties.nombre, destino: f.properties.hacia });
+  mapa.on("mousemove", `${PROPIO}linea-paradas`, (e) => {
+    mapa.getCanvas().style.cursor = "pointer";
+    etiquetaFlotante.setLngLat(e.features[0].geometry.coordinates).setText(textoParada(e.features[0])).addTo(mapa);
+  });
+  mapa.on("mouseleave", `${PROPIO}linea-paradas`, () => {
+    mapa.getCanvas().style.cursor = "";
+    etiquetaFlotante.remove();
+  });
   mapa.on("click", (e) => {
     etiquetaFlotante.remove();
+    // Tocar una parada (en el teléfono) muestra su nombre en vez de elegir ese punto.
+    const capa = `${PROPIO}linea-paradas`;
+    const [parada] = mapa.getLayer(capa) ? mapa.queryRenderedFeatures(e.point, { layers: [capa] }) : [];
+    if (parada) {
+      etiquetaFlotante.setLngLat(parada.geometry.coordinates).setText(textoParada(parada)).addTo(mapa);
+      return;
+    }
     alElegir({ lat: e.lngLat.lat, lon: e.lngLat.lng });
   });
 
@@ -620,6 +673,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
   function limpiarLinea() {
     cancelAnimationFrame(animaciones.get("linea"));
     poner("linea", vacio());
+    poner("paradasLinea", vacio());
     clearInterval(reloj);
     cancelAnimationFrame(reloj);
     puntas = quitar(puntas);
@@ -639,6 +693,8 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
       mapa.setFilter(`${PROPIO}linea`, filtroLinea(PRINCIPAL));
       mapa.setFilter(`${PROPIO}linea-alargue`, filtroLinea(ALARGUE));
       mapa.setFilter(`${PROPIO}linea-flechas`, filtroLinea(PRINCIPAL));
+      mapa.setFilter(`${PROPIO}linea-paradas`, filtroLinea(["has", "sentido"]));
+      mapa.setFilter(`${PROPIO}linea-paradas-nombre`, filtroLinea(["has", "sentido"]));
     }
     for (const b of panel.querySelectorAll("[data-sentido]")) {
       b.setAttribute("aria-pressed", String(b.dataset.sentido === sentido));
@@ -646,9 +702,22 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
     if (lineaActual) moverBuses();
   }
 
-  function mostrarLinea(principales, { linea, horarios, tipo }) {
+  function mostrarLinea(principales, { linea, horarios, tipo, paradas }) {
     const de = (sentido) => principales.find((f) => f.properties.sentido === sentido);
     const [ida, retorno] = [de("ida"), de("retorno")];
+    // Las paradas registradas de cada sentido, con el color de su sentido.
+    poner(
+      "paradasLinea",
+      coleccion(
+        [ida, retorno].filter(Boolean).flatMap((f) =>
+          paradasDeRecorrido(f, paradas).map((p) => ({
+            type: "Feature",
+            properties: { nombre: p.nombre, sentido: f.properties.sentido, hacia: f.properties.hacia },
+            geometry: { type: "Point", coordinates: [p.lon, p.lat] },
+          })),
+        ),
+      ),
+    );
     lineaActual = { linea, tipo, horarios };
     // A es donde empieza la ida (y termina el retorno); B, a donde va la ida.
     const extremos = ida ? puntosDeTrazado(ida.geometry) : [];
@@ -858,13 +927,13 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
      * Dibuja una línea (o la quita con null): cada sentido con su color y sus flechas, las
      * puntas A y B, un selector de sentido y los buses en camino, estimados con el horario.
      */
-    resaltarLinea(trazados, { linea, horarios, tipo } = {}) {
+    resaltarLinea(trazados, { linea, horarios, tipo, paradas } = {}) {
       etiquetaFlotante.remove();
       limpiarLinea();
       if (!trazados) return;
       const principales = trazados.filter((t) => t.properties.tipo !== "alargue");
       trazar("linea", trazados);
-      mostrarLinea(principales, { linea, horarios, tipo });
+      mostrarLinea(principales, { linea, horarios, tipo, paradas });
       // Que el selector de sentido no tape el final del recorrido.
       encuadrar(caja(principales.length ? principales : trazados), {
         top: 40,

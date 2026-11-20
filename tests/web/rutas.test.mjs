@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
 
-import { planificar, prepararLineas, proyectar, tramo } from "../../web/rutas.js";
+import { paradasDeRecorrido, planificar, prepararLineas, proyectar, tramo } from "../../web/rutas.js";
 
 const enCuenca = (iso) => new Date(`${iso}-05:00`);
 const lunes10h = enCuenca("2026-11-09T10:00");
@@ -103,4 +103,21 @@ test("cada tramo en bus trae su sentido y el recorrido entero para estimar sus b
   assert.ok(bus.largo > 6000 && bus.metrosSubida < bus.metrosBajada && bus.metrosBajada <= bus.largo);
   assert.deepEqual(bus.trazado[0].map((x) => Math.round(x * 1000)), [-79030, -2900]);
   assert.deepEqual(bus.trazado.at(-1).map((x) => Math.round(x * 1000)), [-78970, -2900]);
+});
+
+test("las paradas de un recorrido: a menos de 25 m, en orden y sin las de los extremos", () => {
+  const parada = (id, lon, lat) => ({ type: "Feature", properties: { id, nombre: `P${id}` }, geometry: { type: "Point", coordinates: [lon, lat] } });
+  const paradas = {
+    features: [
+      parada(1, -78.99, -2.9001), // sobre la línea, a unos 11 m
+      parada(2, -79.02, -2.9), // sobre la línea, antes que la 1
+      parada(3, -79.0, -2.901), // a unos 110 m: no
+      parada(4, -79.03, -2.9), // en la terminal de salida: no
+    ],
+  };
+  const ida = lineas.features[0]; // 7 de oeste a este
+  assert.deepEqual(paradasDeRecorrido(ida, paradas).map((p) => p.id), [2, 1]);
+  const retorno = lineas.features[1]; // al revés: el mismo par, en el otro orden
+  assert.deepEqual(paradasDeRecorrido(retorno, paradas).map((p) => p.id), [1, 2]);
+  assert.deepEqual(paradasDeRecorrido(ida, null), []);
 });
