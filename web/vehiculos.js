@@ -71,3 +71,19 @@ export function busesEnCamino(horario, largoMetros, fecha = new Date(), velocida
   }
   return metros;
 }
+
+/**
+ * Minutos que faltan para que el próximo bus pase a `metros` del inicio del recorrido
+ * (la parada donde se sube), o null si hoy ya no sale ninguno que llegue.
+ */
+export function minutosAlProximo(horario, largoMetros, metros, fecha = new Date(), velocidadKmH = VELOCIDAD_KMH) {
+  if (!horario?.inicio || !horario?.fin || !horario?.intervalo_min || !(largoMetros > 0)) return null;
+  const ahora = minutosDelDia(fecha);
+  const viaje = (Math.min(Math.max(metros, 0), largoMetros) / 1000 / velocidadKmH) * 60;
+  const inicio = aMinutos(horario.inicio);
+  const cada = horario.intervalo_min;
+  const k = Math.max(0, Math.ceil((ahora - viaje - inicio) / cada));
+  const salida = inicio + k * cada;
+  if (salida > aMinutos(horario.fin)) return null;
+  return salida + viaje - ahora;
+}

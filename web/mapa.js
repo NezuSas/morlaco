@@ -5,7 +5,7 @@
 
 import { CENTRO_CUENCA, LIMITES_CUENCA, horaLegible, nombreDia, nombreParada, puntoEnGeometria } from "./logica.js";
 import { listar, t } from "./textos.js";
-import { busesEnCamino, medirRecorrido, puntoEnRecorrido, puntosDeTrazado } from "./vehiculos.js";
+import { busesEnCamino, medirRecorrido, minutosAlProximo, puntoEnRecorrido, puntosDeTrazado } from "./vehiculos.js";
 
 // MapLibre se carga en index.html, con versión fija y hash de integridad.
 // Mapas vectoriales de OpenFreeMap, hechos con datos de OpenStreetMap: sin clave ni cuenta.
@@ -615,6 +615,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
   let busesMarcas = [];
   let reloj = 0;
   let lineaActual = null;
+  let enRuta = false; // los buses de la opción de "¿qué bus me lleva?"
 
   function limpiarLinea() {
     cancelAnimationFrame(animaciones.get("linea"));
@@ -626,6 +627,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
     busesMarcas = [];
     recorridos = [];
     lineaActual = null;
+    enRuta = false;
     panel.hidden = true;
     contenedor.classList.remove("con-linea");
     elegirSentido("ambos");
@@ -664,12 +666,19 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
         );
       }
     }
-    recorridos = [ida, retorno].filter(Boolean).map((f) => ({
-      sentido: f.properties.sentido,
-      hacia: f.properties.hacia,
-      horario: horarios?.[f.properties.sentido],
-      medida: medirRecorrido(puntosDeTrazado(f.geometry)),
-    }));
+    recorridos = [ida, retorno].filter(Boolean).map((f) => {
+      const medida = medirRecorrido(puntosDeTrazado(f.geometry));
+      return {
+        linea,
+        sentido: f.properties.sentido,
+        color: f.properties.sentido,
+        hacia: f.properties.hacia,
+        horario: horarios?.[f.properties.sentido],
+        medida,
+        largo: medida.total,
+        hasta: 1,
+      };
+    });
 
     // El selector: los dos sentidos con su color, y la nota de los buses estimados.
     const botones = [["ambos", t("sentidoAmbos")]].concat(
@@ -704,6 +713,35 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
       nota.hidden = true; // del tranvía no hay horario de salidas para estimar
       return;
     }
+    arrancarBuses();
+  }
+
+  /**
+   * Los buses de una opción de ruta: los de cada línea que se toma, en su sentido, desde
+   * que salen hasta donde uno se baja, y cuánto falta para que el próximo llegue a la parada.
+   */
+  function mostrarBusesDeRuta(tramos) {
+    recorridos = tramos.map((tramo) => ({
+      linea: tramo.linea,
+      sentido: tramo.sentido,
+      color: "retorno", // del azul de la ruta dibujada
+      hacia: tramo.hacia,
+      horario: tramo.horario,
+      medida: medirRecorrido(tramo.trazado),
+      largo: tramo.largo,
+      hasta: tramo.metrosBajada / tramo.largo,
+      metrosSubida: tramo.metrosSubida,
+    }));
+    enRuta = true;
+    const nota = document.createElement("p");
+    nota.className = "nota-buses";
+    panel.replaceChildren(nota);
+    panel.hidden = false;
+    contenedor.classList.add("con-linea");
+    arrancarBuses();
+  }
+
+  function arrancarBuses() {
     moverBuses();
     if (SIN_MOVIMIENTO) {
       reloj = setInterval(() => !document.hidden && moverBuses(), CADA_BUSES_QUIETO_MS);
@@ -735,13 +773,15 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
 
   /** Pone cada bus donde va ahora según el horario, y dice cuántos hay en camino. */
   function moverBuses() {
-    if (!lineaActual || lineaActual.tipo === "tranvia") return;
+    if (!enRuta && (!lineaActual || lineaActual.tipo === "tranvia")) return;
     const ahora = new Date();
     const posiciones = [];
     for (const r of recorridos) {
-      if (sentidoVisible !== "ambos" && sentidoVisible !== r.sentido) continue;
-      for (const metros of busesEnCamino(r.horario, r.medida.total, ahora)) {
-        posiciones.push({ ...puntoEnRecorrido(r.medida, metros), r });
+      if (!enRuta && sentidoVisible !== "ambos" && sentidoVisible !== r.sentido) continue;
+      for (const metros of busesEnCamino(r.horario, r.largo, ahora)) {
+        const fraccion = metros / r.largo;
+        if (fraccion > r.hasta) continue; // en una ruta, solo hasta donde uno se baja
+        posiciones.push({ ...puntoEnRecorrido(r.medida, fraccion * r.medida.total), r });
       }
     }
     while (busesMarcas.length < posiciones.length) busesMarcas.push(marcaDeBus());
@@ -756,12 +796,11 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
       nodo.style.setProperty("--rumbo", `${p.rumbo}deg`);
       bus.marca.setLngLat([p.lon, p.lat]);
       // El resto solo cambia cuando el marcador pasa a otro bus.
-      if (bus.de !== p.r || bus.linea !== lineaActual.linea) {
+      if (bus.de !== p.r) {
         bus.de = p.r;
-        bus.linea = lineaActual.linea;
-        nodo.classList.toggle("retorno", p.r.sentido === "retorno");
-        nodo.querySelector(".bus-numero").textContent = lineaActual.linea;
-        nodo.dataset.texto = t("busEstimado", { linea: lineaActual.linea, destino: p.r.hacia });
+        nodo.classList.toggle("retorno", p.r.color === "retorno");
+        nodo.querySelector(".bus-numero").textContent = p.r.linea;
+        nodo.dataset.texto = t("busEstimado", { linea: p.r.linea, destino: p.r.hacia });
       }
       if (!bus.puesta) {
         bus.marca.addTo(mapa);
@@ -769,6 +808,19 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
       }
     });
     const nota = panel.querySelector(".nota-buses");
+    if (enRuta) {
+      // Lo que importa en una ruta: cuándo llega el próximo bus a la parada.
+      const [primero] = recorridos;
+      const faltan = minutosAlProximo(primero.horario, primero.largo, primero.metrosSubida, ahora);
+      const texto =
+        faltan === null
+          ? t("rutaSinBusAhora", { linea: primero.linea })
+          : faltan < 1.5
+            ? t("rutaProximoBusYa", { linea: primero.linea })
+            : t("rutaProximoBus", { linea: primero.linea, minutos: Math.round(faltan) });
+      if (nota.textContent !== texto) nota.textContent = texto;
+      return;
+    }
     const sinHorario = recorridos.every((r) => r.horario === undefined);
     const texto = sinHorario
       ? t("busesSinHorario")
@@ -853,7 +905,14 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
       );
       poner("rutaPie", coleccion(pie));
       trazar("rutaBus", bus);
-      encuadrar(caja([...pie, ...bus], [[destino.lon, destino.lat]]), 40);
+      const conHorario = opcion.tramos.filter((t) => t.modo === "bus" && t.tipo !== "tranvia" && t.horario && t.largo > 0);
+      if (conHorario.length) mostrarBusesDeRuta(conHorario);
+      encuadrar(caja([...pie, ...bus], [[destino.lon, destino.lat]]), {
+        top: 40,
+        right: 40,
+        left: 40,
+        bottom: (panel.hidden ? 0 : panel.offsetHeight) + 40,
+      });
     },
     mostrar(punto, zona, cercanas) {
       etiquetaFlotante.remove();

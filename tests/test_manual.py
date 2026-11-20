@@ -109,3 +109,15 @@ def test_basura_regla_rural_en_los_dos_idiomas_con_fuente(basura):
     rural = basura["rural"]
     assert "08:00" in rural["es"] and "08:00" in rural["en"]
     assert rural["fuente"]["url"].startswith("https://emac.gob.ec/")
+
+
+def test_lugares_conocidos_en_cuenca_y_con_su_elemento_de_osm():
+    datos = json.loads((MANUAL / "lugares.json").read_text(encoding="utf-8"))
+    assert datos["metadata"]["fuente"] and datos["metadata"]["licencia"]
+    lugares = datos["lugares"]
+    assert len(lugares) >= 10
+    nombres = [lugar["nombre"] for lugar in lugares]
+    assert len(nombres) == len(set(nombres)), "hay nombres repetidos"
+    for lugar in lugares:
+        assert -3.0 < lugar["lat"] < -2.8 and -79.1 < lugar["lon"] < -78.9, lugar["nombre"]
+        assert lugar["osm"].split("/")[0] in {"node", "way", "relation"}, lugar["nombre"]

@@ -344,6 +344,12 @@ input[type="search"]:focus {
   cursor: pointer;
 }
 
+.sugerencias .tipo-sugerencia {
+  margin-left: 0.4rem;
+  color: var(--tinta-suave);
+  font-size: 0.85em;
+}
+
 .sugerencias li:hover,
 .sugerencias li[aria-selected="true"] {
   background: var(--cal);
@@ -2003,6 +2009,12 @@ button.linea[aria-pressed="true"] {
   box-shadow: 0 1px 4px rgb(0 0 0 / 0.22);
   color: var(--tinta);
   font: var(--t-0) / 1.35 var(--letra);
+}
+
+/* display: grid pisa el atributo hidden: sin esto, el panel no se ocultaba nunca. */
+.panel-linea[hidden],
+.nota-buses[hidden] {
+  display: none;
 }
 
 .panel-linea .sentidos {

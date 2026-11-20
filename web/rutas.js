@@ -121,6 +121,14 @@ function tramoBus(recorrido, subida, bajada, fecha, ajustes) {
     subida: subida.punto,
     bajada: bajada.punto,
     coords: tramo(recorrido, subida.recorrido, bajada.recorrido),
+    // Para estimar dónde van sus buses: el recorrido entero y dónde se sube y se baja.
+    sentido: recorrido.sentido,
+    largo: recorrido.acumulado.at(-1),
+    metrosSubida: subida.recorrido,
+    metrosBajada: bajada.recorrido,
+    get trazado() {
+      return tramo(recorrido, 0, recorrido.acumulado.at(-1));
+    },
   };
 }
 

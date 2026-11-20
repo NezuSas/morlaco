@@ -1,0 +1,167 @@
+{
+  "metadata": {
+    "titulo": "Lugares conocidos de Cuenca",
+    "nota": "Se mantiene a mano. Los lugares que más se buscan y que no son una esquina (terminal, mercados, hospitales, universidades, parques), para sugerirlos al escribir en la página sin preguntar a Nominatim, que no admite autocompletar. Las coordenadas son de OpenStreetMap; cada lugar lleva su elemento (osm) para revisarlo.",
+    "fuente": "https://www.openstreetmap.org",
+    "licencia": "ODbL 1.0, © colaboradores de OpenStreetMap",
+    "revisado": "2026-11-20"
+  },
+  "lugares": [
+    {
+      "nombre": "Terminal Terrestre",
+      "lat": -2.892163,
+      "lon": -78.993195,
+      "osm": "way/1080653214"
+    },
+    {
+      "nombre": "Aeropuerto Mariscal Lamar",
+      "lat": -2.889386,
+      "lon": -78.984949,
+      "osm": "way/399472303"
+    },
+    {
+      "nombre": "Parque Calderón",
+      "lat": -2.897394,
+      "lon": -79.004469,
+      "osm": "way/302980838"
+    },
+    {
+      "nombre": "Catedral de la Inmaculada",
+      "lat": -2.897326,
+      "lon": -79.005397,
+      "osm": "way/1081353723"
+    },
+    {
+      "nombre": "Mall del Río",
+      "lat": -2.91873,
+      "lon": -79.014587,
+      "osm": "way/109187160"
+    },
+    {
+      "nombre": "Millenium Plaza",
+      "lat": -2.905482,
+      "lon": -79.001923,
+      "osm": "way/379801762"
+    },
+    {
+      "nombre": "Monay Shopping",
+      "lat": -2.897323,
+      "lon": -78.977267,
+      "osm": "way/388586526"
+    },
+    {
+      "nombre": "Coral Hipermercados (Monay)",
+      "lat": -2.897719,
+      "lon": -78.976792,
+      "osm": "node/2029176637"
+    },
+    {
+      "nombre": "Mercado 10 de Agosto",
+      "lat": -2.900114,
+      "lon": -79.005856,
+      "osm": "way/1092758779"
+    },
+    {
+      "nombre": "Mercado 9 de Octubre",
+      "lat": -2.895385,
+      "lon": -79.001237,
+      "osm": "way/48864715"
+    },
+    {
+      "nombre": "Feria Libre",
+      "lat": -2.897569,
+      "lon": -79.027417,
+      "osm": "node/13231733886"
+    },
+    {
+      "nombre": "Hospital Vicente Corral Moscoso",
+      "lat": -2.911108,
+      "lon": -78.992463,
+      "osm": "way/305497117"
+    },
+    {
+      "nombre": "Hospital José Carrasco Arteaga (IESS)",
+      "lat": -2.89874,
+      "lon": -78.970124,
+      "osm": "way/109187251"
+    },
+    {
+      "nombre": "Hospital del Río",
+      "lat": -2.894411,
+      "lon": -78.96227,
+      "osm": "way/1078684446"
+    },
+    {
+      "nombre": "Universidad de Cuenca",
+      "lat": -2.90134,
+      "lon": -79.010109,
+      "osm": "relation/17453875"
+    },
+    {
+      "nombre": "Universidad del Azuay",
+      "lat": -2.919093,
+      "lon": -79.002447,
+      "osm": "relation/12835795"
+    },
+    {
+      "nombre": "Universidad Politécnica Salesiana",
+      "lat": -2.886194,
+      "lon": -78.989814,
+      "osm": "way/50552350"
+    },
+    {
+      "nombre": "Estadio Alejandro Serrano Aguilar",
+      "lat": -2.90662,
+      "lon": -79.005161,
+      "osm": "relation/9131140"
+    },
+    {
+      "nombre": "Parque de la Madre",
+      "lat": -2.904407,
+      "lon": -79.003531,
+      "osm": "way/48597754"
+    },
+    {
+      "nombre": "Parque El Paraíso",
+      "lat": -2.910514,
+      "lon": -78.988271,
+      "osm": "way/48597345"
+    },
+    {
+      "nombre": "Mirador de Turi",
+      "lat": -2.922318,
+      "lon": -79.010071,
+      "osm": "node/747791819"
+    },
+    {
+      "nombre": "Puente Roto",
+      "lat": -2.904105,
+      "lon": -79.001248,
+      "osm": "way/1044437702"
+    },
+    {
+      "nombre": "Plaza de San Francisco",
+      "lat": -2.898172,
+      "lon": -79.00632,
+      "osm": "relation/14387893"
+    },
+    {
+      "nombre": "Museo Pumapungo",
+      "lat": -2.906139,
+      "lon": -78.996844,
+      "osm": "node/6150639685"
+    },
+    {
+      "nombre": "Parque Industrial",
+      "lat": -2.876469,
+      "lon": -78.977688,
+      "osm": "relation/15902623"
+    },
+    {
+      "nombre": "Control Sur",
+      "lat": -2.923024,
+      "lon": -79.039205,
+      "osm": "node/12641906203"
+    }
+  ]
+}

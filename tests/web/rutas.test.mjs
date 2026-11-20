@@ -94,3 +94,13 @@ test("con los recorridos reales: del Parque Calderón al Mall del Río hay bus",
   assert.ok(opciones[0].minutos < 60, `${opciones[0].minutos} min`);
   assert.ok(ms < 1500, `tardó ${Math.round(ms)} ms`);
 });
+
+test("cada tramo en bus trae su sentido y el recorrido entero para estimar sus buses", () => {
+  const recorridos = prepararLineas(lineas, rutas, lunes10h);
+  const [mejor] = planificar({ lat: -2.9005, lon: -79.025 }, { lat: -2.8995, lon: -78.975 }, recorridos, { fecha: lunes10h });
+  const bus = mejor.tramos.find((t) => t.modo === "bus");
+  assert.equal(bus.sentido, "ida");
+  assert.ok(bus.largo > 6000 && bus.metrosSubida < bus.metrosBajada && bus.metrosBajada <= bus.largo);
+  assert.deepEqual(bus.trazado[0].map((x) => Math.round(x * 1000)), [-79030, -2900]);
+  assert.deepEqual(bus.trazado.at(-1).map((x) => Math.round(x * 1000)), [-78970, -2900]);
+});

@@ -1,7 +1,15 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { cambiarLugar, leerLugar, leerLugares, lugarDe, textoDeLugar } from "../../web/lugares.js";
+import {
+  cambiarLugar,
+  leerLugar,
+  leerLugares,
+  lugarDe,
+  lugarPorNombre,
+  sugerirLugares,
+  textoDeLugar,
+} from "../../web/lugares.js";
 
 const sucre = { lat: -2.89812, lon: -79.00301 };
 
@@ -33,4 +41,26 @@ test("lugarDe reconoce un lugar guardado a pocos metros", () => {
   const lugares = cambiarLugar(leerLugares(null), "trabajo", sucre, "Oficina");
   assert.equal(lugarDe({ lat: -2.89815, lon: -79.00305 }, lugares), "trabajo");
   assert.equal(lugarDe({ lat: -2.9, lon: -79.01 }, lugares), null);
+});
+
+const CONOCIDOS = [
+  { nombre: "Terminal Terrestre", lat: -2.892163, lon: -78.993195 },
+  { nombre: "Parque Calderón", lat: -2.897394, lon: -79.004469 },
+  { nombre: "Mercado 10 de Agosto", lat: -2.900114, lon: -79.005856 },
+];
+
+test("los lugares conocidos se sugieren con el comienzo de sus palabras, sin tildes", () => {
+  assert.deepEqual(sugerirLugares("termin", CONOCIDOS).map((l) => l.nombre), ["Terminal Terrestre"]);
+  assert.deepEqual(sugerirLugares("Terminal Terrestr", CONOCIDOS).map((l) => l.nombre), ["Terminal Terrestre"]);
+  assert.deepEqual(sugerirLugares("calderon", CONOCIDOS).map((l) => l.nombre), ["Parque Calderón"]);
+  assert.deepEqual(sugerirLugares("10 de ago", CONOCIDOS).map((l) => l.nombre), ["Mercado 10 de Agosto"]);
+  assert.deepEqual(sugerirLugares("te", CONOCIDOS), []); // muy corto
+  assert.deepEqual(sugerirLugares("aeropuerto", CONOCIDOS), []);
+});
+
+test("un lugar conocido se reconoce por su nombre exacto", () => {
+  assert.equal(lugarPorNombre("terminal terrestre", CONOCIDOS)?.lat, -2.892163);
+  assert.equal(lugarPorNombre("Parque Calderon", CONOCIDOS)?.nombre, "Parque Calderón");
+  assert.equal(lugarPorNombre("Terminal", CONOCIDOS), null);
+  assert.equal(lugarPorNombre("", CONOCIDOS), null);
 });

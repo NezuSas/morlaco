@@ -1,6 +1,7 @@
 // Lugares guardados en este navegador: el último punto consultado, "Casa" y "Trabajo".
 // Lógica pura (sin localStorage ni DOM), para poder probarla con `node --test`.
 
+import { palabras } from "./calles.js";
 import { distanciaMetros, puntoDesdeHash } from "./logica.js";
 
 export const LUGARES = ["casa", "trabajo"];
@@ -78,4 +79,29 @@ export function lugarDe(punto, lugares, maximo = 40) {
     if (metros <= maximo && (!mejor || metros < mejor.metros)) mejor = { clave, metros };
   }
   return mejor?.clave ?? null;
+}
+
+// ---------- Lugares conocidos (datos/manual/lugares.json) ----------
+
+const clave = (texto) => palabras(texto).join(" ");
+
+/**
+ * Los lugares conocidos que encajan con lo escrito: cada palabra escrita es el comienzo
+ * de alguna palabra del nombre ("termin terr" → Terminal Terrestre).
+ */
+export function sugerirLugares(texto, lugares, maximo = 4) {
+  const buscadas = palabras(texto);
+  if (!lugares?.length || buscadas.join("").length < 3) return [];
+  return lugares
+    .filter((l) => {
+      const delNombre = palabras(l.nombre);
+      return buscadas.every((b) => delNombre.some((p) => p.startsWith(b)));
+    })
+    .slice(0, maximo);
+}
+
+/** El lugar conocido con ese nombre exacto (sin tildes ni mayúsculas), o null. */
+export function lugarPorNombre(texto, lugares) {
+  const buscada = clave(texto);
+  return (buscada && lugares?.find((l) => clave(l.nombre) === buscada)) || null;
 }

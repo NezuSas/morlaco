@@ -1,7 +1,14 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { busesEnCamino, medirRecorrido, minutosDelDia, puntoEnRecorrido, puntosDeTrazado } from "../../web/vehiculos.js";
+import {
+  busesEnCamino,
+  medirRecorrido,
+  minutosAlProximo,
+  minutosDelDia,
+  puntoEnRecorrido,
+  puntosDeTrazado,
+} from "../../web/vehiculos.js";
 import { horariosDeHoy } from "../../web/buses.js";
 
 // 10:00 en Cuenca (UTC-5) de un miércoles.
@@ -74,4 +81,17 @@ test("cada sentido tiene su horario del día", () => {
   // Domingo: la ida no tiene servicio y del retorno no hay dato.
   assert.deepEqual(horariosDeHoy("3", rutas, new Date("2026-11-22T15:00:00Z")), { ida: null, retorno: null });
   assert.equal(horariosDeHoy("99", rutas, DIEZ), undefined);
+});
+
+test("cuánto falta para que el próximo bus llegue a la parada", () => {
+  // A las 10:00, con salidas cada 10 min y una parada a 2,5 km (10 min de viaje a 15 km/h):
+  // el que salió a las 09:50 pasa justo ahora.
+  assert.equal(Math.round(minutosAlProximo(HORARIO, 15_000, 2500, DIEZ)), 0);
+  // A las 10:01 ya pasó: el siguiente salió a las 10:00 y llega a las 10:10.
+  assert.equal(Math.round(minutosAlProximo(HORARIO, 15_000, 2500, new Date("2026-11-18T15:01:00Z"))), 9);
+  // Antes de la primera salida, el primero del día: 06:00 + 10 min de viaje.
+  assert.equal(Math.round(minutosAlProximo(HORARIO, 15_000, 2500, new Date("2026-11-18T10:30:00Z"))), 40);
+  // Después de la última salida que llega a la parada, ninguno.
+  assert.equal(minutosAlProximo(HORARIO, 15_000, 2500, new Date("2026-11-19T01:30:00Z")), null);
+  assert.equal(minutosAlProximo(undefined, 15_000, 2500, DIEZ), null);
 });

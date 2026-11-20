@@ -53,8 +53,9 @@ import {
 } from "./buses.js";
 import { planificar, prepararLineas } from "./rutas.js";
 import { SVG_BICI, crearMapa } from "./mapa.js";
+import { minutosAlProximo } from "./vehiculos.js";
 import { PAGINA_AIRE, URL_AIRE, URL_CLIMA, URL_UV, aireCercano, leerAire, leerClima, leerUv } from "./aire.js";
-import { LUGARES, cambiarLugar, leerLugar, leerLugares, lugarDe, textoDeLugar } from "./lugares.js";
+import { LUGARES, cambiarLugar, leerLugar, leerLugares, lugarDe, lugarPorNombre, sugerirLugares, textoDeLugar } from "./lugares.js";
 import { etiquetaIdioma, idioma, idiomaInicial, listar, t, usarIdioma } from "./textos.js";
 
 const DATOS = "../datos/";
@@ -983,7 +984,11 @@ function pasosDeOpcion(opcion, paradas) {
     if (tramo.modo === "bus") {
       const frecuencia = tramo.horario?.intervalo_min ? t("pasoFrecuencia", { minutos: tramo.horario.intervalo_min }) : "";
       const datos = { linea: tramo.linea, hacia: tramo.hacia, distancia: formatoDistancia(tramo.metros) };
-      pasos.push((tramo.tipo === "tranvia" ? t("pasoTomarTranvia", datos) : t("pasoTomar", datos)) + frecuencia);
+      // Como en las apps de transporte: cuánto falta para el próximo, estimado con el horario.
+      const faltan = tramo.tipo === "tranvia" ? null : minutosAlProximo(tramo.horario, tramo.largo, tramo.metrosSubida);
+      const proximo =
+        faltan === null ? "" : faltan < 1.5 ? t("pasoProximoYa") : t("pasoProximo", { minutos: Math.round(faltan) });
+      pasos.push((tramo.tipo === "tranvia" ? t("pasoTomarTranvia", datos) : t("pasoTomar", datos)) + frecuencia + proximo);
       return;
     }
     const siguiente = tramos[i + 1];
@@ -1123,15 +1128,20 @@ function autocompletar(campo, lista, alCompletar) {
     campo.value = sugerencia.texto;
     cerrar();
     campo.focus();
-    // Con las dos calles ya se puede buscar; con una sola, se sigue escribiendo ("y ...").
-    if (interpretarBusqueda(sugerencia.texto).calles.length === 2) alCompletar();
+    // Un lugar o dos calles ya se pueden buscar; con una sola, se sigue escribiendo ("y ...").
+    if (sugerencia.lugar || interpretarBusqueda(sugerencia.texto).calles.length === 2) alCompletar();
   };
 
   const pintar = () => {
     if (!sugerencias.length) return cerrar();
     lista.replaceChildren(
       ...sugerencias.map((sugerencia, i) => {
-        const li = elemento("li", { id: `${lista.id}-${i}`, role: "option", "aria-selected": "false" }, sugerencia.nombre);
+        const li = elemento(
+          "li",
+          { id: `${lista.id}-${i}`, role: "option", "aria-selected": "false" },
+          sugerencia.nombre,
+          sugerencia.lugar ? elemento("span", { class: "tipo-sugerencia" }, t("sugerenciaLugar")) : null,
+        );
         // mousedown sin efecto: así el campo no pierde el foco antes del clic.
         li.addEventListener("mousedown", (evento) => evento.preventDefault());
         li.addEventListener("click", () => usar(sugerencia));
@@ -1153,7 +1163,11 @@ function autocompletar(campo, lista, alCompletar) {
     }
     if (pedido !== version || document.activeElement !== campo) return;
     const texto = campo.value;
-    sugerencias = sugerirCalles(texto, indice);
+    const lugares = await cargarLugaresConocidos();
+    if (pedido !== version || document.activeElement !== campo) return;
+    // Primero los lugares (terminal, mercados, hospitales...) y después las calles.
+    const deLugares = sugerirLugares(texto, lugares).map((l) => ({ nombre: l.nombre, texto: l.nombre, lugar: l }));
+    sugerencias = [...deLugares, ...sugerirCalles(texto, indice)].slice(0, 7);
     // Si lo escrito ya es la única sugerencia, no hace falta mostrarla.
     if (sugerencias.length === 1 && sugerencias[0].texto === texto) sugerencias = [];
     pintar();
@@ -1208,7 +1222,24 @@ const LARGO_MAXIMO_SIN_CRUCE = 600;
  * Nominatim, que conoce lugares como "Mall del Río" o "Parque Calderón".
  * Devuelve { punto, texto } o { error, resaltar? }.
  */
+let lugaresConocidos = null;
+
+/** La lista de lugares conocidos, pedida una vez; vacía si no se puede leer. */
+async function cargarLugaresConocidos() {
+  lugaresConocidos ??= cargarJson("manual/lugares.json")
+    .then((d) => d.lugares ?? [])
+    .catch(() => {
+      lugaresConocidos = null; // se reintenta la próxima vez
+      return [];
+    });
+  return lugaresConocidos;
+}
+
 async function ubicarTexto(texto) {
+  // Un lugar conocido se ubica aquí mismo, sin preguntar a Nominatim.
+  const conocido = lugarPorNombre(texto, await cargarLugaresConocidos());
+  if (conocido) return { punto: { lat: conocido.lat, lon: conocido.lon }, texto: conocido.nombre };
+
   const { calles, tieneNumero } = interpretarBusqueda(texto);
   let indice = null;
   try {
