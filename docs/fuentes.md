@@ -131,6 +131,16 @@ turno y lo dice.
   ("Tarqui y Sangurima"), y la del shapefile se desvía por la Estévez de Toral. Desde el 2026-11-19 las líneas 4
   y 27 se toman de la IDE. El alargue de la 4 a Narancay Alto sigue saliendo del shapefile: sale y vuelve a la
   plataforma de Narancay, donde empieza el trazado de la IDE.
+- **Alargues como variantes (2026-11-20).** El shapefile solo trae el tramo extra de cada alargue, a veces en dos
+  piezas (ida hasta el barrio y vuelta), y en los de terminal el rótulo de sentido no siempre es el del bus. La
+  página (`variantesDeLinea` en `web/rutas.js`) junta las piezas que se continúan y las pega a la ruta normal
+  donde encajan, como desvío, prolongación o comienzo. Los que no tocan su línea se unen a ella al generar los
+  datos (`unir_alargues` en `src/morlaco/fuentes/trazados.py`) por las calles del índice de OpenStreetMap: el
+  camino más corto que menos cambia de calle, de 3 km como mucho, anotado en `union_calles_m`. La 8 a Dolorosa
+  empieza en De los Ladrilleros y se une por el Camino del Tejar (unos 2 km), como hace el bus; la 18 a Yunga
+  queda a más de 3 km y no se muestra. Las variantes entran en "¿qué bus me lleva?" como opción aparte, solo si
+  ahorran caminar. Los recorridos oficiales de 2026 no mencionan los alargues ni hay datos de qué buses los
+  hacen; la página lo avisa. Pedir el recorrido real a la EMOV.
 - **Horarios.** Coinciden en 34 de 38 líneas. Difieren en la 7, la 11B, la 17 y la 100; el CSV de marzo de 2025
   parece más nuevo (la 100 tiene intervalos más cortos).
 - **Paradas.** Son conjuntos distintos. La IDE tiene 1.303 paradas, con foto, número de líneas y frecuencia, pero

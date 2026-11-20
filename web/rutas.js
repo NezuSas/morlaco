@@ -29,10 +29,21 @@ const aMetros = ([lon, lat]) => [lon * METROS_POR_GRADO * COS_CUENCA, lat * METR
 const aGrados = ([x, y]) => [x / (METROS_POR_GRADO * COS_CUENCA), y / METROS_POR_GRADO];
 const distancia = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
 
-/** Prepara cada recorrido (línea y sentido) en metros, con la distancia acumulada. */
+/**
+ * Prepara cada recorrido (línea y sentido) en metros, con la distancia acumulada. Además de
+ * la ruta normal, cada variante (un alargue unido a la ruta) es un recorrido más: así una
+ * ruta hasta el Camino del Tejar puede ir en la 8 que sigue a Dolorosa.
+ */
 export function prepararLineas(lineas, rutas = [], fecha = new Date()) {
-  return lineas.features
-    .filter((f) => f.properties.tipo !== "alargue")
+  const porLinea = new Map();
+  for (const f of lineas.features) {
+    if (!porLinea.has(f.properties.linea)) porLinea.set(f.properties.linea, []);
+    porLinea.get(f.properties.linea).push(f);
+  }
+  const variantes = [...porLinea.values()].flatMap((trazados) =>
+    trazados.some((f) => f.properties.tipo === "alargue") ? variantesDeLinea(trazados) : [],
+  );
+  return [...lineas.features.filter((f) => f.properties.tipo !== "alargue"), ...variantes]
     .map((f) => {
       const coords = f.geometry.type === "LineString" ? f.geometry.coordinates : f.geometry.coordinates.flat();
       const puntos = coords.map(aMetros);
@@ -44,6 +55,7 @@ export function prepararLineas(lineas, rutas = [], fecha = new Date()) {
         tipo: p.tipo,
         hacia: p.hacia,
         sentido: p.sentido,
+        variante: p.variante ?? null,
         puntos,
         acumulado,
         horario: p.tipo === "tranvia" ? undefined : horarioDeHoy(p.linea, rutas, fecha),
@@ -106,6 +118,11 @@ function espera(horario, fecha, ajustes) {
   return horario.intervalo_min ? horario.intervalo_min / 2 : ajustes.esperaSinDatos;
 }
 
+function esperaVariante(horario, fecha, ajustes) {
+  const media = espera(horario, fecha, ajustes);
+  return media === null ? null : media * 2;
+}
+
 const minutosPie = (metros, ajustes) => metros / ((ajustes.velocidadPie * 1000) / 60);
 const minutosBus = (metros, ajustes) => metros / ((ajustes.velocidadBus * 1000) / 60);
 
@@ -115,8 +132,10 @@ function tramoBus(recorrido, subida, bajada, fecha, ajustes) {
     linea: recorrido.linea,
     tipo: recorrido.tipo,
     hacia: recorrido.hacia,
+    variante: recorrido.variante,
     horario: recorrido.horario,
-    espera: espera(recorrido.horario, fecha, ajustes),
+    // En una variante no se sabe cuántos buses la hacen: se espera la frecuencia entera.
+    espera: recorrido.variante ? esperaVariante(recorrido.horario, fecha, ajustes) : espera(recorrido.horario, fecha, ajustes),
     metros: bajada.recorrido - subida.recorrido,
     subida: subida.punto,
     bajada: bajada.punto,
@@ -228,19 +247,37 @@ export function planificar(origen, destino, recorridos, { fecha = new Date(), aj
     const tramos = [tramoPie(origen, destino, recta * 1.3)]; // las calles no van en línea recta
     opciones.push({ tipo: "pie", tramos, ...totalizar(tramos, ajustes) });
   }
-  // Una sola opción por línea (o pareja de líneas): la más rápida.
-  const clave = (o) => o.tramos.filter((t) => t.modo === "bus").map((t) => t.linea).join(">") || "pie";
+  // Una sola opción por línea (o pareja de líneas): la más rápida. Una variante cuenta aparte:
+  // es otro viaje (te deja en otro lado, pero solo la hacen algunos buses).
+  const clave = (o) =>
+    o.tramos
+      .filter((t) => t.modo === "bus")
+      .map((t) => (t.variante ? `${t.linea}~${t.variante}` : t.linea))
+      .join(">") || "pie";
   const mejores = new Map();
   for (const o of opciones) {
     const actual = mejores.get(clave(o));
     if (!actual || o.minutos < actual.minutos) mejores.set(clave(o), o);
   }
-  // Si caminar tarda casi lo mismo que el bus (3 minutos de diferencia), mejor caminar.
+  // Una variante solo vale si te hace caminar bastante menos que la ruta normal de su línea.
+  const aPie = (o) => o.tramos.filter((t) => t.modo === "caminar").reduce((s, t) => s + t.metros, 0);
+  const lineas = (o) => o.tramos.filter((t) => t.modo === "bus").map((t) => t.linea).join(">");
+  const conVariante = (o) => o.tramos.some((t) => t.variante);
+  const normales = [...mejores.values()].filter((o) => !conVariante(o));
+  const utiles = [...mejores.values()].filter(
+    (o) =>
+      !conVariante(o) ||
+      !normales.some((n) => lineas(n) === lineas(o) && aPie(n) <= aPie(o) + AHORRO_VARIANTE_M),
+  );
+  // Si caminar tarda casi lo mismo que el bus (3 minutos de diferencia), mejor caminar; a
+  // igual tiempo, primero la que menos se camina.
   const orden = (o) => o.minutos - (o.tipo === "pie" ? 3 : 0);
-  return [...mejores.values()]
-    .sort((a, b) => a.fueraDeHorario - b.fueraDeHorario || orden(a) - orden(b))
+  return utiles
+    .sort((a, b) => a.fueraDeHorario - b.fueraDeHorario || orden(a) - orden(b) || aPie(a) - aPie(b))
     .slice(0, ajustes.maximoOpciones);
 }
+
+const AHORRO_VARIANTE_M = 150;
 
 export const DISTANCIA_PARADA_M = 25; // la misma regla que usa el GTFS (src/morlaco/gtfs.py)
 
@@ -274,6 +311,99 @@ export function alarguesUnidos(trazados, maximo = ALARGUE_UNIDO_M) {
       principales.some((r) => (proyectar({ lat, lon }, r)?.distancia ?? Infinity) <= maximo),
     );
   });
+}
+
+export const EXTREMO_M = 1500; // cerca del comienzo o del final de una ruta
+
+const enGrados = (a, b) => distancia(aMetros(a), aMetros(b));
+
+/**
+ * Las variantes de una línea: cada alargue unido a la ruta normal, como una ruta completa.
+ *
+ * El archivo municipal solo trae los tramos extra de cada alargue, a veces en dos piezas:
+ * la 8 a El Rosal tiene una "ida" que sale de la línea hasta El Rosal y un "retorno" que
+ * vuelve de El Rosal al mismo punto. Las piezas de un barrio que se continúan (una termina
+ * donde empieza la otra) se juntan en un solo viaje de ida y vuelta. Luego cada viaje se
+ * pega a la ruta donde encaja, en cualquiera de los dos sentidos:
+ *   - un desvío: sale de la ruta y vuelve a ella (también al mismo punto);
+ *   - una prolongación: sale cerca del final de una ruta y se queda en el barrio;
+ *   - un comienzo: viene del barrio y entra cerca del comienzo de una ruta;
+ *   - una rama: sale de la ruta de su sentido y se queda en el barrio.
+ * Lo que no toca la línea (a más de 150 m) se deja fuera: no se sabe por dónde llega el bus.
+ */
+export function variantesDeLinea(trazados, maximo = ALARGUE_UNIDO_M) {
+  const principales = trazados
+    .filter((f) => f.properties.tipo !== "alargue")
+    .map((f) => {
+      const ruta = enMetros(f);
+      return { f, ruta, total: ruta.acumulado.at(-1) ?? 0 };
+    });
+  const porBarrio = new Map();
+  for (const alargue of trazados.filter((f) => f.properties.tipo === "alargue")) {
+    const coords = enMetros(alargue).coords;
+    if (coords.length < 2) continue;
+    const { hacia } = alargue.properties;
+    if (!porBarrio.has(hacia)) porBarrio.set(hacia, []);
+    porBarrio.get(hacia).push({ coords, sentido: alargue.properties.sentido, barrio: coords.at(-1) });
+  }
+
+  const salida = [];
+  for (const [hacia, piezas] of porBarrio) {
+    // Primero los viajes de ida y vuelta (dos piezas que se continúan), después cada pieza.
+    const viajes = [];
+    for (const a of piezas) {
+      for (const b of piezas) {
+        if (a !== b && enGrados(a.coords.at(-1), b.coords[0]) <= maximo) {
+          viajes.push({ coords: [...a.coords, ...b.coords], sentido: a.sentido, barrio: a.coords.at(-1) });
+        }
+      }
+    }
+    const linea = trazados[0].properties.linea;
+    for (const c of principales) {
+      const sentido = c.f.properties.sentido;
+      const cerca = (punto) => {
+        const [lon, lat] = punto;
+        const q = proyectar({ lat, lon }, c.ruta);
+        return q && q.distancia <= maximo ? q.recorrido : null;
+      };
+      let elegida = null;
+      for (const viaje of [...viajes, ...piezas]) {
+        const sale = cerca(viaje.coords[0]);
+        const entra = cerca(viaje.coords.at(-1));
+        const { coords } = viaje;
+        if (sale !== null && entra !== null && entra >= sale - 300) {
+          elegida = { coords: [...tramo(c.ruta, 0, sale), ...coords, ...tramo(c.ruta, Math.max(sale, entra), c.total)], empieza: false, termina: false };
+        } else if (sale !== null && entra === null && c.total - sale <= EXTREMO_M) {
+          elegida = { coords: [...tramo(c.ruta, 0, sale), ...coords], empieza: false, termina: true };
+        } else if (entra !== null && sale === null && entra <= EXTREMO_M) {
+          elegida = { coords: [...coords, ...tramo(c.ruta, entra, c.total)], empieza: true, termina: false };
+        } else if (sale !== null && entra === null && viaje.sentido === sentido && viajes.length === 0) {
+          elegida = { coords: [...tramo(c.ruta, 0, sale), ...coords], empieza: false, termina: true };
+        }
+        if (elegida) {
+          elegida.barrio = viaje.barrio;
+          break;
+        }
+      }
+      if (!elegida) continue;
+      salida.push({
+        type: "Feature",
+        properties: {
+          linea,
+          tipo: "linea",
+          sentido,
+          hacia: elegida.termina ? hacia : c.f.properties.hacia,
+          variante: hacia,
+          // Para las puntas: si empieza o termina en el barrio, y dónde queda el barrio.
+          empiezaEnAlargue: elegida.empieza,
+          terminaEnAlargue: elegida.termina,
+          barrio: elegida.barrio,
+        },
+        geometry: { type: "LineString", coordinates: elegida.coords },
+      });
+    }
+  }
+  return salida;
 }
 
 export function paradasDeRecorrido(feature, paradas, maximo = DISTANCIA_PARADA_M) {

@@ -19,8 +19,10 @@ desvía por la Estévez de Toral.
 
 from __future__ import annotations
 
+import heapq
 import io
 import json
+import math
 import re
 import zipfile
 from typing import Any
@@ -36,10 +38,15 @@ from morlaco.geo import utm_a_geograficas
 _PREFIJO_ALARGUE = re.compile(r"^ALARGUE\s+(?:IDA?N?|RETORNO|ID)?\s*", re.IGNORECASE)
 _PREFIJO_LINEA = re.compile(r"^(L|A|T)(\d+[A-Z]?)\s+(.*)$")
 
+_M_GRADO = 111_320
+_COS = math.cos(math.radians(-2.9))
+
 IDE_WFS = "https://ide.cuenca.gob.ec/geoserver/ows"
 IDE_PAGINA = f"{IDE_WFS}?service=WFS&request=GetCapabilities"
 # Líneas cuyo trazado de la IDE es más nuevo que el del shapefile (comparado el 2026-11-19).
 LINEAS_IDE = ("4", "27")
+# El índice de calles de Morlaco (OpenStreetMap), para unir los alargues sueltos a su línea.
+CALLES = "https://nezusas.github.io/morlaco/datos/calles/calles.geojson"
 _ORDEN_TIPO = {"linea": 0, "alimentador": 1, "tranvia": 2, "alargue": 3}
 
 
@@ -235,3 +242,177 @@ def reemplazar_lineas(
         if not (f["properties"]["tipo"] == "linea" and f["properties"]["linea"] in lineas)
     ]
     return ordenar([*quedan, *(f for f in nuevas if f["properties"]["linea"] in lineas)])
+
+
+# ---------- Alargues sueltos: unirlos a su línea por las calles ----------
+
+# Un alargue cuyo tramo empieza o termina a esta distancia de su línea ya está unido.
+UNIDO_M = 150
+# Más allá de esto no se une: sería inventar un recorrido.
+UNION_MAXIMA_M = 3000
+# Vértices de calles a menos de esto se toman como el mismo cruce (el índice de calles
+# está simplificado y los cruces no siempre comparten el punto).
+_CRUCE_M = 12
+# Un vértice de calle a menos de esto de la línea es un lugar donde el bus puede salir de ella.
+_SOBRE_LINEA_M = 25
+# Lo que "cuesta" cambiar de calle: un bus sigue por la misma vía antes que zigzaguear por
+# calles pequeñas para ahorrar unos metros (la 8 a Dolorosa sigue por el Camino del Tejar).
+_CAMBIO_DE_CALLE_M = 400
+
+
+def _metros(a: list[float], b: list[float]) -> float:
+    return math.hypot((a[0] - b[0]) * _M_GRADO * _COS, (a[1] - b[1]) * _M_GRADO)
+
+
+def _a_segmento(p: list[float], a: list[float], b: list[float]) -> float:
+    ax, ay = (a[0] - p[0]) * _M_GRADO * _COS, (a[1] - p[1]) * _M_GRADO
+    bx, by = (b[0] - p[0]) * _M_GRADO * _COS, (b[1] - p[1]) * _M_GRADO
+    dx, dy = bx - ax, by - ay
+    largo2 = dx * dx + dy * dy
+    t = 0.0 if not largo2 else max(0.0, min(1.0, -(ax * dx + ay * dy) / largo2))
+    return math.hypot(ax + t * dx, ay + t * dy)
+
+
+def _a_linea(p: list[float], puntos: list[list[float]]) -> float:
+    tramos = zip(puntos, puntos[1:], strict=False)
+    return min((_a_segmento(p, a, b) for a, b in tramos), default=math.inf)
+
+
+def _puntos(geometria: dict[str, Any]) -> list[list[float]]:
+    if geometria["type"] == "LineString":
+        return geometria["coordinates"]
+    return [p for parte in geometria["coordinates"] for p in parte]
+
+
+class _Calles:
+    """El índice de calles como grafo: vértices y tramos (con el nombre de su calle), con los
+    cruces unidos."""
+
+    def __init__(self, calles: dict[str, Any]):
+        self.puntos: list[list[float]] = []
+        self.vecinos: list[list[tuple[int, float, str | None]]] = []
+        indice: dict[tuple[float, float], int] = {}
+
+        def nodo(p: list[float]) -> int:
+            clave = (round(p[0], 5), round(p[1], 5))
+            if clave not in indice:
+                indice[clave] = len(self.puntos)
+                self.puntos.append([clave[0], clave[1]])
+                self.vecinos.append([])
+            return indice[clave]
+
+        for calle in calles.get("features", []):
+            nombre = (calle.get("properties") or {}).get("nombre")
+            g = calle.get("geometry") or {}
+            partes = g.get("coordinates", [])
+            if g.get("type") == "LineString":
+                partes = [partes]
+            for parte in partes:
+                for a, b in zip(parte, parte[1:], strict=False):
+                    i, j = nodo(a), nodo(b)
+                    if i != j:
+                        d = _metros(a, b)
+                        self.vecinos[i].append((j, d, nombre))
+                        self.vecinos[j].append((i, d, nombre))
+        # Cruces: vértices muy cercanos de calles distintas.
+        celda = 0.0002
+        rejilla: dict[tuple[int, int], list[int]] = {}
+        for i, (lon, lat) in enumerate(self.puntos):
+            rejilla.setdefault((int(lon / celda), int(lat / celda)), []).append(i)
+        for (cx, cy), nodos in rejilla.items():
+            alrededor = [(cx + dx, cy + dy) for dx in (-1, 0, 1) for dy in (-1, 0, 1)]
+            cerca = [k for c in alrededor for k in rejilla.get(c, [])]
+            for i in nodos:
+                for k in cerca:
+                    if i < k and (d := _metros(self.puntos[i], self.puntos[k])) <= _CRUCE_M:
+                        self.vecinos[i].append((k, d, None))
+                        self.vecinos[k].append((i, d, None))
+
+    def mas_cercano(self, p: list[float], maximo: float = 60) -> int | None:
+        mejor = min(range(len(self.puntos)), key=lambda i: _metros(p, self.puntos[i]), default=None)
+        return mejor if mejor is not None and _metros(p, self.puntos[mejor]) <= maximo else None
+
+    def camino(self, desde: int, metas: set[int], maximo: float) -> list[list[float]] | None:
+        """El camino por las calles desde un vértice hasta cualquiera de las metas que menos
+        cuesta: sus metros más _CAMBIO_DE_CALLE_M por cada vez que cambia de calle. Su largo
+        real no pasa de `maximo`."""
+        Estado = tuple[int, str | None]
+        inicio: Estado = (desde, None)
+        costo: dict[Estado, float] = {inicio: 0.0}
+        previo: dict[Estado, Estado] = {}
+        cola: list[tuple[float, float, int, str]] = [(0.0, 0.0, desde, "")]
+        while cola:
+            c, largo, i, calle = heapq.heappop(cola)
+            actual: Estado = (i, calle or None)
+            if c > costo.get(actual, math.inf) or largo > maximo:
+                continue
+            if i in metas:
+                camino = [actual]
+                while camino[-1] in previo:
+                    camino.append(previo[camino[-1]])
+                return [self.puntos[k] for k, _ in camino]  # de la meta (la línea) al inicio
+            for j, w, nombre in self.vecinos[i]:
+                cambia = bool(calle and nombre and nombre != calle)
+                siguiente: Estado = (j, nombre or calle or None)
+                nuevo = c + w + (_CAMBIO_DE_CALLE_M if cambia else 0)
+                if nuevo < costo.get(siguiente, math.inf):
+                    costo[siguiente] = nuevo
+                    previo[siguiente] = actual
+                    heapq.heappush(cola, (nuevo, largo + w, j, siguiente[1] or ""))
+        return None
+
+
+def unir_alargues(
+    entidades: list[dict[str, Any]], calles: dict[str, Any]
+) -> tuple[list[dict[str, Any]], list[str]]:
+    """Une a su línea por las calles los alargues que no la tocan (el camino más corto que
+    menos cambia de calle).
+
+    En el shapefile de 2022 algunos alargues empiezan lejos de su línea: el de la 8 a
+    Dolorosa empieza en De los Ladrilleros, y la línea baja del Camino del Tejar a la
+    Ordóñez Lasso casi 900 m antes; el bus de Dolorosa sigue por el Camino del Tejar. Aquí
+    se completa ese tramo por las calles (como mucho UNION_MAXIMA_M) y se anota en la
+    propiedad "union_calles_m". Devuelve las entidades y la lista de alargues unidos."""
+    grafo: _Calles | None = None
+    principales: dict[str, list[list[list[float]]]] = {}
+    for f in entidades:
+        if f["properties"]["tipo"] != "alargue":
+            principales.setdefault(f["properties"]["linea"], []).append(_puntos(f["geometry"]))
+    salida, unidos = [], []
+    for f in entidades:
+        p = f["properties"]
+        lineas = principales.get(p["linea"], [])
+        if p["tipo"] != "alargue" or not lineas:
+            salida.append(f)
+            continue
+        puntos = _puntos(f["geometry"])
+        a_linea = [min(_a_linea(e, linea) for linea in lineas) for e in (puntos[0], puntos[-1])]
+        if min(a_linea) <= UNIDO_M:
+            salida.append(f)
+            continue
+        grafo = grafo or _Calles(calles)
+        # Se une por el extremo más cercano a la línea.
+        al_inicio = a_linea[0] <= a_linea[1]
+        extremo = puntos[0] if al_inicio else puntos[-1]
+        desde = grafo.mas_cercano(extremo)
+        metas = {
+            i
+            for i, q in enumerate(grafo.puntos)
+            if min(_a_linea(q, linea) for linea in lineas) <= _SOBRE_LINEA_M
+        }
+        camino = grafo.camino(desde, metas, UNION_MAXIMA_M) if desde is not None and metas else None
+        if not camino:
+            salida.append(f)
+            continue
+        union = camino if al_inicio else camino[::-1]
+        coords = [*union, *puntos] if al_inicio else [*puntos, *union]
+        largo = sum(_metros(a, b) for a, b in zip(union, union[1:], strict=False))
+        salida.append(
+            {
+                **f,
+                "properties": {**p, "union_calles_m": round(largo)},
+                "geometry": {"type": "LineString", "coordinates": coords},
+            }
+        )
+        unidos.append(f"{p['linea']} {p['sentido']} {p['hacia']} ({round(largo)} m)")
+    return salida, unidos

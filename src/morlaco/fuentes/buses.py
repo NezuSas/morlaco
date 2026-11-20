@@ -220,6 +220,15 @@ def obtener(descargar: red.Descargador = red.descargar) -> Resultado:
         lineas["features"] = trazados.reemplazar_lineas(
             lineas["features"], trazados.parsear_ide(descargar(trazados.url_ide(linea)))
         )
+    # Los alargues que no tocan su línea se unen a ella por las calles (índice de Morlaco).
+    # Sin el índice, se publican como vienen: la página no dibuja los que quedan sueltos.
+    try:
+        calles = json.loads(descargar(trazados.CALLES))
+        lineas["features"], unidos = trazados.unir_alargues(lineas["features"], calles)
+    except (OSError, ValueError):
+        unidos = []
+    if unidos:
+        lineas["metadata"]["alargues_unidos_por_calles"] = unidos
 
     meta_rutas, texto_rutas = fuentes["rutas"]
     meta_recorridos, texto_recorridos = fuentes["recorridos"]

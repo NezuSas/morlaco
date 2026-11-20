@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
 
-import { alarguesUnidos, paradasDeRecorrido, planificar, prepararLineas, proyectar, tramo } from "../../web/rutas.js";
+import { alarguesUnidos, paradasDeRecorrido, variantesDeLinea, planificar, prepararLineas, proyectar, tramo } from "../../web/rutas.js";
 
 const enCuenca = (iso) => new Date(`${iso}-05:00`);
 const lunes10h = enCuenca("2026-11-09T10:00");
@@ -30,8 +30,9 @@ const rutas = [
 ];
 const recorridos = prepararLineas(lineas, rutas, lunes10h);
 
-test("prepararLineas omite los alargues y trae el horario de hoy", () => {
-  assert.equal(recorridos.length, 3);
+test("prepararLineas trae las rutas normales, cada alargue como variante y el horario de hoy", () => {
+  assert.equal(recorridos.length, 4);
+  assert.deepEqual(recorridos.map((r) => r.variante), [null, null, null, "Alargue"]);
   assert.equal(recorridos[0].horario.intervalo_min, 10);
   assert.ok(Math.abs(recorridos[0].acumulado.at(-1) - 6670) < 20);
 });
@@ -127,4 +128,98 @@ test("los alargues que no tocan su línea no se dibujan", () => {
   const suelto = recorrido("7", "ida", "Lejos", [[-78.95, -2.95], [-78.94, -2.96]], "alargue"); // a varios km
   const trazados = [lineas.features[0], lineas.features[1], unido, suelto];
   assert.deepEqual(alarguesUnidos(trazados).map((f) => f.properties.hacia), ["Este", "Oeste", "Alargue"]);
+});
+
+test("cada alargue unido a la línea es una variante con la ruta completa", () => {
+  // Sigue más allá del final de la ida: la variante es la ruta normal entera y el alargue.
+  const sigue = recorrido("7", "ida", "Barrio", [[-78.97, -2.9], [-78.96, -2.91]], "alargue");
+  // Un desvío que sale en -79.01 y vuelve en -78.99.
+  const desvio = recorrido("7", "ida", "Desvío", [[-79.01, -2.9], [-79.0, -2.91], [-78.99, -2.9]], "alargue");
+  const suelto = recorrido("7", "ida", "Lejos", [[-78.95, -2.95], [-78.94, -2.96]], "alargue");
+  const variantes = variantesDeLinea([lineas.features[0], lineas.features[1], sigue, desvio, suelto]);
+  assert.deepEqual(variantes.map((v) => v.properties.variante), ["Barrio", "Desvío"]);
+
+  const [aBarrio, conDesvio] = variantes;
+  const redondo = (c) => c.map((x) => Math.round(x * 1000));
+  assert.deepEqual(redondo(aBarrio.geometry.coordinates[0]), [-79030, -2900]);
+  assert.deepEqual(redondo(aBarrio.geometry.coordinates.at(-1)), [-78960, -2910]);
+  assert.equal(aBarrio.properties.terminaEnAlargue, true);
+  assert.equal(aBarrio.properties.hacia, "Barrio");
+
+  assert.ok(conDesvio.geometry.coordinates.some((c) => Math.round(c[1] * 1000) === -2910), "pasa por el desvío");
+  assert.deepEqual(redondo(conDesvio.geometry.coordinates.at(-1)), [-78970, -2900]); // y vuelve a la ruta
+  assert.equal(conDesvio.properties.terminaEnAlargue, false);
+  assert.equal(conDesvio.properties.hacia, "Este");
+});
+
+test("un alargue de terminal en dos piezas es una ida y vuelta desde esa terminal", () => {
+  // Las dos piezas salen y vuelven a la terminal oeste (-79.03), donde empieza la ida y
+  // termina el retorno; el rótulo de sentido de cada pieza no importa.
+  const salida = recorrido("7", "ida", "Barrio Oeste", [[-79.03, -2.9], [-79.04, -2.89]], "alargue");
+  const llegada = recorrido("7", "retorno", "Barrio Oeste", [[-79.04, -2.89], [-79.03, -2.9]], "alargue");
+  const variantes = variantesDeLinea([lineas.features[0], lineas.features[1], salida, llegada]);
+  const de = (s) => variantes.find((v) => v.properties.sentido === s);
+  assert.equal(variantes.length, 2);
+  for (const v of variantes) assert.deepEqual(v.properties.barrio, [-79.04, -2.89]);
+  // La ida va primero al barrio y luego sigue hacia el este.
+  const ida = de("ida").geometry.coordinates;
+  assert.ok(ida.findIndex(([lon]) => lon === -79.04) < ida.length / 2);
+  assert.equal(Math.round(ida.at(-1)[0] * 1000), -78970);
+  // El retorno llega a la terminal oeste, va al barrio y vuelve.
+  const retorno = de("retorno").geometry.coordinates;
+  const pasaPorElCentro = retorno.findIndex(([lon]) => Math.round(lon * 1000) === -79010);
+  assert.ok(retorno.findIndex(([lon]) => lon === -79.04) > pasaPorElCentro);
+  assert.equal(Math.round(retorno.at(-1)[0] * 1000), -79030);
+});
+
+test("dos piezas de un barrio que se continúan son un desvío de ida y vuelta", () => {
+  // Sale de la ruta en -79.01, va al barrio (-79.01, -2.92) y vuelve al mismo punto.
+  const va = recorrido("7", "ida", "Rosal", [[-79.01, -2.9], [-79.01, -2.92]], "alargue");
+  const vuelve = recorrido("7", "retorno", "Rosal", [[-79.01, -2.92], [-79.01, -2.9]], "alargue");
+  const [ida] = variantesDeLinea([lineas.features[0], va, vuelve]);
+  assert.equal(ida.properties.sentido, "ida");
+  assert.equal(ida.properties.empiezaEnAlargue || ida.properties.terminaEnAlargue, false);
+  assert.deepEqual(ida.properties.barrio, [-79.01, -2.92]);
+  const c = ida.geometry.coordinates;
+  assert.deepEqual(c[0].map((x) => Math.round(x * 1000)), [-79030, -2900]); // empieza en su terminal
+  assert.deepEqual(c.at(-1).map((x) => Math.round(x * 1000)), [-78970, -2900]); // y termina en la otra
+  assert.ok(c.some(([, lat]) => lat === -2.92), "pasa por el barrio");
+});
+
+test("el planificador usa las variantes cuando la ruta normal no llega", () => {
+  // La 7 va de oeste a este por -2.9; su variante sigue desde el final hasta (-78.96, -2.93).
+  const conVariante = {
+    features: [...lineas.features, recorrido("7", "ida", "Barrio", [[-78.97, -2.9], [-78.96, -2.93]], "alargue")],
+  };
+  const recorridosConVariante = prepararLineas(conVariante, rutas, lunes10h);
+  assert.ok(recorridosConVariante.some((r) => r.variante === "Barrio"));
+  const [mejor] = planificar({ lat: -2.9005, lon: -79.025 }, { lat: -2.9295, lon: -78.9603 }, recorridosConVariante, {
+    fecha: lunes10h,
+  });
+  const bus = mejor.tramos.find((t) => t.modo === "bus");
+  assert.equal(bus.linea, "7");
+  assert.equal(bus.variante, "Barrio");
+  assert.equal(bus.espera, 10); // la frecuencia entera: no todos los buses hacen la variante
+});
+
+test("la variante y la ruta normal de la misma línea salen como opciones distintas", () => {
+  const conVariante = {
+    features: [...lineas.features, recorrido("7", "ida", "Barrio", [[-78.97, -2.9], [-78.96, -2.903]], "alargue")],
+  };
+  const opciones = planificar({ lat: -2.9005, lon: -79.025 }, { lat: -2.9012, lon: -78.968 }, prepararLineas(conVariante, rutas, lunes10h), {
+    fecha: lunes10h,
+  });
+  const variantes = opciones.map((o) => o.tramos.find((t) => t.modo === "bus")?.variante ?? null);
+  assert.ok(variantes.includes(null) && variantes.includes("Barrio"), JSON.stringify(variantes));
+});
+
+test("una variante que no ahorra caminar no se ofrece", () => {
+  // La variante sale del final de la 7 hacia el noreste, lejos del destino: no ayuda.
+  const conVariante = {
+    features: [...lineas.features, recorrido("7", "ida", "Otro lado", [[-78.97, -2.9], [-78.96, -2.89]], "alargue")],
+  };
+  const opciones = planificar({ lat: -2.9005, lon: -79.025 }, { lat: -2.9012, lon: -78.99 }, prepararLineas(conVariante, rutas, lunes10h), {
+    fecha: lunes10h,
+  });
+  assert.ok(!opciones.some((o) => o.tramos.some((t) => t.variante === "Otro lado")));
 });

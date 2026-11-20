@@ -1026,10 +1026,13 @@ function pasosDeOpcion(opcion, paradas) {
       const frecuencia = tramo.horario?.intervalo_min ? t("pasoFrecuencia", { minutos: tramo.horario.intervalo_min }) : "";
       const datos = { linea: tramo.linea, hacia: tramo.hacia, distancia: formatoDistancia(tramo.metros) };
       // Como en las apps de transporte: cuánto falta para el próximo, estimado con el horario.
-      const faltan = tramo.tipo === "tranvia" ? null : minutosAlProximo(tramo.horario, tramo.largo, tramo.metrosSubida);
+      // En una variante no se sabe qué buses la hacen: sin minutos al próximo.
+      const faltan =
+        tramo.tipo === "tranvia" || tramo.variante ? null : minutosAlProximo(tramo.horario, tramo.largo, tramo.metrosSubida);
+      const variante = tramo.variante ? t("pasoVariante", { lugar: tramo.variante }) : "";
       const proximo =
         faltan === null ? "" : faltan < 1.5 ? t("pasoProximoYa") : t("pasoProximo", { minutos: Math.round(faltan) });
-      pasos.push((tramo.tipo === "tranvia" ? t("pasoTomarTranvia", datos) : t("pasoTomar", datos)) + frecuencia + proximo);
+      pasos.push((tramo.tipo === "tranvia" ? t("pasoTomarTranvia", datos) : t("pasoTomar", datos)) + variante + frecuencia + proximo);
       return;
     }
     const siguiente = tramos[i + 1];
@@ -1043,7 +1046,7 @@ function pasosDeOpcion(opcion, paradas) {
     } else if (siguiente) {
       pasos.push(t("pasoCambiar", { distancia, linea: siguiente.linea }) + cerca(tramo.hasta));
     } else {
-      pasos.push(t("pasoLlegar", { distancia }));
+      pasos.push(tramo.metros < 30 ? t("pasoLlegarAhi") : t("pasoLlegar", { distancia }));
     }
   });
   return pasos;

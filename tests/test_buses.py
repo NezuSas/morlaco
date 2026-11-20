@@ -160,6 +160,8 @@ def test_obtener_consulta_la_api_de_ckan():
     def falso(url):
         if url == "zip/rutas":
             return shapefile_zip
+        if url == trazados.CALLES:
+            return b'{"features": []}'  # sin calles: los alargues quedan como vienen
         if url in capas_ide:
             return capas_ide[url]
         for clave, identificador in buses.DATASETS.items():

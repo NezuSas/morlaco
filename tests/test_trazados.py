@@ -215,3 +215,52 @@ def test_parsear_ide_y_reemplazar_la_linea():
         trazados.reemplazar_lineas(antes, nuevas[:1])
     url = trazados.url_ide("4")
     assert "typeNames=ide%3Admt_linea4" in url and "EPSG%3A4326" in url
+
+
+def _linea(linea, tipo, sentido, hacia, coords):
+    return {
+        "type": "Feature",
+        "properties": {"linea": linea, "tipo": tipo, "sentido": sentido, "hacia": hacia},
+        "geometry": {"type": "LineString", "coordinates": coords},
+    }
+
+
+def _calle(nombre, coords):
+    geometria = {"type": "LineString", "coordinates": coords}
+    return {"properties": {"nombre": nombre}, "geometry": geometria}
+
+
+# La línea va por el Camino del Tejar (lat -2.880) hasta lon -79.030 y ahí baja al sur.
+_TEJAR = [[-79.020, -2.880], [-79.030, -2.880]]
+_LINEA = _linea("8", "linea", "ida", "San Joaquín", [*_TEJAR, [-79.030, -2.890]])
+# El alargue empieza 1,1 km más al oeste, al final del Camino del Tejar, y sube al norte.
+_ALARGUE = _linea("8", "alargue", "ida", "Dolorosa", [[-79.040, -2.880], [-79.040, -2.870]])
+
+
+def test_unir_alargues_sigue_la_misma_calle():
+    calles = {
+        "features": [
+            _calle("Camino del Tejar", [*_TEJAR, [-79.035, -2.8805], [-79.040, -2.880]]),
+            # Un atajo apenas más corto que obliga a cambiar dos veces de calle.
+            _calle("Del Yugo", [[-79.030, -2.880], [-79.035, -2.8795]]),
+            _calle("Los Hornos", [[-79.035, -2.8795], [-79.040, -2.880]]),
+        ]
+    }
+    entidades, unidos = trazados.unir_alargues([_LINEA, _ALARGUE], calles)
+    alargue = entidades[1]
+    assert unidos and unidos[0].startswith("8 ida Dolorosa")
+    assert 1000 < alargue["properties"]["union_calles_m"] < 1300
+    coords = alargue["geometry"]["coordinates"]
+    assert [-79.035, -2.8805] in coords, "va por el Camino del Tejar, no por el atajo"
+    assert coords[-1] == [-79.040, -2.870]  # y sigue con el tramo del alargue
+    assert entidades[0] is _LINEA
+
+
+def test_unir_alargues_no_toca_los_unidos_ni_inventa_tramos_largos():
+    unido = _linea("8", "alargue", "ida", "El Rosal", [[-79.030, -2.890], [-79.030, -2.900]])
+    lejos = _linea("8", "alargue", "ida", "Yunga", [[-79.090, -2.880], [-79.090, -2.870]])
+    # Una sola calle de 6,7 km: más de lo que se une.
+    calles = {"features": [_calle("Camino del Tejar", [[-79.030, -2.880], [-79.090, -2.880]])]}
+    entidades, unidos = trazados.unir_alargues([_LINEA, unido, lejos], calles)
+    assert unidos == []
+    assert entidades[1] is unido and entidades[2] is lejos

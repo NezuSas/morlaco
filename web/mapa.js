@@ -4,7 +4,7 @@
 // resaltarLinea, dibujarRuta, agregarCapas y mostrarCapa.
 
 import { CENTRO_CUENCA, LIMITES_CUENCA, horaLegible, nombreDia, nombreParada, puntoEnGeometria } from "./logica.js";
-import { paradasDeRecorrido } from "./rutas.js";
+import { paradasDeRecorrido, variantesDeLinea } from "./rutas.js";
 import { listar, t } from "./textos.js";
 import { busesEnCamino, medirRecorrido, minutosAlProximo, puntoEnRecorrido, puntosDeTrazado } from "./vehiculos.js";
 
@@ -681,6 +681,8 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
     busesMarcas = [];
     recorridos = [];
     lineaActual = null;
+    datosLinea = null;
+    varianteActual = null;
     enRuta = false;
     panel.hidden = true;
     contenedor.classList.remove("con-linea");
@@ -702,15 +704,17 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
     if (lineaActual) moverBuses();
   }
 
-  function mostrarLinea(principales, { linea, horarios, tipo, paradas, alargues = [] }) {
-    const de = (sentido) => principales.find((f) => f.properties.sentido === sentido);
-    const [ida, retorno] = [de("ida"), de("retorno")];
-    // Las paradas registradas de cada sentido, con el color de su sentido.
+  let datosLinea = null; // la línea elegida: ruta normal, variantes y paradas
+  let varianteActual = null;
+
+  /** Dibuja un recorrido (la ruta normal o una variante): trazo, paradas y puntas A y B. */
+  function dibujarRecorrido(trazos, [nombreA, nombreB]) {
+    trazar("linea", trazos);
     poner(
       "paradasLinea",
       coleccion(
-        [ida, retorno].filter(Boolean).flatMap((f) =>
-          paradasDeRecorrido(f, paradas).map((p) => ({
+        trazos.flatMap((f) =>
+          paradasDeRecorrido(f, datosLinea.paradas).map((p) => ({
             type: "Feature",
             properties: { nombre: p.nombre, sentido: f.properties.sentido, hacia: f.properties.hacia },
             geometry: { type: "Point", coordinates: [p.lon, p.lat] },
@@ -718,24 +722,78 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
         ),
       ),
     );
-    lineaActual = { linea, tipo, horarios };
+    puntas = quitar(puntas);
     // A es donde empieza la ida (y termina el retorno); B, a donde va la ida.
-    const extremos = ida ? puntosDeTrazado(ida.geometry) : [];
-    if (extremos.length > 1) {
-      const nombreA = retorno?.properties.hacia;
-      const nombreB = ida.properties.hacia;
-      for (const [letra, nombre, punto] of [
-        ["A", nombreA, extremos[0]],
-        ["B", nombreB, extremos.at(-1)],
-      ]) {
-        puntas.push(
-          marcador(`<span class="punta-linea"><b>${letra}</b>${nombre ? ` ${escapar(nombre)}` : ""}</span>`, punto, {
-            clase: "aparece",
-          }).addTo(mapa),
-        );
+    const ida = trazos.find((f) => f.properties.sentido === "ida");
+    const retorno = trazos.find((f) => f.properties.sentido === "retorno");
+    const extremos = ida ? puntosDeTrazado(ida.geometry) : retorno ? [...puntosDeTrazado(retorno.geometry)].reverse() : [];
+    if (extremos.length < 2) return;
+    for (const [letra, nombre, punto] of [
+      ["A", nombreA, extremos[0]],
+      ["B", nombreB, extremos.at(-1)],
+    ]) {
+      puntas.push(
+        marcador(`<span class="punta-linea"><b>${letra}</b>${nombre ? ` ${escapar(nombre)}` : ""}</span>`, punto, {
+          clase: "aparece",
+        }).addTo(mapa),
+      );
+    }
+  }
+
+  /** Muestra la ruta normal (null) o una variante, con su encuadre y sus buses. */
+  function elegirVariante(variante) {
+    varianteActual = variante;
+    const { principales, variantes } = datosLinea;
+    const normalA = principales.find((f) => f.properties.sentido === "retorno")?.properties.hacia;
+    const normalB = principales.find((f) => f.properties.sentido === "ida")?.properties.hacia;
+    let trazos = principales;
+    let nombres = [normalA, normalB];
+    if (variante) {
+      trazos = variantes.filter((v) => v.properties.variante === variante);
+      const guia = trazos.find((v) => v.properties.sentido === "ida");
+      const p = guia?.properties;
+      nombres = [p?.empiezaEnAlargue ? variante : normalA, p?.terminaEnAlargue ? variante : normalB];
+      if (!guia) {
+        // Solo hay variante de retorno: sus puntas, al revés.
+        const r = trazos[0].properties;
+        nombres = [r.terminaEnAlargue ? variante : normalA, r.empiezaEnAlargue ? variante : normalB];
       }
     }
-    recorridos = [ida, retorno].filter(Boolean).map((f) => {
+    dibujarRecorrido(trazos, nombres);
+    // Si la variante va y vuelve al barrio, el barrio lleva su propia etiqueta.
+    const barrio = trazos.find((v) => !v.properties.empiezaEnAlargue && !v.properties.terminaEnAlargue)?.properties.barrio;
+    if (variante && barrio) {
+      puntas.push(
+        marcador(`<span class="punta-linea barrio"><b aria-hidden="true">•</b> ${escapar(variante)}</span>`, barrio, {
+          clase: "aparece",
+        }).addTo(mapa),
+      );
+    }
+    const nota = panel.querySelector(".nota-buses");
+    // Los buses estimados van por la ruta normal: no hay datos de cuáles hacen cada variante.
+    clearInterval(reloj);
+    cancelAnimationFrame(reloj);
+    if (variante) {
+      busesMarcas.forEach((bus) => {
+        bus.marca.remove();
+        bus.puesta = false;
+      });
+      nota.hidden = false;
+      nota.textContent = t("varianteNota");
+    } else if (datosLinea.tipo === "tranvia") {
+      nota.hidden = true; // del tranvía no hay horario de salidas para estimar
+    } else {
+      nota.hidden = false;
+      arrancarBuses();
+    }
+    encuadrar(caja(trazos), { top: 40, right: 40, left: 40, bottom: panel.offsetHeight + 40 });
+  }
+
+  function mostrarLinea(principales, { linea, horarios, tipo, paradas, variantes = [] }) {
+    lineaActual = { linea, tipo, horarios };
+    datosLinea = { principales, variantes, paradas, tipo };
+    const de = (sentido) => principales.find((f) => f.properties.sentido === sentido);
+    recorridos = [de("ida"), de("retorno")].filter(Boolean).map((f) => {
       const medida = medirRecorrido(puntosDeTrazado(f.geometry));
       return {
         linea,
@@ -749,7 +807,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
       };
     });
 
-    // El selector: los dos sentidos con su color, y la nota de los buses estimados.
+    // El selector: los dos sentidos con su color, las variantes y la nota de los buses.
     const botones = [["ambos", t("sentidoAmbos")]].concat(
       recorridos.map((r) => [r.sentido, t("sentidoHacia", { destino: r.hacia })]),
     );
@@ -772,26 +830,25 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
       b.addEventListener("click", () => elegirSentido(sentido));
       grupo.append(b);
     }
+    panel.append(grupo);
+    const nombresVariantes = [...new Set(variantes.map((v) => v.properties.variante))];
+    if (nombresVariantes.length) {
+      const etiqueta = document.createElement("label");
+      etiqueta.className = "variante-linea";
+      const lista = document.createElement("select");
+      for (const [valor, texto] of [["", t("rutaNormal")], ...nombresVariantes.map((v) => [v, t("varianteHasta", { lugar: v })])]) {
+        lista.append(new Option(texto, valor));
+      }
+      lista.addEventListener("change", () => elegirVariante(lista.value || null));
+      etiqueta.append(t("recorridoLinea"), lista);
+      panel.append(etiqueta);
+    }
     const nota = document.createElement("p");
     nota.className = "nota-buses";
-    panel.append(grupo);
-    // El punteado son los alargues: solo algunos buses siguen hasta esos barrios.
-    if (alargues.length) {
-      const punteado = document.createElement("p");
-      punteado.className = "nota-alargue";
-      punteado.innerHTML = '<i class="muestra-alargue" aria-hidden="true"></i>';
-      punteado.append(t("alarguesNota", { lugares: listar(alargues) }));
-      panel.append(punteado);
-    }
     panel.append(nota);
     panel.hidden = false;
     contenedor.classList.add("con-linea");
-
-    if (tipo === "tranvia") {
-      nota.hidden = true; // del tranvía no hay horario de salidas para estimar
-      return;
-    }
-    arrancarBuses();
+    elegirVariante(null);
   }
 
   /**
@@ -851,7 +908,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
 
   /** Pone cada bus donde va ahora según el horario, y dice cuántos hay en camino. */
   function moverBuses() {
-    if (!enRuta && (!lineaActual || lineaActual.tipo === "tranvia")) return;
+    if (!enRuta && (!lineaActual || lineaActual.tipo === "tranvia" || varianteActual)) return;
     const ahora = new Date();
     const posiciones = [];
     for (const r of recorridos) {
@@ -940,19 +997,9 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
       etiquetaFlotante.remove();
       limpiarLinea();
       if (!trazados) return;
+      // La ruta normal y, en el selector, sus variantes (cada alargue como ruta completa).
       const principales = trazados.filter((t) => t.properties.tipo !== "alargue");
-      trazar("linea", trazados);
-      const alargues = [
-        ...new Set(trazados.filter((t) => t.properties.tipo === "alargue").map((t) => t.properties.hacia)),
-      ].filter(Boolean);
-      mostrarLinea(principales, { linea, horarios, tipo, paradas, alargues });
-      // Que el selector de sentido no tape el final del recorrido.
-      encuadrar(caja(principales.length ? principales : trazados), {
-        top: 40,
-        right: 40,
-        left: 40,
-        bottom: panel.offsetHeight + 40,
-      });
+      mostrarLinea(principales, { linea, horarios, tipo, paradas, variantes: variantesDeLinea(trazados) });
     },
     /** Dibuja una opción de "¿qué bus me lleva?": tramos a pie punteados y en bus llenos. */
     dibujarRuta(opcion, destino) {
@@ -986,7 +1033,10 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
       );
       poner("rutaPie", coleccion(pie));
       trazar("rutaBus", bus);
-      const conHorario = opcion.tramos.filter((t) => t.modo === "bus" && t.tipo !== "tranvia" && t.horario && t.largo > 0);
+      // Los buses estimados, solo en rutas normales: no se sabe qué buses hacen cada variante.
+      const conHorario = opcion.tramos.filter(
+        (t) => t.modo === "bus" && t.tipo !== "tranvia" && !t.variante && t.horario && t.largo > 0,
+      );
       if (conHorario.length) mostrarBusesDeRuta(conHorario);
       encuadrar(caja([...pie, ...bus], [[destino.lon, destino.lat]]), {
         top: 40,
