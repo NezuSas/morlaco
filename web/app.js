@@ -635,7 +635,7 @@ function alTocarLinea(boton, botones, linea, mapa) {
     return;
   }
   boton.setAttribute("aria-pressed", "true");
-  mapa.resaltarLinea(linea.trazados);
+  mapa.resaltarLinea(linea.trazados, { linea: linea.linea, horarios: linea.horarios, tipo: linea.tipo });
   if (linea.tipo === "tranvia") mapa.mostrarCapa("tranvia");
   pintarPasaPor(boton.nextElementSibling, linea.linea);
 }

@@ -18,6 +18,18 @@ export function horarioDeHoy(linea, rutas, fecha = new Date()) {
   return fila.horarios?.[tipoDeDia(fecha)] ?? null; // null: hoy no tiene servicio
 }
 
+/** El horario de hoy de cada sentido ({ ida, retorno }), para estimar dónde van los buses. */
+export function horariosDeHoy(linea, rutas, fecha = new Date()) {
+  const filas = rutas.filter((r) => r.linea === linea);
+  if (!filas.length) return undefined;
+  const dia = tipoDeDia(fecha);
+  const de = (sentido) => {
+    const fila = filas.find((r) => r.sentido === sentido);
+    return fila ? (fila.horarios?.[dia] ?? null) : undefined;
+  };
+  return { ida: de("ida"), retorno: de("retorno") };
+}
+
 /**
  * Cómo leer la frecuencia de hoy: "Cada 9 min, de 05:50 a 21:15", o si ya no hay
  * servicio a esta hora, "Hoy de 05:50 a 21:15; a esta hora ya no pasa".
@@ -67,6 +79,7 @@ export function lineasCercanas(punto, lineas, rutas = [], { maximoMetros = 350, 
       ...g,
       metros: Math.round(g.metros),
       horario: g.tipo === "tranvia" ? undefined : horarioDeHoy(g.linea, rutas, fecha),
+      horarios: g.tipo === "tranvia" ? undefined : horariosDeHoy(g.linea, rutas, fecha),
     }));
 }
 
@@ -130,6 +143,7 @@ export function lineasPorCalle(calle, lineas, rutas = [], { tolerancia = 22, min
       ...g,
       metros: Math.round(g.metros),
       horario: g.tipo === "tranvia" ? undefined : horarioDeHoy(g.linea, rutas, fecha),
+      horarios: g.tipo === "tranvia" ? undefined : horariosDeHoy(g.linea, rutas, fecha),
     }));
 }
 

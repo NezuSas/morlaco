@@ -5,6 +5,7 @@
 
 import { CENTRO_CUENCA, LIMITES_CUENCA, horaLegible, nombreDia, nombreParada, puntoEnGeometria } from "./logica.js";
 import { listar, t } from "./textos.js";
+import { busesEnCamino, medirRecorrido, puntoEnRecorrido, puntosDeTrazado } from "./vehiculos.js";
 
 // MapLibre se carga en index.html, con versión fija y hash de integridad.
 // Mapas vectoriales de OpenFreeMap, hechos con datos de OpenStreetMap: sin clave ni cuenta.
@@ -17,6 +18,14 @@ const ZOOM_INICIAL = 12;
 const ZOOM_MINIMO = 10;
 const ZOOM_PUNTO = 14.5;
 const DURACION_TRAZO = 900;
+const SEPARACION_SENTIDOS = 3.5; // px: cada sentido va a su derecha, como en la calle
+const CADA_BUSES_QUIETO_MS = 15000; // si se pidió reducir el movimiento: a saltos, sin animar
+// El marcador de un bus: una gota que apunta al norte (el marcador la gira según el rumbo)
+// y, encima, un bus visto de lado que no gira. Dibujos propios.
+const SVG_GOTA =
+  '<svg class="bus-gota" viewBox="0 0 40 48" aria-hidden="true"><path d="M20 3 L30.2 17.9 A13 13 0 1 1 9.8 17.9 Z" fill="var(--color-bus)" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"/></svg>';
+const SVG_GLIFO =
+  '<svg class="bus-glifo" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="12" rx="3" fill="currentColor"/><rect x="4" y="7.3" width="3.6" height="3.8" rx=".8" fill="var(--color-bus)"/><rect x="8.6" y="7.3" width="3.6" height="3.8" rx=".8" fill="var(--color-bus)"/><rect x="13.2" y="7.3" width="3.6" height="3.8" rx=".8" fill="var(--color-bus)"/><rect x="17.8" y="7.3" width="2.6" height="6.5" rx=".8" fill="var(--color-bus)"/><rect x="2" y="13.6" width="20" height="1" fill="var(--color-bus)" opacity=".45"/><circle cx="7" cy="17.4" r="2.3" fill="currentColor" stroke="var(--color-bus)" stroke-width="1.3"/><circle cx="17" cy="17.4" r="2.3" fill="currentColor" stroke="var(--color-bus)" stroke-width="1.3"/></svg>';
 const PROPIO = "m-"; // prefijo de las fuentes y capas de Morlaco, para conservarlas al cambiar de estilo
 
 export const SVG_BICI =
@@ -53,6 +62,24 @@ function hayWebgl() {
   } catch {
     return false;
   }
+}
+
+/** Una flecha (›) para marcar el sentido sobre la línea; se colorea en el mapa (SDF). */
+function imagenFlecha() {
+  const n = 32;
+  const lienzo = document.createElement("canvas");
+  lienzo.width = lienzo.height = n;
+  const g = lienzo.getContext("2d");
+  g.strokeStyle = "#000";
+  g.lineWidth = 6;
+  g.lineCap = "round";
+  g.lineJoin = "round";
+  g.beginPath();
+  g.moveTo(11, 7);
+  g.lineTo(21, 16);
+  g.lineTo(11, 25);
+  g.stroke();
+  return g.getImageData(0, 0, n, n);
 }
 
 function color(nombre) {
@@ -180,6 +207,9 @@ function cortar(coords, f) {
 
 const suave = (x) => 1 - (1 - x) ** 3;
 
+const escapar = (texto) =>
+  String(texto).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+
 async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }) {
   const SIN_MOVIMIENTO = sinMovimiento;
   const maplibregl = await cargarBiblioteca();
@@ -217,6 +247,14 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
   const transicion = { duration: SIN_MOVIMIENTO ? 0 : 450 };
   const visibles = new Set();
   const verCiclovias = () => (visibles.has("ciclovias") ? "visible" : "none");
+
+  // Ida en rojo bandera y retorno en azul cúpula; se puede ver un solo sentido.
+  const PRINCIPAL = ["!=", ["get", "tipo"], "alargue"];
+  const ALARGUE = ["==", ["get", "tipo"], "alargue"];
+  let sentidoVisible = "ambos";
+  const filtroLinea = (base) =>
+    sentidoVisible === "ambos" ? base : ["all", base, ["==", ["get", "sentido"], sentidoVisible]];
+  const colorSentido = () => ["match", ["get", "sentido"], "retorno", color("--cupula-hondo"), color("--bandera-rojo")];
 
   // Se vuelven a pedir los colores cada vez: cambian con el modo oscuro.
   const capasPropias = () => [
@@ -276,16 +314,39 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
       id: `${PROPIO}linea`,
       type: "line",
       source: `${PROPIO}linea`,
-      filter: ["!=", ["get", "tipo"], "alargue"],
+      filter: filtroLinea(PRINCIPAL),
       layout: { "line-cap": "round", "line-join": "round" },
-      paint: { "line-color": color("--tinta"), "line-width": 4, "line-opacity": 0.85 },
+      paint: { "line-color": colorSentido(), "line-width": 4, "line-opacity": 0.9, "line-offset": SEPARACION_SENTIDOS },
     },
     {
       id: `${PROPIO}linea-alargue`,
       type: "line",
       source: `${PROPIO}linea`,
-      filter: ["==", ["get", "tipo"], "alargue"],
-      paint: { "line-color": color("--tinta"), "line-width": 3, "line-opacity": 0.85, "line-dasharray": [2, 2] },
+      filter: filtroLinea(ALARGUE),
+      paint: {
+        "line-color": colorSentido(),
+        "line-width": 3,
+        "line-opacity": 0.85,
+        "line-dasharray": [2, 2],
+        "line-offset": SEPARACION_SENTIDOS,
+      },
+    },
+    {
+      id: `${PROPIO}linea-flechas`,
+      type: "symbol",
+      source: `${PROPIO}linea`,
+      filter: filtroLinea(PRINCIPAL),
+      layout: {
+        "symbol-placement": "line",
+        "symbol-spacing": 70,
+        "icon-image": `${PROPIO}flecha`,
+        "icon-size": 0.85,
+        "icon-offset": [0, SEPARACION_SENTIDOS / 0.85],
+        "icon-allow-overlap": true,
+        "icon-ignore-placement": true,
+        "icon-rotation-alignment": "map",
+      },
+      paint: { "icon-color": colorSentido(), "icon-halo-color": color("--superficie"), "icon-halo-width": 1.5 },
     },
     {
       id: `${PROPIO}ruta-pie`,
@@ -341,6 +402,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
     const capas = mapa.getStyle().layers;
     const ultimaDibujada = capas.findLastIndex((c) => c.type !== "symbol");
     const nombres = capas.slice(ultimaDibujada + 1).find((c) => c.type === "symbol")?.id;
+    if (!mapa.hasImage(`${PROPIO}flecha`)) mapa.addImage(`${PROPIO}flecha`, imagenFlecha(), { sdf: true, pixelRatio: 2 });
     for (const capa of capasPropias()) if (!mapa.getLayer(capa.id)) mapa.addLayer(capa, nombres);
     aplicarEstadoZonas();
     ajustarCiclovias();
@@ -348,6 +410,11 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
   // Al llegar el estilo (no hace falta esperar a las teselas) y cada vez que cambia: en modo
   // oscuro hay otro mapa base, y las capas propias se vuelven a poner con los colores nuevos.
   mapa.on("style.load", anadirPropias);
+  // De lejos, los buses estimados son puntos; con zoom se lee su número.
+  const ZOOM_NUMEROS = 13;
+  const ajustarLejos = () => contenedor.classList.toggle("mapa-lejos", mapa.getZoom() < ZOOM_NUMEROS);
+  mapa.on("zoomend", ajustarLejos);
+  ajustarLejos();
   oscuro.addEventListener("change", () => mapa.setStyle(estiloActual(), { diff: false }));
 
   const poner = (nombre, datos) => {
@@ -538,6 +605,181 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
     else grupos[clave].forEach((m) => (visibles.has(clave) ? m.addTo(mapa) : m.remove()));
   }
 
+  // ---------- Línea elegida: puntas, sentido y buses estimados ----------
+  const panel = document.createElement("div");
+  panel.className = "panel-linea";
+  panel.hidden = true;
+  contenedor.append(panel);
+  let puntas = [];
+  let recorridos = [];
+  let busesMarcas = [];
+  let reloj = 0;
+  let lineaActual = null;
+
+  function limpiarLinea() {
+    cancelAnimationFrame(animaciones.get("linea"));
+    poner("linea", vacio());
+    clearInterval(reloj);
+    cancelAnimationFrame(reloj);
+    puntas = quitar(puntas);
+    busesMarcas.forEach((bus) => bus.marca.remove());
+    busesMarcas = [];
+    recorridos = [];
+    lineaActual = null;
+    panel.hidden = true;
+    contenedor.classList.remove("con-linea");
+    elegirSentido("ambos");
+  }
+
+  function elegirSentido(sentido) {
+    sentidoVisible = sentido;
+    if (mapa.getLayer(`${PROPIO}linea`)) {
+      mapa.setFilter(`${PROPIO}linea`, filtroLinea(PRINCIPAL));
+      mapa.setFilter(`${PROPIO}linea-alargue`, filtroLinea(ALARGUE));
+      mapa.setFilter(`${PROPIO}linea-flechas`, filtroLinea(PRINCIPAL));
+    }
+    for (const b of panel.querySelectorAll("[data-sentido]")) {
+      b.setAttribute("aria-pressed", String(b.dataset.sentido === sentido));
+    }
+    if (lineaActual) moverBuses();
+  }
+
+  function mostrarLinea(principales, { linea, horarios, tipo }) {
+    const de = (sentido) => principales.find((f) => f.properties.sentido === sentido);
+    const [ida, retorno] = [de("ida"), de("retorno")];
+    lineaActual = { linea, tipo, horarios };
+    // A es donde empieza la ida (y termina el retorno); B, a donde va la ida.
+    const extremos = ida ? puntosDeTrazado(ida.geometry) : [];
+    if (extremos.length > 1) {
+      const nombreA = retorno?.properties.hacia;
+      const nombreB = ida.properties.hacia;
+      for (const [letra, nombre, punto] of [
+        ["A", nombreA, extremos[0]],
+        ["B", nombreB, extremos.at(-1)],
+      ]) {
+        puntas.push(
+          marcador(`<span class="punta-linea"><b>${letra}</b>${nombre ? ` ${escapar(nombre)}` : ""}</span>`, punto, {
+            clase: "aparece",
+          }).addTo(mapa),
+        );
+      }
+    }
+    recorridos = [ida, retorno].filter(Boolean).map((f) => ({
+      sentido: f.properties.sentido,
+      hacia: f.properties.hacia,
+      horario: horarios?.[f.properties.sentido],
+      medida: medirRecorrido(puntosDeTrazado(f.geometry)),
+    }));
+
+    // El selector: los dos sentidos con su color, y la nota de los buses estimados.
+    const botones = [["ambos", t("sentidoAmbos")]].concat(
+      recorridos.map((r) => [r.sentido, t("sentidoHacia", { destino: r.hacia })]),
+    );
+    panel.replaceChildren();
+    const grupo = document.createElement("div");
+    grupo.className = "sentidos";
+    grupo.setAttribute("role", "group");
+    grupo.setAttribute("aria-label", t("sentidosLinea", { linea: tipo === "tranvia" ? t("tranvia") : linea }));
+    for (const [sentido, texto] of botones) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.dataset.sentido = sentido;
+      b.setAttribute("aria-pressed", String(sentido === "ambos"));
+      if (sentido !== "ambos") {
+        const muestra = document.createElement("i");
+        muestra.className = `muestra-sentido ${sentido}`;
+        b.append(muestra);
+      }
+      b.append(texto);
+      b.addEventListener("click", () => elegirSentido(sentido));
+      grupo.append(b);
+    }
+    const nota = document.createElement("p");
+    nota.className = "nota-buses";
+    panel.append(grupo, nota);
+    panel.hidden = false;
+    contenedor.classList.add("con-linea");
+
+    if (tipo === "tranvia") {
+      nota.hidden = true; // del tranvía no hay horario de salidas para estimar
+      return;
+    }
+    moverBuses();
+    if (SIN_MOVIMIENTO) {
+      reloj = setInterval(() => !document.hidden && moverBuses(), CADA_BUSES_QUIETO_MS);
+      return;
+    }
+    // Cuadro a cuadro: cada bus avanza de forma continua por su recorrido.
+    const paso = () => {
+      moverBuses();
+      reloj = requestAnimationFrame(paso);
+    };
+    reloj = requestAnimationFrame(paso);
+  }
+
+  function marcaDeBus() {
+    const nodo = document.createElement("div");
+    nodo.className = "bus-estimado";
+    nodo.innerHTML = `<span class="bus-pulso"></span>${SVG_GOTA}${SVG_GLIFO}<span class="bus-numero"></span>`;
+    // El centro de la gota (no el del marcador, que incluye el número) cae sobre la calle.
+    const marca = new maplibregl.Marker({ element: nodo, offset: [0, 3] });
+    const ver = () => etiquetaFlotante.setLngLat(marca.getLngLat()).setText(nodo.dataset.texto).addTo(mapa);
+    nodo.addEventListener("mouseenter", ver);
+    nodo.addEventListener("mouseleave", () => etiquetaFlotante.remove());
+    nodo.addEventListener("click", (e) => {
+      e.stopPropagation();
+      ver();
+    });
+    return { marca, puesta: false };
+  }
+
+  /** Pone cada bus donde va ahora según el horario, y dice cuántos hay en camino. */
+  function moverBuses() {
+    if (!lineaActual || lineaActual.tipo === "tranvia") return;
+    const ahora = new Date();
+    const posiciones = [];
+    for (const r of recorridos) {
+      if (sentidoVisible !== "ambos" && sentidoVisible !== r.sentido) continue;
+      for (const metros of busesEnCamino(r.horario, r.medida.total, ahora)) {
+        posiciones.push({ ...puntoEnRecorrido(r.medida, metros), r });
+      }
+    }
+    while (busesMarcas.length < posiciones.length) busesMarcas.push(marcaDeBus());
+    busesMarcas.forEach((bus, i) => {
+      const p = posiciones[i];
+      if (!p) {
+        bus.marca.remove();
+        bus.puesta = false;
+        return;
+      }
+      const nodo = bus.marca.getElement();
+      nodo.style.setProperty("--rumbo", `${p.rumbo}deg`);
+      bus.marca.setLngLat([p.lon, p.lat]);
+      // El resto solo cambia cuando el marcador pasa a otro bus.
+      if (bus.de !== p.r || bus.linea !== lineaActual.linea) {
+        bus.de = p.r;
+        bus.linea = lineaActual.linea;
+        nodo.classList.toggle("retorno", p.r.sentido === "retorno");
+        nodo.querySelector(".bus-numero").textContent = lineaActual.linea;
+        nodo.dataset.texto = t("busEstimado", { linea: lineaActual.linea, destino: p.r.hacia });
+      }
+      if (!bus.puesta) {
+        bus.marca.addTo(mapa);
+        bus.puesta = true;
+      }
+    });
+    const nota = panel.querySelector(".nota-buses");
+    const sinHorario = recorridos.every((r) => r.horario === undefined);
+    const texto = sinHorario
+      ? t("busesSinHorario")
+      : posiciones.length === 0
+        ? t("busesSinServicio")
+        : posiciones.length === 1
+          ? t("busesEnCaminoUno")
+          : t("busesEnCamino", { n: posiciones.length });
+    if (nota.textContent !== texto) nota.textContent = texto;
+  }
+
   let control = null;
 
   return {
@@ -553,30 +795,37 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
     /** Dibuja una o varias calles y encuadra el mapa en ellas. */
     resaltar(calles) {
       etiquetaFlotante.remove();
-      poner("linea", vacio());
+      limpiarLinea();
       paradas = quitar(paradas);
       elegido?.remove();
       elegido = null;
       trazar("calles", calles);
       encuadrar(caja(calles), 30);
     },
-    /** Dibuja el recorrido de una línea (o lo quita con null) y encuadra el mapa. */
-    resaltarLinea(trazados) {
+    /**
+     * Dibuja una línea (o la quita con null): cada sentido con su color y sus flechas, las
+     * puntas A y B, un selector de sentido y los buses en camino, estimados con el horario.
+     */
+    resaltarLinea(trazados, { linea, horarios, tipo } = {}) {
       etiquetaFlotante.remove();
-      if (!trazados) {
-        cancelAnimationFrame(animaciones.get("linea"));
-        poner("linea", vacio());
-        return;
-      }
+      limpiarLinea();
+      if (!trazados) return;
       const principales = trazados.filter((t) => t.properties.tipo !== "alargue");
       trazar("linea", trazados);
-      encuadrar(caja(principales.length ? principales : trazados), 30);
+      mostrarLinea(principales, { linea, horarios, tipo });
+      // Que el selector de sentido no tape el final del recorrido.
+      encuadrar(caja(principales.length ? principales : trazados), {
+        top: 40,
+        right: 40,
+        left: 40,
+        bottom: panel.offsetHeight + 40,
+      });
     },
     /** Dibuja una opción de "¿qué bus me lleva?": tramos a pie punteados y en bus llenos. */
     dibujarRuta(opcion, destino) {
       etiquetaFlotante.remove();
       rutaMarcas = quitar(rutaMarcas);
-      poner("linea", vacio());
+      limpiarLinea();
       poner("rutaPie", vacio());
       poner("rutaBus", vacio());
       if (!opcion) return;
@@ -609,7 +858,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
     mostrar(punto, zona, cercanas) {
       etiquetaFlotante.remove();
       poner("calles", vacio());
-      poner("linea", vacio());
+      limpiarLinea();
       poner("rutaPie", vacio());
       poner("rutaBus", vacio());
       rutaMarcas = quitar(rutaMarcas);

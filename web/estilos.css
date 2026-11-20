@@ -48,6 +48,15 @@
   --esmalte: #fcfcf9;
   --cobalto: #1b3f86;
 
+  /* La bandera de Cuenca: rojo y amarillo. Acentos sobre el azul de las cúpulas. */
+  --bandera-rojo: #c8102e;
+  --bandera-rojo-hondo: #a00d25;
+  --sobre-rojo: #ffffff;
+  --bandera-oro: #f2b705;
+  /* Los buses del mapa, iguales de día y de noche: el bus blanco se lee sobre ellos. */
+  --bus-ida: #c8102e;
+  --bus-retorno: #1f4a96;
+
   /* Colores con significado */
   --funda-negra: #24272c;
   --funda-celeste: #8ccbea;
@@ -92,6 +101,10 @@
     --sobre-cupula: #0e1524;
     --muro: #183a78;
     --muro-hondo: #0f2552;
+    --bandera-rojo: #f0646f;
+    --bandera-rojo-hondo: #f68890;
+    --sobre-rojo: #0e1524;
+    --bandera-oro: #f6c945;
     --funda-negra: #05070a;
     --tomebamba: #6fb593;
     --tranvia: #e8777b;
@@ -113,6 +126,10 @@
   --sobre-cupula: #0e1524;
   --muro: #183a78;
   --muro-hondo: #0f2552;
+  --bandera-rojo: #f0646f;
+  --bandera-rojo-hondo: #f68890;
+  --sobre-rojo: #0e1524;
+  --bandera-oro: #f6c945;
   --funda-negra: #05070a;
   --tomebamba: #6fb593;
   --tranvia: #e8777b;
@@ -225,14 +242,14 @@ button {
   cursor: pointer;
   border-radius: var(--radio-control);
   padding: 0.6rem 1.15rem;
-  border: 1.5px solid var(--cupula);
-  background: var(--cupula);
-  color: var(--sobre-cupula);
+  border: 1.5px solid var(--bandera-rojo);
+  background: var(--bandera-rojo);
+  color: var(--sobre-rojo);
 }
 
 button:hover {
-  background: var(--cupula-hondo);
-  border-color: var(--cupula-hondo);
+  background: var(--bandera-rojo-hondo);
+  border-color: var(--bandera-rojo-hondo);
 }
 
 button:disabled {
@@ -360,7 +377,7 @@ input[type="search"]:focus {
 .aviso {
   margin-top: 0.85rem;
   padding: 0.8rem 1rem;
-  border-left: 3px solid var(--aviso);
+  border-left: 3px solid var(--bandera-oro);
   border-radius: 0 var(--radio-control) var(--radio-control) 0;
   background: var(--aviso-fondo);
   max-width: 62ch;
@@ -374,8 +391,12 @@ input[type="search"]:focus {
   justify-content: space-between;
   gap: 1rem;
   min-height: var(--alto-barra);
-  padding: 0.5rem var(--margen);
-  background: var(--muro);
+  padding: 0.5rem var(--margen) calc(0.5rem + 6px);
+  /* Bajo el azul de cúpula, la bandera de Cuenca: una franja roja y otra amarilla. */
+  background:
+    linear-gradient(var(--bandera-rojo), var(--bandera-rojo)) left bottom 3px / 100% 3px no-repeat,
+    linear-gradient(var(--bandera-oro), var(--bandera-oro)) left bottom / 100% 3px no-repeat,
+    var(--muro);
   color: #fff;
 }
 
@@ -436,7 +457,7 @@ button.idioma:hover {
   margin: 0;
   padding: 0.5rem var(--margen);
   background: var(--aviso-fondo);
-  border-bottom: 1px solid var(--aviso);
+  border-bottom: 2px solid var(--bandera-oro);
   font-size: var(--t-0);
   font-weight: 700;
 }
@@ -1958,6 +1979,211 @@ button.linea[aria-pressed="true"] {
   gap: 0.35rem;
   padding: 0.2rem 0;
   white-space: nowrap;
+}
+
+/* ---------- Línea elegida: sentidos, puntas y buses estimados ---------- */
+
+/* Con una línea a la vista, la leyenda de zonas deja su sitio al selector de sentido. */
+.mapa.con-linea + .leyenda {
+  display: none;
+}
+
+.panel-linea {
+  position: absolute;
+  left: 0.75rem;
+  right: 0.75rem;
+  bottom: 1.9rem;
+  z-index: 2;
+  display: grid;
+  gap: 0.35rem;
+  max-width: 26rem;
+  padding: 0.5rem;
+  border-radius: var(--radio-control);
+  background: var(--superficie);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.22);
+  color: var(--tinta);
+  font: var(--t-0) / 1.35 var(--letra);
+}
+
+.panel-linea .sentidos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.panel-linea button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2rem;
+  padding: 0.25rem 0.6rem;
+  border: 1.5px solid var(--linea);
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.panel-linea button[aria-pressed="true"] {
+  border-color: var(--tinta);
+  font-weight: 700;
+}
+
+.panel-linea button:focus-visible {
+  outline: 2px solid var(--cupula);
+  outline-offset: 2px;
+}
+
+.muestra-sentido {
+  width: 0.9rem;
+  height: 0.3rem;
+  border-radius: 2px;
+  background: var(--bandera-rojo);
+}
+
+.muestra-sentido.retorno {
+  background: var(--cupula-hondo);
+}
+
+.nota-buses {
+  margin: 0;
+  color: var(--tinta-suave);
+}
+
+/* A y B: dónde empieza y a dónde va la línea. */
+.punta-linea {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.15rem 0.5rem 0.15rem 0.15rem;
+  border-radius: 999px;
+  background: var(--superficie);
+  color: var(--tinta);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.3);
+  font: 700 0.8rem/1.2 var(--letra);
+  white-space: nowrap;
+}
+
+.punta-linea b {
+  display: grid;
+  place-items: center;
+  width: 1.3rem;
+  height: 1.3rem;
+  border-radius: 50%;
+  background: var(--tinta);
+  color: var(--superficie);
+}
+
+/* Un bus estimado: una gota de su color que apunta hacia donde va, con un bus dibujado
+   de lado (que no gira) y el número de la línea. Ida en rojo bandera, retorno en azul.
+   Sin `position` en el marcador: MapLibre lo pone en absoluto y lo mueve con transform. */
+.bus-estimado {
+  --color-bus: var(--bus-ida);
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 58px;
+  padding-bottom: 10px;
+  cursor: pointer;
+}
+
+.bus-estimado.retorno {
+  --color-bus: var(--bus-retorno);
+}
+
+.bus-gota,
+.bus-glifo,
+.bus-pulso {
+  grid-area: 1 / 1;
+}
+
+.bus-gota {
+  display: block;
+  width: 40px;
+  height: 48px;
+  transform: rotate(var(--rumbo, 0deg));
+  transform-origin: 20px 26px;
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.35));
+}
+
+/* Con `position`, para quedar encima de la gota (que, al girar, forma su propia capa). */
+.bus-glifo {
+  position: relative;
+  display: block;
+  width: 20px;
+  height: 20px;
+  margin-top: 4px;
+  color: #fff;
+}
+
+/* Un anillo que late suave: el bus está "en camino". */
+.bus-pulso {
+  width: 26px;
+  height: 26px;
+  margin-top: 4px;
+  border-radius: 50%;
+  border: 2px solid var(--color-bus);
+  animation: bus-pulso 2.4s ease-out infinite;
+  pointer-events: none;
+}
+
+@keyframes bus-pulso {
+  from {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  to {
+    transform: scale(2.1);
+    opacity: 0;
+  }
+}
+
+.bus-numero {
+  position: absolute;
+  top: 39px;
+  left: 50%;
+  translate: -50% 0;
+  display: grid;
+  place-items: center;
+  min-width: 22px;
+  height: 17px;
+  padding: 0 5px;
+  border-radius: 999px;
+  border: 1.5px solid #fff;
+  background: var(--color-bus);
+  color: #fff;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.3);
+  font: 800 0.7rem/1 var(--letra);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bus-pulso {
+    display: none;
+  }
+}
+
+/* De lejos, cada bus es un punto de su color. */
+.mapa-lejos .bus-estimado {
+  width: 14px;
+  height: 14px;
+}
+
+.mapa-lejos .bus-gota,
+.mapa-lejos .bus-glifo,
+.mapa-lejos .bus-pulso,
+.mapa-lejos .bus-numero {
+  display: none;
+}
+
+.mapa-lejos .bus-estimado::before {
+  content: "";
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 1.5px solid #fff;
+  background: var(--color-bus);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.35);
 }
 
 /* ---------- Hoja impresa de tu zona ----------
