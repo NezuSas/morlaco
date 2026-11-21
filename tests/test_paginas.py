@@ -56,6 +56,7 @@ def test_farmacias_del_turno_de_hoy_y_el_siguiente(tmp_path):
     assert "Del sábado 7 de noviembre al sábado 14 de noviembre" in es
     assert "Farmacia Uno" in es and "Farmacia Dos" in es
     assert 'href="tel:+59372222222"' in es
+    assert ">07 222 2222</a>" in es
     sin_turno = paginas.generar(tmp_path, date(2026, 12, 1))
     assert "todavía no ha publicado" in sin_turno["info/farmacias-de-turno.html"]
     assert "Farmacia Uno" not in sin_turno["info/farmacias-de-turno.html"]

@@ -9,7 +9,19 @@
       content="Cuándo pasa el recolector de basura, si hay cortes de luz programados y qué paradas de bus tienes cerca, en Cuenca, Ecuador."
     />
     <meta name="color-scheme" content="light dark" />
-    <meta name="theme-color" content="#1d4489" />
+    <script>
+      // Si se abre con una calle ya elegida (enlace #lat,lon o la última consultada), no se
+      // muestra la portada mientras llegan los datos. app.js quita la clase; por si falla, se
+      // quita sola a los 8 segundos.
+      try {
+        if (/^#-?\d/.test(location.hash) || localStorage.getItem("morlaco:ultimo-punto")) {
+          document.documentElement.classList.add("abriendo-punto");
+          setTimeout(() => document.documentElement.classList.remove("abriendo-punto"), 8000);
+        }
+      } catch {}
+    </script>
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0b1220" media="(prefers-color-scheme: dark)" />
     <!-- Vista previa al compartir el enlace (WhatsApp, Facebook, X, Telegram). -->
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="es_EC" />
@@ -33,6 +45,8 @@
     <link rel="apple-touch-icon" href="iconos/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-title" content="Morlaco" />
     <!-- Las tipografías van en el propio sitio: cargan antes y no se pide nada a terceros. -->
+    <link rel="preconnect" href="https://unpkg.com" crossorigin />
+    <link rel="preconnect" href="https://tiles.openfreemap.org" crossorigin />
     <link rel="preload" href="fuentes/alegreya.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="fuentes/alegreya-sans-400.woff2" as="font" type="font/woff2" crossorigin />
     <link
@@ -53,6 +67,9 @@
       </symbol>
       <symbol id="i-rayo" viewBox="0 0 24 24">
         <path d="M13.5 2.5 5 13.5h6.2l-1 8 8.8-11h-6.3z" />
+      </symbol>
+      <symbol id="i-telefono" viewBox="0 0 24 24">
+        <path d="M7.2 3.5h2.6l1.4 4.2-2 1.6a12 12 0 0 0 5.5 5.5l1.6-2 4.2 1.4v2.6a2 2 0 0 1-2.2 2A15.5 15.5 0 0 1 5.2 5.7a2 2 0 0 1 2-2.2z" />
       </symbol>
       <symbol id="i-cruz" viewBox="0 0 24 24">
         <path d="M9.5 3.5h5v6h6v5h-6v6h-5v-6h-6v-5h6z" />
@@ -80,7 +97,7 @@
     <header class="barra">
       <a class="marca" href="./" aria-label="Morlaco, inicio">
         <img src="icono.svg" alt="" width="30" height="30" />
-        <span>Morlaco</span>
+        <span translate="no">Morlaco</span>
       </a>
       <div class="barra-acciones">
         <button type="button" id="instalar" class="idioma" data-t="instalar" data-t-aria-label="instalarAria" hidden>Instalar</button>
@@ -96,7 +113,7 @@
           <div class="muro">
           <!-- Las tres cúpulas de la Catedral Nueva de Cuenca: grandes en la portada y, con tu
                calle elegida, más pequeñas sobre su nombre. -->
-          <svg class="cupulas" viewBox="0 0 320 100" aria-hidden="true" focusable="false">
+          <svg class="cupulas" viewBox="55 0 210 100" aria-hidden="true" focusable="false">
             <defs>
               <g id="cupula">
                 <rect style="fill:var(--superficie);stroke:var(--tinta-suave);stroke-width:1.5" x="134" y="58" width="52" height="26" />
@@ -112,7 +129,8 @@
             <use href="#cupula" transform="translate(-30.8 26.2) scale(.68)" />
             <use href="#cupula" transform="translate(133.2 26.2) scale(.68)" />
             <use href="#cupula" />
-            <rect class="suelo" x="0" y="84" width="320" height="3" rx="1.5" />
+            <!-- El suelo sigue de lado a lado del muro: las cúpulas se paran sobre un horizonte. -->
+            <rect class="suelo" x="-3000" y="84" width="6000" height="2.5" />
           </svg>
           <div class="portada">
             <h1 id="titulo" data-t="portadaTitulo">¿Qué pasa hoy en tu calle?</h1>
@@ -131,7 +149,7 @@
                 aria-autocomplete="list"
                 aria-expanded="false"
                 aria-controls="sug-direccion"
-                placeholder="Sucre y Borrero"
+                placeholder="Sucre y Borrero…"
                 required
               />
               <button type="button" class="limpiar-campo" data-t-aria-label="borrarTexto" aria-label="Borrar lo escrito" hidden>
@@ -161,26 +179,34 @@
               <p id="punto-nombre" class="punto-nombre" role="heading" aria-level="1" aria-live="polite"></p>
             </div>
             <p id="punto-zona" class="punto-zona"></p>
+            <!-- Lo primero que se quiere saber, arriba del todo (en el celular, antes del mapa). -->
+            <p id="punto-hoy" class="punto-hoy" hidden></p>
             <div class="punto-acciones">
+              <!-- A la vista, lo de todos los días; el resto, en "Más". -->
               <button type="button" id="cambiar-punto" class="en-muro" data-t="cambiarPunto">Cambiar de lugar</button>
-              <button type="button" id="borrar-punto" class="en-muro" data-t-aria-label="borrarPuntoAria" aria-label="Borrar esta dirección del dispositivo">
-                <span data-t="borrarPunto">Borrar dirección</span>
-              </button>
-              <button type="button" id="whatsapp" class="en-muro">
-                <span data-t="whatsapp">WhatsApp</span>
-              </button>
               <button type="button" id="compartir" class="en-muro">
-                <span data-t="compartir">Compartir</span>
+                <span data-t="compartir" aria-live="polite">Compartir</span>
               </button>
-              <div class="guardar-lugar" role="group" aria-labelledby="t-guardar-como">
-                <span id="t-guardar-como" data-t="guardarComo">Guardar como</span>
-                <button type="button" class="lugar-boton en-muro" data-lugar="casa" aria-pressed="false">
-                  <span data-t="lugarCasa">Casa</span>
-                </button>
-                <button type="button" class="lugar-boton en-muro" data-lugar="trabajo" aria-pressed="false">
-                  <span data-t="lugarTrabajo">Trabajo</span>
-                </button>
-              </div>
+              <details id="mas-acciones" class="mas-acciones">
+                <summary data-t="masAcciones">Más</summary>
+                <div class="mas-acciones-panel">
+                  <button type="button" id="whatsapp" class="en-muro">
+                    <span data-t="whatsappEnviar">Enviar por WhatsApp</span>
+                  </button>
+                  <div class="guardar-lugar" role="group" aria-labelledby="t-guardar-como">
+                    <span id="t-guardar-como" data-t="guardarComo">Guardar como</span>
+                    <button type="button" class="lugar-boton en-muro" data-lugar="casa" aria-pressed="false">
+                      <span data-t="lugarCasa">Casa</span>
+                    </button>
+                    <button type="button" class="lugar-boton en-muro" data-lugar="trabajo" aria-pressed="false">
+                      <span data-t="lugarTrabajo">Trabajo</span>
+                    </button>
+                  </div>
+                  <button type="button" id="borrar-punto" class="en-muro" data-t-aria-label="borrarPuntoAria" aria-label="Borrar esta dirección del dispositivo">
+                    <span data-t="borrarPunto">Borrar dirección</span>
+                  </button>
+                </div>
+              </details>
             </div>
           </div>
           </div>
@@ -196,28 +222,56 @@
                 <li><button type="button" class="ejemplo" data-busqueda="Mall del Río">Mall del Río</button></li>
               </ul>
             </div>
+            <!-- La ciudad hoy, antes de buscar nada: se llena con los mismos datos de la página. -->
+            <section id="hoy-cuenca" class="hoy-cuenca" aria-labelledby="t-hoy-cuenca" hidden>
+              <h2 id="t-hoy-cuenca" class="titulo-hoy" data-t="hoyEnCuenca">Hoy en Cuenca</h2>
+              <p id="hoy-fecha" class="hoy-fecha"></p>
+              <p id="hoy-recolector" class="hoy-frase"></p>
+              <p id="hoy-otros" class="hoy-frase"></p>
+            </section>
           </div>
 
           <div id="respuesta" class="respuesta" hidden>
-            <h2 class="titulo-hoy" data-t="hoyEnTuCalle">Hoy en tu calle</h2>
-            <ul id="resumen" class="resumen"></ul>
-            <p id="resumen-nota" class="resumen-nota" hidden></p>
-
-            <nav class="secciones" aria-label="Secciones de la respuesta" data-t-aria-label="seccionesAria">
-              <a href="#s-basura" class="servicio-basura" data-t="navBasura">Basura</a>
-              <a href="#s-luz" class="servicio-luz" data-t="navLuz">Luz</a>
-              <a href="#s-agua" class="servicio-agua" data-t="navAgua">Agua</a>
-              <a href="#s-farmacias" class="servicio-farmacias" data-t="navFarmacias">Farmacias</a>
-              <a href="#s-buses" class="servicio-buses" data-t="navBuses">Buses</a>
-              <a href="#s-cerca" class="servicio-cerca" data-t="navCerca">Cerca de ti</a>
-              <a id="nav-aire" href="#s-aire" class="servicio-aire" data-t="navAire" hidden>Aire</a>
+            <!-- Pestañas: cada una muestra solo su parte; el mapa sigue a la vista. -->
+            <nav class="secciones" role="tablist" aria-label="Secciones de la respuesta" data-t-aria-label="seccionesAria">
+              <a href="#s-resumen" role="tab" aria-controls="s-resumen" data-t="navResumen">Resumen</a>
+              <a href="#s-basura" role="tab" aria-controls="s-basura" class="servicio-basura" data-t="navBasura">Basura</a>
+              <!-- Luz y agua comparten pestaña: son la misma pregunta ("¿me cortan algo?"). -->
+              <a href="#s-cortes" role="tab" aria-controls="s-luz s-agua" class="servicio-luz" data-t="navCortes">Cortes</a>
+              <a href="#s-farmacias" role="tab" aria-controls="s-farmacias" class="servicio-farmacias" data-t="navFarmacias">Farmacias</a>
+              <a href="#s-buses" role="tab" aria-controls="s-buses" class="servicio-buses" data-t="navBuses">Buses</a>
+              <a href="#s-cerca" role="tab" aria-controls="s-cerca" class="servicio-cerca" data-t="navCerca">Cerca</a>
+              <a id="nav-aire" href="#s-aire" role="tab" aria-controls="s-aire" class="servicio-aire" data-t="navAire" hidden>Aire</a>
             </nav>
 
-            <section id="s-basura" class="basura" aria-labelledby="t-basura">
+            <section id="s-resumen" class="seccion-resumen" role="tabpanel" aria-labelledby="t-hoy">
+              <h2 id="t-hoy" class="titulo-hoy" data-t="hoyEnTuCalle">Hoy en tu calle</h2>
+              <ul id="resumen" class="resumen"></ul>
+              <p id="resumen-nota" class="resumen-nota" hidden></p>
+              <details id="sobre-datos" class="sobre-datos">
+                <summary data-t="sobreTitulo">Sobre estos datos</summary>
+                <p data-t-html="sobreIntro">Morlaco lo hace y lo mantiene <a href="https://www.nezuecuador.com/">Nezu S.A.S.</a>, en Cuenca. Junta datos públicos de varias instituciones y no es un servicio oficial.</p>
+                <ul>
+                  <li data-t-html="sobreBasura">Las zonas y horarios de recolección salen del <a href="https://emac.gob.ec/mapa-zonas-de-recoleccion/">mapa de EMAC EP</a>. Si EMAC los cambia, el calendario se actualiza solo.</li>
+                  <li data-t-html="sobreLuz">Los cortes de luz son los programados que <a href="https://www.centrosur.gob.ec/suspensiones-programadas/">Centro Sur</a> publica en su web. Cuando deja de publicar, no hay forma de saber si hay cortes, y entonces conviene mirar sus redes sociales.</li>
+                  <li data-t-html="sobreFarmacias">Las farmacias de turno vienen de la lista mensual de <a href="https://www.controlsanitario.gob.ec/turnos-de-farmacias/">ARCSA</a> para Azuay, que a veces trae errores. La distancia se calcula con la dirección que publica ARCSA, así que es aproximada.</li>
+                  <li data-t-html="sobreBuses">Los trazados de buses los publicó el municipio en 2022 y los horarios en 2025, en el portal <a href="https://cuencaendatos.cuenca.gob.ec">Cuenca en Datos</a>. Algunas líneas pueden haber cambiado desde entonces, así que manda el letrero del bus. Las paradas son las del registro municipal, que no tiene todas. Las distancias van en línea recta y los tiempos se estiman con la frecuencia del día, a 15 km/h en bus y 4,5 km/h a pie.</li>
+                  <li data-t-html="sobreTransporte">El pasaje y los cambios de líneas de 2026 salen de comunicados del municipio publicados en <a href="https://elmercurio.com.ec/cuenca/">El Mercurio</a>, revisados a mano por última vez el 10 de noviembre de 2026. Las estaciones del tranvía son las del <a href="https://tranvia.cuenca.gob.ec/">Tranvía de Cuenca</a>, con la frecuencia que anunció en octubre de 2025.</li>
+                  <li data-t-html="sobreAgua">ETAPA EP anuncia sus cortes de agua en redes sociales y no en su web. Morlaco los toma de las notas de El Mercurio que citan a ETAPA, y una persona las revisa antes.</li>
+                  <li data-t-html="sobreCerca">Las zonas WiFi, los mercados, los puntos para pilas y la Guardia Ciudadana vienen del portal <a href="https://cuencaendatos.cuenca.gob.ec">Cuenca en Datos</a>. Algunas coordenadas de la fuente están mal; se corrigen y, si no se puede, el punto no se muestra.</li>
+                  <li data-t-html="sobreAire">La calidad del aire es el índice de la <a href="https://caire.emov.gob.ec/">Red de Monitoreo de la EMOV EP</a>, que se pide a su web cada vez que abres la página. Se muestra la estación más cercana que mide partículas.</li>
+                  <li data-t-html="sobreCalles">Las calles, la BiciPública, las ciclovías y los puntos de carga son de <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> (© sus colaboradores, ODbL).</li>
+                </ul>
+              </details>
+            </section>
+
+            <section id="s-basura" role="tabpanel" class="basura" aria-labelledby="t-basura">
               <h2 id="t-basura">
                 <span data-t="tituloBasura">Recolección de basura</span>
               </h2>
               <p id="basura-cuando" class="cuando"></p>
+              <p id="basura-falta" class="falta" hidden></p>
+              <div id="basura-recorrido"></div>
               <ol id="semana" class="semana" aria-label="Días de recolección en tu zona" data-t-aria-label="semanaAria"></ol>
               <p id="basura-dias" class="solo-impresion"></p>
               <p id="basura-fundas" class="fundas"></p>
@@ -237,28 +291,28 @@
               </div>
             </section>
 
-            <section id="s-luz" class="tarjeta-seccion servicio-luz" aria-labelledby="t-luz">
+            <section id="s-luz" role="tabpanel" class="tarjeta-seccion servicio-luz" aria-labelledby="t-luz">
               <h2 id="t-luz">
                 <span data-t="tituloLuz">Cortes de luz programados</span>
               </h2>
               <div id="luz-estado"></div>
             </section>
 
-            <section id="s-agua" class="servicio-agua" aria-labelledby="t-agua">
+            <section id="s-agua" role="tabpanel" class="servicio-agua" aria-labelledby="t-agua">
               <h2 id="t-agua">
                 <span data-t="tituloAgua">Cortes de agua</span>
               </h2>
               <div id="agua-estado"></div>
             </section>
 
-            <section id="s-farmacias" class="tarjeta-seccion servicio-farmacias farmacias" aria-labelledby="t-farmacias">
+            <section id="s-farmacias" role="tabpanel" class="tarjeta-seccion servicio-farmacias farmacias" aria-labelledby="t-farmacias">
               <h2 id="t-farmacias">
                 <span data-t="tituloFarmacias">Farmacias de turno</span>
               </h2>
               <div id="farmacias-estado"></div>
             </section>
 
-            <section id="s-buses" class="tarjeta-seccion servicio-buses buses" aria-labelledby="t-buses">
+            <section id="s-buses" role="tabpanel" class="tarjeta-seccion servicio-buses buses" aria-labelledby="t-buses">
               <h2 id="t-buses">
                 <span data-t="tituloBuses">Buses cerca de ti</span>
               </h2>
@@ -273,7 +327,7 @@
                     autocomplete="off"
                     role="combobox" aria-autocomplete="list" aria-expanded="false"
                     aria-controls="sug-destino"
-                    placeholder="Mall del Río"
+                    placeholder="Mall del Río…"
                     required
                   />
                   <button type="button" class="limpiar-campo" data-t-aria-label="borrarDestino" aria-label="Borrar el destino" hidden>
@@ -297,7 +351,7 @@
               <p id="bici-nota" class="detalle" data-t="bicicletaNota"></p>
             </section>
 
-            <section id="s-cerca" class="servicio-cerca" aria-labelledby="t-cerca">
+            <section id="s-cerca" role="tabpanel" class="servicio-cerca" aria-labelledby="t-cerca">
               <h2 id="t-cerca">
                 <span data-t="tituloCerca">Cerca de ti</span>
               </h2>
@@ -305,28 +359,13 @@
               <p id="cerca-nota" class="detalle"></p>
             </section>
 
-            <section id="s-aire" class="servicio-aire aire" aria-labelledby="t-aire" hidden>
+            <section id="s-aire" role="tabpanel" class="servicio-aire aire" aria-labelledby="t-aire" hidden>
               <h2 id="t-aire">
                 <span data-t="tituloAire">Calidad del aire</span>
               </h2>
               <div id="aire-estado"></div>
             </section>
 
-            <details id="sobre-datos" class="sobre-datos">
-              <summary data-t="sobreTitulo">Sobre estos datos</summary>
-              <p data-t-html="sobreIntro">Morlaco lo hace y lo mantiene <a href="https://www.nezuecuador.com/">Nezu S.A.S.</a>, en Cuenca. Junta datos públicos de varias instituciones y no es un servicio oficial.</p>
-              <ul>
-                <li data-t-html="sobreBasura">Las zonas y horarios de recolección salen del <a href="https://emac.gob.ec/mapa-zonas-de-recoleccion/">mapa de EMAC EP</a>. Si EMAC los cambia, el calendario se actualiza solo.</li>
-                <li data-t-html="sobreLuz">Los cortes de luz son los programados que <a href="https://www.centrosur.gob.ec/suspensiones-programadas/">Centro Sur</a> publica en su web. Cuando deja de publicar, no hay forma de saber si hay cortes, y entonces conviene mirar sus redes sociales.</li>
-                <li data-t-html="sobreFarmacias">Las farmacias de turno vienen de la lista mensual de <a href="https://www.controlsanitario.gob.ec/turnos-de-farmacias/">ARCSA</a> para Azuay, que a veces trae errores. La distancia se calcula con la dirección que publica ARCSA, así que es aproximada.</li>
-                <li data-t-html="sobreBuses">Los trazados de buses los publicó el municipio en 2022 y los horarios en 2025, en el portal <a href="https://cuencaendatos.cuenca.gob.ec">Cuenca en Datos</a>. Algunas líneas pueden haber cambiado desde entonces, así que manda el letrero del bus. Las paradas son las del registro municipal, que no tiene todas. Las distancias van en línea recta y los tiempos se estiman con la frecuencia del día, a 15 km/h en bus y 4,5 km/h a pie.</li>
-                <li data-t-html="sobreTransporte">El pasaje y los cambios de líneas de 2026 salen de comunicados del municipio publicados en <a href="https://elmercurio.com.ec/cuenca/">El Mercurio</a>, revisados a mano por última vez el 10 de noviembre de 2026. Las estaciones del tranvía son las del <a href="https://tranvia.cuenca.gob.ec/">Tranvía de Cuenca</a>, con la frecuencia que anunció en octubre de 2025.</li>
-                <li data-t-html="sobreAgua">ETAPA EP anuncia sus cortes de agua en redes sociales y no en su web. Morlaco los toma de las notas de El Mercurio que citan a ETAPA, y una persona las revisa antes.</li>
-                <li data-t-html="sobreCerca">Las zonas WiFi, los mercados, los puntos para pilas y la Guardia Ciudadana vienen del portal <a href="https://cuencaendatos.cuenca.gob.ec">Cuenca en Datos</a>. Algunas coordenadas de la fuente están mal; se corrigen y, si no se puede, el punto no se muestra.</li>
-                <li data-t-html="sobreAire">La calidad del aire es el índice de la <a href="https://caire.emov.gob.ec/">Red de Monitoreo de la EMOV EP</a>, que se pide a su web cada vez que abres la página. Se muestra la estación más cercana que mide partículas.</li>
-                <li data-t-html="sobreCalles">Las calles, la BiciPública, las ciclovías y los puntos de carga son de <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> (© sus colaboradores, ODbL).</li>
-              </ul>
-            </details>
           </div>
 
         </section>

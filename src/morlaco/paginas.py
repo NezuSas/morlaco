@@ -206,6 +206,13 @@ def _documento(
 """
 
 
+def _enlaces_zonas(zonas: list[int], idioma: str) -> str:
+    """Los enlaces a las zonas, como una lista en fila (sin puntos medios entre ellos)."""
+    palabra = "Zona" if idioma == "es" else "Zone"
+    elementos = "".join(f'<li><a href="basura-zona-{n}.html">{palabra} {n}</a></li>' for n in zonas)
+    return f'<ul class="lista-zonas">{elementos}</ul>'
+
+
 def _seccion(*parrafos: str) -> str:
     return "      <section>\n" + "\n".join(f"        {p}" for p in parrafos) + "\n      </section>"
 
@@ -226,11 +233,7 @@ def pagina_zona(zona: dict[str, Any], todas: list[int], idioma: str) -> tuple[st
     descripcion = _t(idioma, "zona_desc", **variables)
     raiz = "../" if idioma == "es" else "../../"
     calendario = f"{raiz}../datos/recoleccion/calendarios/zona-{numero}.ics"
-    otras = " · ".join(
-        f'<a href="basura-zona-{n}.html">{"Zona" if idioma == "es" else "Zone"} {n}</a>'
-        for n in todas
-        if n != numero
-    )
+    otras = _enlaces_zonas([n for n in todas if n != numero], idioma)
     cuerpo = "\n".join(
         [
             _seccion(
@@ -241,7 +244,7 @@ def pagina_zona(zona: dict[str, Any], todas: list[int], idioma: str) -> tuple[st
                 f'<p><a href="{calendario}">{escape(_t(idioma, "zona_calendario", zona=numero))}</a></p>',
             ),
             _seccion(f"<p>{escape(_t(idioma, 'zona_saber'))}</p>"),
-            _seccion(f"<h2>{_t(idioma, 'zona_otras')}</h2>", f"<p>{otras}</p>"),
+            _seccion(f"<h2>{_t(idioma, 'zona_otras')}</h2>", otras),
         ]
     )
     faq = {
@@ -268,11 +271,26 @@ def pagina_zona(zona: dict[str, Any], todas: list[int], idioma: str) -> tuple[st
     )
 
 
+def _telefono_legible(tel: str, crudo: str) -> str:
+    """El teléfono escrito como en la página principal: "07 281 2332" o "099 642 8652".
+
+    ARCSA los publica cada uno a su manera (con o sin código, sin el 0); `tel` ya viene listo
+    para marcar (+593...). Si no se reconoce, se deja como lo publicó la fuente.
+    """
+    d = f"0{tel[4:]}" if tel.startswith("+593") else ""
+    if len(d) == 9 and d[1] in "234567":
+        return f"{d[:2]} {d[2:5]} {d[5:]}"
+    if len(d) == 10 and d[1] == "9":
+        return f"{d[:3]} {d[3:6]} {d[6:]}"
+    return crudo
+
+
 def _lista_farmacias(farmacias: list[dict[str, Any]]) -> str:
     filas = []
     for f in farmacias:
         tel = "".join(c for c in f.get("tel") or f.get("telefono") or "" if c.isdigit() or c == "+")
-        telefono = f' <a class="llamar" href="tel:{tel}">{escape(f["telefono"])}</a>' if tel else ""
+        legible = _telefono_legible(tel, f.get("telefono") or tel)
+        telefono = f' <a class="llamar" href="tel:{tel}">{escape(legible)}</a>' if tel else ""
         filas.append(
             f'<li><span class="farmacia-texto"><strong>{escape(f["nombre"])}</strong>'
             f"<span>{escape(f.get('direccion') or '')}</span></span>{telefono}</li>"
@@ -350,13 +368,10 @@ def pagina_agua(agua: dict[str, Any], hoy: date, idioma: str) -> tuple[str, str]
 
 
 def pagina_indice(zonas: list[int], idioma: str) -> tuple[str, str]:
-    enlaces_zonas = " · ".join(
-        f'<a href="basura-zona-{n}.html">{"Zona" if idioma == "es" else "Zone"} {n}</a>'
-        for n in zonas
-    )
+    enlaces_zonas = _enlaces_zonas(zonas, idioma)
     cuerpo = "\n".join(
         [
-            _seccion(f"<h2>{_t(idioma, 'hub_basura')}</h2>", f"<p>{enlaces_zonas}</p>"),
+            _seccion(f"<h2>{_t(idioma, 'hub_basura')}</h2>", enlaces_zonas),
             _seccion(f'<h2><a href="farmacias-de-turno.html">{_t(idioma, "far_titulo")}</a></h2>'),
             _seccion(f'<h2><a href="cortes-de-agua.html">{_t(idioma, "agua_titulo")}</a></h2>'),
         ]

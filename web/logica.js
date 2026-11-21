@@ -27,6 +27,16 @@ export function horaCuenca(fecha = new Date()) {
   };
 }
 
+/**
+ * La hora de Cuenca ("06:05") dentro de `minutos`, redondeada a cinco minutos: para decir
+ * "hacia las 06:05" cuando falta tanto que una cuenta en minutos no se entiende.
+ */
+export function horaDentroDe(minutos, fecha = new Date()) {
+  const total = Math.round((horaCuenca(fecha).minutos + minutos) / 5) * 5;
+  const delDia = ((total % 1440) + 1440) % 1440;
+  return `${String(Math.floor(delDia / 60)).padStart(2, "0")}:${String(delDia % 60).padStart(2, "0")}`;
+}
+
 export function aMinutos(hhmm) {
   const [horas, minutos] = hhmm.split(":").map(Number);
   return horas * 60 + minutos;
@@ -90,6 +100,54 @@ export function proximaRecoleccion(zona, fecha = new Date()) {
     if (dias.includes(dia)) return resultado("proxima", dia, enDias);
   }
   return null;
+}
+
+/**
+ * Minutos que faltan para que empiece la recolección de hoy (estado "hoy") o para que termine
+ * (estado "ahora"). null si la próxima no es hoy.
+ */
+export function faltaRecoleccion(proxima, fecha = new Date()) {
+  if (!proxima || (proxima.estado !== "hoy" && proxima.estado !== "ahora")) return null;
+  const limite = aMinutos(proxima.estado === "hoy" ? proxima.desde : proxima.hasta);
+  return Math.max(0, limite - horaCuenca(fecha).minutos);
+}
+
+/**
+ * La recolección de hoy en toda la ciudad: por qué zonas pasa ahora, en cuáles falta (con la
+ * hora a la que empieza la primera) y en cuáles ya pasó. `todas` son las que tienen recolección hoy.
+ */
+export function recoleccionDeHoy(zonas, fecha = new Date()) {
+  const { diaIso, minutos } = horaCuenca(fecha);
+  const hoy = (zonas?.features ?? [])
+    .map((f) => f.properties)
+    .filter((p) => p.dias_iso.includes(diaIso))
+    .sort((a, b) => Number(a.zona) - Number(b.zona));
+  const ahora = hoy.filter((p) => minutos >= aMinutos(p.desde) && minutos < aMinutos(p.hasta));
+  const luego = hoy.filter((p) => minutos < aMinutos(p.desde));
+  return {
+    todas: hoy.map((p) => p.zona),
+    ahora: ahora.map((p) => p.zona),
+    luego: luego.map((p) => p.zona),
+    empieza: luego.length ? luego.map((p) => p.desde).sort()[0] : null,
+    ya: hoy.filter((p) => minutos >= aMinutos(p.hasta)).map((p) => p.zona),
+  };
+}
+
+/**
+ * Las franjas de recolección de hoy, en el orden en que el recolector recorre la ciudad:
+ * { zona, desde, hasta, inicio, fin (minutos del día), estado: "ya" | "ahora" | "luego", lmv }.
+ */
+export function franjasDeHoy(zonas, fecha = new Date()) {
+  const { diaIso, minutos } = horaCuenca(fecha);
+  return (zonas?.features ?? [])
+    .map((f) => f.properties)
+    .filter((p) => p.dias_iso.includes(diaIso))
+    .map((p) => {
+      const inicio = aMinutos(p.desde);
+      const fin = aMinutos(p.hasta);
+      return { zona: p.zona, desde: p.desde, hasta: p.hasta, inicio, fin, estado: minutos >= fin ? "ya" : minutos >= inicio ? "ahora" : "luego", lmv: p.dias_iso.includes(1) };
+    })
+    .sort((a, b) => a.inicio - b.inicio || Number(a.zona) - Number(b.zona));
 }
 
 /** "24:00" (o "00:00" como final de una franja) se lee mejor como "medianoche". */
@@ -309,6 +367,35 @@ export function formatoDistancia(metros) {
   if (metros < 1000) return `${Math.round(metros / 10) * 10} m`;
   const km = (metros / 1000).toFixed(1);
   return `${idioma() === "en" ? km : km.replace(".", ",")} km`;
+}
+
+/**
+ * La distancia a una parada o una línea: por debajo de 20 m, "menos de 20 m" (no todas las
+ * paradas están en la esquina exacta, y "0 m" parecía un error).
+ */
+export function distanciaParada(metros) {
+  return metros < 20 ? t("menosDe20") : formatoDistancia(metros);
+}
+
+/** Minutos a pie, a 4,5 km/h (75 m por minuto, la misma cuenta de las rutas). Al menos 1. */
+export function minutosAPie(metros) {
+  return Math.max(1, Math.round(metros / 75));
+}
+
+/**
+ * Un teléfono de Ecuador escrito siempre igual: "07 283 6686" (fijo, con su código) o
+ * "099 642 8652" (celular), y el número para marcar (+593...). Acepta lo que publican las
+ * fuentes: sin código de Cuenca, celular sin el 0, con +593. Si no lo reconoce, devuelve null.
+ */
+export function telefono(texto) {
+  let d = String(texto ?? "").replace(/\D/g, "");
+  if (d.startsWith("593")) d = `0${d.slice(3)}`;
+  if (d.length === 7) d = `07${d}`; // fijo de Cuenca sin el código
+  else if (d.length === 8 && /^[2-7]/.test(d)) d = `0${d}`; // fijo con código pero sin el 0
+  else if (d.length === 9 && d.startsWith("9")) d = `0${d}`; // celular sin el 0
+  if (/^0[2-7]\d{7}$/.test(d)) return { texto: `${d.slice(0, 2)} ${d.slice(2, 5)} ${d.slice(5)}`, marcar: `+593${d.slice(1)}` };
+  if (/^09\d{8}$/.test(d)) return { texto: `${d.slice(0, 3)} ${d.slice(3, 6)} ${d.slice(6)}`, marcar: `+593${d.slice(1)}` };
+  return null;
 }
 
 /** Lee "#-2.89733,-79.00454" (lat,lon). Devuelve null si no es un punto válido. */

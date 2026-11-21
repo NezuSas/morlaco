@@ -14,13 +14,20 @@ import {
   enlaceWhatsApp,
   enlacesCalendario,
   estadoLuz,
+  faltaRecoleccion,
+  franjasDeHoy,
+  recoleccionDeHoy,
   filtrarCortes,
+  distanciaParada,
   formatoDistancia,
+  minutosAPie,
+  telefono,
   hashDesdePunto,
   masCercano,
   filtrarFarmacias,
   turnoActual,
   horaCuenca,
+  horaDentroDe,
   paradasCercanas,
   proximaRecoleccion,
   proximoFeriado,
@@ -362,4 +369,61 @@ test("proximoFeriado: el próximo día de descanso si está cerca, y Carnaval co
   const carnaval = proximoFeriado(datos, new Date("2027-02-01T08:00:00-05:00"));
   assert.deepEqual([carnaval.dia.fecha, carnaval.hasta, carnaval.faltan], ["2027-02-08", "2027-02-09", 7]);
   assert.equal(proximoFeriado(null), null);
+});
+
+test("telefono: cada número de las fuentes sale con el mismo formato y se puede marcar", () => {
+  assert.deepEqual(telefono("4081739"), { texto: "07 408 1739", marcar: "+59374081739" }); // fijo sin código
+  assert.deepEqual(telefono("072812332"), { texto: "07 281 2332", marcar: "+59372812332" });
+  assert.deepEqual(telefono("73702200"), { texto: "07 370 2200", marcar: "+59373702200" }); // sin el 0
+  assert.deepEqual(telefono("996428652"), { texto: "099 642 8652", marcar: "+593996428652" }); // celular sin el 0
+  assert.deepEqual(telefono("+593 4 2446520"), { texto: "04 244 6520", marcar: "+59342446520" });
+  assert.equal(telefono("123"), null);
+  assert.equal(telefono(undefined), null);
+});
+
+test("distanciaParada y minutosAPie", () => {
+  assert.equal(distanciaParada(0), "menos de 20 m");
+  assert.equal(distanciaParada(19), "menos de 20 m");
+  assert.equal(distanciaParada(240), "240 m");
+  assert.equal(minutosAPie(0), 1);
+  assert.equal(minutosAPie(240), 3);
+});
+
+test("recoleccionDeHoy: por dónde pasa ahora, dónde falta y dónde ya pasó", () => {
+  const zona = (n, dias_iso, desde, hasta) => ({ properties: { zona: n, dias_iso, desde, hasta } });
+  const zonas = { features: [zona(4, [1, 3, 5], "20:00", "24:00"), zona(1, [1, 3, 5], "08:00", "12:00"), zona(2, [1, 3, 5], "13:00", "17:00"), zona(5, [2, 4, 6], "08:00", "12:00")] };
+  // Viernes 20 de noviembre de 2026, 14:30 en Cuenca.
+  const viernes = new Date("2026-11-20T14:30:00-05:00");
+  assert.deepEqual(recoleccionDeHoy(zonas, viernes), { todas: [1, 2, 4], ahora: [2], luego: [4], empieza: "20:00", ya: [1] });
+  // Domingo: no hay recolección.
+  assert.deepEqual(recoleccionDeHoy(zonas, new Date("2026-11-22T10:00:00-05:00")).todas, []);
+});
+
+test("faltaRecoleccion: minutos para que empiece o termine la de hoy", () => {
+  const zona = { dias_iso: [1, 3, 5], dias: ["lunes", "miércoles", "viernes"], desde: "20:00", hasta: "24:00" };
+  const tarde = new Date("2026-11-20T16:50:00-05:00");
+  assert.equal(faltaRecoleccion(proximaRecoleccion(zona, tarde), tarde), 190);
+  const noche = new Date("2026-11-20T22:40:00-05:00");
+  assert.equal(faltaRecoleccion(proximaRecoleccion(zona, noche), noche), 80);
+  const sabado = new Date("2026-11-21T09:00:00-05:00");
+  assert.equal(faltaRecoleccion(proximaRecoleccion(zona, sabado), sabado), null);
+});
+
+test("franjasDeHoy: las zonas de hoy en el orden del día, con lo que ya pasó, lo que pasa y lo que falta", () => {
+  const zona = (n, dias_iso, desde, hasta) => ({ properties: { zona: n, dias_iso, desde, hasta } });
+  const zonas = { features: [zona(8, [2, 4, 6], "20:00", "24:00"), zona(5, [2, 4, 6], "08:00", "12:00"), zona(7, [2, 4, 6], "15:00", "19:00"), zona(1, [1, 3, 5], "08:00", "12:00")] };
+  const sabado = new Date("2026-11-21T15:40:00-05:00");
+  assert.deepEqual(
+    franjasDeHoy(zonas, sabado).map((f) => [f.zona, f.estado, f.inicio, f.fin, f.lmv]),
+    [[5, "ya", 480, 720, false], [7, "ahora", 900, 1140, false], [8, "luego", 1200, 1440, false]],
+  );
+  assert.deepEqual(franjasDeHoy(zonas, new Date("2026-11-22T10:00:00-05:00")), []);
+});
+
+test("horaDentroDe: la hora de Cuenca a la que llega algo, redondeada a cinco minutos", () => {
+  const madrugada = new Date("2026-11-21T00:40:00-05:00");
+  assert.equal(horaDentroDe(348, madrugada), "06:30");
+  assert.equal(horaDentroDe(62, madrugada), "01:40");
+  // Pasa de medianoche sin salirse del día.
+  assert.equal(horaDentroDe(90, new Date("2026-11-21T23:10:00-05:00")), "00:40");
 });

@@ -10,6 +10,7 @@
 
 import { horarioDeHoy } from "./buses.js";
 import { aMinutos, horaCuenca } from "./logica.js";
+import { minutosAlProximo } from "./vehiculos.js";
 
 const METROS_POR_GRADO = 111_320;
 const COS_CUENCA = Math.cos((-2.9 * Math.PI) / 180);
@@ -127,6 +128,14 @@ const minutosPie = (metros, ajustes) => metros / ((ajustes.velocidadPie * 1000) 
 const minutosBus = (metros, ajustes) => metros / ((ajustes.velocidadBus * 1000) / 60);
 
 function tramoBus(recorrido, subida, bajada, fecha, ajustes) {
+  let enEspera = recorrido.variante ? esperaVariante(recorrido.horario, fecha, ajustes) : espera(recorrido.horario, fecha, ajustes);
+  // Pasada la última salida, el último bus todavía puede venir en camino hacia tu parada.
+  // En una variante no se sabe si ese último bus la hace: queda como fuera de horario.
+  if (enEspera === null && !recorrido.variante && recorrido.horario?.fin && horaCuenca(fecha).minutos > aMinutos(recorrido.horario.fin)) {
+    const largo = recorrido.acumulado.at(-1);
+    const faltan = minutosAlProximo(recorrido.horario, largo, subida.recorrido, fecha);
+    if (faltan !== null) enEspera = faltan;
+  }
   return {
     modo: "bus",
     linea: recorrido.linea,
@@ -135,7 +144,7 @@ function tramoBus(recorrido, subida, bajada, fecha, ajustes) {
     variante: recorrido.variante,
     horario: recorrido.horario,
     // En una variante no se sabe cuántos buses la hacen: se espera la frecuencia entera.
-    espera: recorrido.variante ? esperaVariante(recorrido.horario, fecha, ajustes) : espera(recorrido.horario, fecha, ajustes),
+    espera: enEspera,
     metros: bajada.recorrido - subida.recorrido,
     subida: subida.punto,
     bajada: bajada.punto,
@@ -174,10 +183,17 @@ function directas(origen, destino, recorridos, fecha, ajustes) {
   const recta = distancia(aMetros([origen.lon, origen.lat]), aMetros([destino.lon, destino.lat]));
   const opciones = [];
   for (const r of recorridos) {
-    const subida = proyectar(origen, r);
+    let subida = proyectar(origen, r);
     if (!subida || subida.distancia > ajustes.caminarMaximo) continue;
     const bajada = proyectar(destino, r, subida.recorrido + 1);
     if (!bajada || bajada.distancia > ajustes.caminarMaximo) continue;
+    // Si el bus vuelve a pasar junto a tu punto (va a un barrio y regresa por la misma
+    // calle), se sube en la última pasada: no tiene sentido ir y volver sentado.
+    for (;;) {
+      const otra = proyectar(origen, r, subida.recorrido + REPASO_M, bajada.recorrido - 150);
+      if (!otra || otra.recorrido <= subida.recorrido || otra.distancia > subida.distancia + 60) break;
+      subida = otra;
+    }
     const enBus = bajada.recorrido - subida.recorrido;
     // Descarta vueltas absurdas (una línea que da toda la vuelta a la ciudad).
     if (enBus < 150 || enBus > 2.5 * recta + 1500) continue;
@@ -247,28 +263,38 @@ export function planificar(origen, destino, recorridos, { fecha = new Date(), aj
     const tramos = [tramoPie(origen, destino, recta * 1.3)]; // las calles no van en línea recta
     opciones.push({ tipo: "pie", tramos, ...totalizar(tramos, ajustes) });
   }
-  // Una sola opción por línea (o pareja de líneas): la más rápida. Una variante cuenta aparte:
-  // es otro viaje (te deja en otro lado, pero solo la hacen algunos buses).
+  // Una sola tarjeta por línea (o pareja de líneas). Manda la ruta normal, que hacen todos
+  // los buses; una variante sale solo si la ruta normal de esa línea no sirve para este viaje.
   const clave = (o) =>
     o.tramos
       .filter((t) => t.modo === "bus")
-      .map((t) => (t.variante ? `${t.linea}~${t.variante}` : t.linea))
+      .map((t) => t.linea)
       .join(">") || "pie";
+  const conVariante = (o) => o.tramos.some((t) => t.variante);
   const mejores = new Map();
   for (const o of opciones) {
     const actual = mejores.get(clave(o));
-    if (!actual || o.minutos < actual.minutos) mejores.set(clave(o), o);
+    const mejor =
+      !actual ||
+      (conVariante(actual) && !conVariante(o)) ||
+      (conVariante(actual) === conVariante(o) && o.minutos < actual.minutos);
+    if (mejor) mejores.set(clave(o), o);
   }
-  // Una variante solo vale si te hace caminar bastante menos que la ruta normal de su línea.
   const aPie = (o) => o.tramos.filter((t) => t.modo === "caminar").reduce((s, t) => s + t.metros, 0);
-  const lineas = (o) => o.tramos.filter((t) => t.modo === "bus").map((t) => t.linea).join(">");
-  const conVariante = (o) => o.tramos.some((t) => t.variante);
-  const normales = [...mejores.values()].filter((o) => !conVariante(o));
-  const utiles = [...mejores.values()].filter(
-    (o) =>
-      !conVariante(o) ||
-      !normales.some((n) => lineas(n) === lineas(o) && aPie(n) <= aPie(o) + AHORRO_VARIANTE_M),
-  );
+  const utiles = [...mejores.values()];
+  // La ruta normal avisa si algunos buses de su línea siguen por una variante que te deja
+  // bastante más cerca: el dato no se pierde, pero no ocupa otra tarjeta.
+  // Lo que dice el aviso es dónde te deja: se compara la caminata del final, no la total.
+  const alFinal = (o) => (o.tramos.at(-1).modo === "caminar" ? o.tramos.at(-1).metros : 0);
+  for (const o of utiles) {
+    if (conVariante(o)) continue;
+    const cercana = opciones
+      .filter((v) => conVariante(v) && clave(v) === clave(o) && alFinal(v) + AHORRO_VARIANTE_M <= alFinal(o))
+      .sort((a, b) => alFinal(a) - alFinal(b))[0];
+    if (cercana) {
+      o.variante = { lugar: cercana.tramos.find((t) => t.variante).variante, metrosAlFinal: alFinal(cercana) };
+    }
+  }
   // Si caminar tarda casi lo mismo que el bus (3 minutos de diferencia), mejor caminar; a
   // igual tiempo, primero la que menos se camina.
   const orden = (o) => o.minutos - (o.tipo === "pie" ? 3 : 0);
@@ -277,7 +303,10 @@ export function planificar(origen, destino, recorridos, { fecha = new Date(), aj
     .slice(0, ajustes.maximoOpciones);
 }
 
+// Cuánto menos hay que caminar para que una variante merezca mencionarse.
 const AHORRO_VARIANTE_M = 150;
+// Cuánto más adelante debe estar una segunda pasada del bus para contar como otra.
+const REPASO_M = 300;
 
 export const DISTANCIA_PARADA_M = 25; // la misma regla que usa el GTFS (src/morlaco/gtfs.py)
 

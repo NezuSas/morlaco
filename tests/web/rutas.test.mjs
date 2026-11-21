@@ -202,7 +202,7 @@ test("el planificador usa las variantes cuando la ruta normal no llega", () => {
   assert.equal(bus.espera, 10); // la frecuencia entera: no todos los buses hacen la variante
 });
 
-test("la variante y la ruta normal de la misma línea salen como opciones distintas", () => {
+test("con la ruta normal a mano, la variante de la misma línea no sale aparte", () => {
   const conVariante = {
     features: [...lineas.features, recorrido("7", "ida", "Barrio", [[-78.97, -2.9], [-78.96, -2.903]], "alargue")],
   };
@@ -210,7 +210,13 @@ test("la variante y la ruta normal de la misma línea salen como opciones distin
     fecha: lunes10h,
   });
   const variantes = opciones.map((o) => o.tramos.find((t) => t.modo === "bus")?.variante ?? null);
-  assert.ok(variantes.includes(null) && variantes.includes("Barrio"), JSON.stringify(variantes));
+  assert.ok(opciones.some((o) => o.tramos.some((t) => t.linea === "7" && !t.variante)), "sale la ruta normal de la 7");
+  assert.ok(!variantes.includes("Barrio"), JSON.stringify(variantes));
+  // La tarjeta de la 7 avisa que algunos buses siguen por una variante junto al destino
+  // (la que más acerca: aquí el alargue de siempre, que pasa aún más cerca que el barrio).
+  const normal = opciones.find((o) => o.tramos.some((t) => t.linea === "7"));
+  assert.ok(["Barrio", "Alargue"].includes(normal.variante?.lugar), JSON.stringify(normal.variante));
+  assert.ok(normal.variante.metrosAlFinal < 100, `${normal.variante.metrosAlFinal} m`);
 });
 
 test("una variante que no ahorra caminar no se ofrece", () => {
@@ -222,4 +228,25 @@ test("una variante que no ahorra caminar no se ofrece", () => {
     fecha: lunes10h,
   });
   assert.ok(!opciones.some((o) => o.tramos.some((t) => t.variante === "Otro lado")));
+});
+
+test("si el bus pasa dos veces junto a tu punto, se sube en la segunda pasada", () => {
+  // La 9 va al este hasta un barrio y vuelve por la misma calle hacia el oeste, donde está el destino.
+  const vaYVuelve = { features: [recorrido("9", "ida", "Oeste", [[-79.03, -2.95], [-79.0, -2.95], [-79.0, -2.9501], [-79.06, -2.9501]])] };
+  const [opcion] = planificar({ lat: -2.9502, lon: -79.02 }, { lat: -2.9502, lon: -79.055 }, prepararLineas(vaYVuelve, [], lunes10h), {
+    fecha: lunes10h,
+  });
+  const bus = opcion.tramos.find((t) => t.modo === "bus");
+  // Sin ir y volver: unos 3,9 km en bus en vez de 7,8 km.
+  assert.ok(bus.metros < 4500, `recorre ${Math.round(bus.metros)} m`);
+});
+
+test("pasada la última salida, el último bus todavía cuenta si no ha llegado a tu parada", () => {
+  // La 7 sale por última vez a las 21:00; a 2,2 km del inicio llega unos 9 minutos después.
+  const tarde = enCuenca("2026-11-09T21:05");
+  const opciones = planificar({ lat: -2.9005, lon: -79.01 }, { lat: -2.9005, lon: -78.975 }, prepararLineas(lineas, rutas, tarde), { fecha: tarde });
+  const bus = opciones[0].tramos.find((t) => t.modo === "bus");
+  assert.equal(bus.linea, "7");
+  assert.ok(bus.espera > 0 && bus.espera < 6, `espera ${bus.espera}`);
+  assert.equal(opciones[0].fueraDeHorario, false);
 });

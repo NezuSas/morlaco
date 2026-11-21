@@ -50,10 +50,10 @@
   --esmalte: #fcfcf9;
   --cobalto: #1b3f86;
 
-  /* Cuenca, dosificada: el carmesí en la marca y, con el dorado, en la franja de la barra;
-     el dorado, además, en microdetalles (la línea sobre tu calle, el punto de la zona). */
+  /* Cuenca, dosificada: el carmesí queda para avisos y distintivos; el dorado, en la línea
+     bajo las cúpulas y en microdetalles (el punto de la zona). */
   --marca-rojo: #b91c1c; /* blanco encima: 6,5:1 */
-  --marca-texto: var(--marca-rojo); /* "Morlaco" en la barra */
+  --marca-texto: var(--tinta); /* "Morlaco" en la barra: del color del texto, sin color propio */
   --oro: #b45309; /* como texto: 5,0:1 */
   --oro-grafico: #d97706; /* líneas y puntos: 3,2:1 */
   --bandera-rojo: var(--marca-rojo);
@@ -91,6 +91,7 @@
   /* Paneles flotantes del mapa (la leyenda, el selector de sentido). */
   --borde-flotante: transparent;
   --sombra-flotante: 0 1px 4px rgb(0 0 0 / 0.22);
+  --sombra-marca: 0 1px 3px rgb(15 23 42 / 0.32);
 
   /* Colores con significado */
   --funda-negra: #24272c;
@@ -118,7 +119,7 @@
   --radio-control: 6px;
   --radio-azulejo: 6px;
   --margen: 1.125rem;
-  --alto-barra: 3.875rem; /* 3,5rem más las dos franjas de 3 px de la bandera */
+  --alto-barra: 3.5rem;
   --sombra-tarjeta: 0 1px 2px rgb(16 32 64 / 0.08), 0 12px 32px rgb(16 32 64 / 0.14);
   --patron-azulejo: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='52' height='52' viewBox='0 0 44 44'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.09' stroke-width='1.1'%3E%3Cpath d='M22 4c5 6 5 12 0 18-5-6-5-12 0-18zM22 40c5-6 5-12 0-18-5 6-5 12 0 18zM4 22c6-5 12-5 18 0-6 5-12 5-18 0zM40 22c-6-5-12-5-18 0 6 5 12 5 18 0z'/%3E%3Cpath d='M0 0h44v44H0z'/%3E%3C/g%3E%3C/svg%3E");
 }
@@ -139,7 +140,6 @@
     --muro: #111a2c;
     --muro-hondo: #0b1220;
     --bandera-rojo: #f87171;
-    --marca-texto: #f87171;
     --bandera-oro: #f59e0b;
     --oro: #fbbf24;
     --oro-grafico: #fbbf24;
@@ -185,7 +185,6 @@
   --muro: #111a2c;
   --muro-hondo: #0b1220;
   --bandera-rojo: #f87171;
-  --marca-texto: #f87171;
   --bandera-oro: #f59e0b;
   --oro: #fbbf24;
   --oro-grafico: #fbbf24;
@@ -323,6 +322,43 @@ p {
 .servicio-cerca { --c: var(--tomebamba); }
 
 /* ---------- Botones y campos ---------- */
+
+/* Sin la espera del doble toque en lo que se toca, y con un resalte propio al tocar. */
+a,
+button,
+summary,
+label,
+input,
+select {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: color-mix(in srgb, var(--cupula) 18%, transparent);
+}
+
+/* Los títulos reparten sus palabras entre líneas (sin una palabra suelta al final). */
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+/* "Compartir", recién copiado el enlace. */
+button#compartir.hecho {
+  color: var(--ok);
+  text-decoration: none;
+}
+
+/* "Deshacer", junto al aviso de que se borró la dirección. */
+button.deshacer {
+  padding: 0;
+  font-size: inherit;
+}
+
+/* Un marcador del mapa con el foco del teclado. */
+.marca-gl:focus-visible {
+  outline: 3px solid var(--foco-anillo);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
 
 button {
   font: inherit;
@@ -532,13 +568,9 @@ button.limpiar-campo[hidden] {
   justify-content: space-between;
   gap: 1rem;
   height: var(--alto-barra); /* exacto: el escritorio resta este alto a la ventana */
-  padding: calc(0.5rem + 6px) var(--margen) 0.5rem;
+  padding: 0.5rem var(--margen);
   border-bottom: 1px solid var(--linea);
-  /* Arriba, la bandera de Cuenca: una franja carmesí y otra dorada, de 3 px. */
-  background:
-    linear-gradient(var(--marca-rojo), var(--marca-rojo)) left top / 100% 3px no-repeat,
-    linear-gradient(var(--oro-grafico), var(--oro-grafico)) left 3px / 100% 3px no-repeat,
-    var(--superficie);
+  background: var(--superficie);
   color: var(--tinta);
 }
 
@@ -630,7 +662,58 @@ button.idioma:hover {
 .mapa {
   height: 62vh;
   min-height: 320px;
-  background: var(--cal-hondo);
+  /* El mismo tono del fondo del mapa: mientras cargan las teselas no se ve otro color. */
+  background: #eef0ec;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .mapa {
+    background: #121821;
+  }
+}
+
+:root[data-theme="dark"] .mapa {
+  background: #121821;
+}
+
+/* En el celular el mapa va dentro de la consulta, bajo tu calle: no ocupa toda la pantalla,
+   para que debajo asomen las pestañas y se vea que la página sigue. */
+@media (max-width: 899px) {
+  /* Con tu calle elegida, el encabezado se aprieta: el mapa y la respuesta suben. */
+  .con-respuesta .muro {
+    padding-top: 1rem;
+    padding-bottom: 1.1rem;
+  }
+  .con-respuesta .muro .cupulas {
+    width: 10.5rem;
+    margin-bottom: 0.8rem;
+  }
+  .con-respuesta .punto-nombre {
+    font-size: clamp(1.45rem, 5.8vw, 1.9rem);
+  }
+  .con-respuesta .punto-zona {
+    margin-top: 0.4rem;
+  }
+  .con-respuesta .punto-acciones {
+    gap: 0.15rem 1.1rem;
+    margin-top: 0.6rem;
+  }
+  .con-respuesta #cambiar-punto {
+    padding: 0.35rem 0.8rem;
+  }
+  .consulta .mapa-contenedor {
+    margin-top: 0;
+    border-top: 0;
+    border-bottom: 1px solid var(--linea);
+  }
+  .consulta .mapa {
+    height: 42vh;
+    min-height: 280px;
+  }
+}
+
+.mapa .maplibregl-cooperative-gesture-screen {
+  font: 600 1rem/1.4 var(--letra);
 }
 
 @media (min-width: 900px) {
@@ -667,6 +750,7 @@ button.idioma:hover {
   border-bottom: 1px solid var(--linea);
   color: var(--tinta);
   background: var(--muro);
+  overflow-x: clip; /* corta el suelo de las cúpulas en los bordes, sin cortar el menú que cuelga */
 }
 
 @media (min-width: 900px) {
@@ -684,17 +768,18 @@ button.idioma:hover {
 
 .cupulas {
   display: block;
-  width: min(13.5rem, 62%);
+  width: min(15rem, 70%);
   height: auto;
-  margin-bottom: 1.1rem;
+  margin-bottom: 1.4rem;
+  overflow: visible; /* el suelo se sale del dibujo y cruza el muro entero */
   transition: width 0.45s cubic-bezier(0.2, 0.8, 0.3, 1), margin 0.45s cubic-bezier(0.2, 0.8, 0.3, 1);
 }
 
 /* Con tu calle elegida, las cúpulas se quedan, más pequeñas, sobre su nombre: su suelo
    dorado hace de filete del letrero. */
 .con-respuesta .cupulas {
-  width: 9rem;
-  margin-bottom: 0.75rem;
+  width: 11.5rem;
+  margin-bottom: 1rem;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -828,6 +913,20 @@ button.lugar {
   color: var(--cupula);
 }
 
+/* Al abrir con una calle ya elegida, mientras llegan los datos: ni la portada ni los ejemplos
+   (se verían un instante antes de tu calle), ni la leyenda de zonas. */
+.abriendo-punto .portada,
+.abriendo-punto .buscar,
+.abriendo-punto #inicio,
+.abriendo-punto .leyenda {
+  display: none;
+}
+
+.abriendo-punto .cupulas {
+  width: 11.5rem;
+  margin-bottom: 1rem;
+}
+
 /* Con respuesta, el muro deja solo el letrero; el buscador vuelve con "Cambiar de lugar". */
 .con-respuesta .portada,
 .con-respuesta:not(.cambiando) .buscar,
@@ -904,6 +1003,57 @@ button.lugar {
   background: var(--color-zona, var(--oro-grafico));
 }
 
+/* Cuándo pasa el recolector, bajo el nombre de la calle: lo primero que se busca. */
+.punto-hoy {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  margin-top: 0.9rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--linea);
+  color: var(--tinta);
+  font-size: var(--t-2, 1.1rem);
+  line-height: 1.3;
+}
+
+.punto-hoy[hidden] {
+  display: none;
+}
+
+/* En pantalla ancha la ficha de Basura está justo debajo: aquí sería decirlo dos veces.
+   En el celular sí va, porque entre el nombre y el resumen está el mapa. */
+@media (min-width: 900px) {
+  .punto-hoy {
+    display: none;
+  }
+}
+
+.punto-hoy .icono {
+  margin-top: 0.05rem;
+  color: var(--icono);
+}
+
+.punto-hoy > span {
+  display: grid;
+}
+
+.punto-hoy-falta {
+  color: var(--tinta-suave);
+  font-size: var(--t-0);
+  font-variant-numeric: tabular-nums;
+}
+
+.punto-hoy.ahora strong::before {
+  content: "";
+  display: inline-block;
+  width: 0.55rem;
+  height: 0.55rem;
+  margin-right: 0.45rem;
+  border-radius: 50%;
+  background: #4ade80;
+  vertical-align: 0.08em;
+}
+
 .punto-acciones {
   display: flex;
   flex-wrap: wrap;
@@ -917,6 +1067,70 @@ button.lugar {
 button#borrar-punto,
 button#borrar-punto:hover {
   color: var(--tinta-suave);
+}
+
+/* "Más": WhatsApp, guardar como Casa o Trabajo y borrar, fuera de la vista hasta que se piden. */
+/* El panel se ancla a toda la fila de acciones (no a la palabra "Más"): así empieza en el borde
+   izquierdo y nunca se sale de la columna, que recorta lo que la desborda. */
+.punto-acciones {
+  position: relative;
+}
+
+.mas-acciones summary {
+  padding: 0.35rem 0;
+  color: var(--cupula);
+  font-weight: 700;
+  cursor: pointer;
+  list-style: none;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+.mas-acciones summary::-webkit-details-marker {
+  display: none;
+}
+
+.mas-acciones summary::after {
+  content: "";
+  display: inline-block;
+  width: 0.4em;
+  height: 0.4em;
+  margin-left: 0.4em;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-0.18em) rotate(45deg);
+}
+
+.mas-acciones[open] summary::after {
+  transform: translateY(0.05em) rotate(225deg);
+}
+
+.mas-acciones-panel {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  z-index: 20;
+  display: grid;
+  gap: 0.15rem;
+  width: min(18rem, 100%);
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--borde-flotante, var(--linea));
+  border-radius: var(--radio-control);
+  background: var(--superficie);
+  box-shadow: var(--sombra-tarjeta);
+}
+
+.mas-acciones-panel > button {
+  justify-self: start;
+  min-height: 44px;
+  text-align: left;
+}
+
+.mas-acciones-panel .guardar-lugar {
+  padding: 0.55rem 0;
+  border-top: 1px solid var(--linea);
+  border-bottom: 1px solid var(--linea);
 }
 
 /* Guardar como Casa / Trabajo. */
@@ -1015,7 +1229,7 @@ button.ejemplo:hover {
 }
 
 /* Cada servicio en un renglón: tocarlo lleva a su sección. */
-a.ficha {
+.ficha {
   display: grid;
   grid-template-columns: 7.25rem minmax(0, 1fr);
   column-gap: 1.4rem;
@@ -1069,7 +1283,7 @@ a.ficha.con-aviso .ficha-valor {
 }
 
 @media (max-width: 460px) {
-  a.ficha {
+  .ficha {
     grid-template-columns: 5.75rem minmax(0, 1fr);
     column-gap: 1.1rem;
   }
@@ -1104,6 +1318,122 @@ a.ficha .pastilla.estado-alerta {
   color: var(--alerta);
 }
 
+/* En "Hoy en tu calle" cada servicio es una ficha: su ícono en el color del servicio, la
+   respuesta en grande y el detalle debajo. Dos por fila donde caben. */
+.resumen {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr));
+  gap: 0.7rem;
+  margin-top: 1rem;
+  border-bottom: 0;
+}
+
+.resumen > li {
+  display: grid;
+}
+
+/* Si queda una sola al final, ocupa la fila entera. */
+.resumen > li:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
+.resumen .ficha {
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto auto 1fr;
+  gap: 0.15rem 0.7rem;
+  align-content: start;
+  padding: 0.9rem 1rem 1rem;
+  border: 1px solid var(--linea);
+  border-radius: 12px;
+  background: var(--superficie);
+  box-shadow: 0 1px 2px rgb(16 32 64 / 0.05);
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+
+.resumen a.ficha:hover {
+  border-color: color-mix(in srgb, var(--c) 55%, var(--linea));
+  box-shadow: 0 2px 4px rgb(16 32 64 / 0.06), 0 10px 24px rgb(16 32 64 / 0.1);
+  transform: translateY(-1px);
+}
+
+.resumen a.ficha:hover .ficha-valor {
+  color: inherit;
+  text-decoration: none;
+}
+
+.resumen .ficha-cabecera {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.45rem;
+  font-size: var(--t-0);
+  font-weight: 700;
+}
+
+/* El ícono, en una pastilla del color de su servicio. */
+.resumen .ficha .icono {
+  box-sizing: content-box;
+  width: 1.2rem;
+  height: 1.2rem;
+  margin: 0;
+  padding: 0.45rem;
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--c) 13%, transparent);
+  color: var(--c);
+}
+
+.resumen .ficha-valor,
+.resumen .ficha-detalle {
+  grid-column: 1 / -1;
+}
+
+.resumen .ficha-valor {
+  font-size: var(--t-1);
+  line-height: 1.25;
+}
+
+/* En la ficha el estado no va en pastilla: tiñe la ficha entera y colorea la respuesta. */
+.resumen .ficha-valor.pastilla {
+  justify-self: stretch;
+  margin-left: 0;
+  padding: 0;
+  border-radius: 0;
+  background: none;
+}
+
+.resumen .ficha:has(.estado-ok) {
+  border-color: color-mix(in srgb, var(--ok) 30%, var(--linea));
+  background: color-mix(in srgb, var(--ok-fondo) 45%, var(--superficie));
+}
+
+.resumen .ficha:has(.estado-atencion) {
+  border-color: color-mix(in srgb, var(--atencion) 35%, var(--linea));
+  background: color-mix(in srgb, var(--atencion-fondo) 55%, var(--superficie));
+}
+
+.resumen .ficha:has(.estado-neutro) .ficha-valor {
+  color: var(--tinta);
+}
+
+.resumen .ficha-detalle {
+  line-height: 1.35;
+}
+
+.resumen a.ficha.con-aviso {
+  border-color: color-mix(in srgb, var(--alerta) 40%, var(--linea));
+  background: color-mix(in srgb, var(--alerta-fondo) 55%, var(--superficie));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .resumen .ficha {
+    transition: none;
+  }
+  .resumen a.ficha:hover {
+    transform: none;
+  }
+}
+
 /* La luz, en una línea, cuando Centro Sur no tiene datos al día. */
 .resumen-nota {
   display: flex;
@@ -1121,6 +1451,185 @@ a.ficha .pastilla.estado-alerta {
   color: var(--c-luz);
 }
 
+/* ---------- Hoy en Cuenca (portada) ---------- */
+
+.hoy-cuenca {
+  margin: 2.25rem 0 1rem;
+}
+
+.hoy-cuenca .titulo-hoy {
+  margin-top: 0;
+}
+
+.hoy-fecha {
+  margin-top: 0.3rem;
+  color: var(--tinta-suave);
+}
+
+.hoy-frase {
+  margin-top: 0.7rem;
+  max-width: 34rem;
+}
+
+.hoy-frase:empty {
+  display: none;
+}
+
+.hoy-frase a {
+  color: var(--cupula);
+  text-underline-offset: 3px;
+}
+
+/* ---------- El día del recolector: una fila por zona sobre una regla de 06:00 a 24:00 ---------- */
+
+.dia {
+  --etiqueta: 6.6rem;
+  position: relative;
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 0.8rem;
+}
+
+.dia-fila,
+.dia-regla {
+  display: grid;
+  grid-template-columns: var(--etiqueta) minmax(0, 1fr);
+  align-items: center;
+  column-gap: 0.75rem;
+}
+
+.dia-zona {
+  display: grid;
+  line-height: 1.2;
+}
+
+.dia-zona strong {
+  font-weight: 700;
+}
+
+.dia-zona em {
+  margin-left: 0.4rem;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  background: var(--tinta);
+  color: var(--superficie);
+  font-size: 0.72rem;
+  font-style: normal;
+  white-space: nowrap;
+}
+
+.dia-zona > span {
+  color: var(--tinta-suave);
+  font-size: var(--t-0);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.dia-pista {
+  position: relative;
+  height: 1.5rem;
+  border-radius: 5px;
+  background: var(--cal-hondo);
+}
+
+.dia-franja {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 5px;
+  background: var(--cupula);
+}
+
+.dia-franja.mjs {
+  background: var(--tomebamba);
+}
+
+/* Lo que ya pasó, tenue; lo que falta, a medias; lo que pasa ahora, lleno. */
+.dia-franja.ya {
+  opacity: 0.28;
+}
+
+.dia-franja.luego {
+  opacity: 0.6;
+}
+
+.dia-fila.mia .dia-pista {
+  box-shadow: 0 0 0 2px var(--superficie), 0 0 0 3.5px var(--tinta);
+}
+
+/* La hora actual: una raya que cruza todas las filas. */
+.dia.con-ahora .dia-pista::after {
+  content: "";
+  position: absolute;
+  top: -0.35rem;
+  bottom: -0.35rem;
+  left: var(--ahora);
+  width: 2px;
+  margin-left: -1px;
+  background: var(--marca-rojo);
+}
+
+.dia-horas {
+  position: relative;
+  height: 2.3rem;
+  color: var(--tinta-suave);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.dia-horas > span {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+}
+
+.dia-horas > span:first-child {
+  transform: none;
+}
+
+.dia-horas > span:nth-last-of-type(1) {
+  transform: translateX(-100%);
+}
+
+.dia-ahora {
+  position: absolute;
+  top: 1.05rem;
+  /* Sigue a la raya, sin salirse por los bordes al inicio o al final del día. */
+  left: clamp(2.6rem, var(--x), calc(100% - 2.6rem));
+  transform: translateX(-50%);
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  background: var(--marca-rojo);
+  color: #fff;
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 460px) {
+  .dia {
+    --etiqueta: 5.6rem;
+  }
+}
+
+/* Cuánto falta para que empiece o termine la recolección. */
+.falta {
+  margin-top: 0.35rem;
+  color: var(--tinta-suave);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* En la leyenda del mapa, los días que tocan hoy. */
+.leyenda-hoy {
+  margin-left: 0.45rem;
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+  background: var(--tinta);
+  color: var(--superficie);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
 /* ---------- Navegación por secciones ---------- */
 
 .secciones {
@@ -1128,7 +1637,7 @@ a.ficha .pastilla.estado-alerta {
   top: 0;
   z-index: 5;
   display: flex;
-  gap: 1.4rem;
+  gap: 0.85rem;
   margin: 1.5rem calc(-1 * var(--margen)) 0;
   padding: 0 var(--margen);
   max-width: none;
@@ -1153,7 +1662,43 @@ a.ficha .pastilla.estado-alerta {
   color: var(--cupula);
 }
 
+/* Cuando hay pestañas fuera de la vista, el borde de ese lado se desvanece. */
+.secciones.mas-a-la-derecha {
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 2.75rem), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 2.75rem), transparent);
+}
+
+.secciones.mas-a-la-izquierda {
+  -webkit-mask-image: linear-gradient(to left, #000 calc(100% - 2.75rem), transparent);
+  mask-image: linear-gradient(to left, #000 calc(100% - 2.75rem), transparent);
+}
+
+.secciones.mas-a-la-derecha.mas-a-la-izquierda {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 2.75rem, #000 calc(100% - 2.75rem), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 2.75rem, #000 calc(100% - 2.75rem), transparent);
+}
+
 /* La sección que se está viendo: texto en tinta y subrayado azul de 3 px. */
+/* El pie (fuentes, contacto, autoría) es de la página, no de cada sección: con una calle
+   elegida va solo bajo la pestaña Resumen. En la portada se ve siempre. */
+.columna:has(.respuesta:not([hidden]) > #s-resumen.fuera-de-pestana) .pie {
+  display: none;
+}
+
+/* Cada pestaña muestra solo su parte (al imprimir se ven todas las que se imprimen). */
+.respuesta > section.fuera-de-pestana {
+  display: none;
+}
+
+.seccion-resumen .titulo-hoy {
+  margin-top: 0;
+}
+
+.seccion-resumen .sobre-datos {
+  margin-top: 2rem;
+}
+
+.secciones a[aria-selected="true"],
 .secciones a[aria-current="true"] {
   border-bottom: 3px solid var(--cupula);
   color: var(--tinta);
@@ -1163,11 +1708,9 @@ a.ficha .pastilla.estado-alerta {
 
 .respuesta > section {
   padding: 2rem 0 2.25rem;
-  scroll-margin-top: 3rem;
-}
-
-.respuesta > section + section {
-  border-top: 1px solid var(--linea);
+  /* Lo que mide la barra de secciones fija (unos 52 px) y un poco más: al saltar a una
+     sección, ni su borde ni su título quedan debajo de la barra. */
+  scroll-margin-top: 3.5rem;
 }
 
 .respuesta > section > h2 {
@@ -1428,9 +1971,40 @@ a.ficha .pastilla.estado-alerta {
   min-width: 0;
 }
 
+.farmacia-enlaces {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 1rem;
+  margin-top: 0.15rem;
+  font-size: var(--t-0);
+  font-weight: 700;
+}
+
+.farmacia-enlaces button.ver-en-mapa {
+  padding: 0.2rem 0;
+  font-size: inherit;
+}
+
+.farmacia-enlaces a {
+  color: var(--cupula);
+  text-underline-offset: 4px;
+}
+
+/* El aviso antes de las farmacias sin ubicación. */
+.farmacias-lista > li.farmacias-sin-lugar {
+  display: block;
+  padding: 0.9rem 0 0.4rem;
+  color: var(--tinta-suave);
+  font-size: var(--t-0);
+}
+
 /* El teléfono como botón: en el móvil, un toque llama. */
 .llamar {
   flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   padding: 0.5rem 0.8rem;
   border: 1.5px solid var(--linea);
   border-radius: var(--radio-control);
@@ -1443,6 +2017,22 @@ a.ficha .pastilla.estado-alerta {
 
 .llamar:hover {
   border-color: var(--cupula);
+}
+
+.llamar .icono {
+  width: 0.95rem;
+  height: 0.95rem;
+  fill: currentColor;
+  stroke: none;
+}
+
+/* Bajo la distancia de una línea, cuánto se tarda a pie. */
+.minutos-pie {
+  display: block;
+  color: var(--tinta-suave);
+  font-size: var(--t-0);
+  font-weight: 400;
+  white-space: nowrap;
 }
 
 /* ---------- Cerca de ti ---------- */
@@ -1629,6 +2219,13 @@ button.opcion-ruta[aria-pressed="true"] {
   font-size: var(--t-0);
 }
 
+/* Algunos buses de la línea siguen por una variante que te deja más cerca. */
+.opcion-variante {
+  color: var(--tinta);
+  font-size: var(--t-0);
+  font-weight: 400;
+}
+
 .opcion-etiquetas {
   display: flex;
   flex-wrap: wrap;
@@ -1802,6 +2399,7 @@ button.linea[aria-pressed="true"] {
 }
 
 .metros {
+  text-align: right;
   color: var(--tinta-suave);
   font-size: var(--t-0);
   font-variant-numeric: tabular-nums;
@@ -1991,6 +2589,36 @@ button.linea[aria-pressed="true"] {
   box-shadow: 0 1px 4px rgb(0 0 0 / 0.22);
 }
 
+/* Los controles y los créditos del mapa siguen al modo claro u oscuro de la página. */
+.mapa .maplibregl-ctrl-group {
+  background: var(--superficie);
+}
+
+.mapa .maplibregl-ctrl-group button + button {
+  border-top-color: var(--linea);
+}
+
+.mapa .maplibregl-ctrl-attrib {
+  background: color-mix(in srgb, var(--superficie) 88%, transparent);
+  color: var(--tinta-suave);
+}
+
+.mapa .maplibregl-ctrl-attrib a {
+  color: var(--tinta-suave);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .mapa .maplibregl-ctrl-icon,
+  :root:not([data-theme="light"]) .mapa .maplibregl-ctrl-attrib-button {
+    filter: invert(1);
+  }
+}
+
+:root[data-theme="dark"] .mapa .maplibregl-ctrl-icon,
+:root[data-theme="dark"] .mapa .maplibregl-ctrl-attrib-button {
+  filter: invert(1);
+}
+
 /* Sin WebGL: un aviso en el lugar del mapa. */
 .mapa-ausente {
   display: grid;
@@ -2070,14 +2698,64 @@ button.linea[aria-pressed="true"] {
   font: 700 0.85rem/1 var(--letra);
 }
 
+/* Las farmacias de turno cercanas: la cruz verde de las farmacias, en un cuadro blanco. */
+.etiqueta-farmacia {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: #fff;
+  color: #15803d;
+  border: 2px solid #15803d;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.3);
+}
+
+.etiqueta-farmacia svg {
+  width: 15px;
+  height: 15px;
+}
+
+.mapa.zonas-discretas .marca-gl:not(.pedida) .etiqueta-farmacia {
+  display: none;
+}
+
+/* Dónde bajarse del bus: un aro blanco con el borde del color de la ruta. */
+.punto-bajada {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--superficie);
+  border: 4px solid var(--cupula-hondo);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.3);
+}
+
+/* El destino, como un alfiler clavado: la punta cae justo en el lugar. */
 .punto-destino {
   display: block;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  border-radius: 50% 50% 50% 0;
   background: var(--ladrillo);
   border: 3px solid #fff;
-  box-shadow: 0 1px 5px rgb(0 0 0 / 0.35);
+  box-shadow: -1px 1px 5px rgb(0 0 0 / 0.35);
+  transform: translateY(-15px) rotate(-45deg);
+}
+
+.punto-destino::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.punto-destino {
+  position: relative;
 }
 
 /* Capas de movilidad: marcas en el mapa, muestras en el selector y la estación cercana. */
@@ -2210,21 +2888,145 @@ button.linea[aria-pressed="true"] {
   display: none;
 }
 
+.capas-titulo {
+  display: none;
+}
+
 .control-capas[open] summary {
-  margin-left: auto;
-}
-
-.control-capas > div {
-  display: grid;
-  padding: 0 0.75rem 0.5rem;
-}
-
-.control-capas label {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.2rem 0;
-  white-space: nowrap;
+  width: auto;
+  padding: 0 0 0 0.95rem;
+  gap: 1rem;
+}
+
+.control-capas[open] summary svg {
+  flex: none;
+  margin: 0 13px; /* el ícono queda donde estaba con el panel cerrado */
+  color: var(--cupula);
+}
+
+.control-capas[open] .capas-titulo {
+  display: block;
+  color: var(--tinta);
+  font-weight: 700;
+}
+
+/* El panel de capas: un título, y por capa su marca del mapa, qué muestra y un interruptor. */
+.panel-capas {
+  width: min(18rem, calc(100vw - 6rem));
+  padding: 0 0.35rem 0.4rem;
+}
+
+.capa-fila {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 52px;
+  padding: 0.35rem 0.6rem;
+  border-radius: var(--radio-control);
+  cursor: pointer;
+}
+
+.capa-fila:hover {
+  background: var(--cal);
+}
+
+.capa-fila + .capa-fila {
+  border-top: 1px solid var(--linea);
+}
+
+.capa-fila .marca-capa {
+  justify-self: center;
+  box-shadow: none;
+}
+
+.capa-fila .marca-capa svg {
+  width: 14px;
+  height: 14px;
+}
+
+.capa-texto {
+  display: grid;
+  min-width: 0;
+  line-height: 1.25;
+}
+
+.capa-nombre {
+  color: var(--tinta);
+  font-weight: 700;
+}
+
+.capa-que {
+  color: var(--tinta-suave);
+  font-size: var(--t-0);
+}
+
+/* La ciclovía como en el mapa: una raya llena (separada) y una punteada (carril). */
+.muestra-ciclovia {
+  display: grid;
+  gap: 4px;
+  justify-self: center;
+  width: 24px;
+}
+
+.muestra-ciclovia i {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--tomebamba);
+}
+
+.muestra-ciclovia i + i {
+  height: 3px;
+  background: repeating-linear-gradient(90deg, var(--tomebamba) 0 5px, transparent 5px 8px);
+}
+
+/* Interruptor: la casilla de siempre (accesible y con teclado), dibujada como un botón deslizable. */
+.interruptor {
+  appearance: none;
+  position: relative;
+  width: 40px;
+  height: 24px;
+  margin: 0;
+  border-radius: 999px;
+  background: var(--linea-campo);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.interruptor::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.3);
+  transition: transform 0.15s ease;
+}
+
+.interruptor:checked {
+  background: var(--cupula);
+}
+
+.interruptor:checked::after {
+  transform: translateX(16px);
+}
+
+.interruptor:focus-visible {
+  outline: 2px solid var(--foco-anillo);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .interruptor,
+  .interruptor::after {
+    transition: none;
+  }
 }
 
 /* ---------- Línea elegida: sentidos, puntas y buses estimados ---------- */
@@ -2237,8 +3039,12 @@ button.linea[aria-pressed="true"] {
   display: none;
 }
 
-/* Con una línea a la vista, la leyenda de zonas deja su sitio al selector de sentido. */
-.mapa.con-linea + .leyenda {
+/* La leyenda de zonas sale cuando las zonas son lo principal: en la portada o al alejar el
+   mapa. Con una ruta o una línea a la vista no hace falta (las zonas quedan como contorno), y
+   con tu calle elegida de cerca tampoco: tus días ya están en "Hoy en tu calle". */
+.mapa.con-linea + .leyenda,
+.mapa.zonas-discretas + .leyenda,
+.mapa.con-punto:not(.mapa-lejos) + .leyenda {
   display: none;
 }
 
@@ -2387,6 +3193,29 @@ button.linea[aria-pressed="true"] {
   --color-bus: var(--bus-retorno);
 }
 
+/* Todos los marcadores del mapa comparten el borde claro y la misma sombra: se leen como una
+   sola familia, aunque cada uno tenga su forma y su color. */
+.etiqueta-zona,
+.etiqueta-parada,
+.etiqueta-ruta,
+.etiqueta-farmacia,
+.marca-capa,
+.punto-bajada {
+  box-shadow: var(--sombra-marca);
+}
+
+.etiqueta-parada,
+.etiqueta-ruta,
+.etiqueta-farmacia,
+.marca-capa {
+  border-width: 2px;
+  border-radius: 7px;
+}
+
+.marca-capa {
+  border-radius: 50%;
+}
+
 .bus-gota,
 .bus-glifo {
   grid-area: 1 / 1;
@@ -2430,6 +3259,13 @@ button.linea[aria-pressed="true"] {
   font: 800 0.8125rem/1 var(--letra);
 }
 
+/* Mientras se dibuja una ruta, sus buses y el aviso del próximo bus todavía no se ven (el
+   aviso guarda su sitio: el encuadre ya lo tiene en cuenta). */
+.mapa.trazando .bus-estimado,
+.mapa.trazando .panel-linea {
+  visibility: hidden;
+}
+
 /* De lejos, cada bus es un punto de su color. */
 .mapa-lejos .bus-estimado {
   width: 14px;
@@ -2462,6 +3298,80 @@ button.linea[aria-pressed="true"] {
 
 .imprimir {
   margin-top: 1.5rem;
+}
+
+/* ---------- El muro, en el azul de las cúpulas (de día) ----------
+   El encabezado es un bloque del azul de la Catedral, con la letra en blanco y las cúpulas
+   claras sobre su línea dorada. De noche el muro sigue oscuro, como el resto de la página.
+   Lo que flota o es un campo (el buscador, el menú "Más", un error) vuelve a los colores
+   claros de siempre: son "islas" blancas sobre el azul. */
+@media screen and (prefers-color-scheme: light) {
+  .consulta .muro,
+  .pagina-datos .muro-datos {
+    --muro: #1f4a96;
+    --tinta: #ffffff;
+    --tinta-suave: #d6e2f8; /* 6,6:1 sobre el azul */
+    --icono: #d6e2f8;
+    --cupula: #ffffff; /* los enlaces y acciones, en blanco */
+    --accion-hondo: #ffffff;
+    --linea: rgb(255 255 255 / 0.24);
+    --borde-boton: rgb(255 255 255 / 0.65);
+    --oro: #fcd34d;
+    --oro-grafico: #fbbf24;
+    --foco-anillo: #ffffff;
+    border-bottom: 0;
+    background: linear-gradient(175deg, #2454a8, #1b4188 70%);
+  }
+
+  /* Las cúpulas, claras sobre el azul; los nervios, del color del fondo. */
+  .consulta .muro .cupulas {
+    --cupula: #e8f0fd;
+    --cupula-hondo: #b7cbee;
+    --funda-celeste: #2a58ab;
+    --superficie: #2a58ab;
+    --tinta-suave: #c3d4f1;
+  }
+
+  /* Botones con borde: transparentes, con filo y letra blancos. */
+  .consulta .muro button#cambiar-punto,
+  .consulta .muro button.ubicarme,
+  .consulta .muro button.lugar {
+    background: rgb(255 255 255 / 0.08);
+    color: #fff;
+  }
+  .consulta .muro button#cambiar-punto:hover,
+  .consulta .muro button.ubicarme:hover,
+  .consulta .muro button.lugar:hover {
+    border-color: #fff;
+    background: rgb(255 255 255 / 0.16);
+  }
+  .consulta .muro button#compartir.hecho {
+    color: #bbf7d0;
+  }
+  .consulta .muro .punto-zona:not(:empty)::before {
+    box-shadow: 0 0 0 2px rgb(255 255 255 / 0.85);
+  }
+
+  /* Las islas claras. */
+  .consulta .muro .campo,
+  .consulta .muro .mas-acciones-panel,
+  .consulta .muro .mensaje.error {
+    --tinta: #0f172a;
+    --tinta-suave: #475569;
+    --icono: #475569;
+    --cupula: #1f4a96;
+    --accion-hondo: #173872;
+    --linea: #e2e8f0;
+    --borde-boton: #64748b;
+    --oro: #b45309;
+    --oro-grafico: #d97706;
+    --foco-anillo: #0f172a;
+    color: var(--tinta);
+  }
+  .consulta .muro .campo {
+    border-color: transparent;
+    box-shadow: 0 1px 2px rgb(8 20 48 / 0.2), 0 8px 24px rgb(8 20 48 / 0.18);
+  }
 }
 
 @media print {
@@ -2533,6 +3443,7 @@ button.linea[aria-pressed="true"] {
   #s-buses,
   #s-aire,
   .sobre-datos,
+  #s-resumen,
   .filtro-cortes,
   .ver-mas-fila,
   .pie {
@@ -2544,6 +3455,11 @@ button.linea[aria-pressed="true"] {
     display: block;
     height: auto;
     overflow: visible;
+  }
+
+  #s-basura.fuera-de-pestana,
+  #s-farmacias.fuera-de-pestana {
+    display: block;
   }
 
   .barra {
@@ -2827,6 +3743,16 @@ button.linea[aria-pressed="true"] {
 
 .datos-contenido .info-accion {
   margin-top: 1.75rem;
+}
+
+/* Los enlaces a las zonas, en fila. */
+.lista-zonas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.1rem;
+  list-style: none;
+  margin: 0.6rem 0 0;
+  padding: 0;
 }
 
 /* En las páginas de información, ir a Morlaco es la acción principal: botón lleno. */

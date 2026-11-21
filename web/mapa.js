@@ -3,7 +3,7 @@
 // lo pidió así). app.js solo usa lo que devuelve `crearMapa`: mostrar, resaltar,
 // resaltarLinea, dibujarRuta, agregarCapas y mostrarCapa.
 
-import { CENTRO_CUENCA, LIMITES_CUENCA, horaLegible, nombreDia, nombreParada, puntoEnGeometria } from "./logica.js";
+import { CENTRO_CUENCA, LIMITES_CUENCA, horaDentroDe, horaLegible, nombreDia, nombreParada, puntoEnGeometria } from "./logica.js";
 import { paradasDeRecorrido, variantesDeLinea } from "./rutas.js";
 import { listar, t } from "./textos.js";
 import { busesEnCamino, medirRecorrido, minutosAlProximo, puntoEnRecorrido, puntosDeTrazado } from "./vehiculos.js";
@@ -14,6 +14,28 @@ const ESTILOS = {
   claro: "https://tiles.openfreemap.org/styles/positron",
   oscuro: "https://tiles.openfreemap.org/styles/dark",
 };
+// El mapa base de OpenFreeMap con colores propios: parques verdes, el Tomebamba y los otros
+// ríos en celeste, calles blancas y avenidas con borde. Las teselas son las mismas.
+const PALETA_BASE = {
+  claro: {
+    fondo: "#eef0ec", residencial: "#e8eae5", parque: "#cfe5c4", bosque: "#c2dcb5", agua: "#a9d3e0", rio: "#97c6d6",
+    edificio: "#e1e2db", edificioBorde: "#d2d3cb", calle: "#ffffff", avenida: "#ffffff", avenidaBorde: "#c3c8c0",
+    autopista: "#fbe4a6", autopistaBorde: "#e3c47c", tenue: "#d9dcd5", tren: "#c7cbc3",
+    textoCalle: "#5b6570", textoLugar: "#2e3944", textoAgua: "#3d7088", halo: "#ffffff",
+    // Lugares para orientarse: iglesias, salud, mercados, parques y lo demás (museos, colegios).
+    iglesia: "#6d5a96", salud: "#c2410c", mercado: "#a16207", verde: "#3f7d3a", otro: "#4b6584",
+    // Suelo: parques de la ciudad, canchas, centros educativos y de salud, cementerios.
+    pasto: "#d6ebcb", cancha: "#c6e3b8", educacion: "#efe9dd", hospital: "#f5e4e1", cementerio: "#dde6d6",
+  },
+  oscuro: {
+    fondo: "#121821", residencial: "#151c26", parque: "#17291f", bosque: "#193123", agua: "#1c4560", rio: "#2a6182",
+    edificio: "#1b2330", edificioBorde: "#232d3b", calle: "#242e3c", avenida: "#2f3a4a", avenidaBorde: "#19212c",
+    autopista: "#4c4129", autopistaBorde: "#2d2719", tenue: "#242e3c", tren: "#2a3442",
+    textoCalle: "#a3afbd", textoLugar: "#b9c3cf", textoAgua: "#6fa6c2", halo: "#121821",
+    iglesia: "#b4a4dc", salud: "#fb9a6c", mercado: "#e7b75a", verde: "#8fcf87", otro: "#9fb3cc",
+    pasto: "#172a20", cancha: "#1a3123", educacion: "#1d2129", hospital: "#261c22", cementerio: "#18241d",
+  },
+};
 // Niveles de MapLibre (teselas de 512 px): 12 muestra la ciudad entera.
 const ZOOM_INICIAL = 12;
 // Desde aquí las paradas de una línea dejan de ser puntos y se ven como letreros de parada.
@@ -21,6 +43,8 @@ const ZOOM_LETRERO = 14.5;
 const ZOOM_MINIMO = 10;
 const ZOOM_PUNTO = 14.5;
 const DURACION_TRAZO = 900;
+// Arriba y a los lados quedan los botones del mapa (44 px): el trazo no debe quedar debajo.
+const MARGEN_TRAZO = { top: 70, right: 64, left: 64 };
 const SEPARACION_SENTIDOS = 3.5; // px: cada sentido va a su derecha, como en la calle
 const CADA_BUSES_QUIETO_MS = 15000; // si se pidió reducir el movimiento: a saltos, sin animar
 // El marcador de un bus: una gota que apunta al norte (el marcador la gira según el rumbo)
@@ -36,6 +60,8 @@ const SVG_PARADA =
   '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="15" rx="3.5" fill="currentColor"/><rect x="7.2" y="5.4" width="9.6" height="5.4" rx="1.4" fill="var(--fondo-parada)"/><circle cx="8.6" cy="14.3" r="1.2" fill="var(--fondo-parada)"/><circle cx="15.4" cy="14.3" r="1.2" fill="var(--fondo-parada)"/><rect x="6" y="18" width="3.4" height="3" rx="1" fill="currentColor"/><rect x="14.6" y="18" width="3.4" height="3" rx="1" fill="currentColor"/></svg>';
 export const SVG_BICI =
   '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="16" r="3.5"/><circle cx="18" cy="16" r="3.5"/><path d="M6 16l4-7h5l3 7M10 9l2 7M14 6h3"/></svg>';
+// La cruz de las farmacias.
+const SVG_CRUZ = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 3.5h5v6h6v5h-6v6h-5v-6h-6v-5h6z" fill="currentColor"/></svg>';
 const SVG_RAYO =
   '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M13.5 2.5 5 13.5h6.2l-1 8 8.8-11h-6.3z"/></svg>';
 const SVG_CAPAS =
@@ -160,7 +186,7 @@ function sinMapa(contenedor) {
   contenedor.replaceChildren(Object.assign(document.createElement("p"), { textContent: t("mapaNoDisponible") }));
 }
 
-const METODOS = ["agregarCapas", "mostrarCapa", "resaltar", "resaltarLinea", "dibujarRuta", "mostrar", "olvidar"];
+const METODOS = ["agregarCapas", "mostrarCapa", "resaltar", "resaltarLinea", "dibujarRuta", "mostrar", "mostrarFarmacias", "verFarmacia", "marcarHoy", "olvidar"];
 
 /**
  * El mapa de la página. Se devuelve enseguida: la página no espera a MapLibre para mostrar
@@ -248,26 +274,64 @@ const suave = (x) => 1 - (1 - x) ** 3;
 const escapar = (texto) =>
   String(texto).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 
-async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }) {
+async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, centro = null }) {
   const SIN_MOVIMIENTO = sinMovimiento;
   const maplibregl = await cargarBiblioteca();
   const { sur, oeste, norte, este } = LIMITES_CUENCA;
   const mapa = new maplibregl.Map({
     container: contenedor,
     style: estiloActual(),
-    center: [CENTRO_CUENCA.lon, CENTRO_CUENCA.lat],
-    zoom: ZOOM_INICIAL,
+    // Al abrir con una calle ya elegida, el mapa nace en ella: sin pasar por la ciudad entera.
+    center: centro ? [centro.lon, centro.lat] : [CENTRO_CUENCA.lon, CENTRO_CUENCA.lat],
+    zoom: centro ? ZOOM_PUNTO : ZOOM_INICIAL,
     minZoom: ZOOM_MINIMO,
     maxBounds: [
       [oeste, sur],
       [este, norte],
     ],
     attributionControl: { compact: true },
+    // En el celular el mapa queda en medio de la página: con un dedo se sigue bajando por
+    // ella y con dos se mueve el mapa (tocar para elegir un punto sigue igual).
+    locale: {
+      "CooperativeGesturesHandler.WindowsHelpText": t("gestoTeclaWindows"),
+      "CooperativeGesturesHandler.MacHelpText": t("gestoTeclaMac"),
+      "CooperativeGesturesHandler.MobileHelpText": t("gestoDosDedos"),
+    },
     dragRotate: false,
     pitchWithRotate: false,
     fadeDuration: SIN_MOVIMIENTO ? 0 : 300,
   });
   mapa.touchZoomRotate.disableRotation();
+  const angosto = window.matchMedia("(max-width: 899px)");
+  const ajustarGestos = () => (angosto.matches ? mapa.cooperativeGestures.enable() : mapa.cooperativeGestures.disable());
+  ajustarGestos();
+  angosto.addEventListener("change", ajustarGestos);
+  // Los créditos empiezan plegados (se abren con la "i"): abiertos, en el celular tapaban
+  // el aviso de los buses.
+  // MapLibre los vuelve a abrir solo (al cambiar el tamaño o al llegar datos): quedan abiertos
+  // únicamente si la persona tocó la "i".
+  let creditosPedidos = false;
+  const plegarCreditos = () => {
+    const creditos = contenedor.querySelector(".maplibregl-ctrl-attrib");
+    creditos?.classList.remove("maplibregl-compact-show");
+    creditos?.removeAttribute("open");
+  };
+  contenedor.addEventListener(
+    "click",
+    (e) => {
+      if (e.target.closest(".maplibregl-ctrl-attrib-button")) creditosPedidos = !creditosPedidos;
+    },
+    true,
+  );
+  mapa.once("load", () => {
+    plegarCreditos();
+    const creditos = contenedor.querySelector(".maplibregl-ctrl-attrib");
+    if (!creditos) return;
+    new MutationObserver(() => {
+      const abiertos = creditos.hasAttribute("open") || creditos.classList.contains("maplibregl-compact-show");
+      if (abiertos && !creditosPedidos) plegarCreditos();
+    }).observe(creditos, { attributes: true, attributeFilter: ["open", "class"] });
+  });
   mapa.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-left");
 
   // ---------- Datos propios ----------
@@ -282,10 +346,12 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
     rutaBus: vacio(),
     paradasLinea: vacio(),
     ciclovias: vacio(),
+    tranvia: vacio(),
   };
   const transicion = { duration: SIN_MOVIMIENTO ? 0 : 450 };
   const visibles = new Set();
   const verCiclovias = () => (visibles.has("ciclovias") ? "visible" : "none");
+  const verTranvia = () => (visibles.has("tranvia") ? "visible" : "none");
 
   // Ida en azul cúpula y retorno en púrpura punteado; se puede ver un solo sentido.
   const PRINCIPAL = ["!=", ["get", "tipo"], "alargue"];
@@ -337,7 +403,10 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
           0.18, /* el borde de 3 px ya la marca; así no tapa las calles */
           ["boolean", ["feature-state", "atenuada"], false],
           0.07,
-          0.16,
+          // Sin calle elegida, las zonas donde hoy pasa el recolector resaltan sobre las demás.
+          ["boolean", ["feature-state", "hoy"], false],
+          0.3,
+          0.1,
         ],
         "fill-opacity-transition": transicion,
       },
@@ -371,11 +440,35 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
       paint: { "line-color": color("--tomebamba"), "line-width": 3, "line-opacity": 0.9, "line-dasharray": [1.6, 2] },
     },
     {
+      // El recorrido del tranvía, debajo de sus estaciones, cuando se pide esa capa.
+      id: `${PROPIO}tranvia-borde`,
+      type: "line",
+      source: `${PROPIO}tranvia`,
+      layout: { visibility: verTranvia(), "line-cap": "round", "line-join": "round" },
+      paint: { "line-color": color("--superficie"), "line-width": 7 },
+    },
+    {
+      id: `${PROPIO}tranvia`,
+      type: "line",
+      source: `${PROPIO}tranvia`,
+      layout: { visibility: verTranvia(), "line-cap": "round", "line-join": "round" },
+      paint: { "line-color": color("--tranvia"), "line-width": 4 },
+    },
+    {
       id: `${PROPIO}calles`,
       type: "line",
       source: `${PROPIO}calles`,
       layout: { "line-cap": "round", "line-join": "round" },
       paint: { "line-color": color("--cupula-hondo"), "line-width": 6, "line-opacity": 0.85 },
+    },
+    {
+      // Un borde del color del fondo debajo de cada sentido: la línea se despega del mapa.
+      id: `${PROPIO}linea-borde`,
+      type: "line",
+      source: `${PROPIO}linea`,
+      filter: filtroLinea(PRINCIPAL),
+      layout: { "line-cap": "round", "line-join": "round" },
+      paint: { "line-color": color("--superficie"), "line-width": 7, "line-offset": SEPARACION_SENTIDOS },
     },
     {
       id: `${PROPIO}linea`,
@@ -486,14 +579,20 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
       paint: { "line-color": color("--tinta-suave"), "line-width": 3, "line-dasharray": [0.1, 2.4] },
     },
     {
+      id: `${PROPIO}ruta-bus-borde`,
+      type: "line",
+      source: `${PROPIO}rutaBus`,
+      layout: { "line-cap": "round", "line-join": "round" },
+      paint: { "line-color": color("--superficie"), "line-width": ["interpolate", ["linear"], ["zoom"], 12, 7, 17, 11] },
+    },
+    {
       id: `${PROPIO}ruta-bus`,
       type: "line",
       source: `${PROPIO}rutaBus`,
       layout: { "line-cap": "round", "line-join": "round" },
       paint: {
         "line-color": ["case", ["==", ["get", "tipo"], "tranvia"], color("--tranvia"), color("--cupula-hondo")],
-        "line-width": 5,
-        "line-opacity": 0.9,
+        "line-width": ["interpolate", ["linear"], ["zoom"], 12, 4.5, 17, 7],
       },
     },
   ]);
@@ -506,13 +605,18 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
     );
 
   let estadoZonas = { elegida: null };
+  let zonasDeHoy = new Set(); // donde hoy pasa el recolector: se ven más llenas en la portada
   const aplicarEstadoZonas = () => {
     if (!mapa.getSource(`${PROPIO}zonas`)) return;
     for (const z of zonas.features) {
       const id = z.properties.zona;
       mapa.setFeatureState(
         { source: `${PROPIO}zonas`, id },
-        { elegida: id === estadoZonas.elegida, atenuada: estadoZonas.elegida !== null && id !== estadoZonas.elegida },
+        {
+          elegida: id === estadoZonas.elegida,
+          atenuada: estadoZonas.elegida !== null && id !== estadoZonas.elegida,
+          hoy: zonasDeHoy.has(String(id)),
+        },
       );
     }
   };
@@ -521,10 +625,174 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
     for (const id of ["ciclovias", "ciclovias-carril"]) {
       if (mapa.getLayer(`${PROPIO}${id}`)) mapa.setLayoutProperty(`${PROPIO}${id}`, "visibility", verCiclovias());
     }
+    for (const id of ["tranvia", "tranvia-borde"]) {
+      if (mapa.getLayer(`${PROPIO}${id}`)) mapa.setLayoutProperty(`${PROPIO}${id}`, "visibility", verTranvia());
+    }
+  };
+
+  /**
+   * Parques, iglesias, mercados, hospitales y otros sitios conocidos, con su nombre al acercar:
+   * así uno se ubica ("a dos cuadras de San Blas") sin leer cada calle. Vienen en las mismas
+   * teselas del mapa base (OpenStreetMap).
+   */
+  const capasDeLugares = () => {
+    const base = mapa.getStyle().sources;
+    const fuente = Object.keys(base).find((nombre) => base[nombre].type === "vector");
+    if (!fuente) return [];
+    const c = oscuro.matches ? PALETA_BASE.oscuro : PALETA_BASE.claro;
+    const tipo = [
+      "case",
+      ["==", ["get", "subclass"], "marketplace"], "mercado",
+      ["match", ["get", "class"], ["place_of_worship"], true, false], "iglesia",
+      ["match", ["get", "class"], ["hospital", "doctors", "pharmacy"], true, false], "salud",
+      ["match", ["get", "class"], ["park", "garden"], true, false], "verde",
+      "otro",
+    ];
+    const colorTipo = ["match", tipo, "mercado", c.mercado, "iglesia", c.iglesia, "salud", c.salud, "verde", c.verde, c.otro];
+    // Solo lugares que sirven de referencia; los consultorios y tiendas llenarían el mapa.
+    const filtro = [
+      "all",
+      ["has", "name"],
+      [
+        "any",
+        ["==", ["get", "subclass"], "marketplace"],
+        ["match", ["get", "class"], ["place_of_worship", "park", "museum", "town_hall", "stadium"], true, false],
+        ["all", ["==", ["get", "class"], "hospital"], ["==", ["get", "subclass"], "hospital"]],
+      ],
+    ];
+    // El punto va dentro del mismo texto: si el nombre no cabe, no queda un punto suelto.
+    return [
+      {
+        id: `${PROPIO}lugares-nombre`,
+        type: "symbol",
+        source: fuente,
+        "source-layer": "poi",
+        minzoom: 15,
+        filter: filtro,
+        layout: {
+          "text-field": ["format", "● ", { "font-scale": 0.9 }, ["get", "name"], {}],
+          "text-font": ["Noto Sans Regular"],
+          "text-size": ["interpolate", ["linear"], ["zoom"], 15, 11, 18, 13],
+          "text-anchor": "left",
+          "text-offset": [-0.4, 0],
+          "text-max-width": 10,
+          "text-padding": 4,
+        },
+        paint: { "text-color": colorTipo, "text-halo-color": c.halo, "text-halo-width": 1.4 },
+      },
+    ];
+  };
+
+  /**
+   * Lo que el mapa base deja en blanco: el verde de los parques de la ciudad (Parque Calderón,
+   * El Paraíso, las orillas de los ríos), las canchas y, en tonos apenas visibles, escuelas,
+   * universidades, hospitales y cementerios. Va debajo de calles y edificios.
+   */
+  const capasDeSuelo = () => {
+    const base = mapa.getStyle().sources;
+    const fuente = Object.keys(base).find((nombre) => base[nombre].type === "vector");
+    if (!fuente) return [];
+    const c = oscuro.matches ? PALETA_BASE.oscuro : PALETA_BASE.claro;
+    return [
+      {
+        id: `${PROPIO}suelo-usos`,
+        type: "fill",
+        source: fuente,
+        "source-layer": "landuse",
+        filter: ["match", ["get", "class"], ["school", "university", "college", "kindergarten", "hospital", "cemetery", "pitch", "playground", "stadium", "grass"], true, false],
+        paint: {
+          "fill-color": [
+            "match",
+            ["get", "class"],
+            ["school", "university", "college", "kindergarten"], c.educacion,
+            "hospital", c.hospital,
+            "cemetery", c.cementerio,
+            ["pitch", "playground", "stadium"], c.cancha,
+            c.pasto,
+          ],
+        },
+      },
+      {
+        id: `${PROPIO}suelo-verde`,
+        type: "fill",
+        source: fuente,
+        "source-layer": "landcover",
+        filter: ["==", ["get", "class"], "grass"],
+        paint: { "fill-color": c.pasto },
+      },
+    ];
+  };
+
+  /** Pinta el mapa base con la paleta de Morlaco, capa por capa según lo que dibuja cada una. */
+  const pintarBase = () => {
+    const c = oscuro.matches ? PALETA_BASE.oscuro : PALETA_BASE.claro;
+    const pintar = (id, propiedad, valor) => {
+      try {
+        mapa.setPaintProperty(id, propiedad, valor);
+      } catch {
+        // Una capa que el estilo ya no trae: se deja como viene.
+      }
+    };
+    for (const capa of mapa.getStyle().layers) {
+      const { id, type } = capa;
+      const fuente = capa["source-layer"];
+      if (type === "background") pintar(id, "background-color", c.fondo);
+      else if (type === "fill") {
+        if (fuente === "park" || id.includes("park")) pintar(id, "fill-color", c.parque);
+        else if (id.includes("wood")) pintar(id, "fill-color", c.bosque);
+        else if (fuente === "water") pintar(id, "fill-color", c.agua);
+        else if (id.includes("residential") || id === "aeroway-area") pintar(id, "fill-color", c.residencial);
+        else if (fuente === "building") {
+          pintar(id, "fill-color", c.edificio);
+          pintar(id, "fill-outline-color", c.edificioBorde);
+        } else if (id.includes("pier")) pintar(id, "fill-color", c.fondo);
+      } else if (type === "line") {
+        if (fuente === "waterway") {
+          pintar(id, "line-color", c.rio);
+          pintar(id, "line-width", ["interpolate", ["exponential", 1.4], ["zoom"], 11, 0.8, 14, 2, 17, 6]);
+        } else if (fuente === "aeroway") {
+          // La pista del aeropuerto, como una avenida: en el estilo oscuro venía negra.
+          pintar(id, "line-color", id.includes("casing") ? c.avenidaBorde : id.includes("taxiway") ? c.calle : c.avenida);
+        } else if (fuente === "transportation") {
+          if (id.includes("pier")) pintar(id, "line-color", c.fondo);
+          else if (id.includes("dashline")) pintar(id, "line-color", c.fondo);
+          else if (id.includes("railway")) pintar(id, "line-color", c.tren);
+          else if (id.includes("casing")) pintar(id, "line-color", id.includes("motorway") ? c.autopistaBorde : c.avenidaBorde);
+          else if (id.includes("subtle")) pintar(id, "line-color", c.tenue);
+          else if (id.includes("motorway")) pintar(id, "line-color", c.autopista);
+          else if (id.includes("major")) pintar(id, "line-color", c.avenida);
+          else if (id.includes("minor")) {
+            pintar(id, "line-color", c.calle);
+            // De lejos casi no se ven (la ciudad se lee por sus avenidas); de cerca, anchas.
+            pintar(id, "line-width", ["interpolate", ["exponential", 1.55], ["zoom"], 12, 0.5, 14, 1.8, 17, 8, 20, 20]);
+          } else if (id.includes("path")) pintar(id, "line-color", c.tenue);
+        }
+      } else if (type === "symbol") {
+        const texto = fuente === "transportation_name" ? c.textoCalle : fuente === "water_name" || fuente === "waterway" ? c.textoAgua : fuente === "place" ? c.textoLugar : null;
+        if (texto) {
+          pintar(id, "text-color", texto);
+          pintar(id, "text-halo-color", c.halo);
+        }
+        // Los barrios pequeños salen al acercar: de lejos tapaban la ciudad con letras.
+        if (fuente === "place" && /other|suburb|neighbourhood/.test(id)) mapa.setLayerZoomRange(id, 13, 24);
+      }
+    }
   };
 
   // Se añaden sobre el mapa base, debajo de sus nombres de calles para que se sigan leyendo.
+  let reintentoEstilo = false;
   const anadirPropias = () => {
+    // Si el modo claro u oscuro cambió mientras cargaba el mapa, puede llegar el estilo del
+    // otro modo: se pide el que toca y se espera a que llegue.
+    const fondo = mapa.getStyle().layers.find((capa) => capa.type === "background");
+    const rojo = /rgb\(\s*(\d+)/.exec(String(fondo ? mapa.getPaintProperty(fondo.id, "background-color") : ""))?.[1];
+    if (rojo !== undefined && Number(rojo) < 100 !== oscuro.matches && !reintentoEstilo) {
+      reintentoEstilo = true; // una sola vez: si el estilo cambia de colores, no se queda en bucle
+      mapa.setStyle(estiloActual(), { diff: false });
+      return;
+    }
+    reintentoEstilo = false;
+    pintarBase();
     for (const [id, fuente] of Object.entries(fuentesDelEstilo())) {
       if (!mapa.getSource(id)) mapa.addSource(id, fuente);
     }
@@ -539,6 +807,9 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
       if (mapa.hasImage(id)) mapa.removeImage(id);
       mapa.addImage(id, imagenParada(color(variable), color("--sobre-accion"), color("--superficie")), { pixelRatio: 2 });
     }
+    const primeraLinea = mapa.getStyle().layers.find((capa) => capa.type === "line")?.id;
+    for (const capa of capasDeSuelo()) if (!mapa.getLayer(capa.id)) mapa.addLayer(capa, primeraLinea);
+    for (const capa of capasDeLugares()) if (!mapa.getLayer(capa.id)) mapa.addLayer(capa, nombres);
     for (const capa of capasPropias()) if (!mapa.getLayer(capa.id)) mapa.addLayer(capa, nombres);
     aplicarEstadoZonas();
     ajustarCiclovias();
@@ -561,10 +832,12 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
 
   // ---------- Recorridos que se dibujan solos ----------
   const animaciones = new Map();
-  function trazar(nombre, features) {
+  /** Dibuja los trazos de a poco; `luego` corre cuando terminan (para encadenar tramos). */
+  function trazar(nombre, features, luego = null) {
     cancelAnimationFrame(animaciones.get(nombre));
     if (SIN_MOVIMIENTO || !features.length) {
       poner(nombre, coleccion(features));
+      luego?.();
       return;
     }
     const inicio = performance.now();
@@ -580,8 +853,50 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
         ),
       );
       if (f < 1) animaciones.set(nombre, requestAnimationFrame(paso));
+      else luego?.();
     };
     animaciones.set(nombre, requestAnimationFrame(paso));
+  }
+
+  // Sube cada vez que se quita o cambia la ruta: lo que quedaba por dibujar de la anterior se descarta.
+  let vezRuta = 0;
+  /**
+   * Dibuja los tramos de una ruta uno tras otro, cada uno sobre su fuente (a pie o en bus).
+   * Usa la animación de "rutaBus", así que cancelarla detiene toda la secuencia.
+   */
+  function trazarEnOrden(pasos, alTerminar) {
+    cancelAnimationFrame(animaciones.get("rutaBus"));
+    cancelAnimationFrame(animaciones.get("rutaPie"));
+    const hechos = { rutaPie: [], rutaBus: [] };
+    const generacion = vezRuta;
+    let i = 0;
+    const siguiente = () => {
+      if (generacion !== vezRuta) return; // se quitó la ruta o empezó otra
+      if (i >= pasos.length) {
+        alTerminar?.();
+        return;
+      }
+      const paso = pasos[i++];
+      paso.antes?.();
+      const terminar = () => {
+        hechos[paso.fuente].push(paso.feature);
+        poner(paso.fuente, coleccion(hechos[paso.fuente]));
+        paso.despues?.();
+        siguiente();
+      };
+      if (SIN_MOVIMIENTO) return terminar();
+      const inicio = performance.now();
+      const cuadro = (ahora) => {
+        if (generacion !== vezRuta) return;
+        const f = suave(Math.min(1, (ahora - inicio) / paso.duracion));
+        if (f >= 1) return terminar();
+        const parcial = { ...paso.feature, geometry: { type: "MultiLineString", coordinates: lineasDe(paso.feature).map((c) => cortar(c, f)) } };
+        poner(paso.fuente, coleccion([...hechos[paso.fuente], parcial]));
+        animaciones.set("rutaBus", requestAnimationFrame(cuadro));
+      };
+      animaciones.set("rutaBus", requestAnimationFrame(cuadro));
+    };
+    siguiente();
   }
 
   const encuadrar = (limites, margen) => {
@@ -608,6 +923,17 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
       nodo.addEventListener("mouseleave", () => etiquetaFlotante.remove());
       nodo.addEventListener("click", (e) => {
         e.stopPropagation();
+        ver();
+      });
+      // Con el teclado también: se llega con Tab y Enter o Espacio muestran qué es.
+      nodo.tabIndex = 0;
+      nodo.setAttribute("role", "button");
+      nodo.setAttribute("aria-label", texto);
+      nodo.addEventListener("focus", ver);
+      nodo.addEventListener("blur", () => etiquetaFlotante.remove());
+      nodo.addEventListener("keydown", (e) => {
+        if (e.key !== "Enter" && e.key !== " ") return;
+        e.preventDefault();
         ver();
       });
     } else {
@@ -665,6 +991,8 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
   });
 
   let paradas = [];
+  let farmacias = []; // las de turno más cercanas, en su esquina aproximada
+  let vezFarmacia = 0; // sube con cada "Ver en el mapa": solo la última muestra su nombre
   let rutaMarcas = [];
   let elegido = null;
   let movimiento = 0;
@@ -715,6 +1043,13 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
       );
     }
     pendientes.set("ciclovias", async () => poner("ciclovias", await cargarJson("movilidad/ciclovias.geojson")));
+    if (estaciones) {
+      // Los dos sentidos: en el centro el tranvía va por la Gran Colombia y vuelve por la Mariscal Lamar.
+      pendientes.set("tranvia", async () => {
+        const lineas = await cargarJson("buses/lineas.geojson");
+        poner("tranvia", coleccion(lineas.features.filter((f) => f.properties.tipo === "tranvia")));
+      });
+    }
     pendientes.set("carga", async () => {
       const carga = await cargarJson("movilidad/carga.geojson");
       grupos.carga = carga.features.map((f) =>
@@ -724,24 +1059,37 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
       );
     });
 
+    // Cada capa con la misma marca que tiene en el mapa, qué muestra y un interruptor.
     const opciones = [
-      ...(estaciones ? [["tranvia", t("capaTranvia")]] : []),
-      ["bicis", t("capaBicis")],
-      ["ciclovias", t("capaCiclovias")],
-      ["carga", t("capaCarga")],
+      ...(estaciones ? [["tranvia", t("capaTranvia"), t("capaTranviaQue"), '<span class="marca-capa tranvia">T</span>']] : []),
+      ["bicis", t("capaBicis"), t("capaBicisQue"), `<span class="marca-capa bici">${SVG_BICI}</span>`],
+      ["ciclovias", t("capaCiclovias"), t("capaCicloviasQue"), '<span class="muestra-ciclovia"><i></i><i></i></span>'],
+      ["carga", t("capaCarga"), t("capaCargaQue"), `<span class="marca-capa carga">${SVG_RAYO}</span>`],
     ];
     const control = document.createElement("details");
     control.className = "maplibregl-ctrl control-capas";
-    control.innerHTML = `<summary aria-label="${t("capasMapa")}" title="${t("capasMapa")}">${SVG_CAPAS}</summary>`;
-    const lista = document.createElement("div");
-    const muestra = { tranvia: "tranvia", bicis: "bici", ciclovias: "ciclovia", carga: "carga" };
-    for (const [clave, texto] of opciones) {
-      const etiqueta = document.createElement("label");
-      etiqueta.innerHTML = `<input type="checkbox" data-capa="${clave}"> <span class="muestra-capa ${muestra[clave]}"></span>${texto}`;
-      lista.append(etiqueta);
+    // Cerrado, solo el ícono; abierto, el título al lado (el mismo botón cierra el panel).
+    control.innerHTML = `<summary aria-label="${t("capasMapa")}" title="${t("capasMapa")}"><span class="capas-titulo" aria-hidden="true">${t("capasMapa")}</span>${SVG_CAPAS}</summary>`;
+    const panelCapas = document.createElement("div");
+    panelCapas.className = "panel-capas";
+    for (const [clave, texto, que, marca] of opciones) {
+      const fila = document.createElement("label");
+      fila.className = "capa-fila";
+      fila.innerHTML = `${marca}<span class="capa-texto"><span class="capa-nombre">${texto}</span><span class="capa-que">${que}</span></span><input type="checkbox" role="switch" class="interruptor" data-capa="${clave}">`;
+      panelCapas.append(fila);
     }
-    control.append(lista);
-    lista.addEventListener("change", (e) => cambiarCapa(e.target.dataset.capa, e.target.checked));
+    control.append(panelCapas);
+    panelCapas.addEventListener("change", (e) => cambiarCapa(e.target.dataset.capa, e.target.checked));
+    // Se cierra al tocar fuera del panel o con Escape, como cualquier menú.
+    document.addEventListener("pointerdown", (e) => {
+      if (control.open && !control.contains(e.target)) control.open = false;
+    });
+    control.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && control.open) {
+        control.open = false;
+        control.querySelector("summary").focus();
+      }
+    });
     mapa.addControl({ onAdd: () => control, onRemove: () => control.remove() }, "top-right");
     return control;
   }
@@ -758,8 +1106,8 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
         pendientes.set(clave, cargar); // se reintentará la próxima vez
       }
     }
-    if (clave === "ciclovias") ajustarCiclovias();
-    else grupos[clave].forEach((m) => (visibles.has(clave) ? m.addTo(mapa) : m.remove()));
+    if (clave === "ciclovias" || clave === "tranvia") ajustarCiclovias();
+    if (clave !== "ciclovias") grupos[clave].forEach((m) => (visibles.has(clave) ? m.addTo(mapa) : m.remove()));
   }
 
   // ---------- Línea elegida: puntas, sentido y buses estimados ----------
@@ -789,7 +1137,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
     varianteActual = null;
     enRuta = false;
     panel.hidden = true;
-    contenedor.classList.remove("con-linea");
+    contenedor.classList.remove("con-linea", "trazando");
     discretas(false);
     elegirSentido("ambos");
   }
@@ -797,6 +1145,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
   function elegirSentido(sentido) {
     sentidoVisible = sentido;
     if (mapa.getLayer(`${PROPIO}linea`)) {
+      mapa.setFilter(`${PROPIO}linea-borde`, filtroLinea(PRINCIPAL));
       mapa.setFilter(`${PROPIO}linea`, filtroLinea(IDA));
       mapa.setFilter(`${PROPIO}linea-retorno`, filtroLinea(RETORNO));
       mapa.setFilter(`${PROPIO}linea-alargue`, filtroLinea(ALARGUE));
@@ -892,7 +1241,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
       nota.hidden = false;
       arrancarBuses();
     }
-    encuadrar(caja(trazos), { top: 40, right: 40, left: 40, bottom: panel.offsetHeight + 40 });
+    encuadrar(caja(trazos), { ...MARGEN_TRAZO, bottom: panel.offsetHeight + 40 });
   }
 
   function mostrarLinea(principales, { linea, horarios, tipo, paradas, variantes = [] }) {
@@ -970,6 +1319,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
       horario: tramo.horario,
       medida: medirRecorrido(tramo.trazado),
       largo: tramo.largo,
+      desde: tramo.metrosSubida / tramo.largo,
       hasta: tramo.metrosBajada / tramo.largo,
       metrosSubida: tramo.metrosSubida,
     }));
@@ -1021,7 +1371,9 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
       if (!enRuta && sentidoVisible !== "ambos" && sentidoVisible !== r.sentido) continue;
       for (const metros of busesEnCamino(r.horario, r.largo, ahora)) {
         const fraccion = metros / r.largo;
-        if (fraccion > r.hasta) continue; // en una ruta, solo hasta donde uno se baja
+        // En una ruta solo cuentan los buses que todavía vienen hacia tu parada: los que ya
+        // pasaron no te sirven y harían dudar del "ya no pasan".
+        if (enRuta && fraccion > r.desde) continue;
         posiciones.push({ ...puntoEnRecorrido(r.medida, fraccion * r.medida.total), r });
       }
     }
@@ -1058,7 +1410,10 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
           ? t("rutaSinBusAhora", { linea: primero.linea })
           : faltan < 1.5
             ? t("rutaProximoBusYa", { linea: primero.linea })
-            : t("rutaProximoBus", { linea: primero.linea, minutos: Math.round(faltan) });
+            : faltan > 60
+              ? // Falta más de una hora (de madrugada, por ejemplo): se dice la hora, no los minutos.
+                t("rutaPrimerBus", { linea: primero.linea, hora: horaDentroDe(faltan, ahora) })
+              : t("rutaProximoBus", { linea: primero.linea, minutos: Math.round(faltan) });
       if (nota.textContent !== texto) nota.textContent = texto;
       return;
     }
@@ -1089,9 +1444,19 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
     resaltar(calles) {
       etiquetaFlotante.remove();
       limpiarLinea();
+      cancelAnimationFrame(animaciones.get("rutaPie"));
+      poner("rutaPie", vacio());
+      cancelAnimationFrame(animaciones.get("rutaBus"));
+      vezRuta++;
+      poner("rutaBus", vacio());
+      rutaMarcas = quitar(rutaMarcas);
       paradas = quitar(paradas);
+      farmacias = quitar(farmacias);
       elegido?.remove();
       elegido = null;
+      estadoZonas = { elegida: null };
+      contenedor.classList.remove("con-punto");
+      aplicarEstadoZonas();
       trazar("calles", calles);
       encuadrar(caja(calles), 30);
     },
@@ -1104,7 +1469,10 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
       limpiarLinea();
       // Sin restos de una ruta buscada antes: se ve solo la línea.
       rutaMarcas = quitar(rutaMarcas);
+      cancelAnimationFrame(animaciones.get("rutaPie"));
       poner("rutaPie", vacio());
+      cancelAnimationFrame(animaciones.get("rutaBus"));
+      vezRuta++;
       poner("rutaBus", vacio());
       if (!trazados) return;
       discretas(true);
@@ -1120,70 +1488,108 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
       etiquetaFlotante.remove();
       rutaMarcas = quitar(rutaMarcas);
       limpiarLinea();
+      cancelAnimationFrame(animaciones.get("rutaPie"));
       poner("rutaPie", vacio());
+      cancelAnimationFrame(animaciones.get("rutaBus"));
+      vezRuta++;
       poner("rutaBus", vacio());
       if (!opcion) return;
-      const pie = [];
-      const bus = [];
+      // El viaje se dibuja en el orden en que se hace: la caminata hasta la parada, el bus y
+      // la caminata hasta el destino. Cada marcador aparece cuando el trazo llega a él.
+      const pasos = [];
       const paradasRuta = [];
-      for (const t of opcion.tramos) {
-        if (t.modo === "caminar") {
-          if (t.metros < 5) continue;
-          pie.push({
+      const todos = [];
+      const ponerMarca = (html, lugar, opciones) => rutaMarcas.push(marcador(html, lugar, { clase: "aparece", ...opciones }).addTo(mapa));
+      opcion.tramos.forEach((tramo, i) => {
+        if (tramo.modo === "caminar") {
+          if (tramo.metros < 5) return;
+          const feature = {
             type: "Feature",
             properties: {},
-            geometry: { type: "LineString", coordinates: [[t.desde.lon, t.desde.lat], [t.hasta.lon, t.hasta.lat]] },
-          });
-        } else {
-          const trazo = { type: "Feature", properties: { tipo: t.tipo }, geometry: { type: "LineString", coordinates: t.coords } };
-          bus.push(trazo);
-          // El tranvía tiene su propia capa de estaciones.
-          if (t.tipo !== "tranvia" && paradasRegistradas) {
-            for (const p of paradasDeRecorrido(trazo, paradasRegistradas)) {
-              paradasRuta.push({
-                type: "Feature",
-                // Del color de la ida, como el trazo de la ruta.
-                properties: { nombre: p.nombre, sentido: "ida", hacia: t.hacia },
-                geometry: { type: "Point", coordinates: [p.lon, p.lat] },
-              });
-            }
-          }
-          rutaMarcas.push(
-            marcador(`<span class="etiqueta-ruta">${t.tipo === "tranvia" ? "T" : t.linea}</span>`, [t.subida.lon, t.subida.lat], {
-              clase: "aparece",
-            }).addTo(mapa),
-          );
+            geometry: { type: "LineString", coordinates: [[tramo.desde.lon, tramo.desde.lat], [tramo.hasta.lon, tramo.hasta.lat]] },
+          };
+          todos.push(feature);
+          pasos.push({ fuente: "rutaPie", feature, duracion: Math.min(700, Math.max(300, tramo.metros * 1.2)) });
+          return;
         }
-      }
-      rutaMarcas.push(
-        marcador('<span class="punto-destino"></span>', [destino.lon, destino.lat], { clase: "aparece", encima: true }).addTo(mapa),
-      );
-      poner("rutaPie", coleccion(pie));
-      trazar("rutaBus", bus);
-      poner("paradasLinea", coleccion(paradasRuta));
+        const feature = { type: "Feature", properties: { tipo: tramo.tipo }, geometry: { type: "LineString", coordinates: tramo.coords } };
+        todos.push(feature);
+        // El tranvía tiene su propia capa de estaciones.
+        if (tramo.tipo !== "tranvia" && paradasRegistradas) {
+          for (const p of paradasDeRecorrido(feature, paradasRegistradas)) {
+            paradasRuta.push({
+              type: "Feature",
+              // Del color de la ida, como el trazo de la ruta.
+              properties: { nombre: p.nombre, sentido: "ida", hacia: tramo.hacia },
+              geometry: { type: "Point", coordinates: [p.lon, p.lat] },
+            });
+          }
+        }
+        const siguiente = opcion.tramos[i + 1];
+        const enLaPuerta = siguiente?.modo === "caminar" && siguiente.metros < 30 && i + 1 === opcion.tramos.length - 1;
+        pasos.push({
+          fuente: "rutaBus",
+          feature,
+          duracion: DURACION_TRAZO,
+          antes: () =>
+            ponerMarca(`<span class="etiqueta-ruta">${tramo.tipo === "tranvia" ? "T" : tramo.linea}</span>`, [tramo.subida.lon, tramo.subida.lat], {
+              texto: tramo.tipo === "tranvia" ? t("rutaSubeTranvia") : t("rutaSube", { linea: tramo.linea }),
+            }),
+          // Dónde bajarse: un aro del color del trazo, para no pasarse de parada. Si el bus
+          // deja en la puerta, ya está el alfiler del destino.
+          despues: () => !enLaPuerta && ponerMarca('<span class="punto-bajada"></span>', [tramo.bajada.lon, tramo.bajada.lat], { texto: t("rutaBaja") }),
+        });
+      });
       discretas(true);
       // Los buses estimados, solo en rutas normales: no se sabe qué buses hacen cada variante.
+      // Esperan a que el trazo termine, para no aparecer sobre la nada.
       const conHorario = opcion.tramos.filter(
         (t) => t.modo === "bus" && t.tipo !== "tranvia" && !t.variante && t.horario && t.largo > 0,
       );
+      contenedor.classList.add("trazando");
       if (conHorario.length) mostrarBusesDeRuta(conHorario);
-      encuadrar(caja([...pie, ...bus], [[destino.lon, destino.lat]]), {
-        top: 40,
-        right: 40,
-        left: 40,
+      let seMueve = false;
+      const alMoverse = () => (seMueve = true);
+      mapa.once("movestart", alMoverse);
+      encuadrar(caja(todos, [[destino.lon, destino.lat]]), {
+        ...MARGEN_TRAZO,
         bottom: (panel.hidden ? 0 : panel.offsetHeight) + 40,
       });
+      // Se empieza a dibujar cuando el mapa termina de moverse hasta la ruta (o enseguida).
+      let empezado = false;
+      const miVez = vezRuta;
+      const empezar = () => {
+        mapa.off("moveend", empezar);
+        mapa.off("movestart", alMoverse);
+        if (empezado || miVez !== vezRuta) return;
+        empezado = true;
+        trazarEnOrden(pasos, () => {
+          contenedor.classList.remove("trazando");
+          ponerMarca('<span class="punto-destino"></span>', [destino.lon, destino.lat], { encima: true });
+          poner("paradasLinea", coleccion(paradasRuta));
+        });
+      };
+      // Si el mapa ya estaba encuadrado no hay movimiento que esperar: se empieza enseguida.
+      mapa.once("moveend", empezar);
+      requestAnimationFrame(() => requestAnimationFrame(() => !seMueve && empezar()));
+      setTimeout(empezar, SIN_MOVIMIENTO ? 0 : 950);
     },
     mostrar(punto, zona, cercanas) {
       etiquetaFlotante.remove();
       poner("calles", vacio());
       limpiarLinea();
+      cancelAnimationFrame(animaciones.get("rutaPie"));
       poner("rutaPie", vacio());
+      cancelAnimationFrame(animaciones.get("rutaBus"));
+      vezRuta++;
       poner("rutaBus", vacio());
       rutaMarcas = quitar(rutaMarcas);
       estadoZonas = { elegida: zona ? zona.properties.zona : null };
+      // Con una calle elegida (dentro o fuera de las zonas), la leyenda solo sale al alejar.
+      contenedor.classList.add("con-punto");
       aplicarEstadoZonas();
       paradas = quitar(paradas);
+      farmacias = quitar(farmacias);
       cercanas.forEach((parada, i) => {
         const m = marcador(`<span class="etiqueta-parada">${SVG_PARADA}${i + 1}</span>`, [parada.lon, parada.lat], {
           texto: nombreParada(parada),
@@ -1197,19 +1603,73 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
       if (SIN_MOVIMIENTO) mapa.jumpTo({ center: destino, zoom });
       else mapa.flyTo({ center: destino, zoom, speed: 1.4, curve: 1.42, essential: false });
     },
+    /** Las farmacias de turno más cercanas: una cruz verde en la esquina de su dirección. */
+    mostrarFarmacias(lista) {
+      farmacias = quitar(farmacias);
+      for (const f of lista) {
+        farmacias.push(
+          marcador(`<span class="etiqueta-farmacia">${SVG_CRUZ}</span>`, [f.lon, f.lat], {
+            texto: t("farmaciaMapa", { nombre: f.nombre }),
+            clase: "aparece",
+          }).addTo(mapa),
+        );
+      }
+    },
+    /** Lleva el mapa a una farmacia de la lista, con su cruz y su nombre a la vista. */
+    verFarmacia(f) {
+      const lugar = [f.lon, f.lat];
+      let marca = farmacias.find((m) => {
+        const p = m.getLngLat();
+        return Math.abs(p.lng - f.lon) < 1e-7 && Math.abs(p.lat - f.lat) < 1e-7;
+      });
+      if (!marca) {
+        marca = marcador(`<span class="etiqueta-farmacia">${SVG_CRUZ}</span>`, lugar, {
+          texto: t("farmaciaMapa", { nombre: f.nombre }),
+          clase: "aparece",
+        }).addTo(mapa);
+        farmacias.push(marca);
+      }
+      // La pedida se ve aunque haya una ruta o una línea dibujada (que esconden las demás).
+      for (const m of farmacias) m.getElement().classList.toggle("pedida", m === marca);
+      // El nombre sale al llegar; si mientras tanto se pidió otra farmacia, otro punto o se
+      // borró la dirección (la cruz ya no está), no sale.
+      const miVez = ++vezFarmacia;
+      const mostrarNombre = () => {
+        if (miVez !== vezFarmacia || !farmacias.includes(marca)) return;
+        etiquetaFlotante.setLngLat(lugar).setText(t("farmaciaMapa", { nombre: f.nombre })).addTo(mapa);
+      };
+      const zoom = Math.max(mapa.getZoom(), 15.5);
+      if (SIN_MOVIMIENTO) {
+        mapa.jumpTo({ center: lugar, zoom });
+        mostrarNombre();
+      } else {
+        mapa.once("moveend", mostrarNombre);
+        mapa.flyTo({ center: lugar, zoom, speed: 1.4, curve: 1.42, essential: false });
+      }
+    },
+    /** Las zonas donde hoy pasa el recolector (se ven más llenas mientras no haya calle elegida). */
+    marcarHoy(zonasHoy) {
+      zonasDeHoy = new Set(zonasHoy.map(String));
+      aplicarEstadoZonas();
+    },
     /** Sin punto elegido: quita todo lo dibujado y vuelve a la vista de la ciudad. */
     olvidar() {
       etiquetaFlotante.remove();
       poner("calles", vacio());
       limpiarLinea();
+      cancelAnimationFrame(animaciones.get("rutaPie"));
       poner("rutaPie", vacio());
+      cancelAnimationFrame(animaciones.get("rutaBus"));
+      vezRuta++;
       poner("rutaBus", vacio());
       rutaMarcas = quitar(rutaMarcas);
       paradas = quitar(paradas);
+      farmacias = quitar(farmacias);
       cancelAnimationFrame(movimiento);
       elegido?.remove();
       elegido = null;
       estadoZonas = { elegida: null };
+      contenedor.classList.remove("con-punto");
       aplicarEstadoZonas();
       discretas(false);
       const vista = { center: [CENTRO_CUENCA.lon, CENTRO_CUENCA.lat], zoom: ZOOM_INICIAL };
