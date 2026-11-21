@@ -2573,7 +2573,12 @@ async function iniciar() {
   // Al cerrar el mapa ampliado con "atrás", el historial vuelve a la dirección de cuando se
   // amplió: se deja la del punto de ahora, para no saltar a la calle anterior.
   // El nombre de la calle, también sobre el mapa ampliado: al tocar otra calle ahí, se ve cuál es.
-  const copiarLugar = () => ($("mapa-lugar").textContent = $("punto-nombre").textContent);
+  // "Casa: Cerca de Benigno Malo": la etiqueta del lugar guardado y la calle, separadas.
+  const copiarLugar = () =>
+    ($("mapa-lugar").textContent = [...$("punto-nombre").childNodes]
+      .map((nodo) => nodo.textContent.trim())
+      .filter(Boolean)
+      .join(": "));
   new MutationObserver(copiarLugar).observe($("punto-nombre"), { childList: true, characterData: true, subtree: true });
   copiarLugar();
   window.addEventListener("morlaco:mapa-cerrado", () => {

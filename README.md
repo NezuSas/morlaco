@@ -62,8 +62,8 @@ públicas y quedan aquí, abiertos, para que cualquiera los use.
      Crespo". Mientras escribes, la página sugiere calles; después de la "y" solo propone las que de verdad
      cruzan a la primera;
    - toca **Usar mi ubicación**;
-   - o toca tu calle en el mapa. Con una calle ya elegida, el mapa pregunta antes de cambiarla ("Ver esta
-     calle"), para que no cambie por un toque sin querer.
+   - o toca tu calle en el mapa. Con una calle ya elegida se cambia con dos toques seguidos, para que no
+     cambie por un toque sin querer.
 3. **Lee el resumen** "Hoy en tu calle" y, si quieres el detalle, entra a la pestaña de cada servicio.
 
 La próxima vez que abras la página, vuelve sola a tu calle.
@@ -139,8 +139,8 @@ BiciPública, las ciclovías y los puntos de carga para autos eléctricos.
 - **Funcionar sin conexión** con los últimos datos descargados, útil en un corte de luz o sin megas.
 - **Hablar español e inglés.** Elige el idioma del navegador y tiene un botón para cambiarlo.
 - **Ampliar el mapa en el celular.** Dentro de la página el mapa se mueve con dos dedos, para poder seguir
-  bajando con uno; el botón "Ampliar" lo pone a pantalla completa, donde se mueve con un dedo como en
-  cualquier app de mapas. Se cierra con "Cerrar" o con el botón atrás del teléfono.
+  bajando con uno; el botón de ampliar lo pone a pantalla completa, donde se mueve con un dedo como en
+  cualquier app de mapas. Se cierra con la X o con el botón atrás del teléfono.
 - **Verse en claro o en oscuro.** Sigue el modo de tu dispositivo, y el botón de la luna (o el sol) de la
   barra lo cambia cuando quieras.
 - **Imprimir la hoja de tu zona**, con los días de recolección y las farmacias de turno, para la

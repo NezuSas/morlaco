@@ -772,21 +772,21 @@ button.boton-tema[hidden] {
    "Ampliar" lo saca de la página y lo pone encima de todo: ahí se mueve con un dedo. El
    panel de la línea elegida queda debajo, como la hoja inferior de una app de mapas. */
 .mapa .boton-ampliar {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  min-height: 44px;
-  padding: 0 0.8rem 0 0.7rem;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
   border: 0;
   border-radius: var(--radio-control);
   background: var(--superficie);
   box-shadow: 0 1px 4px rgb(0 0 0 / 0.22);
   color: var(--tinta);
-  font: 700 var(--t-0) / 1 var(--letra);
   cursor: pointer;
 }
 
-.mapa .boton-ampliar svg {
+.mapa .boton-ampliar svg,
+.mapa-cerrar svg {
   fill: none;
   stroke: currentColor;
   stroke-width: 2.2;
@@ -794,7 +794,8 @@ button.boton-tema[hidden] {
   stroke-linejoin: round;
 }
 
-.mapa .boton-ampliar:focus-visible {
+.mapa .boton-ampliar:focus-visible,
+.mapa-cerrar:focus-visible {
   outline: 3px solid var(--foco-halo);
   outline-offset: 2px;
   box-shadow: 0 0 0 2px var(--foco-anillo);
@@ -816,16 +817,30 @@ button.boton-tema[hidden] {
   min-height: 0;
 }
 
-/* La calle elegida, en una franja sobre el mapa ampliado. */
-.mapa-lugar {
+/* Ampliado ya no hace falta el botón de ampliar: se cierra con la X de la barra. */
+.mapa-amplio .mapa .boton-ampliar {
   display: none;
 }
 
-.mapa-amplio .mapa-lugar:not(:empty) {
-  display: block;
-  margin: 0;
-  padding: 0.6rem var(--margen);
+/* La barra del mapa ampliado: la calle elegida y, a la derecha, la X para cerrar. */
+.mapa-barra {
+  display: none;
+}
+
+.mapa-amplio .mapa-barra {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 3.25rem;
+  padding: 0.25rem 0.4rem 0.25rem var(--margen);
   border-bottom: 1px solid var(--linea);
+  background: var(--superficie);
+}
+
+.mapa-lugar {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
   overflow: hidden;
   color: var(--tinta);
   font: 700 var(--t-1, 1.1rem) / 1.25 var(--serif);
@@ -833,10 +848,27 @@ button.boton-tema[hidden] {
   white-space: nowrap;
 }
 
-/* Cerrar es lo que más se busca: en el color de acción. */
-.mapa-amplio .mapa .boton-ampliar {
-  background: var(--accion);
-  color: var(--sobre-accion);
+.mapa-cerrar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--tinta);
+  cursor: pointer;
+}
+
+.mapa-cerrar:hover {
+  background: var(--cal);
+}
+
+.mapa-cerrar svg {
+  width: 22px;
+  height: 22px;
 }
 
 /* Debajo del mapa ampliado, la página no se mueve. */
@@ -3045,52 +3077,6 @@ button.linea[aria-pressed="true"] {
   display: none;
 }
 
-/* "Ver esta calle": la pregunta que sale al tocar el mapa con una calle ya elegida. El globo
-   es el propio botón, con su pico hacia el punto tocado. */
-.propuesta-gl {
-  z-index: 3;
-}
-
-.propuesta-gl .maplibregl-popup-content {
-  padding: 0;
-  border-radius: var(--radio-control);
-  background: none;
-  box-shadow: 0 2px 8px rgb(0 0 0 / 0.3);
-}
-
-.mapa .boton-propuesta {
-  min-height: 44px;
-  padding: 0 1rem;
-  border: 0;
-  border-radius: var(--radio-control);
-  background: var(--accion);
-  color: var(--sobre-accion);
-  font: 700 var(--t-0) / 1 var(--letra);
-  white-space: nowrap;
-  cursor: pointer;
-}
-
-.mapa .boton-propuesta:focus-visible {
-  outline: 3px solid var(--foco-halo);
-  outline-offset: 2px;
-}
-
-.propuesta-gl[class*="anchor-bottom"] .maplibregl-popup-tip {
-  border-top-color: var(--accion);
-}
-
-.propuesta-gl[class*="anchor-top"] .maplibregl-popup-tip {
-  border-bottom-color: var(--accion);
-}
-
-.propuesta-gl.maplibregl-popup-anchor-left .maplibregl-popup-tip {
-  border-right-color: var(--accion);
-}
-
-.propuesta-gl.maplibregl-popup-anchor-right .maplibregl-popup-tip {
-  border-left-color: var(--accion);
-}
-
 .control-capas {
   color: var(--tinta);
   background: var(--superficie);
@@ -3135,9 +3121,19 @@ button.linea[aria-pressed="true"] {
 }
 
 /* El panel de capas: un título, y por capa su marca del mapa, qué muestra y un interruptor. */
+/* El panel abierto va por encima de los créditos del mapa, que si no le tapaban el final. */
+.mapa .maplibregl-ctrl-top-right {
+  z-index: 3;
+}
+
+/* Cabe siempre dentro del mapa (en el celular es bajo): lo que no entra se desliza por dentro,
+   en vez de quedar cortado. El alto del mapa lo pone mapa.js en --alto-mapa. */
 .panel-capas {
   width: min(18rem, calc(100vw - 6rem));
+  max-height: calc(var(--alto-mapa, 60vh) - 44px - 1.75rem);
   padding: 0 0.35rem 0.4rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .capa-fila {

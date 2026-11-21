@@ -357,10 +357,19 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
   const botonAmpliar = document.createElement("button");
   botonAmpliar.type = "button";
   botonAmpliar.className = "maplibregl-ctrl boton-ampliar";
-  const pintarAmpliar = () => {
-    botonAmpliar.innerHTML = `${amplio ? SVG_CERRAR : SVG_AMPLIAR}<span>${t(amplio ? "mapaCerrar" : "mapaAmpliar")}</span>`;
-    botonAmpliar.setAttribute("aria-label", t(amplio ? "mapaCerrarAria" : "mapaAmpliarAria"));
-  };
+  botonAmpliar.innerHTML = SVG_AMPLIAR;
+  botonAmpliar.setAttribute("aria-label", t("mapaAmpliarAria"));
+  botonAmpliar.title = t("mapaAmpliar");
+  // Ampliado, arriba hay una barra con la calle elegida y la X para cerrar, como en una app.
+  const botonCerrar = document.createElement("button");
+  botonCerrar.type = "button";
+  botonCerrar.className = "mapa-cerrar";
+  botonCerrar.innerHTML = SVG_CERRAR;
+  botonCerrar.setAttribute("aria-label", t("mapaCerrarAria"));
+  botonCerrar.title = t("mapaCerrar");
+  seccion?.querySelector(".mapa-barra")?.append(botonCerrar);
+  // El alto del mapa, para que lo que se abre sobre él (el panel de capas) quepa dentro.
+  new ResizeObserver(() => contenedor.style.setProperty("--alto-mapa", `${contenedor.clientHeight}px`)).observe(contenedor);
   const ponerAmplio = (si) => {
     if (si === amplio || !seccion) return;
     // Al cambiar de tamaño, la línea o la ruta elegida se vuelve a encuadrar para que llene
@@ -369,7 +378,6 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
     amplio = si;
     seccion.classList.toggle("mapa-amplio", si);
     document.documentElement.classList.toggle("con-mapa-amplio", si);
-    pintarAmpliar();
     ajustarGestos();
     mapa.resize();
     if (reencuadre) reencuadre();
@@ -381,10 +389,12 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
     else ponerAmplio(false);
   };
   botonAmpliar.addEventListener("click", () => {
-    if (amplio) return cerrarAmplio();
+    if (amplio) return;
     ponerAmplio(true);
     history.pushState({ ...history.state, mapaAmplio: true }, "");
+    botonCerrar.focus({ preventScroll: true });
   });
+  botonCerrar.addEventListener("click", cerrarAmplio);
   window.addEventListener("popstate", () => {
     if (!amplio) return;
     ponerAmplio(false);
@@ -397,7 +407,6 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
   angosto.addEventListener("change", () => {
     if (!angosto.matches && amplio) cerrarAmplio();
   });
-  pintarAmpliar();
   mapa.addControl({ onAdd: () => botonAmpliar, onRemove: () => botonAmpliar.remove() }, "top-left");
 
   // ---------- Datos propios ----------
@@ -1055,45 +1064,47 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
       etiquetaFlotante.remove();
     });
   }
-  // Con una calle ya elegida, un toque en el mapa no la cambia: al moverlo o al acercarlo
-  // es fácil tocarlo sin querer. El primer toque pregunta ahí mismo ("Ver esta calle") y el
-  // segundo, sobre ese botón, la elige. Sin calle elegida todavía, basta un toque.
-  const propuesta = new maplibregl.Popup({
-    closeButton: false,
-    closeOnClick: false,
-    className: "propuesta-gl",
-    offset: 6,
-    maxWidth: "none",
-  });
-  let puntoPropuesto = null;
-  const botonPropuesta = document.createElement("button");
-  botonPropuesta.type = "button";
-  botonPropuesta.className = "boton-propuesta";
-  botonPropuesta.textContent = t("mapaVerCalle");
-  botonPropuesta.addEventListener("click", () => {
-    const punto = puntoPropuesto;
-    propuesta.remove();
-    if (punto) alElegir(punto);
-  });
-  propuesta.setDOMContent(botonPropuesta);
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && propuesta.isOpen()) propuesta.remove();
-  });
+  // Con una calle ya elegida, un solo toque en el mapa no la cambia: al moverlo o al acercarlo
+  // es fácil tocarlo sin querer. Se cambia con dos toques seguidos en el mismo sitio (o doble
+  // clic), así que el doble toque ya no acerca el mapa: para eso están los botones y los dos
+  // dedos. Sin calle elegida todavía, basta un toque.
+  mapa.doubleClickZoom.disable();
+  const DOBLE_TOQUE_MS = 450;
+  const DOBLE_TOQUE_PX = 36;
+  let toqueAnterior = null;
+  // Las dos primeras veces que alguien toca una sola vez, se le dice cómo se cambia.
+  let pistasDadas = 0;
+  let relojPista = 0;
 
   mapa.on("click", (e) => {
     etiquetaFlotante.remove();
-    propuesta.remove();
+    clearTimeout(relojPista);
     // Tocar una parada (en el teléfono) muestra su nombre en vez de elegir ese punto.
     const capas = CAPAS_PARADA.filter((c) => mapa.getLayer(c));
     const [parada] = capas.length ? mapa.queryRenderedFeatures(e.point, { layers: capas }) : [];
     if (parada) {
+      toqueAnterior = null;
       etiquetaFlotante.setLngLat(parada.geometry.coordinates).setText(textoParada(parada)).addTo(mapa);
       return;
     }
     const punto = { lat: e.lngLat.lat, lon: e.lngLat.lng };
     if (!contenedor.classList.contains("con-punto")) return alElegir(punto);
-    puntoPropuesto = punto;
-    propuesta.setLngLat(e.lngLat).addTo(mapa);
+    const ahora = performance.now();
+    const doble =
+      toqueAnterior &&
+      ahora - toqueAnterior.cuando < DOBLE_TOQUE_MS &&
+      Math.hypot(e.point.x - toqueAnterior.x, e.point.y - toqueAnterior.y) < DOBLE_TOQUE_PX;
+    toqueAnterior = doble ? null : { x: e.point.x, y: e.point.y, cuando: ahora };
+    if (doble) return alElegir(punto);
+    if (pistasDadas < 2) {
+      // Espera a ver si llega el segundo toque: si llega, la pista no hace falta.
+      relojPista = setTimeout(() => {
+        pistasDadas++;
+        const conRaton = window.matchMedia("(pointer: fine)").matches;
+        etiquetaFlotante.setLngLat(e.lngLat).setText(t(conRaton ? "mapaDobleClic" : "mapaDobleToque")).addTo(mapa);
+        relojPista = setTimeout(() => etiquetaFlotante.remove(), 2600);
+      }, DOBLE_TOQUE_MS);
+    }
   });
 
   let paradas = [];
@@ -1755,7 +1766,6 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
     },
     mostrar(punto, zona, cercanas) {
       etiquetaFlotante.remove();
-      propuesta.remove();
       poner("calles", vacio());
       limpiarLinea();
       cancelAnimationFrame(animaciones.get("rutaPie"));
