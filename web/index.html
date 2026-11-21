@@ -61,49 +61,11 @@
         <rect x="4.5" y="3.5" width="15" height="14" rx="3" />
         <path d="M4.5 11h15M8 20.5v-3M16 20.5v-3M8.5 14.5h.01M15.5 14.5h.01" />
       </symbol>
-      <symbol id="i-casa" viewBox="0 0 24 24">
-        <path d="M3.5 11.5 12 4l8.5 7.5M6 9.5V20h12V9.5M10 20v-5.5h4V20" />
-      </symbol>
-      <symbol id="i-maletin" viewBox="0 0 24 24">
-        <rect x="3.5" y="7.5" width="17" height="12" rx="2" />
-        <path d="M9 7.5v-2A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5v2M3.5 12.5h17" />
-      </symbol>
-      <symbol id="i-cerca" viewBox="0 0 24 24">
-        <path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0C18.5 15.4 12 21 12 21z" />
-        <circle cx="12" cy="10" r="2.3" />
-      </symbol>
-      <symbol id="i-wifi" viewBox="0 0 24 24">
-        <path d="M3.5 9.5a12 12 0 0 1 17 0M6.5 12.8a7.7 7.7 0 0 1 11 0M9.5 16a3.3 3.3 0 0 1 5 0" />
-        <circle cx="12" cy="19" r="0.9" />
-      </symbol>
-      <symbol id="i-mercado" viewBox="0 0 24 24">
-        <path d="M4 9.5 5.5 4h13L20 9.5M4 9.5h16M4 9.5c0 1.4 1.2 2.5 2.7 2.5s2.6-1.1 2.6-2.5c0 1.4 1.2 2.5 2.7 2.5s2.7-1.1 2.7-2.5c0 1.4 1.1 2.5 2.6 2.5S20 10.9 20 9.5M5.5 12v8h13v-8M10 20v-4.5h4V20" />
-      </symbol>
-      <symbol id="i-pila" viewBox="0 0 24 24">
-        <rect x="8" y="5" width="8" height="15" rx="1.5" />
-        <path d="M10.5 3h3v2M12 9.5v4M10 11.5h4" />
-      </symbol>
-      <symbol id="i-escudo" viewBox="0 0 24 24">
-        <path d="M12 3.5 19 6v5.5c0 4.3-3 7.6-7 9-4-1.4-7-4.7-7-9V6z" />
-      </symbol>
       <symbol id="i-gota" viewBox="0 0 24 24">
         <path d="M12 3.5c3.2 4.1 6 7.6 6 10.9a6 6 0 0 1-12 0c0-3.3 2.8-6.8 6-10.9z" />
       </symbol>
       <symbol id="i-aire" viewBox="0 0 24 24">
         <path d="M3 9h10.5a2.5 2.5 0 1 0-2.4-3.2M3 13h15a2.5 2.5 0 1 1-2.4 3.2M3 17h7.5a2 2 0 1 1-1.9 2.6" />
-      </symbol>
-      <symbol id="i-mensaje" viewBox="0 0 24 24">
-        <path d="M20.5 11.5a8.5 8.5 0 0 1-12.6 7.4L3.5 20.5l1.6-4.3A8.5 8.5 0 1 1 20.5 11.5z" />
-      </symbol>
-      <symbol id="i-compartir" viewBox="0 0 24 24">
-        <circle cx="6" cy="12" r="2.5" />
-        <circle cx="17.5" cy="6" r="2.5" />
-        <circle cx="17.5" cy="18" r="2.5" />
-        <path d="M8.2 10.8l7-3.6M8.2 13.2l7 3.6" />
-      </symbol>
-      <symbol id="i-imprimir" viewBox="0 0 24 24">
-        <path d="M7 8.5V4h10v4.5M7 17.5H5a1.5 1.5 0 0 1-1.5-1.5v-6A1.5 1.5 0 0 1 5 8.5h14a1.5 1.5 0 0 1 1.5 1.5v6a1.5 1.5 0 0 1-1.5 1.5h-2" />
-        <rect x="7" y="14" width="10" height="6" />
       </symbol>
       <symbol id="i-borrar" viewBox="0 0 24 24">
         <path d="M6.5 6.5l11 11M17.5 6.5l-11 11" />
@@ -126,9 +88,7 @@
         <a class="enlace-datos" href="https://github.com/NezuSas/morlaco" data-t="enlaceDatos">Datos abiertos y código</a>
       </div>
     </header>
-    <p id="sin-conexion" class="sin-conexion" role="status" data-t="sinConexion" hidden>
-      Sin conexión: ves los últimos datos guardados en este dispositivo.
-    </p>
+    <p id="sin-conexion" class="sin-conexion" role="status" data-t="sinConexion" hidden>Sin conexión. Estos son los últimos datos guardados en este dispositivo.</p>
 
     <main class="disposicion">
       <div class="columna">
@@ -156,10 +116,7 @@
           </svg>
           <div class="portada">
             <h1 id="titulo" data-t="portadaTitulo">¿Qué pasa hoy en tu calle?</h1>
-            <p class="entrada" data-t="portadaEntrada">
-              Cuándo pasa el recolector, si hay cortes de luz programados y qué paradas de bus tienes
-              cerca, en Cuenca.
-            </p>
+            <p class="entrada" data-t="portadaEntrada">Cuándo pasa el recolector, si hay cortes de luz o de agua, qué farmacias están de turno y qué bus te lleva a donde vas, en Cuenca.</p>
           </div>
 
           <form id="buscar" class="buscar" role="search">
@@ -206,26 +163,21 @@
             <p id="punto-zona" class="punto-zona"></p>
             <div class="punto-acciones">
               <button type="button" id="cambiar-punto" class="en-muro" data-t="cambiarPunto">Cambiar de lugar</button>
-              <button type="button" id="borrar-punto" class="en-muro con-icono" data-t-aria-label="borrarPuntoAria" aria-label="Borrar esta dirección del dispositivo">
-                <svg class="icono" aria-hidden="true"><use href="#i-borrar" /></svg>
+              <button type="button" id="borrar-punto" class="en-muro" data-t-aria-label="borrarPuntoAria" aria-label="Borrar esta dirección del dispositivo">
                 <span data-t="borrarPunto">Borrar dirección</span>
               </button>
-              <button type="button" id="whatsapp" class="en-muro con-icono">
-                <svg class="icono" aria-hidden="true"><use href="#i-mensaje" /></svg>
+              <button type="button" id="whatsapp" class="en-muro">
                 <span data-t="whatsapp">WhatsApp</span>
               </button>
-              <button type="button" id="compartir" class="en-muro con-icono">
-                <svg class="icono" aria-hidden="true"><use href="#i-compartir" /></svg>
+              <button type="button" id="compartir" class="en-muro">
                 <span data-t="compartir">Compartir</span>
               </button>
               <div class="guardar-lugar" role="group" aria-labelledby="t-guardar-como">
                 <span id="t-guardar-como" data-t="guardarComo">Guardar como</span>
                 <button type="button" class="lugar-boton en-muro" data-lugar="casa" aria-pressed="false">
-                  <svg class="icono" aria-hidden="true"><use href="#i-casa" /></svg>
                   <span data-t="lugarCasa">Casa</span>
                 </button>
                 <button type="button" class="lugar-boton en-muro" data-lugar="trabajo" aria-pressed="false">
-                  <svg class="icono" aria-hidden="true"><use href="#i-maletin" /></svg>
                   <span data-t="lugarTrabajo">Trabajo</span>
                 </button>
               </div>
@@ -244,24 +196,6 @@
                 <li><button type="button" class="ejemplo" data-busqueda="Mall del Río">Mall del Río</button></li>
               </ul>
             </div>
-            <ul class="servicios">
-              <li class="servicio servicio-basura">
-                <svg class="icono" aria-hidden="true"><use href="#i-funda" /></svg>
-                <p data-t-html="avanceBasura"><strong>Recolección de basura.</strong> Qué días y a qué hora pasa el recolector, y cuándo sacar la funda celeste.</p>
-              </li>
-              <li class="servicio servicio-luz">
-                <svg class="icono" aria-hidden="true"><use href="#i-rayo" /></svg>
-                <p data-t-html="avanceLuz"><strong>Cortes de luz.</strong> Los cortes que Centro Sur programó para hoy.</p>
-              </li>
-              <li class="servicio servicio-farmacias">
-                <svg class="icono" aria-hidden="true"><use href="#i-cruz" /></svg>
-                <p data-t-html="avanceFarmacias"><strong>Farmacias de turno.</strong> Las que abren las 24 horas esta semana, la más cercana primero.</p>
-              </li>
-              <li class="servicio servicio-buses">
-                <svg class="icono" aria-hidden="true"><use href="#i-bus" /></svg>
-                <p data-t-html="avanceBuses"><strong>Buses.</strong> Qué bus te lleva a donde vas, las líneas cercanas y cada cuánto pasan.</p>
-              </li>
-            </ul>
           </div>
 
           <div id="respuesta" class="respuesta" hidden>
@@ -281,7 +215,6 @@
 
             <section id="s-basura" class="basura" aria-labelledby="t-basura">
               <h2 id="t-basura">
-                <svg class="icono" aria-hidden="true"><use href="#i-funda" /></svg>
                 <span data-t="tituloBasura">Recolección de basura</span>
               </h2>
               <p id="basura-cuando" class="cuando"></p>
@@ -297,8 +230,7 @@
               </details>
               <div id="calendario" class="calendario"></div>
               <div class="imprimir">
-                <button type="button" id="imprimir" class="secundario con-icono">
-                  <svg class="icono" aria-hidden="true"><use href="#i-imprimir" /></svg>
+                <button type="button" id="imprimir" class="secundario">
                   <span data-t="imprimir">Imprimir la hoja de tu zona</span>
                 </button>
                 <p class="detalle" data-t="imprimirNota">Con los días de recolección y las farmacias de turno, para la refrigeradora o la cartelera del edificio.</p>
@@ -307,7 +239,6 @@
 
             <section id="s-luz" class="tarjeta-seccion servicio-luz" aria-labelledby="t-luz">
               <h2 id="t-luz">
-                <svg class="icono" aria-hidden="true"><use href="#i-rayo" /></svg>
                 <span data-t="tituloLuz">Cortes de luz programados</span>
               </h2>
               <div id="luz-estado"></div>
@@ -315,7 +246,6 @@
 
             <section id="s-agua" class="servicio-agua" aria-labelledby="t-agua">
               <h2 id="t-agua">
-                <svg class="icono" aria-hidden="true"><use href="#i-gota" /></svg>
                 <span data-t="tituloAgua">Cortes de agua</span>
               </h2>
               <div id="agua-estado"></div>
@@ -323,7 +253,6 @@
 
             <section id="s-farmacias" class="tarjeta-seccion servicio-farmacias farmacias" aria-labelledby="t-farmacias">
               <h2 id="t-farmacias">
-                <svg class="icono" aria-hidden="true"><use href="#i-cruz" /></svg>
                 <span data-t="tituloFarmacias">Farmacias de turno</span>
               </h2>
               <div id="farmacias-estado"></div>
@@ -331,7 +260,6 @@
 
             <section id="s-buses" class="tarjeta-seccion servicio-buses buses" aria-labelledby="t-buses">
               <h2 id="t-buses">
-                <svg class="icono" aria-hidden="true"><use href="#i-bus" /></svg>
                 <span data-t="tituloBuses">Buses cerca de ti</span>
               </h2>
               <h3 class="subtitulo" data-t="subtituloRuta">¿Qué bus me lleva?</h3>
@@ -371,7 +299,6 @@
 
             <section id="s-cerca" class="servicio-cerca" aria-labelledby="t-cerca">
               <h2 id="t-cerca">
-                <svg class="icono" aria-hidden="true"><use href="#i-cerca" /></svg>
                 <span data-t="tituloCerca">Cerca de ti</span>
               </h2>
               <ul id="cerca-lista" class="cerca-lista"></ul>
@@ -380,7 +307,6 @@
 
             <section id="s-aire" class="servicio-aire aire" aria-labelledby="t-aire" hidden>
               <h2 id="t-aire">
-                <svg class="icono" aria-hidden="true"><use href="#i-aire" /></svg>
                 <span data-t="tituloAire">Calidad del aire</span>
               </h2>
               <div id="aire-estado"></div>
@@ -388,17 +314,17 @@
 
             <details id="sobre-datos" class="sobre-datos">
               <summary data-t="sobreTitulo">Sobre estos datos</summary>
-              <p data-t-html="sobreIntro">Morlaco lo hace y lo mantiene <a href="https://www.nezuecuador.com/">Nezu S.A.S.</a>, en Cuenca. Junta datos públicos de varias instituciones; no es un servicio oficial. Ante cualquier duda, consulta la fuente.</p>
+              <p data-t-html="sobreIntro">Morlaco lo hace y lo mantiene <a href="https://www.nezuecuador.com/">Nezu S.A.S.</a>, en Cuenca. Junta datos públicos de varias instituciones y no es un servicio oficial.</p>
               <ul>
-                <li data-t-html="sobreBasura"><strong>Recolección.</strong> Zonas y horarios del <a href="https://emac.gob.ec/mapa-zonas-de-recoleccion/">mapa de EMAC EP</a>. Si EMAC los cambia, el calendario se actualiza solo.</li>
-                <li data-t-html="sobreLuz"><strong>Cortes de luz.</strong> Los cortes programados que <a href="https://www.centrosur.gob.ec/suspensiones-programadas/">Centro Sur</a> publica en su web. Si no publica, no sabemos si hay cortes: revisa también sus redes sociales.</li>
-                <li data-t-html="sobreFarmacias"><strong>Farmacias de turno.</strong> La lista mensual de <a href="https://www.controlsanitario.gob.ec/turnos-de-farmacias/">ARCSA</a> para Azuay, que puede tener errores. La cercanía se calcula con la dirección que publica, así que es aproximada.</li>
-                <li data-t-html="sobreBuses"><strong>Buses.</strong> Trazados publicados por el municipio en 2022 y horarios de 2025, del portal <a href="https://cuencaendatos.cuenca.gob.ec">Cuenca en Datos</a>: algunas líneas pueden haber cambiado, confirma con el letrero del bus. Las paradas son las del registro municipal, que no incluye todas. Distancias en línea recta; tiempos estimados con la frecuencia del día, a 15 km/h en bus y 4,5 km/h a pie.</li>
-                <li data-t-html="sobreTransporte"><strong>Pasaje, cambios de líneas y tranvía.</strong> Comunicados del municipio publicados en prensa, revisados a mano.</li>
-                <li data-t-html="sobreAgua"><strong>Agua.</strong> ETAPA EP anuncia sus cortes en redes sociales, no en su web. Morlaco los toma de las notas de El Mercurio que citan a ETAPA, después de que una persona las revisa.</li>
-                <li data-t-html="sobreCerca"><strong>Cerca de ti.</strong> Zonas WiFi, mercados, puntos para pilas y Guardia Ciudadana del portal <a href="https://cuencaendatos.cuenca.gob.ec">Cuenca en Datos</a>. Algunas coordenadas de la fuente están mal: se corrigen o, si no se puede, el punto no se muestra.</li>
-                <li data-t-html="sobreAire"><strong>Aire.</strong> Índice de calidad del aire de la <a href="https://caire.emov.gob.ec/">Red de Monitoreo de la EMOV EP</a>, pedido en vivo a su web cada vez que abres la página. Se muestra la estación más cercana que mide partículas.</li>
-                <li data-t-html="sobreCalles"><strong>Calles, BiciPública, ciclovías y carga eléctrica.</strong> © colaboradores de <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> (ODbL).</li>
+                <li data-t-html="sobreBasura">Las zonas y horarios de recolección salen del <a href="https://emac.gob.ec/mapa-zonas-de-recoleccion/">mapa de EMAC EP</a>. Si EMAC los cambia, el calendario se actualiza solo.</li>
+                <li data-t-html="sobreLuz">Los cortes de luz son los programados que <a href="https://www.centrosur.gob.ec/suspensiones-programadas/">Centro Sur</a> publica en su web. Cuando deja de publicar, no hay forma de saber si hay cortes, y entonces conviene mirar sus redes sociales.</li>
+                <li data-t-html="sobreFarmacias">Las farmacias de turno vienen de la lista mensual de <a href="https://www.controlsanitario.gob.ec/turnos-de-farmacias/">ARCSA</a> para Azuay, que a veces trae errores. La distancia se calcula con la dirección que publica ARCSA, así que es aproximada.</li>
+                <li data-t-html="sobreBuses">Los trazados de buses los publicó el municipio en 2022 y los horarios en 2025, en el portal <a href="https://cuencaendatos.cuenca.gob.ec">Cuenca en Datos</a>. Algunas líneas pueden haber cambiado desde entonces, así que manda el letrero del bus. Las paradas son las del registro municipal, que no tiene todas. Las distancias van en línea recta y los tiempos se estiman con la frecuencia del día, a 15 km/h en bus y 4,5 km/h a pie.</li>
+                <li data-t-html="sobreTransporte">El pasaje y los cambios de líneas de 2026 salen de comunicados del municipio publicados en <a href="https://elmercurio.com.ec/cuenca/">El Mercurio</a>, revisados a mano por última vez el 10 de noviembre de 2026. Las estaciones del tranvía son las del <a href="https://tranvia.cuenca.gob.ec/">Tranvía de Cuenca</a>, con la frecuencia que anunció en octubre de 2025.</li>
+                <li data-t-html="sobreAgua">ETAPA EP anuncia sus cortes de agua en redes sociales y no en su web. Morlaco los toma de las notas de El Mercurio que citan a ETAPA, y una persona las revisa antes.</li>
+                <li data-t-html="sobreCerca">Las zonas WiFi, los mercados, los puntos para pilas y la Guardia Ciudadana vienen del portal <a href="https://cuencaendatos.cuenca.gob.ec">Cuenca en Datos</a>. Algunas coordenadas de la fuente están mal; se corrigen y, si no se puede, el punto no se muestra.</li>
+                <li data-t-html="sobreAire">La calidad del aire es el índice de la <a href="https://caire.emov.gob.ec/">Red de Monitoreo de la EMOV EP</a>, que se pide a su web cada vez que abres la página. Se muestra la estación más cercana que mide partículas.</li>
+                <li data-t-html="sobreCalles">Las calles, la BiciPública, las ciclovías y los puntos de carga son de <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> (© sus colaboradores, ODbL).</li>
               </ul>
             </details>
           </div>

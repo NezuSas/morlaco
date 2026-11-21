@@ -115,7 +115,7 @@
   --t-3: 1.6rem;
   --t-4: 2.1rem;
 
-  --radio-control: 10px;
+  --radio-control: 6px;
   --radio-azulejo: 6px;
   --margen: 1.125rem;
   --alto-barra: 3.875rem; /* 3,5rem más las dos franjas de 3 px de la bandera */
@@ -345,29 +345,41 @@ button:disabled {
   cursor: progress;
 }
 
-button.secundario {
-  padding: 0.45rem 0.9rem;
-  border-color: var(--borde-boton);
+/* Las acciones secundarias son texto subrayado: solo buscar lleva botón lleno. */
+button.secundario,
+button.en-muro {
+  padding: 0.35rem 0;
+  border-color: transparent;
   background: transparent;
   color: var(--cupula);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
 }
 
-button.secundario:hover {
-  border-color: var(--cupula);
+button.secundario:hover,
+button.en-muro:hover {
+  border-color: transparent;
   background: transparent;
+  color: var(--accion-hondo);
+  text-decoration-thickness: 2px;
 }
 
-/* Botones sobre el muro azul. */
-button.en-muro,
+/* Cambiar de lugar y usar la ubicación sí son botones, con borde. */
+button#cambiar-punto,
+button.ubicarme,
 .muro button.lugar {
+  padding: 0.45rem 0.95rem;
   border-color: var(--borde-boton);
   background: var(--superficie);
   color: var(--cupula);
+  text-decoration: none;
 }
 
-button.en-muro:hover,
+button#cambiar-punto:hover,
+button.ubicarme:hover,
 .muro button.lugar:hover {
-  border-color: var(--linea-campo);
+  border-color: var(--cupula);
   background: var(--superficie);
 }
 
@@ -455,7 +467,7 @@ button.limpiar-campo[hidden] {
   margin: 0;
   padding: 0.3rem;
   border: 1px solid var(--linea);
-  border-radius: calc(var(--radio-control) + 3px);
+  border-radius: var(--radio-control);
   background: var(--superficie);
   box-shadow: var(--sombra-tarjeta);
 }
@@ -490,8 +502,8 @@ button.limpiar-campo[hidden] {
 
 .mensaje.error {
   padding: 0.75rem 0.9rem;
-  border-left: 3px solid var(--alerta);
-  border-radius: 0 var(--radio-control) var(--radio-control) 0;
+  border: 1px solid color-mix(in srgb, var(--alerta) 35%, transparent);
+  border-radius: 3px;
   background: var(--alerta-fondo);
   color: var(--tinta);
 }
@@ -506,8 +518,8 @@ button.limpiar-campo[hidden] {
 .aviso {
   margin-top: 0.85rem;
   padding: 0.8rem 1rem;
-  border-left: 3px solid var(--atencion-grafico);
-  border-radius: 0 var(--radio-control) var(--radio-control) 0;
+  border: 1px solid color-mix(in srgb, var(--atencion-grafico) 40%, transparent);
+  border-radius: 3px;
   background: var(--atencion-fondo);
   max-width: 62ch;
 }
@@ -755,7 +767,7 @@ button.ubicarme {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  padding: 0.5rem 0.95rem 0.5rem 0.75rem;
+  padding-left: 0.75rem;
   font-size: var(--t-1);
 }
 
@@ -794,13 +806,9 @@ button.lugar {
   align-items: center;
   gap: 0.45rem;
   max-width: 100%;
-  padding: 0.4rem 0.85rem 0.4rem 0.65rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
   text-align: left;
-}
-
-button.lugar .icono {
-  width: 1.1rem;
-  height: 1.1rem;
 }
 
 .lugar-nombre {
@@ -846,17 +854,6 @@ button.lugar .icono {
 .letrero {
   color: var(--tinta);
   text-align: left;
-}
-
-.con-respuesta .letrero {
-  animation: asentar 0.4s cubic-bezier(0.2, 0.8, 0.3, 1) both;
-}
-
-/* Solo se mueve: si el navegador pausa la animación, el letrero se sigue leyendo. */
-@keyframes asentar {
-  from {
-    transform: translateY(8px);
-  }
 }
 
 .tu-punto-etiqueta {
@@ -916,23 +913,10 @@ button.lugar .icono {
   margin-top: 0.9rem;
 }
 
-#cambiar-punto {
-  padding: 0.45rem 0.95rem;
-}
-
 /* "Borrar dirección", discreto: no compite con las acciones de todos los días. */
 button#borrar-punto,
 button#borrar-punto:hover {
-  padding: 0.45rem 0.5rem;
-  border-color: transparent;
-  background: transparent;
   color: var(--tinta-suave);
-}
-
-button#borrar-punto:hover {
-  color: var(--tinta);
-  text-decoration: underline;
-  text-underline-offset: 3px;
 }
 
 /* Guardar como Casa / Trabajo. */
@@ -946,22 +930,24 @@ button#borrar-punto:hover {
 }
 
 button.lugar-boton {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.45rem 0.8rem 0.45rem 0.6rem;
+  padding: 0.3rem 0.85rem;
+  border-color: var(--borde-boton);
+  border-radius: 999px;
+  background: var(--superficie);
+  color: var(--cupula);
   font-size: var(--t-0);
+  text-decoration: none;
+}
+
+button.lugar-boton:hover {
+  border-color: var(--cupula);
+  background: var(--superficie);
 }
 
 button.lugar-boton[aria-pressed="true"] {
   border-color: var(--tinta);
   background: var(--tinta);
   color: var(--superficie);
-}
-
-.lugar-boton .icono {
-  width: 1rem;
-  height: 1rem;
 }
 
 /* ---------- Estado inicial: ejemplos y lo que vas a saber ---------- */
@@ -998,6 +984,7 @@ button.lugar-boton[aria-pressed="true"] {
 
 button.ejemplo {
   padding: 0.38rem 0.8rem;
+  border-radius: 999px;
   border-color: var(--borde-boton);
   background: var(--superficie);
   color: var(--cupula);
@@ -1008,35 +995,6 @@ button.ejemplo:hover {
   border-color: var(--cupula);
   background: var(--superficie);
   color: var(--cupula);
-}
-
-.servicios {
-  list-style: none;
-  padding: 0;
-  margin: 1.75rem 0 0;
-}
-
-.servicio {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 0.9rem;
-  align-items: start;
-  padding: 0.95rem 0;
-  border-top: 1px solid var(--linea);
-  color: var(--tinta-suave);
-}
-
-.servicio .icono {
-  margin-top: 0.1rem;
-  color: var(--icono);
-}
-
-.servicio strong {
-  display: block;
-  color: var(--tinta);
-  font-family: var(--serif);
-  font-size: var(--t-2);
-  line-height: 1.25;
 }
 
 /* ---------- Hoy en tu calle ---------- */
@@ -1213,17 +1171,10 @@ a.ficha .pastilla.estado-alerta {
 }
 
 .respuesta > section > h2 {
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
   font-family: var(--serif);
   font-size: var(--t-3);
   font-weight: 700;
   line-height: 1.15;
-}
-
-.respuesta > section > h2 .icono {
-  color: var(--icono);
 }
 
 .subtitulo {
@@ -1393,18 +1344,14 @@ a.ficha .pastilla.estado-alerta {
 }
 
 .boton-claro {
-  display: inline-block;
-  padding: 0.45rem 0.9rem;
-  border: 1.5px solid var(--cupula);
-  border-radius: var(--radio-control);
   color: var(--cupula);
   font-weight: 700;
-  text-decoration: none;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
 }
 
 .boton-claro:hover {
-  background: var(--cupula);
-  color: var(--sobre-cupula);
+  text-decoration-thickness: 2px;
 }
 
 /* ---------- Luz y farmacias ---------- */
@@ -1508,16 +1455,11 @@ a.ficha .pastilla.estado-alerta {
 
 .cerca-lista > li {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 0.8rem;
   align-items: start;
   padding: 0.8rem 0;
   border-bottom: 1px solid var(--linea);
-}
-
-.cerca-lista > li > .icono {
-  margin-top: 0.15rem;
-  color: var(--tomebamba);
 }
 
 .cerca-texto {
@@ -1608,6 +1550,7 @@ button.opcion-ruta {
   width: 100%;
   padding: 0.8rem 0.9rem;
   border: 1.5px solid var(--linea);
+  border-radius: 10px;
   background: var(--superficie);
   color: var(--tinta);
   font-weight: 400;
@@ -1623,7 +1566,6 @@ button.opcion-ruta[aria-pressed="true"] {
   border-width: 2px;
   border-color: var(--cupula);
   background: var(--seleccion-fondo);
-  box-shadow: inset 4px 0 0 var(--cupula);
 }
 
 /* La cabecera de una opción: minutos, la tira del viaje y el pasaje a la derecha. */
@@ -1708,7 +1650,6 @@ button.opcion-ruta[aria-pressed="true"] {
 .etiqueta-opcion.variante {
   background: var(--atencion-fondo);
   color: var(--tinta);
-  box-shadow: inset 3px 0 0 var(--bandera-oro);
 }
 
 /* Los pasos, solo en la opción elegida: en las demás repetirían lo mismo. */
@@ -1808,13 +1749,6 @@ button.linea:hover {
 
 button.linea[aria-pressed="true"] {
   background: var(--seleccion-fondo);
-  box-shadow: inset 4px 0 0 var(--cupula);
-}
-
-/* Con el foco del teclado, la opción o línea elegida no pierde su filete azul. */
-button.linea[aria-pressed="true"]:focus-visible,
-button.opcion-ruta[aria-pressed="true"]:focus-visible {
-  box-shadow: inset 4px 0 0 var(--cupula), 0 0 0 2px var(--foco-anillo);
 }
 
 /* El número de línea como el letrero de un bus. */
@@ -1900,25 +1834,16 @@ button.opcion-ruta[aria-pressed="true"]:focus-visible {
 }
 
 .buses-calle h2 {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.55rem;
   font-family: var(--serif);
   font-size: var(--t-3);
   font-weight: 700;
   line-height: 1.15;
 }
 
-.buses-calle h2 .icono {
-  margin-top: 0.1em;
-}
-
 /* Cambio reciente de una línea, bajo su frecuencia. */
 .aviso-linea {
   display: block;
   margin-top: 0.35rem;
-  padding-left: 0.6rem;
-  border-left: 2px solid var(--atencion-grafico);
   color: var(--tinta);
   font-size: var(--t-0);
   font-weight: 400;
@@ -2222,7 +2147,8 @@ button.opcion-ruta[aria-pressed="true"]:focus-visible {
   inset: -3px;
   border-radius: 50%;
   border: 2px solid var(--cupula);
-  animation: pulso-gl 2.2s ease-out infinite;
+  animation: pulso-gl 2.2s ease-out 2; /* late dos veces al elegir el punto y se calma */
+  opacity: 0;
 }
 
 @keyframes pulso-gl {
@@ -2237,12 +2163,11 @@ button.opcion-ruta[aria-pressed="true"]:focus-visible {
 }
 
 .marca-gl.aparece > * {
-  animation: aparece-gl 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) var(--retraso, 0.5s) both;
+  animation: aparece-gl 0.2s ease-out both;
 }
 
 @keyframes aparece-gl {
   from {
-    transform: scale(0);
     opacity: 0;
   }
 }
@@ -2463,8 +2388,7 @@ button.opcion-ruta[aria-pressed="true"]:focus-visible {
 }
 
 .bus-gota,
-.bus-glifo,
-.bus-pulso {
+.bus-glifo {
   grid-area: 1 / 1;
 }
 
@@ -2487,27 +2411,6 @@ button.opcion-ruta[aria-pressed="true"]:focus-visible {
   color: #fff;
 }
 
-/* Un anillo que late suave: el bus está "en camino". */
-.bus-pulso {
-  width: 26px;
-  height: 26px;
-  margin-top: 4px;
-  border-radius: 50%;
-  border: 2px solid var(--color-bus);
-  animation: bus-pulso 2.4s ease-out infinite;
-  pointer-events: none;
-}
-
-@keyframes bus-pulso {
-  from {
-    transform: scale(1);
-    opacity: 0.7;
-  }
-  to {
-    transform: scale(2.1);
-    opacity: 0;
-  }
-}
 
 .bus-numero {
   position: absolute;
@@ -2527,12 +2430,6 @@ button.opcion-ruta[aria-pressed="true"]:focus-visible {
   font: 800 0.8125rem/1 var(--letra);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .bus-pulso {
-    display: none;
-  }
-}
-
 /* De lejos, cada bus es un punto de su color. */
 .mapa-lejos .bus-estimado {
   width: 14px;
@@ -2541,7 +2438,6 @@ button.opcion-ruta[aria-pressed="true"]:focus-visible {
 
 .mapa-lejos .bus-gota,
 .mapa-lejos .bus-glifo,
-.mapa-lejos .bus-pulso,
 .mapa-lejos .bus-numero {
   display: none;
 }
@@ -2566,17 +2462,6 @@ button.opcion-ruta[aria-pressed="true"]:focus-visible {
 
 .imprimir {
   margin-top: 1.5rem;
-}
-
-button.con-icono {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-}
-
-.con-icono .icono {
-  width: 1.15rem;
-  height: 1.15rem;
 }
 
 @media print {
@@ -2942,6 +2827,20 @@ button.con-icono {
 
 .datos-contenido .info-accion {
   margin-top: 1.75rem;
+}
+
+/* En las páginas de información, ir a Morlaco es la acción principal: botón lleno. */
+.info-accion .boton-claro {
+  display: inline-block;
+  padding: 0.6rem 1.15rem;
+  border-radius: var(--radio-control);
+  background: var(--accion);
+  color: var(--sobre-accion);
+  text-decoration: none;
+}
+
+.info-accion .boton-claro:hover {
+  background: var(--accion-hondo);
 }
 
 .datos-contenido .autoria {

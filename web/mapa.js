@@ -317,8 +317,14 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
     aplicarZonas();
   };
 
+  // Las paradas van encima de todos los trazos, también del de la ruta.
+  const CAPAS_ENCIMA = ["linea-paradas", "linea-paradas-nombre", "linea-paradas-letrero"].map((c) => `${PROPIO}${c}`);
+  const encimaAlFinal = (capas) => [
+    ...capas.filter((c) => !CAPAS_ENCIMA.includes(c.id)),
+    ...CAPAS_ENCIMA.map((id) => capas.find((c) => c.id === id)),
+  ];
   // Se vuelven a pedir los colores cada vez: cambian con el modo oscuro.
-  const capasPropias = () => [
+  const capasPropias = () => encimaAlFinal([
     {
       id: `${PROPIO}zonas-relleno`,
       type: "fill",
@@ -490,7 +496,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
         "line-opacity": 0.9,
       },
     },
-  ];
+  ]);
   const fuentesDelEstilo = () =>
     Object.fromEntries(
       Object.entries(fuentes).map(([nombre, datos]) => [
@@ -993,7 +999,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
   function marcaDeBus() {
     const nodo = document.createElement("div");
     nodo.className = "bus-estimado";
-    nodo.innerHTML = `<span class="bus-pulso"></span>${SVG_GOTA}${SVG_GLIFO}<span class="bus-numero"></span>`;
+    nodo.innerHTML = `${SVG_GOTA}${SVG_GLIFO}<span class="bus-numero"></span>`;
     // El centro de la gota (no el del marcador, que incluye el número) cae sobre la calle.
     const marca = new maplibregl.Marker({ element: nodo, offset: [0, 3] });
     const ver = () => etiquetaFlotante.setLngLat(marca.getLngLat()).setText(nodo.dataset.texto).addTo(mapa);
@@ -1106,8 +1112,11 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
       const principales = trazados.filter((t) => t.properties.tipo !== "alargue");
       mostrarLinea(principales, { linea, horarios, tipo, paradas, variantes: variantesDeLinea(trazados) });
     },
-    /** Dibuja una opción de "¿qué bus me lleva?": tramos a pie punteados y en bus llenos. */
-    dibujarRuta(opcion, destino) {
+    /**
+     * Dibuja una opción de "¿qué bus me lleva?": tramos a pie punteados, en bus llenos y
+     * las paradas registradas de cada tramo en bus (las cercanas se esconden con la ruta).
+     */
+    dibujarRuta(opcion, destino, paradasRegistradas = null) {
       etiquetaFlotante.remove();
       rutaMarcas = quitar(rutaMarcas);
       limpiarLinea();
@@ -1116,6 +1125,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
       if (!opcion) return;
       const pie = [];
       const bus = [];
+      const paradasRuta = [];
       for (const t of opcion.tramos) {
         if (t.modo === "caminar") {
           if (t.metros < 5) continue;
@@ -1125,7 +1135,19 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
             geometry: { type: "LineString", coordinates: [[t.desde.lon, t.desde.lat], [t.hasta.lon, t.hasta.lat]] },
           });
         } else {
-          bus.push({ type: "Feature", properties: { tipo: t.tipo }, geometry: { type: "LineString", coordinates: t.coords } });
+          const trazo = { type: "Feature", properties: { tipo: t.tipo }, geometry: { type: "LineString", coordinates: t.coords } };
+          bus.push(trazo);
+          // El tranvía tiene su propia capa de estaciones.
+          if (t.tipo !== "tranvia" && paradasRegistradas) {
+            for (const p of paradasDeRecorrido(trazo, paradasRegistradas)) {
+              paradasRuta.push({
+                type: "Feature",
+                // Del color de la ida, como el trazo de la ruta.
+                properties: { nombre: p.nombre, sentido: "ida", hacia: t.hacia },
+                geometry: { type: "Point", coordinates: [p.lon, p.lat] },
+              });
+            }
+          }
           rutaMarcas.push(
             marcador(`<span class="etiqueta-ruta">${t.tipo === "tranvia" ? "T" : t.linea}</span>`, [t.subida.lon, t.subida.lat], {
               clase: "aparece",
@@ -1138,6 +1160,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
       );
       poner("rutaPie", coleccion(pie));
       trazar("rutaBus", bus);
+      poner("paradasLinea", coleccion(paradasRuta));
       discretas(true);
       // Los buses estimados, solo en rutas normales: no se sabe qué buses hacen cada variante.
       const conHorario = opcion.tramos.filter(
@@ -1166,7 +1189,6 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
           texto: nombreParada(parada),
           clase: "aparece",
         });
-        m.getElement().style.setProperty("--retraso", `${300 + i * 70}ms`);
         paradas.push(m.addTo(mapa));
       });
       const destino = [punto.lon, punto.lat];

@@ -267,7 +267,6 @@ function pintarBasura(zona, rural) {
   pintarCalendario(p.zona);
 }
 
-const ICONO_CERCA = { wifi: "#i-wifi", mercado: "#i-mercado", pilas: "#i-pila", guardia: "#i-escudo" };
 
 /** "Cerca de ti": la WiFi gratis, el mercado, el punto de pilas y la Guardia Ciudadana más cercanos. */
 function pintarCerca(punto, coleccion) {
@@ -291,7 +290,6 @@ function pintarCerca(punto, coleccion) {
       return elemento(
         "li",
         {},
-        icono(ICONO_CERCA[c.tipo]),
         elemento(
           "span",
           { class: "cerca-texto" },
@@ -705,7 +703,7 @@ function pintarBusesDeCalle(calle, lineas, rutas, mapa) {
     return;
   }
   const encontradas = lineasPorCalle(calle.feature, lineas, rutas);
-  const titulo = elemento("h2", {}, icono("#i-bus"), elemento("span", {}, t("busesCalleTitulo", { calle: calle.nombre })));
+  const titulo = elemento("h2", {}, t("busesCalleTitulo", { calle: calle.nombre }));
   if (!encontradas.length) {
     caja.replaceChildren(titulo, elemento("p", { class: "detalle" }, t("busesCalleNinguno")));
     caja.hidden = false;
@@ -929,6 +927,8 @@ const nombreContaminante = (clave) => {
  */
 function pintarAire(estacion, { uv = null, clima = null } = {}) {
   $("resumen").querySelector(".ficha-aire")?.remove();
+  // De noche el índice UV es 0 y no dice nada: se deja solo la temperatura.
+  if (uv && !(uv.valor > 0)) uv = null;
   const hay = Boolean(estacion || uv || clima);
   $("s-aire").hidden = !hay;
   $("nav-aire").hidden = !hay;
@@ -984,8 +984,8 @@ function pintarAire(estacion, { uv = null, clima = null } = {}) {
   const nivel = t("aireNiveles")[estacion.nivel - 1];
   const hora = horaDe(estacion.fecha);
 
-  // La recomendación oficial viene en español; en inglés, su traducción.
-  const recomendacion = idioma() === "en" ? t("aireRecomendaciones")[estacion.nivel - 1] : (estacion.recomendacion ?? t("aireRecomendaciones")[estacion.nivel - 1]);
+  // Texto propio para cada nivel, en el mismo tono que el resto de la página.
+  const recomendacion = t("aireRecomendaciones")[estacion.nivel - 1];
   $("aire-estado").replaceChildren(
     elemento(
       "p",
@@ -1205,7 +1205,7 @@ function pintarOpciones(opciones, destino, mapa, paradas, transporte) {
       boton.addEventListener("click", () => {
         for (const b of botones) b.setAttribute("aria-pressed", "false");
         boton.setAttribute("aria-pressed", "true");
-        mapa.dibujarRuta(opcion, destino);
+        mapa.dibujarRuta(opcion, destino, paradasRegistradas);
         verMapaEnCelular();
       });
       botones.push(boton);
@@ -1213,7 +1213,7 @@ function pintarOpciones(opciones, destino, mapa, paradas, transporte) {
     }),
   );
   $("ruta-nota").hidden = !opciones.length;
-  if (opciones.length) mapa.dibujarRuta(opciones[0], destino);
+  if (opciones.length) mapa.dibujarRuta(opciones[0], destino, paradasRegistradas);
   // Los minutos al próximo bus se ponen al día, igual que el panel del mapa.
   relojOpciones = setInterval(() => {
     if (!botones[0]?.isConnected) {
@@ -1617,7 +1617,6 @@ async function iniciar() {
     if (puntoActual) pintarAire(aireCercano(puntoActual, estacionesAire), extrasAire);
   };
 
-  const ICONO_LUGAR = { casa: "#i-casa", trabajo: "#i-maletin" };
   const nombreLugar = (clave) => t(clave === "casa" ? "lugarCasa" : "lugarTrabajo");
 
   const pintarPunto = () => {
@@ -1649,7 +1648,6 @@ async function iniciar() {
           const boton = elemento(
             "button",
             { type: "button", class: "lugar" },
-            icono(ICONO_LUGAR[clave]),
             elemento("span", {}, nombreLugar(clave)),
             lugar.nombre ? elemento("span", { class: "lugar-nombre" }, lugar.nombre) : null,
           );
