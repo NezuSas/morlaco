@@ -1,0 +1,75 @@
+/* ---------- El muro, en el azul de las cúpulas (de día) ----------
+   El encabezado es un bloque del azul de la Catedral, con la letra en blanco y las cúpulas
+   claras sobre su línea dorada. De noche el muro sigue oscuro, como el resto de la página.
+   Lo que flota o es un campo (el buscador, el menú "Más", un error) vuelve a los colores
+   claros de siempre: son "islas" blancas sobre el azul.
+
+   Va en su propia hoja para que el botón de claro y oscuro pueda encenderla o apagarla: la
+   página la enlaza con media="screen and (prefers-color-scheme: light)" y tema.js cambia ese
+   media cuando la persona elige un modo distinto al de su dispositivo. */
+.consulta .muro,
+.pagina-datos .muro-datos {
+  --muro: #1f4a96;
+  --tinta: #ffffff;
+  --tinta-suave: #d6e2f8; /* 6,6:1 sobre el azul */
+  --icono: #d6e2f8;
+  --cupula: #ffffff; /* los enlaces y acciones, en blanco */
+  --accion-hondo: #ffffff;
+  --linea: rgb(255 255 255 / 0.24);
+  --borde-boton: rgb(255 255 255 / 0.65);
+  --oro: #fcd34d;
+  --oro-grafico: #fbbf24;
+  --foco-anillo: #ffffff;
+  border-bottom: 0;
+  background: linear-gradient(175deg, #2454a8, #1b4188 70%);
+}
+
+/* Las cúpulas, claras sobre el azul; los nervios, del color del fondo. */
+.consulta .muro .cupulas {
+  --cupula: #e8f0fd;
+  --cupula-hondo: #b7cbee;
+  --funda-celeste: #2a58ab;
+  --superficie: #2a58ab;
+  --tinta-suave: #c3d4f1;
+}
+
+/* Botones con borde: transparentes, con filo y letra blancos. */
+.consulta .muro button#cambiar-punto,
+.consulta .muro button.ubicarme,
+.consulta .muro button.lugar {
+  background: rgb(255 255 255 / 0.08);
+  color: #fff;
+}
+.consulta .muro button#cambiar-punto:hover,
+.consulta .muro button.ubicarme:hover,
+.consulta .muro button.lugar:hover {
+  border-color: #fff;
+  background: rgb(255 255 255 / 0.16);
+}
+.consulta .muro button#compartir.hecho {
+  color: #bbf7d0;
+}
+.consulta .muro .punto-zona:not(:empty)::before {
+  box-shadow: 0 0 0 2px rgb(255 255 255 / 0.85);
+}
+
+/* Las islas claras. */
+.consulta .muro .campo,
+.consulta .muro .mas-acciones-panel,
+.consulta .muro .mensaje.error {
+  --tinta: #0f172a;
+  --tinta-suave: #475569;
+  --icono: #475569;
+  --cupula: #1f4a96;
+  --accion-hondo: #173872;
+  --linea: #e2e8f0;
+  --borde-boton: #64748b;
+  --oro: #b45309;
+  --oro-grafico: #d97706;
+  --foco-anillo: #0f172a;
+  color: var(--tinta);
+}
+.consulta .muro .campo {
+  border-color: transparent;
+  box-shadow: 0 1px 2px rgb(8 20 48 / 0.2), 0 8px 24px rgb(8 20 48 / 0.18);
+}

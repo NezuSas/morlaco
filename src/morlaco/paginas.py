@@ -190,7 +190,9 @@ def _documento(
     <meta property="og:image:height" content="640" />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" href="{raiz}icono.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="{raiz}estilos.css" />{ld}
+    <link rel="stylesheet" href="{raiz}estilos.css" />
+    <link rel="stylesheet" href="{raiz}muro-claro.css" id="hoja-muro-claro" media="screen and (prefers-color-scheme: light)" />
+    <script src="{raiz}tema.js"></script>{ld}
   </head>
   <body class="pagina-datos">
     <header class="barra">

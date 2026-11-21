@@ -1917,6 +1917,7 @@ async function iniciar() {
     enlace.href = enlaceCorreoAviso({ asunto: t("avisoAsunto"), cuerpo: t("avisoCuerpo", { pagina: location.href }) });
     enlace.textContent = CORREO_AVISOS;
   }
+  window.morlacoTema?.boton($("tema"), { oscuro: t("temaOscuroAria"), claro: t("temaClaroAria") });
   // Cambiar de idioma recarga la página: el punto elegido sigue en la dirección (#lat,lon).
   $("idioma").addEventListener("click", () => {
     guardar(CLAVE_IDIOMA, idioma() === "en" ? "es" : "en");

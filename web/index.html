@@ -56,6 +56,9 @@
       crossorigin="anonymous"
     />
     <link rel="stylesheet" href="estilos.css" />
+    <!-- El encabezado azul del modo claro, y el modo que la persona haya elegido con el botón. -->
+    <link rel="stylesheet" href="muro-claro.css" id="hoja-muro-claro" media="screen and (prefers-color-scheme: light)" />
+    <script src="tema.js"></script>
   </head>
   <body>
     <a class="saltar" href="#contenido" data-t="saltar">Saltar al contenido</a>
@@ -102,6 +105,10 @@
       <div class="barra-acciones">
         <button type="button" id="instalar" class="idioma" data-t="instalar" data-t-aria-label="instalarAria" hidden>Instalar</button>
         <button type="button" id="idioma" class="idioma" lang="en" data-t="cambiarIdioma" data-t-aria-label="cambiarIdiomaAria">English</button>
+        <button type="button" id="tema" class="idioma boton-tema" aria-label="Cambiar a modo oscuro" hidden>
+          <svg class="icono-luna" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z" /></svg>
+          <svg class="icono-sol" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8" /></svg>
+        </button>
         <a class="enlace-datos" href="https://github.com/NezuSas/morlaco" data-t="enlaceDatos">Datos abiertos y código</a>
       </div>
     </header>

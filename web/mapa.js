@@ -212,8 +212,10 @@ export function crearMapa(zonas, alElegir, opciones) {
   return mapa;
 }
 
-const oscuro = window.matchMedia("(prefers-color-scheme: dark)");
-const estiloActual = () => (oscuro.matches ? ESTILOS.oscuro : ESTILOS.claro);
+// Claro u oscuro: el modo elegido con el botón de la barra (tema.js) o, si no, el del dispositivo.
+const modoSistema = window.matchMedia("(prefers-color-scheme: dark)");
+const esOscuro = () => window.morlacoTema?.oscuro() ?? modoSistema.matches;
+const estiloActual = () => (esOscuro() ? ESTILOS.oscuro : ESTILOS.claro);
 
 const vacio = () => ({ type: "FeatureCollection", features: [] });
 const coleccion = (features) => ({ type: "FeatureCollection", features });
@@ -639,7 +641,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
     const base = mapa.getStyle().sources;
     const fuente = Object.keys(base).find((nombre) => base[nombre].type === "vector");
     if (!fuente) return [];
-    const c = oscuro.matches ? PALETA_BASE.oscuro : PALETA_BASE.claro;
+    const c = esOscuro() ? PALETA_BASE.oscuro : PALETA_BASE.claro;
     const tipo = [
       "case",
       ["==", ["get", "subclass"], "marketplace"], "mercado",
@@ -692,7 +694,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
     const base = mapa.getStyle().sources;
     const fuente = Object.keys(base).find((nombre) => base[nombre].type === "vector");
     if (!fuente) return [];
-    const c = oscuro.matches ? PALETA_BASE.oscuro : PALETA_BASE.claro;
+    const c = esOscuro() ? PALETA_BASE.oscuro : PALETA_BASE.claro;
     return [
       {
         id: `${PROPIO}suelo-usos`,
@@ -725,7 +727,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
 
   /** Pinta el mapa base con la paleta de Morlaco, capa por capa según lo que dibuja cada una. */
   const pintarBase = () => {
-    const c = oscuro.matches ? PALETA_BASE.oscuro : PALETA_BASE.claro;
+    const c = esOscuro() ? PALETA_BASE.oscuro : PALETA_BASE.claro;
     const pintar = (id, propiedad, valor) => {
       try {
         mapa.setPaintProperty(id, propiedad, valor);
@@ -786,7 +788,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
     // otro modo: se pide el que toca y se espera a que llegue.
     const fondo = mapa.getStyle().layers.find((capa) => capa.type === "background");
     const rojo = /rgb\(\s*(\d+)/.exec(String(fondo ? mapa.getPaintProperty(fondo.id, "background-color") : ""))?.[1];
-    if (rojo !== undefined && Number(rojo) < 100 !== oscuro.matches && !reintentoEstilo) {
+    if (rojo !== undefined && Number(rojo) < 100 !== esOscuro() && !reintentoEstilo) {
       reintentoEstilo = true; // una sola vez: si el estilo cambia de colores, no se queda en bucle
       mapa.setStyle(estiloActual(), { diff: false });
       return;
@@ -823,7 +825,10 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
   const ajustarLejos = () => contenedor.classList.toggle("mapa-lejos", mapa.getZoom() < ZOOM_NUMEROS);
   mapa.on("zoomend", ajustarLejos);
   ajustarLejos();
-  oscuro.addEventListener("change", () => mapa.setStyle(estiloActual(), { diff: false }));
+  // tema.js avisa cuando cambia el modo, por el botón o porque cambió el del dispositivo.
+  const alCambiarModo = () => mapa.setStyle(estiloActual(), { diff: false });
+  if (window.morlacoTema) window.addEventListener("morlaco:tema", alCambiarModo);
+  else modoSistema.addEventListener("change", alCambiarModo);
 
   const poner = (nombre, datos) => {
     fuentes[nombre] = datos;
@@ -1114,7 +1119,10 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
   const panel = document.createElement("div");
   panel.className = "panel-linea";
   panel.hidden = true;
-  contenedor.append(panel);
+  // Va junto al mapa, no dentro: en el celular queda debajo, para no taparlo; en pantallas
+  // anchas flota sobre su esquina (estilos.css). Solo entonces ocupa sitio del encuadre.
+  (contenedor.parentElement ?? contenedor).append(panel);
+  const altoPanel = () => (!panel.hidden && getComputedStyle(panel).position === "absolute" ? panel.offsetHeight : 0);
   let puntas = [];
   let recorridos = [];
   let busesMarcas = [];
@@ -1241,7 +1249,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
       nota.hidden = false;
       arrancarBuses();
     }
-    encuadrar(caja(trazos), { ...MARGEN_TRAZO, bottom: panel.offsetHeight + 40 });
+    encuadrar(caja(trazos), { ...MARGEN_TRAZO, bottom: altoPanel() + 40 });
   }
 
   function mostrarLinea(principales, { linea, horarios, tipo, paradas, variantes = [] }) {
@@ -1553,7 +1561,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
       mapa.once("movestart", alMoverse);
       encuadrar(caja(todos, [[destino.lon, destino.lat]]), {
         ...MARGEN_TRAZO,
-        bottom: (panel.hidden ? 0 : panel.offsetHeight) + 40,
+        bottom: altoPanel() + 40,
       });
       // Se empieza a dibujar cuando el mapa termina de moverse hasta la ruta (o enseguida).
       let empezado = false;

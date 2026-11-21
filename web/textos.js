@@ -14,6 +14,8 @@ const TEXTOS = {
     enlaceDatos: "Datos abiertos y código",
     instalar: "Instalar",
     instalarAria: "Instalar Morlaco como app en este dispositivo",
+    temaOscuroAria: "Cambiar a modo oscuro",
+    temaClaroAria: "Cambiar a modo claro",
     sinConexion: "Sin conexión. Estos son los últimos datos guardados en este dispositivo.",
     portadaTitulo: "¿Qué pasa hoy en tu calle?",
     portadaEntrada:
@@ -509,6 +511,8 @@ const TEXTOS = {
     enlaceDatos: "Open data and code",
     instalar: "Install",
     instalarAria: "Install Morlaco as an app on this device",
+    temaOscuroAria: "Switch to dark mode",
+    temaClaroAria: "Switch to light mode",
     sinConexion: "You’re offline. This is the last data saved on this device.",
     portadaTitulo: "What’s happening on your street today?",
     portadaEntrada:

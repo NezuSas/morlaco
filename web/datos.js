@@ -95,6 +95,7 @@ function pintarConjunto(c, estado) {
 async function iniciar() {
   usarIdioma(idiomaInicial(leer(CLAVE_IDIOMA), navigator.languages ?? [navigator.language]));
   aplicarTextos();
+  window.morlacoTema?.boton($("tema"), { oscuro: t("temaOscuroAria"), claro: t("temaClaroAria") });
   $("idioma").addEventListener("click", () => {
     guardar(CLAVE_IDIOMA, idioma() === "en" ? "es" : "en");
     location.reload();

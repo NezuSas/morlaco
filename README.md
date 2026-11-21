@@ -131,6 +131,8 @@ BiciPública, las ciclovías y los puntos de carga para autos eléctricos.
   "Instalar"; en el iPhone, desde Safari, con Compartir y "Añadir a pantalla de inicio".
 - **Funcionar sin conexión** con los últimos datos descargados, útil en un corte de luz o sin megas.
 - **Hablar español e inglés.** Elige el idioma del navegador y tiene un botón para cambiarlo.
+- **Verse en claro o en oscuro.** Sigue el modo de tu dispositivo, y el botón de la luna (o el sol) de la
+  barra lo cambia cuando quieras.
 - **Imprimir la hoja de tu zona**, con los días de recolección y las farmacias de turno, para la
   refrigeradora o la cartelera del edificio.
 - **Un [cartel con código QR](https://nezusas.github.io/morlaco/web/cartel.html)** para la puerta de un
@@ -142,7 +144,8 @@ BiciPública, las ciclovías y los puntos de carga para autos eléctricos.
 ## Privacidad
 
 - **No hay cuentas, cookies ni analítica.**
-- La página recuerda **solo en tu navegador** el último punto que consultaste, tus dos lugares y el idioma.
+- La página recuerda **solo en tu navegador** el último punto que consultaste, tus dos lugares, el idioma y, si lo
+  cambiaste, el modo claro u oscuro.
   En "Más", "Borrar dirección" quita el punto guardado.
 - Las direcciones se buscan **dentro de la página**, con un índice de calles que se descarga una vez. Solo
   cuando lo que escribes no es una calle (un parque, un centro comercial) el texto se envía a Nominatim, de
