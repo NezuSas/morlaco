@@ -2,9 +2,27 @@
   "metadata": {
     "titulo": "Cortes de agua confirmados",
     "nota": "Se mantiene a mano. Cada corte sale de una nota de prensa que cita a ETAPA EP: se copia aquí solo después de leerla. Los avisos por confirmar están en datos/agua/avisos.json y el bot abre un aviso en GitHub por cada uno. Un corte deja de mostrarse cuando pasa su fecha.",
-    "revisado": "2026-11-10"
+    "revisado": "2026-11-21"
   },
-  "cortes": [],
+  "cortes": [
+    {
+      "fecha": "2026-11-20",
+      "desde": "09:00",
+      "hasta": "18:00",
+      "es": {
+        "sectores": "Av. González Suárez, av. Paseo de los Cañaris, Pisarcápac, av. Huayna-Cápac, Del Rollo, Barrial Blanco, av. de las Américas, río Milchichig, Terminal Terrestre, Aeropuerto Mariscal Lamar, Totoracocha, Cementerio Municipal, Las Retamas, Ciudadela de la UNE y Mercado 12 de Abril",
+        "motivo": "Interconexión de una tubería nueva en la calle Barrial Blanco, entre Héroes de Verdeloma y Turuhuayco"
+      },
+      "en": {
+        "sectores": "Av. González Suárez, Av. Paseo de los Cañaris, Pisarcápac, Av. Huayna-Cápac, Del Rollo, Barrial Blanco, Av. de las Américas, Milchichig river, Terminal Terrestre (bus station), Mariscal Lamar Airport, Totoracocha, Cementerio Municipal, Las Retamas, Ciudadela de la UNE and Mercado 12 de Abril",
+        "motivo": "Connection of a new pipe on Barrial Blanco street, between Héroes de Verdeloma and Turuhuayco"
+      },
+      "fuente": {
+        "nombre": "El Mercurio, citando a ETAPA EP",
+        "url": "https://elmercurio.com.ec/cuenca/2026/11/19/agua-cuenca-suspension-sectores-tuberia/"
+      }
+    }
+  ],
   "descartados": [
     {
       "enlace": "https://elmercurio.com.ec/cuenca/2026/09/24/sistemas-banos-nero-cortes-agua-lluvias/",
