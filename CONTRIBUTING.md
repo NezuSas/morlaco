@@ -39,6 +39,7 @@ python -m venv .venv
 .venv/Scripts/python -m ruff check .
 .venv/Scripts/python -m ruff format --check .
 node --test "tests/web/*.test.mjs"
+node tests/ui/celular.mjs   # si cambiaste la web: la revisa en tamaño de celular (necesita Chrome o Edge)
 ```
 
 Para ver la página en tu computadora, sirve la carpeta del proyecto y abre <http://127.0.0.1:8765/web/>:
