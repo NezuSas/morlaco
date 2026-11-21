@@ -1360,6 +1360,8 @@ button.lugar-boton[aria-pressed="true"] {
 .inicio,
 .respuesta {
   padding: 0 var(--margen);
+  /* La sección que entra de lado al deslizar no ensancha la página. */
+  overflow-x: clip;
 }
 
 .inicio > *,
@@ -1878,6 +1880,23 @@ a.ficha .pastilla.estado-alerta {
 }
 
 /* Cada pestaña muestra solo su parte (al imprimir se ven todas las que se imprimen). */
+/* Al deslizar el dedo para cambiar de sección, la nueva entra desde ese lado. */
+@keyframes entra-seccion {
+  from {
+    opacity: 0;
+    translate: var(--desde, 1.5rem) 0;
+  }
+}
+
+.respuesta > section.entra-por-derecha {
+  animation: entra-seccion 0.18s ease-out;
+}
+
+.respuesta > section.entra-por-izquierda {
+  --desde: -1.5rem;
+  animation: entra-seccion 0.18s ease-out;
+}
+
 .respuesta > section.fuera-de-pestana {
   display: none;
 }

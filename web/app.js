@@ -1510,6 +1510,63 @@ function pestanasConTeclado(evento) {
   elegirPestana(enlaces[destino].getAttribute("href").slice(1), { foco: true, desplazar: false });
 }
 
+/**
+ * En el celular, deslizar el dedo de lado sobre la respuesta pasa a la sección de al lado
+ * (Resumen, Basura, Cortes…), como en cualquier app con pestañas. Solo cuenta un gesto
+ * claramente horizontal y rápido: bajar por la página con el dedo algo torcido no cambia nada.
+ */
+function deslizarEntreSecciones(zona) {
+  const MINIMO_PX = 64;
+  const MAXIMO_MS = 700;
+  /** ¿El dedo empezó sobre algo que ya se desliza de lado por su cuenta? */
+  const tieneSuGesto = (nodo) => {
+    if (nodo.closest(".secciones, input, textarea, select, .sentidos")) return true;
+    for (let n = nodo; n && n !== zona; n = n.parentElement) {
+      const estilo = getComputedStyle(n).overflowX;
+      if ((estilo === "auto" || estilo === "scroll") && n.scrollWidth > n.clientWidth + 4) return true;
+    }
+    return false;
+  };
+  let inicio = null;
+  zona.addEventListener(
+    "touchstart",
+    (e) => {
+      inicio = null;
+      if (e.touches.length !== 1 || tieneSuGesto(e.target)) return;
+      inicio = { x: e.touches[0].clientX, y: e.touches[0].clientY, cuando: e.timeStamp };
+    },
+    { passive: true },
+  );
+  zona.addEventListener(
+    "touchend",
+    (e) => {
+      if (!inicio) return;
+      const dedo = e.changedTouches[0];
+      const dx = dedo.clientX - inicio.x;
+      const dy = dedo.clientY - inicio.y;
+      const duro = e.timeStamp - inicio.cuando;
+      inicio = null;
+      if (Math.abs(dx) < MINIMO_PX || Math.abs(dx) < 2.2 * Math.abs(dy) || duro > MAXIMO_MS) return;
+      if (String(window.getSelection() ?? "")) return; // estaba seleccionando texto
+      const enlaces = [...document.querySelectorAll(".secciones a")].filter((a) => !a.hidden);
+      const actual = enlaces.findIndex((a) => a.getAttribute("aria-selected") === "true");
+      // Hacia la izquierda se avanza; hacia la derecha se vuelve. En las puntas no pasa nada.
+      const destino = enlaces[actual + (dx < 0 ? 1 : -1)];
+      if (actual < 0 || !destino) return;
+      const id = destino.getAttribute("href").slice(1);
+      elegirPestana(id);
+      // La sección entra desde el lado hacia el que se deslizó, para que se note el cambio.
+      if (SIN_MOVIMIENTO) return;
+      for (const seccion of zona.querySelectorAll(":scope > section:not(.fuera-de-pestana)")) {
+        seccion.classList.remove("entra-por-derecha", "entra-por-izquierda");
+        void seccion.offsetWidth; // reinicia la animación si se desliza varias veces seguidas
+        seccion.classList.add(dx < 0 ? "entra-por-derecha" : "entra-por-izquierda");
+      }
+    },
+    { passive: true },
+  );
+}
+
 // ---------- ¿Qué bus me lleva? ----------
 
 /** Los pasos de una opción, en palabras. */
@@ -2386,6 +2443,7 @@ async function iniciar() {
 
   // Navegación por secciones y fichas del resumen.
   $("respuesta").addEventListener("click", irASeccion);
+  deslizarEntreSecciones($("respuesta"));
   document.querySelector(".secciones").addEventListener("keydown", pestanasConTeclado);
   // En el celular las pestañas se deslizan de lado: un desvanecido avisa de que hay más.
   const barraPestanas = document.querySelector(".secciones");
