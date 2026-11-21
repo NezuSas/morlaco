@@ -1,13 +1,21 @@
 # Mantiene los datos al día sin que nadie tenga que acordarse.
 #
-# Todos los días a las 06:00 de Cuenca revisa las fuentes que cambian seguido
-# (basura, luz, farmacias, tranvía y avisos de agua); los lunes, todas. Pasa las pruebas con los
-# datos nuevos y, solo si algo cambió y las pruebas pasan, los publica en main.
+# Todos los días de madrugada (03:17 de Cuenca) revisa las fuentes que cambian seguido
+# (basura, luz, farmacias, tranvía y avisos de agua); por la tarde (17:43), otra vez los
+# avisos de agua, que ETAPA suele anunciar a esa hora para la mañana siguiente; los lunes,
+# todas. Pasa las pruebas con los datos nuevos y, solo si algo cambió y las pruebas pasan,
+# los publica en main.
+#
+# Las horas no caen en punto a propósito: GitHub retrasa las tareas programadas cuando hay
+# mucha carga, y a las horas en punto es cuando más. Con "0 11" (06:00 de Cuenca) esta tarea
+# arrancaba entre seis y diez horas tarde, y un corte de agua anunciado la víspera se
+# detectaba cuando ya había empezado.
 # Si una fuente falla, publica el resto y la ejecución queda en rojo: GitHub
 # avisa por correo y en datos/estado.json queda el error.
 #
-# Si la prensa anuncia un corte de agua en Cuenca, abre un aviso (issue) para que
-# una persona lo lea y, si es real, lo copie a datos/manual/agua.json.
+# Si la prensa anuncia un corte de agua en Cuenca, la página lo muestra enseguida como
+# "por confirmar" y se abre un aviso (issue) para que una persona lo lea y, si es real,
+# lo copie a datos/manual/agua.json.
 #
 # Y revisa lo que se está quedando viejo (farmacias que se acaban, avisos que
 # vencen, datos a mano sin revisar, fuentes que fallan, errores del GTFS según el
@@ -17,8 +25,9 @@ name: Actualizar datos
 
 on:
   schedule:
-    - cron: "0 11 * * *" # 06:00 en Cuenca (UTC-5): fuentes que cambian seguido
-    - cron: "30 11 * * 1" # lunes 06:30: todas las fuentes
+    - cron: "17 8 * * *" # 03:17 en Cuenca (UTC-5): fuentes que cambian seguido
+    - cron: "43 22 * * *" # 17:43 en Cuenca: solo los avisos de agua
+    - cron: "47 8 * * 1" # lunes 03:47: todas las fuentes
   workflow_dispatch:
     inputs:
       fuentes:
@@ -59,10 +68,13 @@ jobs:
           PROGRAMA: ${{ github.event.schedule }}
           PEDIDAS: ${{ inputs.fuentes }}
         run: |
-          if [ "$PROGRAMA" = "0 11 * * *" ]; then
+          if [ "$PROGRAMA" = "17 8 * * *" ]; then
             echo "fuentes=recoleccion luz farmacias tranvia agua" >> "$GITHUB_OUTPUT"
             echo "siempre=" >> "$GITHUB_OUTPUT"
-          elif [ "$PROGRAMA" = "30 11 * * 1" ]; then
+          elif [ "$PROGRAMA" = "43 22 * * *" ]; then
+            echo "fuentes=agua" >> "$GITHUB_OUTPUT"
+            echo "siempre=" >> "$GITHUB_OUTPUT"
+          elif [ "$PROGRAMA" = "47 8 * * 1" ]; then
             echo "fuentes=" >> "$GITHUB_OUTPUT"
             echo "siempre=--siempre" >> "$GITHUB_OUTPUT"
           else
