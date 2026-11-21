@@ -16,6 +16,8 @@ from html import escape
 from pathlib import Path
 from typing import Any
 
+from morlaco.fuentes.agua import por_confirmar
+
 SITIO = "https://nezusas.github.io/morlaco/"
 WEB = SITIO + "web/"
 DIAS_EN = {
@@ -56,6 +58,10 @@ T = {
         "agua_sin": "No hay cortes de agua anunciados para los próximos días.",
         "agua_nota": "ETAPA EP anuncia sus cortes en redes sociales y en su línea 188; Morlaco los toma de la prensa que cita a ETAPA, así que puede haber cortes que no estén aquí.",
         "agua_corte": "{dia}, de {desde} a {hasta}",
+        "agua_posible": "Posibles cortes, por confirmar",
+        "agua_posible_nota": "Morlaco los tomó de la prensa automáticamente y nadie los ha revisado todavía: lee la nota antes de fiarte.",
+        "agua_publicado": "Publicado el {dia}",
+        "agua_leer": "Leer la nota en El Mercurio",
         "fuente": "Fuente",
         "hub_titulo": "Servicios de Cuenca, hoy",
         "hub_desc": "Horario de la basura por zona, farmacias de turno y cortes de agua en Cuenca, Ecuador.",
@@ -89,6 +95,10 @@ T = {
         "agua_sin": "No water cuts announced for the coming days.",
         "agua_nota": "ETAPA EP announces its cuts on social media and on its 188 line; Morlaco takes them from press articles that quote ETAPA, so there may be cuts that aren’t listed here.",
         "agua_corte": "{dia}, {desde} to {hasta}",
+        "agua_posible": "Possible cuts, to be confirmed",
+        "agua_posible_nota": "Morlaco picked these up from the press automatically and nobody has reviewed them yet: read the article before relying on them.",
+        "agua_publicado": "Published {dia}",
+        "agua_leer": "Read the article in El Mercurio (in Spanish)",
         "fuente": "Source",
         "hub_titulo": "Cuenca services today",
         "hub_desc": "Garbage schedule by zone, on-duty pharmacies and water cuts in Cuenca, Ecuador.",
@@ -335,7 +345,37 @@ def pagina_farmacias(turnos: dict[str, Any], hoy: date, idioma: str) -> tuple[st
     )
 
 
-def pagina_agua(agua: dict[str, Any], hoy: date, idioma: str) -> tuple[str, str]:
+def _avisos_por_confirmar(avisos: list[dict[str, Any]], idioma: str) -> str:
+    """Las notas que citan a ETAPA y nadie ha revisado, dichas como lo que son: sin confirmar."""
+    items = []
+    for a in avisos:
+        if a.get("fecha") and a.get("desde") and a.get("hasta"):
+            cuando = _t(
+                idioma,
+                "agua_corte",
+                dia=_fecha(a["fecha"], idioma),
+                desde=a["desde"],
+                hasta=_hora(a["hasta"], idioma),
+            )
+        elif a.get("fecha"):
+            cuando = _fecha(a["fecha"], idioma)
+        else:
+            cuando = _t(idioma, "agua_publicado", dia=_fecha(a["publicado"], idioma))
+        items.append(
+            f'<li><span class="horario">{escape(cuando)}</span>{escape(a["titulo"])}'
+            f'<span class="frecuencia"><a href="{escape(a["enlace"])}">{_t(idioma, "agua_leer")}</a></span></li>'
+        )
+    return _seccion(
+        f"<h2>{escape(_t(idioma, 'agua_posible'))}</h2>",
+        '<ul class="cortes">\n          ' + "\n          ".join(items) + "\n        </ul>",
+        f'<p class="detalle">{escape(_t(idioma, "agua_posible_nota"))}</p>',
+    )
+
+
+def pagina_agua(
+    agua: dict[str, Any], hoy: date, idioma: str, avisos: dict[str, Any] | None = None
+) -> tuple[str, str]:
+    posibles = por_confirmar(avisos or {}, agua, hoy)
     cortes = sorted(
         (c for c in agua.get("cortes", []) if c.get("fecha", "") >= hoy.isoformat()),
         key=lambda c: (c["fecha"], c.get("desde", "")),
@@ -358,8 +398,12 @@ def pagina_agua(agua: dict[str, Any], hoy: date, idioma: str) -> tuple[str, str]
         cuerpo = _seccion(
             '<ul class="cortes">\n          ' + "\n          ".join(items) + "\n        </ul>"
         )
+    elif posibles:
+        cuerpo = ""
     else:
         cuerpo = _seccion(f'<p class="luz-resumen">{escape(_t(idioma, "agua_sin"))}</p>')
+    if posibles:
+        cuerpo += ("\n" if cuerpo else "") + _avisos_por_confirmar(posibles, idioma)
     cuerpo += "\n" + _seccion(f'<p class="detalle">{escape(_t(idioma, "agua_nota"))}</p>')
     nombre = "cortes-de-agua.html"
     return nombre, _documento(
@@ -390,11 +434,13 @@ def generar(datos: Path, hoy: date) -> dict[str, str]:
     numeros = [z["properties"]["zona"] for z in zonas]
     turnos = leer("farmacias/turnos.json")
     agua = leer("manual/agua.json")
+    # Los avisos por confirmar pueden no estar (la primera vez, o si la fuente falló).
+    avisos = leer("agua/avisos.json") if (datos / "agua/avisos.json").exists() else {}
     paginas: dict[str, str] = {}
     for idioma in ("es", "en"):
         generadas = [pagina_indice(numeros, idioma)]
         generadas += [pagina_zona(z, numeros, idioma) for z in zonas]
-        generadas += [pagina_farmacias(turnos, hoy, idioma), pagina_agua(agua, hoy, idioma)]
+        generadas += [pagina_farmacias(turnos, hoy, idioma), pagina_agua(agua, hoy, idioma, avisos)]
         for nombre, html in generadas:
             paginas[_ruta(idioma, nombre)] = html
     urls = [WEB, WEB + "datos.html"] + [

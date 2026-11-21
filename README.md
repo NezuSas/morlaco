@@ -160,7 +160,7 @@ Todo sale de **fuentes oficiales y públicas** y, cuando una institución solo l
 |---|---|---|
 | Recolección de basura | EMAC EP, mapa de zonas | Se revisa todos los días |
 | Cortes de luz | Centro Sur, suspensiones programadas | Se revisa todos los días, pero **Centro Sur no actualiza su cronograma desde julio de 2026**; la página lo dice |
-| Cortes de agua | ETAPA EP, a través de El Mercurio | Se busca todos los días y una persona confirma cada corte antes de mostrarlo |
+| Cortes de agua | ETAPA EP, a través de El Mercurio | Se busca todos los días. Lo que cita a ETAPA se muestra enseguida como "por confirmar"; una persona lo revisa después |
 | Farmacias de turno | ARCSA, lista mensual de Azuay | Se revisa todos los días |
 | Buses | GAD Municipal, portal Cuenca en Datos | Horarios de 2025 y recorridos de 2022: manda el letrero del bus |
 | Tranvía | Tranvía de Cuenca | Se revisa todos los días |
@@ -205,7 +205,7 @@ bot, una app o un análisis.
 | [`datos/buses/tranvia.geojson`](datos/buses/tranvia.geojson) | Las 20 estaciones del tranvía, con un punto por andén y el sentido en que para en cada una | [Tranvía de Cuenca](https://tranvia.cuenca.gob.ec/) |
 | [`datos/manual/transporte.json`](datos/manual/transporte.json) | **Mantenido a mano**: pasaje del bus y del tranvía, cambios de líneas de 2026 (con fecha de caducidad) y frecuencia del tranvía, cada dato con su fuente | Comunicados del municipio publicados en [El Mercurio](https://elmercurio.com.ec/cuenca/) |
 | [`datos/ciudad/cerca.geojson`](datos/ciudad/cerca.geojson) | Zonas WiFi gratis, mercados (con horario), puntos para dejar pilas usadas y destacamentos de la Guardia Ciudadana (con teléfono), con las coordenadas corregidas | [Cuenca en Datos](https://cuencaendatos.cuenca.gob.ec) |
-| [`datos/agua/avisos.json`](datos/agua/avisos.json) | Notas de prensa de las últimas tres semanas que anuncian un corte de agua, **por confirmar** (la página no las muestra) | [El Mercurio](https://elmercurio.com.ec/cuenca/) |
+| [`datos/agua/avisos.json`](datos/agua/avisos.json) | Notas de prensa de las últimas tres semanas que anuncian un corte de agua, **por confirmar**, con la fecha y el horario del corte cuando la nota los dice. La página muestra las que citan a ETAPA, marcadas como sin confirmar | [El Mercurio](https://elmercurio.com.ec/cuenca/) |
 | [`datos/manual/agua.json`](datos/manual/agua.json) | **Mantenido a mano**: cortes de agua confirmados (fecha, horario, sectores y la nota de prensa que cita a ETAPA) y las notas descartadas | El Mercurio, a partir de [`datos/agua/avisos.json`](datos/agua/avisos.json) |
 | [`datos/manual/basura.json`](datos/manual/basura.json) | **Mantenido a mano**: qué pasa con la recolección en feriados, qué va en la funda celeste y dónde llevar orgánicos, vidrio, escombros, pilas y objetos grandes, cada dato con su fuente | Páginas de [EMAC EP](https://emac.gob.ec) y [ETAPA EP](https://www.etapa.net.ec) y comunicados en prensa |
 | [`datos/manual/feriados.json`](datos/manual/feriados.json) | **Mantenido a mano**: los próximos días de descanso en Cuenca (feriados nacionales, el local de Cuenca y las suspensiones de jornada por decreto), ya en el día en que se descansa, cada uno con su fuente | Decretos y calendario oficial publicados en prensa |
@@ -314,11 +314,15 @@ tan al día está, si se puede leer automáticamente y qué no tiene fuente.
   `metadata.fuentes.<tipo>.descartados`.
 - **Cortes de agua (ETAPA y prensa).** ETAPA los anuncia en redes sociales; su web no publica nada desde
   febrero de 2025. El Mercurio sí publica cada aviso. Cada día, `morlaco actualizar agua` busca en su API las
-  notas cuyo título anuncia un corte de agua en Cuenca y las guarda en `datos/agua/avisos.json` **sin
-  mostrarlas**. Por cada nota nueva, el workflow abre un aviso en GitHub (etiqueta `corte-agua`), y GitHub lo
-  manda por correo. Una persona lee la nota y, si es un corte de ETAPA, lo copia a
-  [`datos/manual/agua.json`](datos/manual/agua.json) con fecha, horario, sectores y fuente; si no, añade el
-  enlace a `descartados`. Solo entonces aparece en la página, hasta que pasa su fecha.
+  notas cuyo título anuncia un corte de agua en Cuenca y las guarda en `datos/agua/avisos.json`, con el día
+  y el horario del corte cuando la nota los dice. Las que citan a ETAPA **se muestran enseguida, marcadas
+  "por confirmar"** y con el enlace a la nota: ETAPA suele anunciar por la tarde un corte para la mañana
+  siguiente, y esperar a que alguien lo lea era llegar tarde (pasó el 20 de noviembre de 2026). Por cada nota
+  nueva, el workflow abre además un aviso en GitHub (etiqueta `corte-agua`), y GitHub lo manda por correo. Una
+  persona lee la nota y, si es un corte de ETAPA, lo copia a
+  [`datos/manual/agua.json`](datos/manual/agua.json) con fecha, horario, sectores y fuente, y pasa a mostrarse
+  como confirmado; si no, añade el enlace a `descartados` y deja de mostrarse. Un aviso sin revisar se quita
+  solo cuando pasa su fecha (o a los dos días, si la nota no dice cuándo es).
 
 ## Buses en formato GTFS
 
@@ -450,9 +454,13 @@ fecha de generación, así que solo cambian cuando cambia la fuente.
 
 El workflow [`actualizar-datos.yml`](.github/workflows/actualizar-datos.yml) lo hace solo en GitHub:
 
-- **Todos los días a las 06:00** de Cuenca revisa las fuentes que cambian seguido: `recoleccion`, `luz`,
+- **Todos los días de madrugada** (03:17 de Cuenca) revisa las fuentes que cambian seguido: `recoleccion`, `luz`,
   `farmacias`, `tranvia` y `agua`.
-- **Los lunes a las 06:30** revisa todas y publica aunque no haya cambios, para que conste la revisión.
+- **Todas las tardes** (17:43) vuelve a buscar avisos de cortes de agua: ETAPA suele anunciarlos a esa hora
+  para la mañana siguiente.
+- **Los lunes a las 03:47** revisa todas y publica aunque no haya cambios, para que conste la revisión.
+- Las horas no caen en punto a propósito: GitHub retrasa las tareas programadas, y a las horas en punto es
+  cuando más (con las 06:00 en punto arrancaba entre seis y diez horas tarde).
 - Antes de publicar pasa todas las pruebas con los datos nuevos. Si alguna falla, no publica nada.
 - Con los datos nuevos rehace las páginas simples de `web/info/` y el mapa del sitio.
 - Publica en `main` solo si algún archivo de datos cambió o si una fuente empezó a fallar o se recuperó. Eso lo

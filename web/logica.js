@@ -434,6 +434,25 @@ export function cortesAgua(datos, fecha = new Date()) {
 }
 
 /**
+ * Los avisos de corte de agua que se muestran sin esperar a que alguien los revise
+ * (datos/agua/avisos.json): citan a ETAPA, nadie los ha confirmado ni descartado
+ * (datos/manual/agua.json) y su corte no ha pasado. La fecha y el horario se leen de la nota
+ * automáticamente; si no hay fecha, el aviso vale hasta dos días después de publicarse.
+ */
+export function avisosAguaPorConfirmar(avisos, confirmados, fecha = new Date()) {
+  const { fecha: hoy, minutos } = horaCuenca(fecha);
+  const limite = horaCuenca(new Date(fecha.getTime() - 2 * 86_400_000)).fecha;
+  const revisados = new Set([
+    ...(confirmados?.cortes ?? []).map((c) => c.fuente?.url),
+    ...(confirmados?.descartados ?? []).map((d) => d.enlace),
+  ]);
+  return (avisos?.avisos ?? [])
+    .filter((a) => a.menciona_etapa && a.enlace && !revisados.has(a.enlace))
+    .filter((a) => (a.fecha ? a.fecha > hoy || (a.fecha === hoy && (!a.hasta || minutos < aMinutos(a.hasta))) : (a.publicado ?? "") >= limite))
+    .sort((a, b) => (a.fecha ?? a.publicado ?? "").localeCompare(b.fecha ?? b.publicado ?? ""));
+}
+
+/**
  * El próximo día de descanso (datos/manual/feriados.json) desde hoy, en hora de Cuenca,
  * si cae dentro de los próximos `maximoDias`. Devuelve { dia, hasta, faltan } (faltan = 0 si es
  * hoy) o null. Los días seguidos con el mismo nombre (Carnaval) se cuentan como uno.

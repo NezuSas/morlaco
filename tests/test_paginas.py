@@ -103,3 +103,27 @@ def test_cada_zona_tiene_su_imagen_para_compartir():
         for sufijo in ("", "-en"):
             imagen = raiz / f"web/info/img/zona-{zona['properties']['zona']}{sufijo}.png"
             assert imagen.exists(), imagen
+
+
+def test_cortes_de_agua_por_confirmar_se_muestran_como_tales(tmp_path):
+    datos = _datos(tmp_path)
+    aviso = {
+        "publicado": "2026-11-09",
+        "titulo": "Suspensión de agua potable este miércoles en Totoracocha",
+        "enlace": "https://elmercurio.com.ec/cuenca/nota/",
+        "resumen": "ETAPA EP suspenderá el servicio.",
+        "menciona_etapa": True,
+        "fecha": "2026-11-11",
+        "desde": "09:00",
+        "hasta": "18:00",
+    }
+    (datos / "agua").mkdir(exist_ok=True)
+    (datos / "agua" / "avisos.json").write_text(json.dumps({"avisos": [aviso]}), encoding="utf-8")
+    es = paginas.generar(datos, date(2026, 11, 10))["info/cortes-de-agua.html"]
+    assert "Posibles cortes, por confirmar" in es
+    assert "miércoles 11 de noviembre, de 09:00 a 18:00" in es
+    assert 'href="https://elmercurio.com.ec/cuenca/nota/"' in es
+    assert "No hay cortes de agua anunciados" not in es
+    # Pasada su fecha deja de mostrarse y vuelve el mensaje de siempre.
+    despues = paginas.generar(datos, date(2026, 11, 12))["info/cortes-de-agua.html"]
+    assert "por confirmar" not in despues and "No hay cortes de agua anunciados" in despues

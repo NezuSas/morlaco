@@ -8,6 +8,7 @@ import {
   horaLegible,
   nombreParada,
   cercanosPorTipo,
+  avisosAguaPorConfirmar,
   cortesAgua,
   enlaceCorreoAviso,
   enlaceReporteDireccion,
@@ -426,4 +427,26 @@ test("horaDentroDe: la hora de Cuenca a la que llega algo, redondeada a cinco mi
   assert.equal(horaDentroDe(62, madrugada), "01:40");
   // Pasa de medianoche sin salirse del día.
   assert.equal(horaDentroDe(90, new Date("2026-11-21T23:10:00-05:00")), "00:40");
+});
+
+test("avisosAguaPorConfirmar: los de ETAPA sin revisar, hasta que pasa su corte", () => {
+  const aviso = (enlace, mas) => ({ enlace, menciona_etapa: true, publicado: "2026-11-19", ...mas });
+  const avisos = {
+    avisos: [
+      aviso("manana", { fecha: "2026-11-21", desde: "08:00", hasta: "12:00" }),
+      aviso("hoy", { fecha: "2026-11-20", desde: "09:00", hasta: "18:00" }),
+      aviso("ayer", { fecha: "2026-11-19", desde: "09:00", hasta: "18:00" }),
+      aviso("sin-fecha", { fecha: null }),
+      aviso("sin-fecha-viejo", { fecha: null, publicado: "2026-11-15" }),
+      aviso("confirmado", { fecha: "2026-11-21" }),
+      aviso("descartado", { fecha: "2026-11-21" }),
+      { enlace: "sin-etapa", menciona_etapa: false, publicado: "2026-11-19", fecha: "2026-11-21" },
+    ],
+  };
+  const confirmados = { cortes: [{ fuente: { url: "confirmado" } }], descartados: [{ enlace: "descartado" }] };
+  const enlaces = (cuando) => avisosAguaPorConfirmar(avisos, confirmados, new Date(cuando)).map((a) => a.enlace);
+  assert.deepEqual(enlaces("2026-11-20T10:00:00-05:00"), ["sin-fecha", "hoy", "manana"]);
+  // Pasada la hora de fin, el de hoy ya no se muestra.
+  assert.deepEqual(enlaces("2026-11-20T18:30:00-05:00"), ["sin-fecha", "manana"]);
+  assert.deepEqual(avisosAguaPorConfirmar(null, null), []);
 });

@@ -8,6 +8,7 @@ import {
   nombreParada,
   CORREO_AVISOS,
   cercanosPorTipo,
+  avisosAguaPorConfirmar,
   cortesAgua,
   enlaceCorreoAviso,
   enlaceReporteDireccion,
@@ -457,8 +458,40 @@ function pintarCerca(punto, coleccion) {
   nota.textContent = [t("cercaNota"), fechas.length ? t("cercaFechas", { lista: listar(fechas) }) : null].filter(Boolean).join(" ");
 }
 
-/** Los cortes de agua confirmados de hoy y de los próximos días, con su fuente. */
-function pintarAgua(datos) {
+/** Cuándo es el corte de un aviso por confirmar, con lo que se haya podido leer de la nota. */
+function cuandoAviso(aviso) {
+  if (aviso.fecha && aviso.desde && aviso.hasta) return t("aguaHorario", { dia: fechaDia(aviso.fecha), desde: aviso.desde, hasta: horaLegible(aviso.hasta) });
+  if (aviso.fecha) return fechaDia(aviso.fecha);
+  return t("aguaPublicado", { dia: fechaDia(aviso.publicado) });
+}
+
+/** Los avisos que citan a ETAPA y nadie ha revisado: se muestran, pero diciendo que falta confirmarlos. */
+function bloquePorConfirmar(posibles) {
+  return [
+    elemento("p", { class: "luz-resumen" }, t("aguaPosibleTitulo", { n: posibles.length })),
+    elemento(
+      "ul",
+      { class: "cortes" },
+      ...posibles.map((a) =>
+        elemento(
+          "li",
+          {},
+          elemento("span", { class: "horario" }, cuandoAviso(a)),
+          a.titulo,
+          a.resumen ? elemento("span", { class: "frecuencia" }, a.resumen) : null,
+          elemento("span", { class: "frecuencia" }, elemento("a", { href: a.enlace, target: "_blank", rel: "noopener" }, t("aguaLeerNota"))),
+        ),
+      ),
+    ),
+    elemento("p", { class: "aviso" }, t("aguaPosibleNota")),
+  ];
+}
+
+/**
+ * Los cortes de agua confirmados de hoy y de los próximos días, con su fuente, y debajo los
+ * avisos de la prensa que aún nadie revisó. Devuelve los confirmados.
+ */
+function pintarAgua(datos, posibles = []) {
   const caja = $("agua-estado");
   const enlaceEtapa = () => elemento("a", { href: "https://www.etapa.net.ec/", target: "_blank", rel: "noopener" }, "ETAPA EP");
   if (!datos) {
@@ -466,6 +499,10 @@ function pintarAgua(datos) {
     return [];
   }
   const cortes = cortesAgua(datos);
+  if (!cortes.length && posibles.length) {
+    caja.replaceChildren(...bloquePorConfirmar(posibles), elemento("p", { class: "detalle" }, t("aguaSinCortesNota")));
+    return [];
+  }
   if (!cortes.length) {
     caja.replaceChildren(
       elemento("p", { class: "luz-resumen" }, t("aguaSinCortes")),
@@ -501,6 +538,7 @@ function pintarAgua(datos) {
       }),
     ),
     elemento("p", { class: "detalle" }, t("aguaNota")),
+    ...(posibles.length ? bloquePorConfirmar(posibles) : []),
   );
   return cortes;
 }
@@ -1071,12 +1109,18 @@ function tiempoQueFalta(minutos) {
   return t("duracion", { h: Math.floor(minutos / 60), m: minutos % 60 });
 }
 
+/** El primer aviso por confirmar que es de hoy o de mañana (o que no dice cuándo). */
+function avisoCercano(posibles) {
+  const manana = horaCuenca(new Date(Date.now() + 86_400_000)).fecha;
+  return posibles.find((a) => !a.fecha || a.fecha <= manana) ?? null;
+}
+
 /**
  * "Hoy en Cuenca", en la portada: un par de frases sobre el día, antes de buscar una calle. El
  * recolector se dice con el color de las zonas en el mapa (nadie sabe de memoria su número de
  * zona); de lo demás, solo lo que hay: farmacias de turno y, si existen, cortes de luz o de agua.
  */
-function pintarHoyEnCuenca({ zonas, suspensiones, turnos, agua, diasFeriado }) {
+function pintarHoyEnCuenca({ zonas, suspensiones, turnos, agua, avisosAgua, diasFeriado }) {
   const fecha = new Intl.DateTimeFormat(etiquetaIdioma(), { weekday: "long", day: "numeric", month: "long", timeZone: "America/Guayaquil" }).format(new Date());
   const feriado = proximoFeriado(diasFeriado, new Date(), 7);
   let nota = "";
@@ -1102,6 +1146,8 @@ function pintarHoyEnCuenca({ zonas, suspensiones, turnos, agua, diasFeriado }) {
   const corte = agua ? cortesAgua(agua)[0] : null;
   if (corte && corte.fecha <= horaCuenca(new Date(Date.now() + 86_400_000)).fecha) {
     frases.push(elemento("a", { href: "info/cortes-de-agua.html" }, t("hoyAgua")));
+  } else if (avisoCercano(avisosAguaPorConfirmar(avisosAgua, agua))) {
+    frases.push(elemento("a", { href: "info/cortes-de-agua.html" }, t("hoyAguaPosible")));
   }
   // El aire llega aparte (se pide a la EMOV): su frase se conserva al repintar.
   const aire = $("hoy-otros").querySelector(".hoy-aire");
@@ -1885,7 +1931,7 @@ async function iniciar() {
     mensaje(t("errorDatos"), true);
     return;
   }
-  const [suspensiones, paradas, estado, lineas, rutas, bicicletas, turnosFarmacias, transporte, estacionesTranvia, basura, agua, cerca, diasFeriado] = await Promise.all(
+  const [suspensiones, paradas, estado, lineas, rutas, bicicletas, turnosFarmacias, transporte, estacionesTranvia, basura, agua, cerca, diasFeriado, avisosAgua] = await Promise.all(
     [
       "luz/suspensiones.json",
       "buses/paradas.geojson",
@@ -1900,6 +1946,7 @@ async function iniciar() {
       "manual/agua.json",
       "ciudad/cerca.geojson",
       "manual/feriados.json",
+      "agua/avisos.json",
     ].map((r) =>
       cargarJson(r).catch(() => null),
     ),
@@ -2043,7 +2090,9 @@ async function iniciar() {
       if (puntoActual === punto) mapa.mostrarFarmacias(lista);
     }, (farmacia) => mapa.verFarmacia(farmacia));
     // Un corte de agua de hoy o de mañana sale también en el resumen.
-    const proximo = pintarAgua(agua)[0];
+    const posibles = avisosAguaPorConfirmar(avisosAgua, agua);
+    const proximo = pintarAgua(agua, posibles)[0];
+    const posible = avisoCercano(posibles);
     $("resumen").querySelector(".ficha-agua")?.remove();
     if (proximo && proximo.fecha <= horaCuenca(new Date(Date.now() + 86_400_000)).fecha) {
       const texto = proximo[idioma()] ?? proximo.es;
@@ -2053,6 +2102,11 @@ async function iniciar() {
         texto.sectores,
         { aviso: true },
       );
+      li.classList.add("ficha-agua");
+      $("resumen").append(li);
+    } else if (posible) {
+      // Un corte que la prensa anunció y nadie ha revisado: se avisa, diciendo que falta confirmarlo.
+      const { li } = ficha("agua", t("aguaPosibleFicha"), enMayuscula(cuandoAviso(posible)), { estado: "atencion" });
       li.classList.add("ficha-agua");
       $("resumen").append(li);
     }
@@ -2076,7 +2130,7 @@ async function iniciar() {
   colocarMapa();
   // La portada, viva: lo de hoy en la ciudad, al día cada minuto (el recolector avanza de zona).
   zonasDeCuenca = zonas;
-  const hoyEnCuenca = () => pintarHoyEnCuenca({ zonas, suspensiones, turnos: turnosFarmacias, agua, diasFeriado });
+  const hoyEnCuenca = () => pintarHoyEnCuenca({ zonas, suspensiones, turnos: turnosFarmacias, agua, avisosAgua, diasFeriado });
   hoyEnCuenca();
   setInterval(() => !document.hidden && hoyEnCuenca(), 60_000);
   actualizarAire();

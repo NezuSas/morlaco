@@ -116,9 +116,11 @@ EN: dict[str, dict[str, Any]] = {
     },
     "agua-avisos": {
         "titulo": "Water cut notices to confirm",
-        "descripcion": "Press articles from the last three weeks whose headline announces a water cut. Not reviewed: to show cuts, use manual/agua.json.",
+        "descripcion": "Press articles from the last three weeks whose headline announces a water cut. Not reviewed: the site shows the ones that quote ETAPA as 'to be confirmed'; reviewed cuts are in manual/agua.json.",
         "frecuencia": "daily",
-        "campos": {"avisos[]": "published, title, link, summary and whether it mentions ETAPA"},
+        "campos": {
+            "avisos[]": "published, title, link, summary, whether it mentions ETAPA and, when the article states them, date and hours of the cut (fecha, desde, hasta; null otherwise)"
+        },
     },
     "farmacias-turnos": {
         "titulo": "On-duty pharmacies",
@@ -372,8 +374,12 @@ CONJUNTOS: list[dict[str, Any]] = [
         "tema": "agua",
         "titulo": "Avisos de cortes de agua por confirmar",
         "descripcion": "Notas de prensa de las últimas tres semanas cuyo título anuncia un corte de agua. "
-        "Sin revisar: para mostrar cortes, usa manual/agua.json.",
-        "campos": {"avisos[]": "publicado, titulo, enlace, resumen y menciona_etapa"},
+        "Sin revisar: la página muestra como «por confirmar» las que citan a ETAPA; los cortes "
+        "revisados están en manual/agua.json.",
+        "campos": {
+            "avisos[]": "publicado, titulo, enlace, resumen, menciona_etapa y, si la nota los dice, "
+            "fecha, desde y hasta del corte (null si no)"
+        },
         "fuente_morlaco": "agua",
         "frecuencia": "diaria",
         "fuente": "El Mercurio",

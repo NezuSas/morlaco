@@ -83,3 +83,53 @@ def test_pendientes_quita_los_confirmados_y_los_descartados():
     }
     assert agua.pendientes(avisos, confirmados) == [{"enlace": "c"}]
     assert agua.pendientes({}, {}) == []
+
+
+def test_cuando_lee_el_dia_y_el_horario_de_la_nota():
+    nota = (
+        "ETAPA EP suspenderá el servicio de agua potable este viernes 20 de noviembre de 2026, "
+        "entre las 09:00 y las 18:00, por trabajos de interconexión de una nueva tubería."
+    )
+    assert agua.cuando(nota, "2026-11-19") == {
+        "fecha": "2026-11-20",
+        "desde": "09:00",
+        "hasta": "18:00",
+    }
+    # Sin fecha escrita vale el "este martes" siguiente a la nota; el horario con "h".
+    turi = "El sector de Turi no tendrá agua este martes, de 08h00 a 16h30."
+    assert agua.cuando(turi, "2026-10-12") == {
+        "fecha": "2026-10-13",
+        "desde": "08:00",
+        "hasta": "16:30",
+    }
+    # Una fecha lejana o pasada no es la del corte; sin nada que leer, todo queda en None.
+    assert agua.cuando("La obra empezó el 3 de marzo de 2025.", "2026-11-19")["fecha"] is None
+    assert agua.cuando("ETAPA anunció un corte.", "2026-11-19") == {
+        "fecha": None,
+        "desde": None,
+        "hasta": None,
+    }
+    # A fin de año, "2 de enero" es del año siguiente.
+    assert agua.cuando("Corte el 2 de enero.", "2026-12-30")["fecha"] == "2027-01-02"
+
+
+def test_por_confirmar_solo_los_de_etapa_pendientes_y_vigentes():
+    aviso = lambda enlace, **mas: {"enlace": enlace, "menciona_etapa": True, **mas}  # noqa: E731
+    avisos = {
+        "avisos": [
+            aviso("manana", publicado="2026-11-19", fecha="2026-11-21"),
+            aviso("hoy", publicado="2026-11-19", fecha="2026-11-20"),
+            aviso("ayer", publicado="2026-11-18", fecha="2026-11-19"),
+            aviso("sin-fecha-nuevo", publicado="2026-11-19", fecha=None),
+            aviso("sin-fecha-viejo", publicado="2026-11-15", fecha=None),
+            aviso("confirmado", publicado="2026-11-19", fecha="2026-11-21"),
+            aviso("descartado", publicado="2026-11-19", fecha="2026-11-21"),
+            {"enlace": "otro", "menciona_etapa": False, "publicado": "2026-11-19", "fecha": None},
+        ]
+    }
+    confirmados = {
+        "cortes": [{"fuente": {"url": "confirmado"}}],
+        "descartados": [{"enlace": "descartado"}],
+    }
+    vigentes = agua.por_confirmar(avisos, confirmados, date(2026, 11, 20))
+    assert [a["enlace"] for a in vigentes] == ["sin-fecha-nuevo", "hoy", "manana"]

@@ -4,8 +4,10 @@ ETAPA EP no publica sus cortes en un formato legible: la sección de su web est�
 abandonada desde febrero de 2025 y los anuncia en redes sociales. El Mercurio sí
 publica cada aviso, con sectores, fecha y horario, y su web tiene una API pública
 (WordPress). Aquí se buscan las notas recientes cuyo título habla de un corte de
-agua y se guardan como avisos *por confirmar*: no se muestran en la página hasta
-que una persona lee la nota y copia el corte a datos/manual/agua.json.
+agua y se guardan como avisos *por confirmar*. La página muestra enseguida los que
+citan a ETAPA, marcados "por confirmar" y con el enlace a la nota (un corte anunciado
+por la tarde para la mañana siguiente no puede esperar a que alguien lo lea); cuando
+una persona lo revisa, lo copia a datos/manual/agua.json o lo descarta.
 """
 
 from __future__ import annotations
@@ -18,7 +20,7 @@ from typing import Any
 from urllib.parse import urlencode
 
 from morlaco import red
-from morlaco.comun import Resultado, decodificar, sin_tildes
+from morlaco.comun import DIAS_SEMANA, MESES, Resultado, decodificar, sin_tildes
 
 API = "https://elmercurio.com.ec/wp-json/wp/v2/posts"
 DIAS = 21
@@ -34,6 +36,12 @@ _CORTE = re.compile(
 _OTRO_CANTON = re.compile(
     r"\b(azogues|gualaceo|paute|giron|sigsig|biblian|canar|loja|quito|guayaquil)\b"
 )
+# "20 de noviembre de 2026", "este viernes" y "entre las 09:00 y las 18:00" (o "de 08h00 a 16h00").
+_FECHA = re.compile(rf"\b(\d{{1,2}}) de ({'|'.join(MESES)})(?: del? (\d{{4}}))?\b")
+_ESTE_DIA = re.compile(rf"\beste ({'|'.join(DIAS_SEMANA)})\b")
+_FRANJA = re.compile(r"\b(\d{1,2})[:h](\d{2})\D{1,20}?(\d{1,2})[:h](\d{2})\b")
+# Un corte se anuncia con pocos días: una fecha más lejana es de otra cosa (una obra, un plazo).
+_MAXIMO_DIAS = 14
 
 
 def texto(fragmento: str) -> str:
@@ -59,6 +67,42 @@ def es_aviso_de_corte(titulo: str, contenido: str = "") -> bool:
     return "etapa" in resto or "cuenca" in resto or "cuenca" in t
 
 
+def cuando(cuerpo: str, publicado: str) -> dict[str, str | None]:
+    """El día y el horario del corte según la nota, o None en lo que no se pueda leer.
+
+    Se toma la primera fecha escrita ("20 de noviembre") que caiga entre el día de la nota y
+    dos semanas después; si no hay, el "este viernes" siguiente a la nota. El horario es la
+    primera franja ("entre las 09:00 y las 18:00"). Es una lectura automática: sirve para
+    saber hasta cuándo mostrar el aviso, y la página la presenta como "por confirmar".
+    """
+    plano = sin_tildes(cuerpo.lower())
+    try:
+        dia_nota = date.fromisoformat(publicado)
+    except ValueError:
+        return {"fecha": None, "desde": None, "hasta": None}
+    fecha = None
+    for dia, mes, anio in _FECHA.findall(plano):
+        for a in [int(anio)] if anio else [dia_nota.year, dia_nota.year + 1]:
+            try:
+                candidata = date(a, MESES[mes], int(dia))
+            except ValueError:
+                continue
+            if 0 <= (candidata - dia_nota).days <= _MAXIMO_DIAS:
+                fecha = candidata
+                break
+        if fecha:
+            break
+    if not fecha and (este := _ESTE_DIA.search(plano)):
+        fecha = dia_nota + timedelta(days=(DIAS_SEMANA[este.group(1)] - dia_nota.isoweekday()) % 7)
+    desde = hasta = None
+    for h1, m1, h2, m2 in _FRANJA.findall(plano):
+        a, b = f"{int(h1):02d}:{m1}", f"{int(h2):02d}:{m2}"
+        if int(h1) < 24 and int(h2) <= 24 and int(m1) < 60 and int(m2) < 60 and a < b:
+            desde, hasta = a, b
+            break
+    return {"fecha": fecha.isoformat() if fecha else None, "desde": desde, "hasta": hasta}
+
+
 def parsear_notas(contenido: bytes) -> list[dict[str, Any]]:
     """Los avisos de corte de agua de una página de la API, del más nuevo al más viejo."""
     avisos = []
@@ -67,13 +111,15 @@ def parsear_notas(contenido: bytes) -> list[dict[str, Any]]:
         cuerpo = texto(nota.get("content", {}).get("rendered", ""))
         if not es_aviso_de_corte(titulo, cuerpo):
             continue
+        publicado = str(nota.get("date", ""))[:10]
         avisos.append(
             {
-                "publicado": str(nota.get("date", ""))[:10],
+                "publicado": publicado,
                 "titulo": titulo,
                 "enlace": nota.get("link"),
                 "resumen": texto(nota.get("excerpt", {}).get("rendered", ""))[:400],
                 "menciona_etapa": "etapa" in sin_tildes(cuerpo.lower()),
+                **cuando(cuerpo, publicado),
             }
         )
     return sorted(avisos, key=lambda a: a["publicado"], reverse=True)
@@ -84,6 +130,21 @@ def pendientes(avisos: dict[str, Any], confirmados: dict[str, Any]) -> list[dict
     revisados = {c.get("fuente", {}).get("url") for c in confirmados.get("cortes", [])}
     revisados |= {d.get("enlace") for d in confirmados.get("descartados", [])}
     return [a for a in avisos.get("avisos", []) if a.get("enlace") not in revisados]
+
+
+def por_confirmar(
+    avisos: dict[str, Any], confirmados: dict[str, Any], hoy: date
+) -> list[dict[str, Any]]:
+    """Los avisos que la página muestra sin esperar a nadie: citan a ETAPA, siguen pendientes
+    y su corte no ha pasado. Sin fecha leída, valen hasta dos días después de publicarse."""
+    limite = (hoy - timedelta(days=2)).isoformat()
+    vigentes = [
+        a
+        for a in pendientes(avisos, confirmados)
+        if a.get("menciona_etapa")
+        and (a["fecha"] >= hoy.isoformat() if a.get("fecha") else a.get("publicado", "") >= limite)
+    ]
+    return sorted(vigentes, key=lambda a: (a.get("fecha") or a.get("publicado", ""), a["enlace"]))
 
 
 def url_busqueda(desde: date, busqueda: str = "corte agua") -> str:
@@ -112,8 +173,10 @@ def obtener(descargar: red.Descargador = red.descargar, hoy: date | None = None)
             "pagina": "https://elmercurio.com.ec/cuenca/",
             "datos": API,
             "desde": desde.isoformat(),
-            "nota": "Notas cuyo título anuncia un corte de agua. No se muestran en la página: "
-            "una persona las lee y copia los cortes confirmados a datos/manual/agua.json.",
+            "nota": "Notas cuyo título anuncia un corte de agua. Las que citan a ETAPA se "
+            "muestran en la página como 'por confirmar' hasta que pasa su fecha; una persona las "
+            "lee y copia los cortes confirmados a datos/manual/agua.json o las descarta. La fecha "
+            "y el horario se leen de la nota automáticamente y pueden faltar.",
         },
         "avisos": avisos,
     }
