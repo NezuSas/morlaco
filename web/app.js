@@ -1718,9 +1718,13 @@ function pintarAire(estacion, { uv = null, clima = null, lluvia = null } = {}) {
   ponerFrase("sol", uv && uv.nivel >= 3 ? t("fraseSol", { nivel: nivelUv.toLowerCase(), valor: uv.valor }) : null);
   const gravedad = Math.max(gravedadAire, gravedadUv);
   const estado = gravedad === 1 ? "ok" : gravedad === 2 ? "atencion" : gravedad >= 3 ? "alerta" : null;
-  const { li } = ficha("aire", valorFicha, detalleFicha, { aviso: gravedad >= 3, estado });
-  li.classList.add("ficha-aire");
-  $("resumen").append(li);
+  // Solo con la lluvia (la EMOV sin responder) no hay nada que poner en la ficha: la lluvia ya
+  // va en la frase del día y en su sección. Una ficha vacía parecía un error.
+  if (estacion || uv || clima) {
+    const { li } = ficha("aire", valorFicha, detalleFicha, { aviso: gravedad >= 3, estado });
+    li.classList.add("ficha-aire");
+    $("resumen").append(li);
+  }
 
   const bloquesSol = [];
   if (lluvia) {

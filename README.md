@@ -14,11 +14,11 @@
 
 <p align="center">
   <a href="https://nezusas.github.io/morlaco/web/">
-    <img src="docs/imagenes/busqueda.gif" alt="Un recorrido por Morlaco: se escribe «Calle Larga y Her», se elige «Hermano Miguel» y aparece el resumen de hoy en fichas; en el mapa se prenden el tranvía, la BiciPública y las ciclovías; se pide una ruta al Mall del Río, que se dibuja con sus paradas; y se abre la línea 24, con sus buses avanzando por el recorrido" width="880">
+    <img src="docs/imagenes/recorrido.webp" alt="Un recorrido por Morlaco en siete escenas, dentro de una ventana de navegador: se escribe «Sucre y Borrero»; el resumen dice lo de hoy en una frase, con tu línea de bus arriba; el mapa marca los mercados, el hospital con emergencias y el centro de salud cercanos; cada línea dice cuándo pasa su próximo bus; el tranvía avanza por sus rieles; se pide una ruta al Mall del Río; y la pestaña Cerca muestra el botón del 911 y el hospital más cercano" width="880">
   </a>
 </p>
 
-<p align="center"><sub>Un recorrido de un minuto: buscar una esquina, prender las capas del mapa, pedir una ruta en bus y ver una línea con sus buses. Los buses se mueven más rápido que en la página, donde van a su velocidad real.</sub></p>
+<p align="center"><sub>Siete escenas en medio minuto. Los buses y tranvías se mueven más rápido que en la página, donde van a su velocidad real (estimada con su frecuencia: en Cuenca no hay GPS público de los buses).</sub></p>
 
 Morlaco es una página web gratuita para quien vive en Cuenca. Escribes tu esquina y te dice, en una sola
 pantalla, lo que hoy hay que buscar en seis sitios distintos: cuándo pasa el recolector, si te van a cortar
