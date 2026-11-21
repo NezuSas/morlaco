@@ -166,7 +166,7 @@ function pintarBici(estacion) {
     estacion.capacidad ? t("bicicletaAnclajes", { n: estacion.capacidad }) : null,
   ]
     .filter(Boolean)
-    .join(" · ");
+    .join(", ");
   caja.replaceChildren(
     elemento("span", { class: "marca-capa bici", "aria-hidden": "true" }),
     elemento("span", {}, elemento("strong", {}, estacion.nombre), elemento("span", { class: "frecuencia" }, detalle)),
@@ -222,8 +222,9 @@ function pintarBasura(zona, rural) {
     semana.append(
       elemento(
         "li",
-        { class: clases.filter(Boolean).join(" "), "aria-label": descripcion, title: descripcion },
+        { class: clases.filter(Boolean).join(" ") },
         elemento("span", { "aria-hidden": "true" }, iniciales[dia - 1]),
+        elemento("span", { class: "oculto-accesible" }, descripcion),
       ),
     );
   }
@@ -386,9 +387,15 @@ function pintarBasuraManual(basura, diasFeriado) {
         ? fechaDia(proximo.dia.fecha)
         : t("feriadoVariosDias", { desde: fechaDia(proximo.dia.fecha), hasta: fechaDia(proximo.hasta) });
     const clave = proximo.faltan === 0 ? "feriadoHoy" : proximo.faltan === 1 ? "feriadoManana" : "feriadoProximo";
-    aviso.append(elemento("strong", {}, t(clave, { fecha, nombre })), " ");
+    // Lo que importa va primero y en negrita: que el recolector pasa igual (la regla de EMAC).
+    const regla = vigente ? (feriados[idioma()] ?? feriados.es) : "";
+    const corte = regla.indexOf(". ");
+    const [primera, resto] = corte > 0 ? [regla.slice(0, corte + 1), regla.slice(corte + 2)] : [regla, ""];
+    if (primera) aviso.append(elemento("strong", {}, primera), " ");
+    aviso.append(t(clave, { fecha, nombre }), resto ? ` ${resto}` : "");
+  } else if (vigente) {
+    aviso.append(feriados[idioma()] ?? feriados.es);
   }
-  if (vigente) aviso.append(feriados[idioma()] ?? feriados.es);
 
   const destinos = basura?.donde_llevar ?? [];
   const caja = $("donde-llevar");
@@ -660,6 +667,12 @@ async function pintarPasaPor(nodo, linea) {
   }
 }
 
+/** En el celular el mapa queda abajo: al elegir una ruta o una línea, se baja a verlo. */
+function verMapaEnCelular() {
+  if (!window.matchMedia("(max-width: 899px)").matches) return;
+  document.querySelector(".mapa-contenedor")?.scrollIntoView({ behavior: SIN_MOVIMIENTO ? "auto" : "smooth", block: "start" });
+}
+
 /** Tocar una línea la dibuja en el mapa y muestra por dónde pasa; tocarla otra vez lo quita. */
 function alTocarLinea(boton, botones, linea, mapa) {
   const activa = boton.getAttribute("aria-pressed") === "true";
@@ -680,6 +693,7 @@ function alTocarLinea(boton, botones, linea, mapa) {
   });
   if (linea.tipo === "tranvia") mapa.mostrarCapa("tranvia");
   pintarPasaPor(boton.nextElementSibling, linea);
+  verMapaEnCelular();
 }
 
 /** Las líneas que recorren una calle, cuando se busca la calle sola. */
@@ -813,59 +827,61 @@ function iconoServicio(servicio) {
   return icono(ICONO_SERVICIO[servicio]);
 }
 
-/** Una ficha del resumen; tocarla lleva a su sección. Devuelve el nodo del detalle para actualizarlo. */
-function ficha(servicio, valor, detalle, { aviso = false, ancha = false } = {}) {
+/**
+ * Una ficha del resumen; tocarla lleva a su sección. Con `estado` ("ok", "atencion" o
+ * "alerta") el valor va en una pastilla de su color; un aviso sin estado es una alerta.
+ * Devuelve el nodo del detalle para actualizarlo.
+ */
+function ficha(servicio, valor, detalle, { aviso = false, estado = null } = {}) {
   const nodoDetalle = elemento("span", { class: "ficha-detalle" }, detalle ?? "");
+  const tono = estado ?? (aviso ? "alerta" : null);
   const enlace = elemento(
     "a",
     { href: `#s-${servicio}`, class: `ficha servicio-${servicio}${aviso ? " con-aviso" : ""}` },
     elemento("span", { class: "ficha-cabecera" }, iconoServicio(servicio), elemento("span", {}, t(`nav${servicio[0].toUpperCase()}${servicio.slice(1)}`))),
-    elemento("strong", { class: "ficha-valor" }, valor),
+    elemento("strong", { class: tono ? `ficha-valor pastilla estado-${tono}` : "ficha-valor" }, valor),
     nodoDetalle,
   );
-  return { li: elemento("li", ancha ? { class: "ficha-ancha" } : {}, enlace), detalle: nodoDetalle };
+  return { li: elemento("li", {}, enlace), detalle: nodoDetalle };
 }
 
 /** Las cuatro fichas de "Hoy en tu calle". Devuelve cómo actualizar la de farmacias. */
 function pintarResumen({ zona, suspensiones, turnos, cercanas }) {
   const fichas = [];
 
-  // Sin datos de luz al día, la ficha de luz no aporta: se queda en una línea bajo
-  // el resumen y la de basura ocupa todo el ancho.
+  // La luz siempre tiene su ficha. Sin datos al día dice "Sin datos recientes": una nota
+  // gris con "no ha publicado cortes" se leía como "no hay cortes".
   const luz = suspensiones ? estadoLuz(suspensiones) : null;
-  let notaLuz = null;
-  if (!luz) notaLuz = t("resumenLuzNotaError");
-  else if (luz.cronograma) notaLuz = null;
-  else if (!luz.publicadoHoy && luz.diasSinPublicar !== null && luz.diasSinPublicar > 2) {
-    notaLuz = t("resumenLuzNota", { fecha: fechaLarga().format(new Date(luz.ultima)) });
-  }
+  const luzVieja = luz && !luz.cronograma && !luz.publicadoHoy && luz.diasSinPublicar !== null && luz.diasSinPublicar > 2;
 
   const p = zona?.properties;
+  const proxima = p ? proximaRecoleccion(p) : null;
   fichas.push(
     ficha(
       "basura",
-      p ? describirRecoleccion(proximaRecoleccion(p)) : t("fueraZonas"),
+      p ? describirRecoleccion(proxima) : t("fueraZonas"),
       p ? t("zonaRecoleccion", { zona: p.zona }) : "",
-      { ancha: Boolean(notaLuz) },
+      // Pasando ahora, en verde; hoy más tarde (hay que sacar la funda), en ámbar.
+      { estado: proxima?.estado === "ahora" ? "ok" : proxima?.estado === "hoy" ? "atencion" : null },
     ),
   );
 
-  if (!notaLuz) {
+  if (!luz) {
+    fichas.push(ficha("luz", t("sinDatos"), t("resumenLuzError"), { estado: "neutro" }));
+  } else if (luzVieja) {
+    const fecha = fechaLarga().format(new Date(luz.ultima));
+    fichas.push(ficha("luz", t("resumenLuzSinDatos"), t("resumenLuzDesde", { fecha }), { estado: "neutro" }));
+  } else {
     if (luz.cronograma) {
-      fichas.push(ficha("luz", t("resumenLuzCronograma"), fechaDia(luz.cronograma.fecha), { aviso: true }));
+      fichas.push(ficha("luz", t("resumenLuzCronograma"), fechaDia(luz.cronograma.fecha), { aviso: true, estado: "atencion" }));
     } else if (luz.publicadoHoy) {
-      fichas.push(ficha("luz", t("resumenLuzHoy", { n: luz.cortesHoy.length }), t("resumenLuzFuente"), { aviso: luz.cortesHoy.length > 0 }));
+      const hay = luz.cortesHoy.length > 0;
+      fichas.push(ficha("luz", t("resumenLuzHoy", { n: luz.cortesHoy.length }), t("resumenLuzFuente"), { aviso: hay, estado: hay ? "alerta" : "ok" }));
     } else {
-      fichas.push(ficha("luz", t("resumenLuzSinCortes"), t("resumenLuzFuente")));
+      fichas.push(ficha("luz", t("resumenLuzSinCortes"), t("resumenLuzFuente"), { estado: "ok" }));
     }
   }
-  const nota = $("resumen-nota");
-  nota.hidden = !notaLuz;
-  nota.replaceChildren(
-    ...(notaLuz
-      ? [iconoServicio("luz"), elemento("span", {}, notaLuz, " ", elemento("a", { href: "#s-luz" }, t("verDetalle")))]
-      : []),
-  );
+  $("resumen-nota").hidden = true;
 
   const turno = turnoActual(turnos?.turnos);
   let fichaFarmacias;
@@ -924,10 +940,13 @@ function pintarAire(estacion, { uv = null, clima = null } = {}) {
   // En el resumen: el aire y, al lado, el sol y la temperatura.
   const extras = [uv ? t("resumenUv", { valor: uv.valor, nivel: nivelUv.toLowerCase() }) : null, clima ? `${clima.temperatura} °C` : null]
     .filter(Boolean)
-    .join(" · ");
+    .join(", ");
   const valorFicha = estacion ? t("aireNiveles")[estacion.nivel - 1] : t("resumenUv", { valor: uv?.valor, nivel: nivelUv?.toLowerCase() ?? "" });
   const detalleFicha = estacion ? [t("resumenAire", { valor: estacion.valor, estacion: estacion.nombre }), extras].filter(Boolean).join(". ") : extras;
-  const { li } = ficha("aire", valorFicha, detalleFicha, { aviso: (estacion?.nivel ?? 0) >= 3 || (uv?.nivel ?? 0) >= 4 });
+  // Buena en verde, moderada en ámbar y de ahí para arriba en rojo (o el sol, si no hay aire).
+  const gravedad = estacion ? estacion.nivel : uv ? (uv.nivel <= 2 ? 1 : uv.nivel === 3 ? 2 : 3) : 0;
+  const estado = gravedad === 1 ? "ok" : gravedad === 2 ? "atencion" : gravedad >= 3 ? "alerta" : null;
+  const { li } = ficha("aire", valorFicha, detalleFicha, { aviso: (estacion?.nivel ?? 0) >= 3 || (uv?.nivel ?? 0) >= 4, estado });
   li.classList.add("ficha-aire");
   $("resumen").append(li);
 
@@ -1002,6 +1021,31 @@ function pintarAire(estacion, { uv = null, clima = null } = {}) {
   );
 }
 
+/** En la barra de secciones, marca la que se está viendo (aria-current). */
+function marcarSeccionVisible() {
+  const enlaces = [...document.querySelectorAll(".secciones a")];
+  const secciones = enlaces.map((a) => document.querySelector(a.getAttribute("href"))).filter(Boolean);
+  if (!("IntersectionObserver" in window) || !secciones.length) return;
+  const aLaVista = new Set();
+  const observador = new IntersectionObserver(
+    (entradas) => {
+      for (const e of entradas) {
+        if (e.isIntersecting) aLaVista.add(e.target.id);
+        else aLaVista.delete(e.target.id);
+      }
+      // La primera, en el orden de la página; ninguna si se está arriba, en el resumen.
+      const actual = secciones.find((s) => aLaVista.has(s.id))?.id;
+      for (const a of enlaces) {
+        if (actual && a.getAttribute("href") === `#${actual}`) a.setAttribute("aria-current", "true");
+        else a.removeAttribute("aria-current");
+      }
+    },
+    // La sección que cruza la franja media de la pantalla.
+    { rootMargin: "-40% 0px -55% 0px" },
+  );
+  secciones.forEach((s) => observador.observe(s));
+}
+
 /** Los enlaces a secciones se desplazan sin tocar la dirección (#lat,lon guarda el punto). */
 function irASeccion(evento) {
   const enlace = evento.target.closest('a[href^="#s-"]');
@@ -1065,6 +1109,27 @@ function piezaDeTramo(tramo, esUltimo) {
   );
 }
 
+let relojOpciones = 0;
+
+/** Cuándo pasa el primer bus de una opción, con las mismas cuentas que el panel del mapa. */
+function textoCuando(opcion, transporte) {
+  const buses = opcion.tramos.filter((tramo) => tramo.modo === "bus");
+  const primero = buses[0];
+  const minutosTranvia = frecuenciaTranvia(transporte?.tranvia);
+  const cuando = [];
+  if (opcion.fueraDeHorario) {
+    cuando.push(t("rutaFueraHorario"));
+  } else if (primero?.tipo === "tranvia") {
+    cuando.push(minutosTranvia ? t("rutaTranviaCada", { minutos: minutosTranvia }) : t("rutaTranviaHorario"));
+  } else if (primero) {
+    const faltan = primero.variante ? null : minutosAlProximo(primero.horario, primero.largo, primero.metrosSubida);
+    if (faltan !== null) cuando.push(faltan < 1.5 ? t("rutaProximoYa") : t("rutaProximo", { minutos: Math.round(faltan) }));
+    if (primero.horario?.intervalo_min) cuando.push(t("rutaCada", { minutos: primero.horario.intervalo_min }));
+  }
+  if (buses.length > 1) cuando.push(t("rutaTransbordo"));
+  return cuando.join(", ");
+}
+
 /**
  * Las opciones de "¿qué bus me lleva?". Cada una se resume en una línea que se lee de un
  * vistazo (a pie › bus › a pie), lo que la distingue de las otras y cuándo pasa el bus; los
@@ -1073,6 +1138,7 @@ function piezaDeTramo(tramo, esUltimo) {
 function pintarOpciones(opciones, destino, mapa, paradas, transporte) {
   const lista = $("ruta-opciones");
   const botones = [];
+  clearInterval(relojOpciones);
   lista.replaceChildren(
     ...opciones.map((opcion, i) => {
       const buses = opcion.tramos.filter((tramo) => tramo.modo === "bus");
@@ -1081,6 +1147,18 @@ function pintarOpciones(opciones, destino, mapa, paradas, transporte) {
         (tramo, j) => tramo.modo === "bus" || tramo.metros >= 30 || j === opcion.tramos.length - 1,
       );
       const tira = elemento("span", { class: "opcion-tira", "aria-hidden": "true" });
+      // Lo mismo que la tira, dicho con palabras para el lector de pantalla.
+      const tiraTexto = (buses.length ? visibles : [opcion.tramos[0]])
+        .map((tramo) =>
+          tramo.modo === "caminar"
+            ? t("rutaTiraPie", { distancia: formatoDistancia(tramo.metros) })
+            : tramo.tipo === "tranvia"
+              ? t("tranvia")
+              : tramo.variante
+                ? t("rutaTiraVariante", { linea: tramo.linea, lugar: tramo.variante })
+                : t("rutaTiraLinea", { linea: tramo.linea }),
+        )
+        .join(", ");
       visibles.forEach((tramo, j) => {
         if (j) tira.append(elemento("span", { class: "tira-flecha" }, "›"));
         tira.append(piezaDeTramo(tramo, j === visibles.length - 1 && visibles.length > 1));
@@ -1088,19 +1166,7 @@ function pintarOpciones(opciones, destino, mapa, paradas, transporte) {
       if (!buses.length) tira.replaceChildren(piezaDeTramo(opcion.tramos[0], false));
 
       // Cuándo pasa: del primer bus de la opción (estimado con su horario).
-      const primero = buses[0];
-      const minutosTranvia = frecuenciaTranvia(transporte?.tranvia);
-      const cuando = [];
-      if (opcion.fueraDeHorario) {
-        cuando.push(t("rutaFueraHorario"));
-      } else if (primero?.tipo === "tranvia") {
-        cuando.push(minutosTranvia ? t("rutaTranviaCada", { minutos: minutosTranvia }) : t("rutaTranviaHorario"));
-      } else if (primero) {
-        const faltan = primero.variante ? null : minutosAlProximo(primero.horario, primero.largo, primero.metrosSubida);
-        if (faltan !== null) cuando.push(faltan < 1.5 ? t("rutaProximoYa") : t("rutaProximo", { minutos: Math.round(faltan) }));
-        if (primero.horario?.intervalo_min) cuando.push(t("rutaCada", { minutos: primero.horario.intervalo_min }));
-      }
-      if (buses.length > 1) cuando.push(t("rutaTransbordo"));
+      const cuando = textoCuando(opcion, transporte);
 
       // Lo que la distingue de las otras opciones.
       const ultimo = opcion.tramos.at(-1);
@@ -1118,9 +1184,10 @@ function pintarOpciones(opciones, destino, mapa, paradas, transporte) {
           { class: "opcion-cabecera" },
           elemento("strong", { class: "opcion-minutos" }, t("rutaMinutos", { n: opcion.minutos })),
           tira,
+          elemento("span", { class: "oculto-accesible" }, tiraTexto),
           pasaje !== null ? elemento("span", { class: "opcion-pasaje" }, dolares(pasaje)) : null,
         ),
-        cuando.length ? elemento("span", { class: "opcion-cuando" }, cuando.join(" · ")) : null,
+        cuando ? elemento("span", { class: "opcion-cuando" }, cuando) : null,
         etiquetas.length
           ? elemento(
               "span",
@@ -1128,12 +1195,18 @@ function pintarOpciones(opciones, destino, mapa, paradas, transporte) {
               ...etiquetas.map(([clase, texto]) => elemento("span", { class: `etiqueta-opcion ${clase}` }, texto)),
             )
           : null,
-        elemento("ol", { class: "opcion-pasos" }, ...pasosDeOpcion(opcion, paradas).map((paso) => elemento("li", {}, paso))),
+        // Spans y no <ol>: un botón solo admite contenido de frase.
+        elemento(
+          "span",
+          { class: "opcion-pasos", role: "list" },
+          ...pasosDeOpcion(opcion, paradas).map((paso) => elemento("span", { role: "listitem" }, paso)),
+        ),
       );
       boton.addEventListener("click", () => {
         for (const b of botones) b.setAttribute("aria-pressed", "false");
         boton.setAttribute("aria-pressed", "true");
         mapa.dibujarRuta(opcion, destino);
+        verMapaEnCelular();
       });
       botones.push(boton);
       return elemento("li", {}, boton);
@@ -1141,6 +1214,19 @@ function pintarOpciones(opciones, destino, mapa, paradas, transporte) {
   );
   $("ruta-nota").hidden = !opciones.length;
   if (opciones.length) mapa.dibujarRuta(opciones[0], destino);
+  // Los minutos al próximo bus se ponen al día, igual que el panel del mapa.
+  relojOpciones = setInterval(() => {
+    if (!botones[0]?.isConnected) {
+      clearInterval(relojOpciones); // otra búsqueda o otro punto: estas tarjetas ya no están
+      return;
+    }
+    if (document.hidden) return;
+    botones.forEach((boton, i) => {
+      const nodo = boton.querySelector(".opcion-cuando");
+      const texto = textoCuando(opciones[i], transporte);
+      if (nodo && nodo.textContent !== texto) nodo.textContent = texto;
+    });
+  }, 15_000);
 }
 
 /** El pasaje vigente, bajo el buscador de rutas. */
@@ -1543,6 +1629,9 @@ async function iniciar() {
       nombreActual ?? t("puntoGuardado"),
     );
     $("punto-zona").textContent = z ? t("zonaRecoleccion", { zona: z }) : t("fueraZonas");
+    // El punto de la zona, azul o verde como su zona en el mapa y en la leyenda.
+    const lmv = zonaActual?.properties.dias_iso.includes(1);
+    $("punto-zona").style.setProperty("--color-zona", z ? (lmv ? "var(--cupula)" : "var(--tomebamba)") : "var(--oro-grafico)");
     for (const boton of document.querySelectorAll(".lugar-boton")) {
       boton.setAttribute("aria-pressed", String(boton.dataset.lugar === clave));
     }
@@ -1754,6 +1843,7 @@ async function iniciar() {
 
   // Navegación por secciones y fichas del resumen.
   $("respuesta").addEventListener("click", irASeccion);
+  marcarSeccionVisible();
   $("cambiar-punto").addEventListener("click", () => {
     document.querySelector(".consulta").classList.add("cambiando");
     $("buscar").scrollIntoView({ behavior: SIN_MOVIMIENTO ? "auto" : "smooth", block: "center" });
@@ -1800,6 +1890,55 @@ async function iniciar() {
     if (!$("destino").value.trim()) borrar(CLAVE_DESTINO);
   });
 
+  /** La × de un campo: aparece cuando hay algo escrito y lo borra de un toque. */
+  const prepararLimpiar = (campo, alLimpiar) => {
+    const boton = campo.parentElement.querySelector(".limpiar-campo");
+    const actualizar = () => {
+      boton.hidden = !campo.value;
+    };
+    campo.addEventListener("input", actualizar);
+    boton.addEventListener("click", () => {
+      campo.value = "";
+      campo.dispatchEvent(new Event("input", { bubbles: true }));
+      alLimpiar?.();
+      campo.focus();
+    });
+    return actualizar;
+  };
+  const limpiarDireccion = prepararLimpiar($("direccion"));
+  // Sin destino, la ruta que se veía también se va, del panel y del mapa.
+  const quitarRuta = () => {
+    $("ruta-opciones").replaceChildren();
+    $("ruta-nota").hidden = true;
+    $("ruta-mensaje").textContent = "";
+    $("ruta-mensaje").classList.remove("error");
+    mapa.dibujarRuta(null);
+  };
+  const limpiarDestino = prepararLimpiar($("destino"), quitarRuta);
+
+  // "Borrar dirección": olvida el punto, la ruta y el enlace, y vuelve a la portada.
+  $("borrar-punto").addEventListener("click", () => {
+    borrar(CLAVE_ULTIMO_PUNTO);
+    borrar(CLAVE_DESTINO);
+    puntoActual = null;
+    zonaActual = null;
+    nombreActual = null;
+    history.replaceState(null, "", location.pathname + location.search);
+    $("direccion").value = "";
+    $("destino").value = "";
+    limpiarDireccion();
+    limpiarDestino();
+    quitarRuta();
+    pintarBusesDeCalle(null);
+    $("respuesta").hidden = true;
+    $("inicio").hidden = false;
+    document.querySelector(".consulta").classList.remove("con-respuesta", "cambiando");
+    mapa.olvidar();
+    mensaje(t("puntoBorrado"));
+    $("contenido").scrollIntoView({ behavior: SIN_MOVIMIENTO ? "auto" : "smooth", block: "start" });
+    $("direccion").focus({ preventScroll: true });
+  });
+
   // "Guardar como Casa / Trabajo": tocar el botón marcado lo quita.
   for (const boton of document.querySelectorAll(".lugar-boton")) {
     boton.addEventListener("click", () => {
@@ -1818,6 +1957,7 @@ async function iniciar() {
   for (const boton of document.querySelectorAll(".ejemplo")) {
     boton.addEventListener("click", () => {
       $("direccion").value = boton.dataset.busqueda;
+      limpiarDireccion();
       $("buscar").requestSubmit();
     });
   }
@@ -1848,6 +1988,7 @@ async function iniciar() {
   const destinoGuardado = leerDestino(leer(CLAVE_DESTINO));
   if (destinoGuardado && puntoActual) {
     $("destino").value = destinoGuardado;
+    limpiarDestino();
     $("ruta").requestSubmit();
   } else if (!destinoGuardado) {
     borrar(CLAVE_DESTINO);

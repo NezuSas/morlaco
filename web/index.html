@@ -105,6 +105,9 @@
         <path d="M7 8.5V4h10v4.5M7 17.5H5a1.5 1.5 0 0 1-1.5-1.5v-6A1.5 1.5 0 0 1 5 8.5h14a1.5 1.5 0 0 1 1.5 1.5v6a1.5 1.5 0 0 1-1.5 1.5h-2" />
         <rect x="7" y="14" width="10" height="6" />
       </symbol>
+      <symbol id="i-borrar" viewBox="0 0 24 24">
+        <path d="M6.5 6.5l11 11M17.5 6.5l-11 11" />
+      </symbol>
       <symbol id="i-ubicar" viewBox="0 0 24 24">
         <circle cx="12" cy="12" r="6.5" />
         <circle cx="12" cy="12" r="2" />
@@ -131,26 +134,27 @@
       <div class="columna">
         <section id="contenido" class="consulta" aria-labelledby="titulo" tabindex="-1">
           <div class="muro">
+          <!-- Las tres cúpulas de la Catedral Nueva de Cuenca: grandes en la portada y, con tu
+               calle elegida, más pequeñas sobre su nombre. -->
+          <svg class="cupulas" viewBox="0 0 320 100" aria-hidden="true" focusable="false">
+            <defs>
+              <g id="cupula">
+                <rect style="fill:var(--superficie);stroke:var(--tinta-suave);stroke-width:1.5" x="134" y="58" width="52" height="26" />
+                <path style="fill:none;stroke:var(--tinta-suave);stroke-width:1.5" d="M143 80v-9a3 3 0 0 1 6 0v9M157 80v-9a3 3 0 0 1 6 0v9M171 80v-9a3 3 0 0 1 6 0v9" />
+                <path style="fill:var(--cupula)" d="M128 60c0-22 14.5-36 32-36s32 14 32 36z" />
+                <path style="fill:none;stroke:var(--funda-celeste);stroke-width:2.2;stroke-linecap:round" d="M160 25v35M148.5 29c-4 7-6 17-6 31M171.5 29c4 7 6 17 6 31M137.5 40c-2.2 5-3.4 12-3.4 20M182.5 40c2.2 5 3.4 12 3.4 20" />
+                <rect style="fill:var(--cupula-hondo)" x="154" y="13" width="12" height="13" rx="2" />
+                <path style="fill:var(--cupula)" d="M153.5 14c0-5 3-8 6.5-8s6.5 3 6.5 8z" />
+                <path style="fill:none;stroke:var(--tinta-suave);stroke-width:1.6;stroke-linecap:round" d="M160 0v7M157 3h6" />
+              </g>
+            </defs>
+            <rect class="nave" x="62" y="68" width="196" height="16" />
+            <use href="#cupula" transform="translate(-30.8 26.2) scale(.68)" />
+            <use href="#cupula" transform="translate(133.2 26.2) scale(.68)" />
+            <use href="#cupula" />
+            <rect class="suelo" x="0" y="84" width="320" height="3" rx="1.5" />
+          </svg>
           <div class="portada">
-            <!-- Las tres cúpulas de la Catedral Nueva de Cuenca. -->
-            <svg class="cupulas" viewBox="0 0 320 100" aria-hidden="true" focusable="false">
-              <defs>
-                <g id="cupula">
-                  <rect style="fill:var(--superficie);stroke:var(--tinta-suave);stroke-width:1.5" x="134" y="58" width="52" height="26" />
-                  <path style="fill:none;stroke:var(--tinta-suave);stroke-width:1.5" d="M143 80v-9a3 3 0 0 1 6 0v9M157 80v-9a3 3 0 0 1 6 0v9M171 80v-9a3 3 0 0 1 6 0v9" />
-                  <path style="fill:var(--cupula)" d="M128 60c0-22 14.5-36 32-36s32 14 32 36z" />
-                  <path style="fill:none;stroke:var(--funda-celeste);stroke-width:2.2;stroke-linecap:round" d="M160 25v35M148.5 29c-4 7-6 17-6 31M171.5 29c4 7 6 17 6 31M137.5 40c-2.2 5-3.4 12-3.4 20M182.5 40c2.2 5 3.4 12 3.4 20" />
-                  <rect style="fill:var(--cupula-hondo)" x="154" y="13" width="12" height="13" rx="2" />
-                  <path style="fill:var(--cupula)" d="M153.5 14c0-5 3-8 6.5-8s6.5 3 6.5 8z" />
-                  <path style="fill:none;stroke:var(--tinta-suave);stroke-width:1.6;stroke-linecap:round" d="M160 0v7M157 3h6" />
-                </g>
-              </defs>
-              <rect class="nave" x="62" y="68" width="196" height="16" />
-              <use href="#cupula" transform="translate(-30.8 26.2) scale(.68)" />
-              <use href="#cupula" transform="translate(133.2 26.2) scale(.68)" />
-              <use href="#cupula" />
-              <rect class="suelo" x="0" y="84" width="320" height="3" rx="1.5" />
-            </svg>
             <h1 id="titulo" data-t="portadaTitulo">¿Qué pasa hoy en tu calle?</h1>
             <p class="entrada" data-t="portadaEntrada">
               Cuándo pasa el recolector, si hay cortes de luz programados y qué paradas de bus tienes
@@ -173,6 +177,9 @@
                 placeholder="Sucre y Borrero"
                 required
               />
+              <button type="button" class="limpiar-campo" data-t-aria-label="borrarTexto" aria-label="Borrar lo escrito" hidden>
+                <svg class="icono" aria-hidden="true"><use href="#i-borrar" /></svg>
+              </button>
               <button type="submit" data-t="buscar">Buscar</button>
               <ul id="sug-direccion" class="sugerencias" role="listbox" hidden data-t-aria-label="sugerenciasCalles" aria-label="Calles sugeridas"></ul>
             </div>
@@ -190,7 +197,7 @@
           </form>
           <p id="mensaje" class="mensaje" role="status" aria-live="polite"></p>
 
-          <!-- Tu calle, en un letrero de cerámica como los del Centro Histórico. -->
+          <!-- Tu calle: un encabezado con una línea dorada encima, sin recuadro. -->
           <div id="tu-punto" class="tu-punto">
             <div class="letrero">
               <p class="tu-punto-etiqueta" data-t="tuPunto">Tu punto</p>
@@ -199,6 +206,10 @@
             <p id="punto-zona" class="punto-zona"></p>
             <div class="punto-acciones">
               <button type="button" id="cambiar-punto" class="en-muro" data-t="cambiarPunto">Cambiar de lugar</button>
+              <button type="button" id="borrar-punto" class="en-muro con-icono" data-t-aria-label="borrarPuntoAria" aria-label="Borrar esta dirección del dispositivo">
+                <svg class="icono" aria-hidden="true"><use href="#i-borrar" /></svg>
+                <span data-t="borrarPunto">Borrar dirección</span>
+              </button>
               <button type="button" id="whatsapp" class="en-muro con-icono">
                 <svg class="icono" aria-hidden="true"><use href="#i-mensaje" /></svg>
                 <span data-t="whatsapp">WhatsApp</span>
@@ -264,7 +275,7 @@
               <a href="#s-agua" class="servicio-agua" data-t="navAgua">Agua</a>
               <a href="#s-farmacias" class="servicio-farmacias" data-t="navFarmacias">Farmacias</a>
               <a href="#s-buses" class="servicio-buses" data-t="navBuses">Buses</a>
-              <a href="#s-cerca" class="servicio-cerca" data-t="navCerca">Cerca</a>
+              <a href="#s-cerca" class="servicio-cerca" data-t="navCerca">Cerca de ti</a>
               <a id="nav-aire" href="#s-aire" class="servicio-aire" data-t="navAire" hidden>Aire</a>
             </nav>
 
@@ -337,6 +348,9 @@
                     placeholder="Mall del Río"
                     required
                   />
+                  <button type="button" class="limpiar-campo" data-t-aria-label="borrarDestino" aria-label="Borrar el destino" hidden>
+                    <svg class="icono" aria-hidden="true"><use href="#i-borrar" /></svg>
+                  </button>
                   <button type="submit" data-t="buscarRuta">Buscar ruta</button>
                   <ul id="sug-destino" class="sugerencias" role="listbox" hidden data-t-aria-label="sugerenciasCalles" aria-label="Calles sugeridas"></ul>
                 </div>
@@ -415,8 +429,7 @@
             ¿Quieres que tus vecinos lo usen? <a href="cartel.html">Imprime un cartel con el código QR</a>.
           </p>
           <p data-t="pieAviso">
-            Morlaco no es un servicio oficial. Ante cualquier duda, consulta la fuente. Las calles se
-            buscan en esta página; solo cuando buscas un lugar (como un parque o un centro comercial),
+            Las calles se buscan en esta página; solo cuando buscas un lugar (como un parque o un centro comercial),
             el texto se envía a OpenStreetMap (Nominatim) para ubicarlo. La calidad del aire se pide a la web
             de la EMOV, sin enviarle tu ubicación.
           </p>
@@ -426,7 +439,7 @@
         </footer>
       </div>
 
-      <section class="mapa-contenedor" aria-label="Mapa de zonas de recolección" data-t-aria-label="mapaAria">
+      <section class="mapa-contenedor" aria-label="Mapa de tu calle: zonas, rutas y buses" data-t-aria-label="mapaAria">
         <div id="mapa" class="mapa"></div>
         <div class="leyenda" aria-hidden="true">
           <span><i class="muestra lmv"></i><span data-t="leyendaLmv">Lunes, miércoles y viernes</span></span>

@@ -1,8 +1,8 @@
-/* Morlaco, como la cerámica de Cuenca: un muro de azulejo cobalto (el azul de las
-   cúpulas de la Catedral Nueva), tu calle en un letrero de cerámica como los del
-   Centro Histórico y, debajo, todo lo demás en blanco de cal, sin cajas. Los únicos
-   colores fuera del azul son reales: las fundas de EMAC (negra y celeste), el
-   verde del Tomebamba y el rojo del tranvía. */
+/* Morlaco: un panel claro junto al mapa, de alto contraste para leer al sol (como BA Cómo
+   Llego o GOV.UK). Cuenca va dosificada: el azul de las cúpulas de la Catedral Nueva, el
+   carmesí solo en la marca y en "Buscar", y el dorado en microdetalles. Los estados van
+   en pastillas de color suave; los colores fuera de eso son reales: las fundas de EMAC
+   (negra y celeste), el verde del Tomebamba y el rojo del tranvía. */
 
 /* Alegreya y Alegreya Sans (Huerta Tipográfica, licencia SIL OFL 1.1; ver fuentes/). */
 @font-face {
@@ -30,47 +30,67 @@
 }
 
 :root {
-  /* Cal y tinta */
+  /* Superficies claras, como un panel junto al mapa (BA Cómo Llego, GOV.UK). */
   --superficie: #ffffff;
-  --cal: #f4f6f9;
-  --cal-hondo: #e8ecf2;
-  --linea: #d8dee7;
-  --tinta: #141d2e;
-  --tinta-suave: #465062; /* 8,1:1 sobre blanco: se lee al sol */
+  --cal: #f8fafc;
+  --cal-hondo: #f1f5f9;
+  --linea: #e2e8f0; /* separa zonas; no es el borde de un control */
+  --linea-campo: #64748b; /* borde de campos: 4,8:1, lo pide WCAG para un control */
+  --tinta: #0f172a; /* 17,9:1 sobre blanco */
+  --tinta-suave: #475569; /* 7,6:1: se lee al sol */
+  --icono: #475569; /* los íconos, todos en gris pizarra */
 
   /* Azul de cúpula */
   --cupula: #1f4a96;
   --cupula-hondo: #173872;
   --sobre-cupula: #ffffff;
-  --muro: #1d4489;
-  --muro-hondo: #142f66;
+  --muro: var(--cal); /* el panel de búsqueda, claro */
+  --muro-hondo: var(--cal-hondo);
   /* El letrero es cerámica: blanco esmaltado y letra cobalto, de día y de noche. */
   --esmalte: #fcfcf9;
   --cobalto: #1b3f86;
 
-  /* La bandera de Cuenca: rojo y amarillo. Acentos sobre el azul de las cúpulas. */
-  --bandera-rojo: #c8102e;
-  --bandera-oro: #f2b705;
+  /* Cuenca, dosificada: el carmesí en la marca y, con el dorado, en la franja de la barra;
+     el dorado, además, en microdetalles (la línea sobre tu calle, el punto de la zona). */
+  --marca-rojo: #b91c1c; /* blanco encima: 6,5:1 */
+  --marca-texto: var(--marca-rojo); /* "Morlaco" en la barra */
+  --oro: #b45309; /* como texto: 5,0:1 */
+  --oro-grafico: #d97706; /* líneas y puntos: 3,2:1 */
+  --bandera-rojo: var(--marca-rojo);
+  --bandera-oro: var(--oro-grafico);
 
-  /* Las acciones van en el azul de las cúpulas: el rojo se lee como "peligro" y le
-     restaría fuerza a un aviso real. El rojo y el amarillo de la bandera quedan como
-     identidad (la franja, las variantes, la ida en el mapa), sin significado de estado. */
-  --accion: #1f4a96;
+  /* Las acciones ("Buscar", "Buscar ruta"...) en el azul de las cúpulas, el único color de
+     interacción: el rojo se lee como peligro y chocaría con los avisos de cortes. */
+  --accion: #1f4a96; /* blanco encima: 8,5:1 */
   --accion-hondo: #173872;
   --sobre-accion: #ffffff;
 
-  /* Estados, cada uno con su texto (4,5:1 o más) y su fondo suave. */
-  --ok: #1b6e45;
-  --ok-fondo: #e3f2ea;
-  --atencion: #8a5700;
-  --atencion-fondo: #fdf1d8;
-  --atencion-grafico: #b47c00; /* íconos y puntos: 3,6:1 */
-  --alerta: #b42318;
-  --alerta-fondo: #fdecea;
+  /* Foco como GOV.UK: anillo de tinta y halo amarillo, visible sobre cualquier fondo. */
+  --foco-anillo: #0f172a;
+  --foco-halo: #ffdd00;
+
+  /* Estados en pastilla: fondo pastel y texto oscuro (6,4:1 o más). */
+  --ok: #166534;
+  --ok-fondo: #dcfce7;
+  --atencion: #92400e;
+  --atencion-fondo: #fef3c7;
+  --atencion-grafico: #b45309;
+  --alerta: #991b1b;
+  --alerta-fondo: #fee2e2;
 
   /* Los buses del mapa, iguales de día y de noche: el bus blanco se lee sobre ellos. */
-  --bus-ida: #c8102e;
-  --bus-retorno: #1f4a96;
+  --bus-ida: #1f4a96;
+  --bus-retorno: #6d28d9;
+  /* Los sentidos de una línea en el mapa: ida en azul cúpula y retorno en púrpura. */
+  --sentido-ida: #1f4a96;
+  --sentido-retorno: #6d28d9;
+  /* La opción elegida, con un fondo azul muy claro que se distingue al sol. */
+  --seleccion-fondo: #dbeafe;
+  /* Borde de los botones secundarios. */
+  --borde-boton: #64748b; /* 4,8:1: el botón se ve como botón */
+  /* Paneles flotantes del mapa (la leyenda, el selector de sentido). */
+  --borde-flotante: transparent;
+  --sombra-flotante: 0 1px 4px rgb(0 0 0 / 0.22);
 
   /* Colores con significado */
   --funda-negra: #24272c;
@@ -89,8 +109,8 @@
      La Sans es estrecha y de ojo pequeño, así que el texto va un punto más grande. */
   --letra: "Alegreya Sans", "Segoe UI", system-ui, sans-serif;
   --serif: "Alegreya", Georgia, "Times New Roman", serif;
-  --t-0: 0.9375rem;
-  --t-1: 1.0625rem;
+  --t-0: 1rem;
+  --t-1: 1.125rem;
   --t-2: 1.3rem;
   --t-3: 1.6rem;
   --t-4: 2.1rem;
@@ -98,36 +118,49 @@
   --radio-control: 10px;
   --radio-azulejo: 6px;
   --margen: 1.125rem;
-  --alto-barra: 3.5rem;
+  --alto-barra: 3.875rem; /* 3,5rem más las dos franjas de 3 px de la bandera */
   --sombra-tarjeta: 0 1px 2px rgb(16 32 64 / 0.08), 0 12px 32px rgb(16 32 64 / 0.14);
   --patron-azulejo: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='52' height='52' viewBox='0 0 44 44'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.09' stroke-width='1.1'%3E%3Cpath d='M22 4c5 6 5 12 0 18-5-6-5-12 0-18zM22 40c5-6 5-12 0-18-5 6-5 12 0 18zM4 22c6-5 12-5 18 0-6 5-12 5-18 0zM40 22c-6-5-12-5-18 0 6 5 12 5 18 0z'/%3E%3Cpath d='M0 0h44v44H0z'/%3E%3C/g%3E%3C/svg%3E");
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --superficie: #0e1524;
-    --cal: #151e31;
-    --cal-hondo: #1c2740;
-    --linea: #29354d;
-    --tinta: #e9edf5;
-    --tinta-suave: #a7b2c6;
+    --superficie: #0b1220;
+    --cal: #1e293b;
+    --cal-hondo: #172238;
+    --linea: #334155;
+    --linea-campo: #94a3b8;
+    --tinta: #e2e8f0;
+    --tinta-suave: #94a3b8;
+    --icono: #94a3b8;
     --cupula: #93b8f3;
     --cupula-hondo: #bbd3f8;
-    --sobre-cupula: #0e1524;
-    --muro: #183a78;
-    --muro-hondo: #0f2552;
-    --bandera-rojo: #f0646f;
-    --bandera-oro: #f6c945;
+    --sobre-cupula: #0b1220;
+    --muro: #111a2c;
+    --muro-hondo: #0b1220;
+    --bandera-rojo: #f87171;
+    --marca-texto: #f87171;
+    --bandera-oro: #f59e0b;
+    --oro: #fbbf24;
+    --oro-grafico: #fbbf24;
     --accion: #93b8f3;
     --accion-hondo: #bbd3f8;
-    --sobre-accion: #0e1524;
-    --ok: #5fc08f;
-    --ok-fondo: #13261d;
-    --atencion: #f2b84b;
-    --atencion-fondo: #2a2314;
-    --atencion-grafico: #f2b84b;
-    --alerta: #f28b82;
-    --alerta-fondo: #2c1517;
+    --sobre-accion: #0b1220;
+    --sentido-ida: #93b8f3;
+    --sentido-retorno: #c4b5fd;
+    --seleccion-fondo: #1e3a5f;
+    --borde-flotante: #334155;
+    --sombra-flotante: 0 4px 12px rgb(0 0 0 / 0.45);
+    --borde-boton: #475569;
+    --foco-anillo: #0b1220;
+    --foco-halo: #ffdd00;
+    --ok: #86efac;
+    --ok-fondo: #052e16;
+    --atencion: #fcd34d;
+    --atencion-fondo: #422006;
+    --atencion-grafico: #f59e0b;
+    --alerta: #fca5a5;
+    --alerta-fondo: #450a0a;
     --funda-negra: #05070a;
     --tomebamba: #6fb593;
     --tranvia: #e8777b;
@@ -138,29 +171,42 @@
   }
 }
 :root[data-theme="dark"] {
-  --superficie: #0e1524;
-  --cal: #151e31;
-  --cal-hondo: #1c2740;
-  --linea: #29354d;
-  --tinta: #e9edf5;
-  --tinta-suave: #a7b2c6;
+  --superficie: #0b1220;
+  --cal: #1e293b;
+  --cal-hondo: #172238;
+  --linea: #334155;
+  --linea-campo: #94a3b8;
+  --tinta: #e2e8f0;
+  --tinta-suave: #94a3b8;
+  --icono: #94a3b8;
   --cupula: #93b8f3;
   --cupula-hondo: #bbd3f8;
-  --sobre-cupula: #0e1524;
-  --muro: #183a78;
-  --muro-hondo: #0f2552;
-  --bandera-rojo: #f0646f;
-  --bandera-oro: #f6c945;
+  --sobre-cupula: #0b1220;
+  --muro: #111a2c;
+  --muro-hondo: #0b1220;
+  --bandera-rojo: #f87171;
+  --marca-texto: #f87171;
+  --bandera-oro: #f59e0b;
+  --oro: #fbbf24;
+  --oro-grafico: #fbbf24;
   --accion: #93b8f3;
   --accion-hondo: #bbd3f8;
-  --sobre-accion: #0e1524;
-  --ok: #5fc08f;
-  --ok-fondo: #13261d;
-  --atencion: #f2b84b;
-  --atencion-fondo: #2a2314;
-  --atencion-grafico: #f2b84b;
-  --alerta: #f28b82;
-  --alerta-fondo: #2c1517;
+  --sobre-accion: #0b1220;
+  --sentido-ida: #93b8f3;
+  --sentido-retorno: #c4b5fd;
+  --seleccion-fondo: #1e3a5f;
+  --borde-flotante: #334155;
+  --sombra-flotante: 0 4px 12px rgb(0 0 0 / 0.45);
+  --borde-boton: #475569;
+  --foco-anillo: #0b1220;
+  --foco-halo: #ffdd00;
+  --ok: #86efac;
+  --ok-fondo: #052e16;
+  --atencion: #fcd34d;
+  --atencion-fondo: #422006;
+  --atencion-grafico: #f59e0b;
+  --alerta: #fca5a5;
+  --alerta-fondo: #450a0a;
   --funda-negra: #05070a;
   --tomebamba: #6fb593;
   --tranvia: #e8777b;
@@ -207,8 +253,9 @@ a:hover {
 }
 
 :focus-visible {
-  outline: 3px solid var(--cupula);
+  outline: 3px solid var(--foco-halo);
   outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--foco-anillo);
 }
 
 h1,
@@ -244,6 +291,16 @@ p {
   width: 0;
   height: 0;
   overflow: hidden;
+}
+
+/* Oculto a la vista, pero el lector de pantalla lo lee. */
+.oculto-accesible {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .icono {
@@ -290,7 +347,7 @@ button:disabled {
 
 button.secundario {
   padding: 0.45rem 0.9rem;
-  border-color: var(--linea);
+  border-color: var(--borde-boton);
   background: transparent;
   color: var(--cupula);
 }
@@ -303,15 +360,15 @@ button.secundario:hover {
 /* Botones sobre el muro azul. */
 button.en-muro,
 .muro button.lugar {
-  border-color: rgb(255 255 255 / 0.4);
-  background: rgb(255 255 255 / 0.1);
-  color: #fff;
+  border-color: var(--borde-boton);
+  background: var(--superficie);
+  color: var(--cupula);
 }
 
 button.en-muro:hover,
 .muro button.lugar:hover {
-  border-color: #fff;
-  background: rgb(255 255 255 / 0.2);
+  border-color: var(--linea-campo);
+  background: var(--superficie);
 }
 
 .campo {
@@ -319,14 +376,14 @@ button.en-muro:hover,
   display: flex;
   gap: 0.4rem;
   padding: 0.3rem;
-  border: 1.5px solid var(--linea);
+  border: 1.5px solid var(--linea-campo);
   border-radius: calc(var(--radio-control) + 3px);
   background: var(--superficie);
 }
 
 .campo:focus-within {
-  border-color: var(--cupula);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cupula) 22%, transparent);
+  border-color: var(--foco-anillo);
+  box-shadow: 0 0 0 1px var(--foco-anillo), 0 0 0 4px var(--foco-halo);
 }
 
 input[type="search"] {
@@ -348,6 +405,41 @@ input[type="search"]::placeholder {
 
 input[type="search"]:focus {
   outline: none;
+}
+
+/* La × propia reemplaza a la del navegador, que no sale en todos. */
+input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  display: none;
+}
+
+button.limpiar-campo {
+  flex: none;
+  align-self: center;
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--tinta-suave);
+}
+
+button.limpiar-campo:hover {
+  border: 0;
+  background: var(--cal-hondo);
+  color: var(--tinta);
+}
+
+button.limpiar-campo[hidden] {
+  display: none;
+}
+
+.limpiar-campo .icono {
+  width: 1.15rem;
+  height: 1.15rem;
 }
 
 /* Sugerencias de calles bajo el campo. */
@@ -420,28 +512,30 @@ input[type="search"]:focus {
   max-width: 62ch;
 }
 
-/* ---------- Barra superior: del mismo azul que el muro ---------- */
+/* ---------- Barra superior: clara, con un borde fino ---------- */
 
 .barra {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  min-height: var(--alto-barra);
-  padding: 0.5rem var(--margen) calc(0.5rem + 6px);
-  /* Bajo el azul de cúpula, la bandera de Cuenca: una franja roja y otra amarilla. */
+  height: var(--alto-barra); /* exacto: el escritorio resta este alto a la ventana */
+  padding: calc(0.5rem + 6px) var(--margen) 0.5rem;
+  border-bottom: 1px solid var(--linea);
+  /* Arriba, la bandera de Cuenca: una franja carmesí y otra dorada, de 3 px. */
   background:
-    linear-gradient(var(--bandera-rojo), var(--bandera-rojo)) left bottom 3px / 100% 3px no-repeat,
-    linear-gradient(var(--bandera-oro), var(--bandera-oro)) left bottom / 100% 3px no-repeat,
-    var(--muro);
-  color: #fff;
+    linear-gradient(var(--marca-rojo), var(--marca-rojo)) left top / 100% 3px no-repeat,
+    linear-gradient(var(--oro-grafico), var(--oro-grafico)) left 3px / 100% 3px no-repeat,
+    var(--superficie);
+  color: var(--tinta);
 }
 
+/* La marca, en el carmesí de Cuenca. */
 .marca {
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
-  color: #fff;
+  color: var(--marca-texto);
   font-family: var(--serif);
   font-size: 1.5rem;
   font-weight: 700;
@@ -451,7 +545,6 @@ input[type="search"]:focus {
 
 .marca img {
   border-radius: 7px;
-  box-shadow: 0 0 0 1.5px rgb(255 255 255 / 0.35);
 }
 
 .barra-acciones {
@@ -461,27 +554,22 @@ input[type="search"]:focus {
 }
 
 .enlace-datos {
-  color: #fff;
+  color: var(--tinta-suave);
   font-size: var(--t-0);
 }
 
 /* Idioma e instalar: discretos, en la barra. */
 button.idioma {
   padding: 0.42rem 0.85rem;
-  border-color: rgb(255 255 255 / 0.4);
+  border-color: var(--borde-boton);
   background: transparent;
-  color: #fff;
+  color: var(--cupula);
   font-size: var(--t-0);
 }
 
 button.idioma:hover {
-  border-color: #fff;
-  background: rgb(255 255 255 / 0.14);
-}
-
-.barra :focus-visible,
-.muro :focus-visible {
-  outline-color: #fff;
+  border-color: var(--linea-campo);
+  background: var(--cal);
 }
 
 @media (max-width: 460px) {
@@ -540,6 +628,9 @@ button.idioma:hover {
     height: calc(100dvh - var(--alto-barra));
   }
   .columna {
+    /* Con position, lo que va oculto en absoluto (el texto para el lector de pantalla)
+       queda dentro de la columna y no estira la página entera. */
+    position: relative;
     display: block;
     overflow-y: auto;
     min-width: 0;
@@ -561,11 +652,9 @@ button.idioma:hover {
 
 .muro {
   padding: 1.5rem var(--margen) 1.75rem;
-  color: #fff;
-  background-color: var(--muro);
-  background-image:
-    linear-gradient(175deg, transparent 30%, var(--muro-hondo) 100%),
-    var(--patron-azulejo);
+  border-bottom: 1px solid var(--linea);
+  color: var(--tinta);
+  background: var(--muro);
 }
 
 @media (min-width: 900px) {
@@ -575,14 +664,10 @@ button.idioma:hover {
   }
 }
 
-/* Las cúpulas toman estos colores sobre el azul. Sus piezas llevan el color en el
-   propio SVG: las copias hechas con <use> no reciben los selectores de esta hoja. */
-.portada {
-  --superficie: rgb(255 255 255 / 0.13);
-  --tinta-suave: rgb(255 255 255 / 0.72);
-  --cupula: #8ccbea;
-  --cupula-hondo: #ffffff;
-  --funda-celeste: #ffffff;
+/* Las cúpulas, en su azul sobre el panel claro. Sus piezas llevan el color en el propio
+   SVG: las copias hechas con <use> no reciben los selectores de esta hoja. */
+.muro {
+  --funda-celeste: #dbeafe;
 }
 
 .cupulas {
@@ -590,17 +675,30 @@ button.idioma:hover {
   width: min(13.5rem, 62%);
   height: auto;
   margin-bottom: 1.1rem;
+  transition: width 0.45s cubic-bezier(0.2, 0.8, 0.3, 1), margin 0.45s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+
+/* Con tu calle elegida, las cúpulas se quedan, más pequeñas, sobre su nombre: su suelo
+   dorado hace de filete del letrero. */
+.con-respuesta .cupulas {
+  width: 9rem;
+  margin-bottom: 0.75rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cupulas {
+    transition: none;
+  }
 }
 
 .cupulas .nave {
-  fill: rgb(255 255 255 / 0.13);
-  stroke: rgb(255 255 255 / 0.72);
+  fill: var(--superficie);
+  stroke: var(--tinta-suave);
   stroke-width: 1.5;
 }
 
 .cupulas .suelo {
-  fill: #fff;
-  opacity: 0.4;
+  fill: var(--oro-grafico);
 }
 
 h1 {
@@ -616,7 +714,7 @@ h1 {
 .entrada {
   margin-top: 0.9rem;
   max-width: 38ch;
-  color: rgb(255 255 255 / 0.88);
+  color: var(--tinta-suave);
   font-size: 1.2rem;
   line-height: 1.35;
 }
@@ -632,24 +730,14 @@ h1 {
 }
 
 .muro .campo {
-  border-color: transparent;
-  background: #fff;
-  box-shadow: 0 1px 0 rgb(0 0 0 / 0.18), 0 10px 24px rgb(6 18 48 / 0.28);
-  --tinta: #141d2e;
-  --tinta-suave: #515c6e;
-  --superficie: #ffffff;
-  --cal: #f4f6f9;
-  --linea: #d8dee7;
-  --cupula: #1f4a96;
-  --cupula-hondo: #173872;
-  --sobre-cupula: #ffffff;
-  --accion: #1f4a96;
-  --accion-hondo: #173872;
-  --sobre-accion: #ffffff;
+  border: 1.5px solid var(--linea-campo);
+  background: var(--superficie);
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.06);
 }
 
 .muro .campo:focus-within {
-  box-shadow: 0 0 0 3px rgb(140 203 234 / 0.75), 0 10px 24px rgb(6 18 48 / 0.28);
+  border-color: var(--foco-anillo);
+  box-shadow: 0 0 0 1px var(--foco-anillo), 0 0 0 4px var(--foco-halo);
 }
 
 .otras-formas {
@@ -658,7 +746,7 @@ h1 {
   align-items: center;
   gap: 0.5rem 0.8rem;
   margin-top: 0.85rem;
-  color: rgb(255 255 255 / 0.82);
+  color: var(--tinta-suave);
   font-size: var(--t-0);
 }
 
@@ -683,7 +771,7 @@ button.ubicarme {
 
 .mis-lugares p {
   margin-bottom: 0.4rem;
-  color: rgb(255 255 255 / 0.82);
+  color: var(--tinta-suave);
   font-size: var(--t-0);
 }
 
@@ -721,21 +809,15 @@ button.lugar .icono {
   text-overflow: ellipsis;
   white-space: nowrap;
   font-weight: 400;
-  color: rgb(255 255 255 / 0.82);
+  color: var(--tinta-suave);
 }
 
 .muro .mensaje {
-  color: rgb(255 255 255 / 0.92);
-}
-
-.muro .mensaje.error {
-  border-left-color: #f0b546;
-  background: #fff;
-  color: #141d2e;
+  color: var(--tinta);
 }
 
 .muro .mensaje.error a {
-  color: #1f4a96;
+  color: var(--cupula);
 }
 
 /* Con respuesta, el muro deja solo el letrero; el buscador vuelve con "Cambiar de lugar". */
@@ -755,25 +837,15 @@ button.lugar .icono {
   margin: 0 0 1rem;
 }
 
-/* El letrero: blanco esmaltado con doble filete cobalto, como los de las esquinas
-   del Centro Histórico. */
+/* Tu calle: un encabezado de alto contraste, con una línea dorada encima. Sin recuadro,
+   para que no se confunda con un campo para escribir. */
 .tu-punto {
   scroll-margin-top: 1.5rem;
 }
 
 .letrero {
-  padding: 1.35rem 1.5rem 1.45rem;
-  border-radius: var(--radio-azulejo);
-  background: var(--esmalte);
-  color: var(--cobalto);
-  text-align: center;
-  box-shadow:
-    inset 0 0 0 4px var(--esmalte),
-    inset 0 0 0 6px var(--cobalto),
-    inset 0 0 0 9px var(--esmalte),
-    inset 0 0 0 10px var(--cobalto),
-    0 2px 0 rgb(0 0 0 / 0.22),
-    0 14px 30px rgb(6 18 48 / 0.35);
+  color: var(--tinta);
+  text-align: left;
 }
 
 .con-respuesta .letrero {
@@ -806,27 +878,40 @@ button.lugar .icono {
   text-wrap: balance;
 }
 
-/* "Casa" o "Trabajo", sobre el nombre de la calle. */
+/* "Casa" o "Trabajo", sobre el nombre de la calle, en dorado. */
 .punto-lugar {
   display: block;
   margin-bottom: 0.15rem;
+  color: var(--oro);
   font-family: var(--letra);
   font-size: var(--t-0);
   font-weight: 700;
   line-height: 1.5;
 }
 
+/* La zona, con un punto dorado delante. */
 .punto-zona {
-  margin-top: 0.9rem;
-  color: rgb(255 255 255 / 0.86);
-  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.6rem;
+  color: var(--tinta-suave);
+}
+
+.punto-zona:not(:empty)::before {
+  content: "";
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--color-zona, var(--oro-grafico));
 }
 
 .punto-acciones {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 0.6rem 1.25rem;
   margin-top: 0.9rem;
 }
@@ -835,13 +920,28 @@ button.lugar .icono {
   padding: 0.45rem 0.95rem;
 }
 
+/* "Borrar dirección", discreto: no compite con las acciones de todos los días. */
+button#borrar-punto,
+button#borrar-punto:hover {
+  padding: 0.45rem 0.5rem;
+  border-color: transparent;
+  background: transparent;
+  color: var(--tinta-suave);
+}
+
+button#borrar-punto:hover {
+  color: var(--tinta);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 /* Guardar como Casa / Trabajo. */
 .guardar-lugar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.4rem 0.5rem;
-  color: rgb(255 255 255 / 0.82);
+  color: var(--tinta-suave);
   font-size: var(--t-0);
 }
 
@@ -854,9 +954,9 @@ button.lugar-boton {
 }
 
 button.lugar-boton[aria-pressed="true"] {
-  border-color: #fff;
-  background: #fff;
-  color: var(--cobalto);
+  border-color: var(--tinta);
+  background: var(--tinta);
+  color: var(--superficie);
 }
 
 .lugar-boton .icono {
@@ -898,9 +998,9 @@ button.lugar-boton[aria-pressed="true"] {
 
 button.ejemplo {
   padding: 0.38rem 0.8rem;
-  border-color: var(--linea);
+  border-color: var(--borde-boton);
   background: var(--superficie);
-  color: var(--tinta);
+  color: var(--cupula);
   font-weight: 400;
 }
 
@@ -928,7 +1028,7 @@ button.ejemplo:hover {
 
 .servicio .icono {
   margin-top: 0.1rem;
-  color: var(--c, var(--cupula));
+  color: var(--icono);
 }
 
 .servicio strong {
@@ -960,7 +1060,7 @@ button.ejemplo:hover {
 a.ficha {
   display: grid;
   grid-template-columns: 7.25rem minmax(0, 1fr);
-  column-gap: 1rem;
+  column-gap: 1.4rem;
   padding: 0.8rem 0;
   border-top: 1px solid var(--linea);
   color: var(--tinta);
@@ -977,7 +1077,7 @@ a.ficha {
 
 .ficha .icono {
   margin-top: 0.08rem;
-  color: var(--c, var(--cupula));
+  color: var(--icono);
 }
 
 .ficha-valor,
@@ -1007,6 +1107,42 @@ a.ficha:hover .ficha-valor {
 }
 
 a.ficha.con-aviso .ficha-valor {
+  color: var(--alerta);
+}
+
+@media (max-width: 460px) {
+  a.ficha {
+    grid-template-columns: 5.75rem minmax(0, 1fr);
+    column-gap: 1.1rem;
+  }
+}
+
+/* Los estados clave, en pastilla (como Citymapper o IQAir): fondo pastel y texto oscuro. */
+.ficha-valor.pastilla {
+  justify-self: start;
+  margin-left: -0.65rem; /* el texto queda alineado con los valores sin pastilla */
+  padding: 0.12rem 0.65rem;
+  border-radius: 999px;
+}
+
+/* Sin datos recientes: ni bueno ni malo. */
+.pastilla.estado-neutro {
+  background: var(--cal-hondo);
+  color: var(--tinta);
+}
+
+.pastilla.estado-ok {
+  background: var(--ok-fondo);
+  color: var(--ok);
+}
+
+.pastilla.estado-atencion {
+  background: var(--atencion-fondo);
+  color: var(--atencion);
+}
+
+a.ficha .pastilla.estado-alerta {
+  background: var(--alerta-fondo);
   color: var(--alerta);
 }
 
@@ -1059,6 +1195,12 @@ a.ficha.con-aviso .ficha-valor {
   color: var(--cupula);
 }
 
+/* La sección que se está viendo: texto en tinta y subrayado azul de 3 px. */
+.secciones a[aria-current="true"] {
+  border-bottom: 3px solid var(--cupula);
+  color: var(--tinta);
+}
+
 /* ---------- Secciones de la respuesta ---------- */
 
 .respuesta > section {
@@ -1081,7 +1223,7 @@ a.ficha.con-aviso .ficha-valor {
 }
 
 .respuesta > section > h2 .icono {
-  color: var(--c, var(--cupula));
+  color: var(--icono);
 }
 
 .subtitulo {
@@ -1094,7 +1236,7 @@ a.ficha.con-aviso .ficha-valor {
 
 .cuando {
   margin-top: 0.7rem;
-  color: var(--cupula);
+  color: var(--tinta); /* informativo: el azul queda para lo que se toca */
   font-family: var(--serif);
   font-size: clamp(2rem, 8vw, 2.6rem);
   font-weight: 700;
@@ -1133,18 +1275,18 @@ a.ficha.con-aviso .ficha-valor {
   place-items: center;
   border-radius: var(--radio-azulejo);
   border: 1.5px solid var(--linea);
-  background: var(--cal);
+  background: var(--superficie);
   color: var(--tinta-suave);
   font-weight: 700;
   overflow: hidden;
 }
 
+/* El día que pasa el recolector, en tinta sólida (17,9:1): el azul queda para lo que se toca. */
 .azulejo.toca {
-  border-color: var(--muro);
-  background: var(--muro);
-  color: #fff;
+  border-color: var(--tinta);
+  background: var(--tinta);
+  color: var(--superficie);
   font-weight: 700;
-  box-shadow: inset 0 0 0 2.5px var(--muro), inset 0 0 0 3.5px rgb(255 255 255 / 0.28);
 }
 
 /* El día de la funda celeste lleva una franja celeste abajo. */
@@ -1161,7 +1303,7 @@ a.ficha.con-aviso .ficha-valor {
 }
 
 .azulejo.hoy {
-  outline: 2px solid var(--tinta);
+  outline: 3px solid var(--oro-grafico);
   outline-offset: 2px;
 }
 
@@ -1305,13 +1447,14 @@ a.ficha.con-aviso .ficha-valor {
 
 .filtro-cortes input {
   width: 100%;
-  border: 1.5px solid var(--linea);
+  border: 1.5px solid var(--linea-campo);
   background: var(--superficie);
 }
 
 .filtro-cortes input:focus {
-  border-color: var(--cupula);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cupula) 22%, transparent);
+  outline: none;
+  border-color: var(--foco-anillo);
+  box-shadow: 0 0 0 1px var(--foco-anillo), 0 0 0 4px var(--foco-halo);
 }
 
 .farmacias-lista {
@@ -1449,7 +1592,7 @@ a.ficha.con-aviso .ficha-valor {
 .ruta-opciones {
   list-style: none;
   padding: 0;
-  margin: 0.6rem 0 0;
+  margin: 1rem 0 0;
   display: grid;
   gap: 0.5rem;
 }
@@ -1459,6 +1602,7 @@ a.ficha.con-aviso .ficha-valor {
 }
 
 button.opcion-ruta {
+  position: relative; /* contiene su texto para el lector de pantalla */
   display: grid;
   gap: 0.4rem;
   width: 100%;
@@ -1476,9 +1620,10 @@ button.opcion-ruta:hover {
 }
 
 button.opcion-ruta[aria-pressed="true"] {
+  border-width: 2px;
   border-color: var(--cupula);
-  background: var(--cal);
-  box-shadow: inset 3px 0 0 var(--cupula);
+  background: var(--seleccion-fondo);
+  box-shadow: inset 4px 0 0 var(--cupula);
 }
 
 /* La cabecera de una opción: minutos, la tira del viaje y el pasaje a la derecha. */
@@ -1551,7 +1696,7 @@ button.opcion-ruta[aria-pressed="true"] {
 .etiqueta-opcion {
   padding: 0.1rem 0.5rem;
   border-radius: 999px;
-  font-size: 0.82rem;
+  font-size: 0.9375rem;
   font-weight: 700;
 }
 
@@ -1568,11 +1713,30 @@ button.opcion-ruta[aria-pressed="true"] {
 
 /* Los pasos, solo en la opción elegida: en las demás repetirían lo mismo. */
 .opcion-pasos {
+  display: block;
+  counter-reset: paso;
   margin: 0.2rem 0 0;
-  padding: 0.5rem 0 0 1.2rem;
+  padding: 0.5rem 0 0;
   border-top: 1px solid var(--linea);
   color: var(--tinta-suave);
   font-size: var(--t-0);
+}
+
+.opcion-pasos > span {
+  position: relative;
+  display: block;
+  padding-left: 1.3rem;
+}
+
+.opcion-pasos > span + span {
+  margin-top: 0.15rem;
+}
+
+.opcion-pasos > span::before {
+  counter-increment: paso;
+  content: counter(paso) ".";
+  position: absolute;
+  left: 0;
 }
 
 button.opcion-ruta[aria-pressed="false"] .opcion-pasos {
@@ -1581,6 +1745,18 @@ button.opcion-ruta[aria-pressed="false"] .opcion-pasos {
 
 .opcion-pasos li + li {
   margin-top: 0.15rem;
+}
+
+.pasaje {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--linea);
+}
+
+/* Lo secundario ("Revisado el…", "Tiempos aproximados…"), un punto más chico. */
+#ruta-nota,
+.pasaje .detalle {
+  font-size: 0.875rem;
 }
 
 .pasaje p {
@@ -1631,8 +1807,14 @@ button.linea:hover {
 }
 
 button.linea[aria-pressed="true"] {
-  background: var(--cal);
-  box-shadow: inset 3px 0 0 var(--cupula);
+  background: var(--seleccion-fondo);
+  box-shadow: inset 4px 0 0 var(--cupula);
+}
+
+/* Con el foco del teclado, la opción o línea elegida no pierde su filete azul. */
+button.linea[aria-pressed="true"]:focus-visible,
+button.opcion-ruta[aria-pressed="true"]:focus-visible {
+  box-shadow: inset 4px 0 0 var(--cupula), 0 0 0 2px var(--foco-anillo);
 }
 
 /* El número de línea como el letrero de un bus. */
@@ -1835,14 +2017,15 @@ button.linea[aria-pressed="true"] {
 .leyenda {
   position: absolute;
   left: 0.75rem;
-  bottom: 0.75rem;
+  bottom: 1.5rem;
+  border: 1px solid var(--borde-flotante);
   z-index: 500;
   display: grid;
   gap: 0.2rem;
   padding: 0.5rem 0.75rem;
   border-radius: var(--radio-control);
   background: var(--superficie);
-  box-shadow: 0 1px 4px rgb(0 0 0 / 0.22);
+  box-shadow: var(--sombra-flotante);
   color: var(--tinta);
   font-size: var(--t-0);
   pointer-events: none;
@@ -1868,6 +2051,12 @@ button.linea[aria-pressed="true"] {
 /* El mapa base es gris (claro u oscuro, según el sistema) para que las zonas sean lo que destaca. */
 .mapa {
   font: var(--t-0) / 1.4 var(--letra);
+}
+
+/* Botones del mapa de 44 px: se tocan con el dedo. */
+.mapa .maplibregl-ctrl-group button {
+  width: 44px;
+  height: 44px;
 }
 
 .mapa .maplibregl-ctrl-group,
@@ -1921,16 +2110,26 @@ button.linea[aria-pressed="true"] {
     0 2px 6px rgb(0 0 0 / 0.3);
 }
 
+/* Las paradas cercanas, como letreros de parada: el bus y su número en la lista. */
 .etiqueta-parada {
-  display: grid;
-  place-items: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: var(--superficie);
-  color: var(--tinta);
-  border: 2px solid var(--tinta);
+  --fondo-parada: #1f4a96; /* el mismo azul en los dos modos: lleva texto blanco */
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 24px;
+  padding: 0 6px 0 3px;
+  border-radius: 7px;
+  background: var(--fondo-parada);
+  color: #fff;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 3px rgb(15 23 42 / 0.35);
   font: 700 0.8rem/1 var(--letra);
+  font-variant-numeric: tabular-nums;
+}
+
+.etiqueta-parada svg {
+  width: 16px;
+  height: 16px;
 }
 
 .etiqueta-ruta {
@@ -2076,8 +2275,8 @@ button.linea[aria-pressed="true"] {
 .control-capas summary {
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   cursor: pointer;
   list-style: none;
 }
@@ -2105,6 +2304,14 @@ button.linea[aria-pressed="true"] {
 
 /* ---------- Línea elegida: sentidos, puntas y buses estimados ---------- */
 
+.mapa.zonas-discretas .etiqueta-zona {
+  opacity: 0.45;
+}
+
+.mapa.zonas-discretas .etiqueta-parada {
+  display: none;
+}
+
 /* Con una línea a la vista, la leyenda de zonas deja su sitio al selector de sentido. */
 .mapa.con-linea + .leyenda {
   display: none;
@@ -2122,7 +2329,8 @@ button.linea[aria-pressed="true"] {
   padding: 0.5rem;
   border-radius: var(--radio-control);
   background: var(--superficie);
-  box-shadow: 0 1px 4px rgb(0 0 0 / 0.22);
+  border: 1px solid var(--borde-flotante);
+  box-shadow: var(--sombra-flotante);
   color: var(--tinta);
   font: var(--t-0) / 1.35 var(--letra);
 }
@@ -2143,9 +2351,9 @@ button.linea[aria-pressed="true"] {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  min-height: 2rem;
-  padding: 0.25rem 0.6rem;
-  border: 1.5px solid var(--linea);
+  min-height: 44px;
+  padding: 0.25rem 0.75rem;
+  border: 1.5px solid var(--linea-campo);
   border-radius: 999px;
   background: transparent;
   color: inherit;
@@ -2159,19 +2367,20 @@ button.linea[aria-pressed="true"] {
 }
 
 .panel-linea button:focus-visible {
-  outline: 2px solid var(--cupula);
+  outline: 3px solid var(--foco-halo);
   outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--foco-anillo);
 }
 
 .muestra-sentido {
   width: 0.9rem;
   height: 0.3rem;
   border-radius: 2px;
-  background: var(--bandera-rojo);
+  background: var(--sentido-ida);
 }
 
 .muestra-sentido.retorno {
-  background: var(--cupula-hondo);
+  background: repeating-linear-gradient(90deg, var(--sentido-retorno) 0 4px, transparent 4px 6px);
 }
 
 .nota-buses {
@@ -2190,9 +2399,9 @@ button.linea[aria-pressed="true"] {
 .variante-linea select {
   flex: 1;
   min-width: 0;
-  min-height: 2rem;
+  min-height: 44px;
   padding: 0.2rem 0.5rem;
-  border: 1.5px solid var(--linea);
+  border: 1.5px solid var(--linea-campo);
   border-radius: var(--radio-control);
   background: var(--superficie);
   color: var(--tinta);
@@ -2201,8 +2410,9 @@ button.linea[aria-pressed="true"] {
 }
 
 .variante-linea select:focus-visible {
-  outline: 2px solid var(--cupula);
+  outline: 3px solid var(--foco-halo);
   outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--foco-anillo);
 }
 
 /* A y B: dónde empieza y a dónde va la línea. */
@@ -2236,7 +2446,7 @@ button.linea[aria-pressed="true"] {
 }
 
 /* Un bus estimado: una gota de su color que apunta hacia donde va, con un bus dibujado
-   de lado (que no gira) y el número de la línea. Ida en rojo bandera, retorno en azul.
+   de lado (que no gira) y el número de la línea. Ida en azul cúpula, retorno en púrpura.
    Sin `position` en el marcador: MapLibre lo pone en absoluto y lo mueve con transform. */
 .bus-estimado {
   --color-bus: var(--bus-ida);
@@ -2306,15 +2516,15 @@ button.linea[aria-pressed="true"] {
   translate: -50% 0;
   display: grid;
   place-items: center;
-  min-width: 22px;
-  height: 17px;
+  min-width: 24px;
+  height: 19px;
   padding: 0 5px;
   border-radius: 999px;
   border: 1.5px solid #fff;
   background: var(--color-bus);
   color: #fff;
   box-shadow: 0 1px 3px rgb(0 0 0 / 0.3);
-  font: 800 0.7rem/1 var(--letra);
+  font: 800 0.8125rem/1 var(--letra);
 }
 
 @media (prefers-reduced-motion: reduce) {

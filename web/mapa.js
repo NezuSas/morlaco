@@ -16,6 +16,8 @@ const ESTILOS = {
 };
 // Niveles de MapLibre (teselas de 512 px): 12 muestra la ciudad entera.
 const ZOOM_INICIAL = 12;
+// Desde aquí las paradas de una línea dejan de ser puntos y se ven como letreros de parada.
+const ZOOM_LETRERO = 14.5;
 const ZOOM_MINIMO = 10;
 const ZOOM_PUNTO = 14.5;
 const DURACION_TRAZO = 900;
@@ -29,6 +31,9 @@ const SVG_GLIFO =
   '<svg class="bus-glifo" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="12" rx="3" fill="currentColor"/><rect x="4" y="7.3" width="3.6" height="3.8" rx=".8" fill="var(--color-bus)"/><rect x="8.6" y="7.3" width="3.6" height="3.8" rx=".8" fill="var(--color-bus)"/><rect x="13.2" y="7.3" width="3.6" height="3.8" rx=".8" fill="var(--color-bus)"/><rect x="17.8" y="7.3" width="2.6" height="6.5" rx=".8" fill="var(--color-bus)"/><rect x="2" y="13.6" width="20" height="1" fill="var(--color-bus)" opacity=".45"/><circle cx="7" cy="17.4" r="2.3" fill="currentColor" stroke="var(--color-bus)" stroke-width="1.3"/><circle cx="17" cy="17.4" r="2.3" fill="currentColor" stroke="var(--color-bus)" stroke-width="1.3"/></svg>';
 const PROPIO = "m-"; // prefijo de las fuentes y capas de Morlaco, para conservarlas al cambiar de estilo
 
+// El bus de frente de los letreros de parada (relleno, para que se lea en tamaño pequeño).
+const SVG_PARADA =
+  '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="15" rx="3.5" fill="currentColor"/><rect x="7.2" y="5.4" width="9.6" height="5.4" rx="1.4" fill="var(--fondo-parada)"/><circle cx="8.6" cy="14.3" r="1.2" fill="var(--fondo-parada)"/><circle cx="15.4" cy="14.3" r="1.2" fill="var(--fondo-parada)"/><rect x="6" y="18" width="3.4" height="3" rx="1" fill="currentColor"/><rect x="14.6" y="18" width="3.4" height="3" rx="1" fill="currentColor"/></svg>';
 export const SVG_BICI =
   '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="16" r="3.5"/><circle cx="18" cy="16" r="3.5"/><path d="M6 16l4-7h5l3 7M10 9l2 7M14 6h3"/></svg>';
 const SVG_RAYO =
@@ -83,6 +88,38 @@ function imagenFlecha() {
   return g.getImageData(0, 0, n, n);
 }
 
+/**
+ * El letrero de una parada, como los de la calle: un cuadro del color del sentido, con
+ * borde y un bus de frente que contrastan con él (blancos en el modo claro, oscuros en el
+ * oscuro). Se dibuja al doble para pantallas nítidas.
+ */
+function imagenParada(fondo, figura, borde) {
+  const n = 44;
+  const lienzo = document.createElement("canvas");
+  lienzo.width = lienzo.height = n;
+  const g = lienzo.getContext("2d");
+  const cuadro = (x, y, ancho, alto, radio) => {
+    g.beginPath();
+    if (g.roundRect) g.roundRect(x, y, ancho, alto, radio);
+    else g.rect(x, y, ancho, alto);
+    g.fill();
+  };
+  g.fillStyle = borde;
+  cuadro(1, 1, n - 2, n - 2, 12);
+  g.fillStyle = fondo;
+  cuadro(4.5, 4.5, n - 9, n - 9, 8.5);
+  // El bus: carrocería, parabrisas, faros y ruedas.
+  g.fillStyle = figura;
+  cuadro(12.5, 10, 19, 20, 4.5);
+  cuadro(14, 30, 4.5, 4, 1.5);
+  cuadro(25.5, 30, 4.5, 4, 1.5);
+  g.fillStyle = fondo;
+  cuadro(15, 13, 14, 7.5, 2);
+  cuadro(15.5, 24, 3, 3, 1.5);
+  cuadro(25.5, 24, 3, 3, 1.5);
+  return g.getImageData(0, 0, n, n);
+}
+
 function color(nombre) {
   return getComputedStyle(document.documentElement).getPropertyValue(nombre).trim();
 }
@@ -123,7 +160,7 @@ function sinMapa(contenedor) {
   contenedor.replaceChildren(Object.assign(document.createElement("p"), { textContent: t("mapaNoDisponible") }));
 }
 
-const METODOS = ["agregarCapas", "mostrarCapa", "resaltar", "resaltarLinea", "dibujarRuta", "mostrar"];
+const METODOS = ["agregarCapas", "mostrarCapa", "resaltar", "resaltarLinea", "dibujarRuta", "mostrar", "olvidar"];
 
 /**
  * El mapa de la página. Se devuelve enseguida: la página no espera a MapLibre para mostrar
@@ -250,13 +287,35 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
   const visibles = new Set();
   const verCiclovias = () => (visibles.has("ciclovias") ? "visible" : "none");
 
-  // Ida en rojo bandera y retorno en azul cúpula; se puede ver un solo sentido.
+  // Ida en azul cúpula y retorno en púrpura punteado; se puede ver un solo sentido.
   const PRINCIPAL = ["!=", ["get", "tipo"], "alargue"];
+  const IDA = ["all", PRINCIPAL, ["!=", ["get", "sentido"], "retorno"]];
+  const RETORNO = ["all", PRINCIPAL, ["==", ["get", "sentido"], "retorno"]];
   const ALARGUE = ["==", ["get", "tipo"], "alargue"];
   let sentidoVisible = "ambos";
   const filtroLinea = (base) =>
     sentidoVisible === "ambos" ? base : ["all", base, ["==", ["get", "sentido"], sentidoVisible]];
-  const colorSentido = () => ["match", ["get", "sentido"], "retorno", color("--cupula-hondo"), color("--bandera-rojo")];
+  const colorSentido = () => ["match", ["get", "sentido"], "retorno", color("--sentido-retorno"), color("--sentido-ida")];
+
+  // Con una ruta o una línea a la vista, las zonas de recolección quedan solo como contorno
+  // gris discontinuo: su relleno le quitaba contraste al trazo.
+  let zonasDiscretas = false;
+  const aplicarZonas = () => {
+    if (!mapa.getLayer(`${PROPIO}zonas-relleno`)) return;
+    const normal = capasPropias();
+    const de = (id) => normal.find((c) => c.id === `${PROPIO}${id}`).paint;
+    mapa.setPaintProperty(`${PROPIO}zonas-relleno`, "fill-opacity", zonasDiscretas ? 0 : de("zonas-relleno")["fill-opacity"]);
+    const borde = de("zonas-borde");
+    mapa.setPaintProperty(`${PROPIO}zonas-borde`, "line-color", zonasDiscretas ? color("--linea-campo") : borde["line-color"]);
+    mapa.setPaintProperty(`${PROPIO}zonas-borde`, "line-opacity", zonasDiscretas ? 0.4 : borde["line-opacity"]);
+    mapa.setPaintProperty(`${PROPIO}zonas-borde`, "line-width", zonasDiscretas ? 1.2 : borde["line-width"]);
+    mapa.setPaintProperty(`${PROPIO}zonas-borde`, "line-dasharray", zonasDiscretas ? [3, 3] : null);
+    contenedor.classList.toggle("zonas-discretas", zonasDiscretas);
+  };
+  const discretas = (si) => {
+    zonasDiscretas = si;
+    aplicarZonas();
+  };
 
   // Se vuelven a pedir los colores cada vez: cambian con el modo oscuro.
   const capasPropias = () => [
@@ -269,7 +328,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
         "fill-opacity": [
           "case",
           ["boolean", ["feature-state", "elegida"], false],
-          0.3,
+          0.18, /* el borde de 3 px ya la marca; así no tapa las calles */
           ["boolean", ["feature-state", "atenuada"], false],
           0.07,
           0.16,
@@ -316,9 +375,23 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
       id: `${PROPIO}linea`,
       type: "line",
       source: `${PROPIO}linea`,
-      filter: filtroLinea(PRINCIPAL),
+      filter: filtroLinea(IDA),
       layout: { "line-cap": "round", "line-join": "round" },
       paint: { "line-color": colorSentido(), "line-width": 4, "line-opacity": 0.9, "line-offset": SEPARACION_SENTIDOS },
+    },
+    {
+      id: `${PROPIO}linea-retorno`,
+      type: "line",
+      source: `${PROPIO}linea`,
+      filter: filtroLinea(RETORNO),
+      layout: { "line-join": "round" },
+      paint: {
+        "line-color": colorSentido(),
+        "line-width": 4,
+        "line-opacity": 0.9,
+        "line-offset": SEPARACION_SENTIDOS,
+        "line-dasharray": [2, 1.2],
+      },
     },
     {
       id: `${PROPIO}linea-alargue`,
@@ -338,6 +411,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
       type: "circle",
       source: `${PROPIO}paradasLinea`,
       minzoom: 12,
+      maxzoom: ZOOM_LETRERO,
       filter: filtroLinea(["has", "sentido"]),
       paint: {
         "circle-radius": ["interpolate", ["linear"], ["zoom"], 12, 3, 16, 6],
@@ -357,7 +431,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
         "text-field": ["get", "nombre"],
         "text-font": ["Noto Sans Regular"],
         "text-size": 11,
-        "text-offset": [0, 1.1],
+        "text-offset": [0, 1.4],
         "text-anchor": "top",
         "text-max-width": 9,
       },
@@ -383,6 +457,20 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
         "icon-rotation-alignment": "map",
       },
       paint: { "icon-color": colorSentido(), "icon-halo-color": color("--superficie"), "icon-halo-width": 1.5 },
+    },
+    {
+      // Encima de las flechas, para que no tapen el letrero.
+      id: `${PROPIO}linea-paradas-letrero`,
+      type: "symbol",
+      source: `${PROPIO}paradasLinea`,
+      minzoom: ZOOM_LETRERO,
+      filter: filtroLinea(["has", "sentido"]),
+      layout: {
+        "icon-image": ["match", ["get", "sentido"], "retorno", `${PROPIO}parada-retorno`, `${PROPIO}parada-ida`],
+        "icon-size": ["interpolate", ["linear"], ["zoom"], ZOOM_LETRERO, 0.95, 17, 1.2],
+        "icon-allow-overlap": true,
+        "icon-ignore-placement": true,
+      },
     },
     {
       id: `${PROPIO}ruta-pie`,
@@ -439,9 +527,16 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
     const ultimaDibujada = capas.findLastIndex((c) => c.type !== "symbol");
     const nombres = capas.slice(ultimaDibujada + 1).find((c) => c.type === "symbol")?.id;
     if (!mapa.hasImage(`${PROPIO}flecha`)) mapa.addImage(`${PROPIO}flecha`, imagenFlecha(), { sdf: true, pixelRatio: 2 });
+    // Los letreros llevan el color de cada sentido, que cambia con el modo oscuro.
+    for (const [sentido, variable] of [["ida", "--sentido-ida"], ["retorno", "--sentido-retorno"]]) {
+      const id = `${PROPIO}parada-${sentido}`;
+      if (mapa.hasImage(id)) mapa.removeImage(id);
+      mapa.addImage(id, imagenParada(color(variable), color("--sobre-accion"), color("--superficie")), { pixelRatio: 2 });
+    }
     for (const capa of capasPropias()) if (!mapa.getLayer(capa.id)) mapa.addLayer(capa, nombres);
     aplicarEstadoZonas();
     ajustarCiclovias();
+    aplicarZonas();
   };
   // Al llegar el estilo (no hace falta esperar a las teselas) y cada vez que cambia: en modo
   // oscuro hay otro mapa base, y las capas propias se vuelven a poner con los colores nuevos.
@@ -540,19 +635,22 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
   });
   // Pasar por una parada de la línea dice su nombre y hacia dónde va el bus desde ahí.
   const textoParada = (f) => t("paradaDeLinea", { parada: f.properties.nombre, destino: f.properties.hacia });
-  mapa.on("mousemove", `${PROPIO}linea-paradas`, (e) => {
-    mapa.getCanvas().style.cursor = "pointer";
-    etiquetaFlotante.setLngLat(e.features[0].geometry.coordinates).setText(textoParada(e.features[0])).addTo(mapa);
-  });
-  mapa.on("mouseleave", `${PROPIO}linea-paradas`, () => {
-    mapa.getCanvas().style.cursor = "";
-    etiquetaFlotante.remove();
-  });
+  const CAPAS_PARADA = [`${PROPIO}linea-paradas`, `${PROPIO}linea-paradas-letrero`];
+  for (const capa of CAPAS_PARADA) {
+    mapa.on("mousemove", capa, (e) => {
+      mapa.getCanvas().style.cursor = "pointer";
+      etiquetaFlotante.setLngLat(e.features[0].geometry.coordinates).setText(textoParada(e.features[0])).addTo(mapa);
+    });
+    mapa.on("mouseleave", capa, () => {
+      mapa.getCanvas().style.cursor = "";
+      etiquetaFlotante.remove();
+    });
+  }
   mapa.on("click", (e) => {
     etiquetaFlotante.remove();
     // Tocar una parada (en el teléfono) muestra su nombre en vez de elegir ese punto.
-    const capa = `${PROPIO}linea-paradas`;
-    const [parada] = mapa.getLayer(capa) ? mapa.queryRenderedFeatures(e.point, { layers: [capa] }) : [];
+    const capas = CAPAS_PARADA.filter((c) => mapa.getLayer(c));
+    const [parada] = capas.length ? mapa.queryRenderedFeatures(e.point, { layers: capas }) : [];
     if (parada) {
       etiquetaFlotante.setLngLat(parada.geometry.coordinates).setText(textoParada(parada)).addTo(mapa);
       return;
@@ -606,7 +704,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
         marcador(`<span class="marca-capa bici">${SVG_BICI}</span>`, f.geometry.coordinates, {
           texto: [f.properties.nombre, f.properties.capacidad ? t("bicicletaAnclajes", { n: f.properties.capacidad }) : null]
             .filter(Boolean)
-            .join(" · "),
+            .join(", "),
         }),
       );
     }
@@ -615,7 +713,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
       const carga = await cargarJson("movilidad/carga.geojson");
       grupos.carga = carga.features.map((f) =>
         marcador(`<span class="marca-capa carga">${SVG_RAYO}</span>`, f.geometry.coordinates, {
-          texto: [f.properties.nombre, textoAcceso(f.properties.acceso)].filter(Boolean).join(" · "),
+          texto: [f.properties.nombre, textoAcceso(f.properties.acceso)].filter(Boolean).join(", "),
         }),
       );
     });
@@ -686,13 +784,15 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
     enRuta = false;
     panel.hidden = true;
     contenedor.classList.remove("con-linea");
+    discretas(false);
     elegirSentido("ambos");
   }
 
   function elegirSentido(sentido) {
     sentidoVisible = sentido;
     if (mapa.getLayer(`${PROPIO}linea`)) {
-      mapa.setFilter(`${PROPIO}linea`, filtroLinea(PRINCIPAL));
+      mapa.setFilter(`${PROPIO}linea`, filtroLinea(IDA));
+      mapa.setFilter(`${PROPIO}linea-retorno`, filtroLinea(RETORNO));
       mapa.setFilter(`${PROPIO}linea-alargue`, filtroLinea(ALARGUE));
       mapa.setFilter(`${PROPIO}linea-flechas`, filtroLinea(PRINCIPAL));
       mapa.setFilter(`${PROPIO}linea-paradas`, filtroLinea(["has", "sentido"]));
@@ -859,7 +959,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
     recorridos = tramos.map((tramo) => ({
       linea: tramo.linea,
       sentido: tramo.sentido,
-      color: "retorno", // del azul de la ruta dibujada
+      color: "ida", // del azul de la ruta dibujada
       hacia: tramo.hacia,
       horario: tramo.horario,
       medida: medirRecorrido(tramo.trazado),
@@ -996,7 +1096,12 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
     resaltarLinea(trazados, { linea, horarios, tipo, paradas } = {}) {
       etiquetaFlotante.remove();
       limpiarLinea();
+      // Sin restos de una ruta buscada antes: se ve solo la línea.
+      rutaMarcas = quitar(rutaMarcas);
+      poner("rutaPie", vacio());
+      poner("rutaBus", vacio());
       if (!trazados) return;
+      discretas(true);
       // La ruta normal y, en el selector, sus variantes (cada alargue como ruta completa).
       const principales = trazados.filter((t) => t.properties.tipo !== "alargue");
       mostrarLinea(principales, { linea, horarios, tipo, paradas, variantes: variantesDeLinea(trazados) });
@@ -1033,6 +1138,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
       );
       poner("rutaPie", coleccion(pie));
       trazar("rutaBus", bus);
+      discretas(true);
       // Los buses estimados, solo en rutas normales: no se sabe qué buses hacen cada variante.
       const conHorario = opcion.tramos.filter(
         (t) => t.modo === "bus" && t.tipo !== "tranvia" && !t.variante && t.horario && t.largo > 0,
@@ -1056,7 +1162,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
       aplicarEstadoZonas();
       paradas = quitar(paradas);
       cercanas.forEach((parada, i) => {
-        const m = marcador(`<span class="etiqueta-parada">${i + 1}</span>`, [parada.lon, parada.lat], {
+        const m = marcador(`<span class="etiqueta-parada">${SVG_PARADA}${i + 1}</span>`, [parada.lon, parada.lat], {
           texto: nombreParada(parada),
           clase: "aparece",
         });
@@ -1068,6 +1174,25 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento }
       const zoom = Math.max(mapa.getZoom(), ZOOM_PUNTO);
       if (SIN_MOVIMIENTO) mapa.jumpTo({ center: destino, zoom });
       else mapa.flyTo({ center: destino, zoom, speed: 1.4, curve: 1.42, essential: false });
+    },
+    /** Sin punto elegido: quita todo lo dibujado y vuelve a la vista de la ciudad. */
+    olvidar() {
+      etiquetaFlotante.remove();
+      poner("calles", vacio());
+      limpiarLinea();
+      poner("rutaPie", vacio());
+      poner("rutaBus", vacio());
+      rutaMarcas = quitar(rutaMarcas);
+      paradas = quitar(paradas);
+      cancelAnimationFrame(movimiento);
+      elegido?.remove();
+      elegido = null;
+      estadoZonas = { elegida: null };
+      aplicarEstadoZonas();
+      discretas(false);
+      const vista = { center: [CENTRO_CUENCA.lon, CENTRO_CUENCA.lat], zoom: ZOOM_INICIAL };
+      if (SIN_MOVIMIENTO) mapa.jumpTo(vista);
+      else mapa.flyTo({ ...vista, speed: 1.4, curve: 1.42, essential: false });
     },
   };
 }
