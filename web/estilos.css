@@ -3006,6 +3006,52 @@ button.linea[aria-pressed="true"] {
   display: none;
 }
 
+/* "Ver esta calle": la pregunta que sale al tocar el mapa con una calle ya elegida. El globo
+   es el propio botón, con su pico hacia el punto tocado. */
+.propuesta-gl {
+  z-index: 3;
+}
+
+.propuesta-gl .maplibregl-popup-content {
+  padding: 0;
+  border-radius: var(--radio-control);
+  background: none;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.3);
+}
+
+.mapa .boton-propuesta {
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: var(--radio-control);
+  background: var(--accion);
+  color: var(--sobre-accion);
+  font: 700 var(--t-0) / 1 var(--letra);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.mapa .boton-propuesta:focus-visible {
+  outline: 3px solid var(--foco-halo);
+  outline-offset: 2px;
+}
+
+.propuesta-gl[class*="anchor-bottom"] .maplibregl-popup-tip {
+  border-top-color: var(--accion);
+}
+
+.propuesta-gl[class*="anchor-top"] .maplibregl-popup-tip {
+  border-bottom-color: var(--accion);
+}
+
+.propuesta-gl.maplibregl-popup-anchor-left .maplibregl-popup-tip {
+  border-right-color: var(--accion);
+}
+
+.propuesta-gl.maplibregl-popup-anchor-right .maplibregl-popup-tip {
+  border-left-color: var(--accion);
+}
+
 .control-capas {
   color: var(--tinta);
   background: var(--superficie);

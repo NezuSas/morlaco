@@ -1043,8 +1043,34 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
       etiquetaFlotante.remove();
     });
   }
+  // Con una calle ya elegida, un toque en el mapa no la cambia: al moverlo o al acercarlo
+  // es fácil tocarlo sin querer. El primer toque pregunta ahí mismo ("Ver esta calle") y el
+  // segundo, sobre ese botón, la elige. Sin calle elegida todavía, basta un toque.
+  const propuesta = new maplibregl.Popup({
+    closeButton: false,
+    closeOnClick: false,
+    className: "propuesta-gl",
+    offset: 6,
+    maxWidth: "none",
+  });
+  let puntoPropuesto = null;
+  const botonPropuesta = document.createElement("button");
+  botonPropuesta.type = "button";
+  botonPropuesta.className = "boton-propuesta";
+  botonPropuesta.textContent = t("mapaVerCalle");
+  botonPropuesta.addEventListener("click", () => {
+    const punto = puntoPropuesto;
+    propuesta.remove();
+    if (punto) alElegir(punto);
+  });
+  propuesta.setDOMContent(botonPropuesta);
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && propuesta.isOpen()) propuesta.remove();
+  });
+
   mapa.on("click", (e) => {
     etiquetaFlotante.remove();
+    propuesta.remove();
     // Tocar una parada (en el teléfono) muestra su nombre en vez de elegir ese punto.
     const capas = CAPAS_PARADA.filter((c) => mapa.getLayer(c));
     const [parada] = capas.length ? mapa.queryRenderedFeatures(e.point, { layers: capas }) : [];
@@ -1052,7 +1078,10 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
       etiquetaFlotante.setLngLat(parada.geometry.coordinates).setText(textoParada(parada)).addTo(mapa);
       return;
     }
-    alElegir({ lat: e.lngLat.lat, lon: e.lngLat.lng });
+    const punto = { lat: e.lngLat.lat, lon: e.lngLat.lng };
+    if (!contenedor.classList.contains("con-punto")) return alElegir(punto);
+    puntoPropuesto = punto;
+    propuesta.setLngLat(e.lngLat).addTo(mapa);
   });
 
   let paradas = [];
@@ -1648,6 +1677,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
     },
     mostrar(punto, zona, cercanas) {
       etiquetaFlotante.remove();
+      propuesta.remove();
       poner("calles", vacio());
       limpiarLinea();
       cancelAnimationFrame(animaciones.get("rutaPie"));
