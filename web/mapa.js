@@ -64,6 +64,10 @@ export const SVG_BICI =
 const SVG_CRUZ = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 3.5h5v6h6v5h-6v6h-5v-6h-6v-5h6z" fill="currentColor"/></svg>';
 const SVG_RAYO =
   '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M13.5 2.5 5 13.5h6.2l-1 8 8.8-11h-6.3z"/></svg>';
+const SVG_AMPLIAR =
+  '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7" /></svg>';
+const SVG_CERRAR =
+  '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M5 5l14 14M19 5 5 19" /></svg>';
 const SVG_CAPAS =
   '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></svg>';
 
@@ -293,7 +297,8 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
     ],
     attributionControl: { compact: true },
     // En el celular el mapa queda en medio de la página: con un dedo se sigue bajando por
-    // ella y con dos se mueve el mapa (tocar para elegir un punto sigue igual).
+    // ella y con dos se mueve el mapa (tocar para elegir un punto sigue igual). Para moverlo
+    // con un dedo está "Ampliar", que lo pone a pantalla completa.
     locale: {
       "CooperativeGesturesHandler.WindowsHelpText": t("gestoTeclaWindows"),
       "CooperativeGesturesHandler.MacHelpText": t("gestoTeclaMac"),
@@ -305,7 +310,11 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
   });
   mapa.touchZoomRotate.disableRotation();
   const angosto = window.matchMedia("(max-width: 899px)");
-  const ajustarGestos = () => (angosto.matches ? mapa.cooperativeGestures.enable() : mapa.cooperativeGestures.disable());
+  let amplio = false; // a pantalla completa (solo en el celular)
+  // Cómo volver a encuadrar la línea o la ruta que se está mirando, si hay una.
+  let reencuadre = null;
+  const ajustarGestos = () =>
+    angosto.matches && !amplio ? mapa.cooperativeGestures.enable() : mapa.cooperativeGestures.disable();
   ajustarGestos();
   angosto.addEventListener("change", ajustarGestos);
   // Los créditos empiezan plegados (se abren con la "i"): abiertos, en el celular tapaban
@@ -335,6 +344,57 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
     }).observe(creditos, { attributes: true, attributeFilter: ["open", "class"] });
   });
   mapa.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-left");
+
+  // ---------- A pantalla completa (celular) ----------
+  // Como en las apps de mapas: ampliado, el mapa ocupa toda la pantalla y se mueve con un
+  // dedo. Se cierra con su botón, con Escape o con el botón "atrás" del teléfono (por eso se
+  // anota en el historial).
+  const seccion = contenedor.parentElement;
+  const botonAmpliar = document.createElement("button");
+  botonAmpliar.type = "button";
+  botonAmpliar.className = "maplibregl-ctrl boton-ampliar";
+  const pintarAmpliar = () => {
+    botonAmpliar.innerHTML = `${amplio ? SVG_CERRAR : SVG_AMPLIAR}<span>${t(amplio ? "mapaCerrar" : "mapaAmpliar")}</span>`;
+    botonAmpliar.setAttribute("aria-label", t(amplio ? "mapaCerrarAria" : "mapaAmpliarAria"));
+  };
+  const ponerAmplio = (si) => {
+    if (si === amplio || !seccion) return;
+    // Al cambiar de tamaño, la línea o la ruta elegida se vuelve a encuadrar para que llene
+    // el mapa; sin ninguna, el punto que se estaba mirando sigue en el centro.
+    const centroAntes = mapa.getCenter();
+    amplio = si;
+    seccion.classList.toggle("mapa-amplio", si);
+    document.documentElement.classList.toggle("con-mapa-amplio", si);
+    pintarAmpliar();
+    ajustarGestos();
+    mapa.resize();
+    if (reencuadre) reencuadre();
+    else mapa.setCenter(centroAntes);
+  };
+  const cerrarAmplio = () => {
+    // Con la anotación en el historial, se vuelve atrás y el "popstate" lo cierra.
+    if (history.state?.mapaAmplio) history.back();
+    else ponerAmplio(false);
+  };
+  botonAmpliar.addEventListener("click", () => {
+    if (amplio) return cerrarAmplio();
+    ponerAmplio(true);
+    history.pushState({ ...history.state, mapaAmplio: true }, "");
+  });
+  window.addEventListener("popstate", () => {
+    if (!amplio) return;
+    ponerAmplio(false);
+    // La página deja en la dirección el punto de ahora (pudo cambiar con el mapa ampliado).
+    window.dispatchEvent(new Event("morlaco:mapa-cerrado"));
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && amplio) cerrarAmplio();
+  });
+  angosto.addEventListener("change", () => {
+    if (!angosto.matches && amplio) cerrarAmplio();
+  });
+  pintarAmpliar();
+  mapa.addControl({ onAdd: () => botonAmpliar, onRemove: () => botonAmpliar.remove() }, "top-left");
 
   // ---------- Datos propios ----------
   const datosZonas = coleccion(
@@ -1144,6 +1204,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
     datosLinea = null;
     varianteActual = null;
     enRuta = false;
+    reencuadre = null;
     panel.hidden = true;
     contenedor.classList.remove("con-linea", "trazando");
     discretas(false);
@@ -1249,7 +1310,8 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
       nota.hidden = false;
       arrancarBuses();
     }
-    encuadrar(caja(trazos), { ...MARGEN_TRAZO, bottom: altoPanel() + 40 });
+    reencuadre = () => encuadrar(caja(trazos), { ...MARGEN_TRAZO, bottom: altoPanel() + 40 });
+    reencuadre();
   }
 
   function mostrarLinea(principales, { linea, horarios, tipo, paradas, variantes = [] }) {
@@ -1559,10 +1621,12 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
       let seMueve = false;
       const alMoverse = () => (seMueve = true);
       mapa.once("movestart", alMoverse);
-      encuadrar(caja(todos, [[destino.lon, destino.lat]]), {
-        ...MARGEN_TRAZO,
-        bottom: altoPanel() + 40,
-      });
+      reencuadre = () =>
+        encuadrar(caja(todos, [[destino.lon, destino.lat]]), {
+          ...MARGEN_TRAZO,
+          bottom: altoPanel() + 40,
+        });
+      reencuadre();
       // Se empieza a dibujar cuando el mapa termina de moverse hasta la ruta (o enseguida).
       let empezado = false;
       const miVez = vezRuta;

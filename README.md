@@ -131,6 +131,9 @@ BiciPública, las ciclovías y los puntos de carga para autos eléctricos.
   "Instalar"; en el iPhone, desde Safari, con Compartir y "Añadir a pantalla de inicio".
 - **Funcionar sin conexión** con los últimos datos descargados, útil en un corte de luz o sin megas.
 - **Hablar español e inglés.** Elige el idioma del navegador y tiene un botón para cambiarlo.
+- **Ampliar el mapa en el celular.** Dentro de la página el mapa se mueve con dos dedos, para poder seguir
+  bajando con uno; el botón "Ampliar" lo pone a pantalla completa, donde se mueve con un dedo como en
+  cualquier app de mapas. Se cierra con "Cerrar" o con el botón atrás del teléfono.
 - **Verse en claro o en oscuro.** Sigue el modo de tu dispositivo, y el botón de la luna (o el sol) de la
   barra lo cambia cuando quieras.
 - **Imprimir la hoja de tu zona**, con los días de recolección y las farmacias de turno, para la

@@ -768,6 +768,89 @@ button.boton-tema[hidden] {
   font: 600 1rem/1.4 var(--letra);
 }
 
+/* ---------- El mapa a pantalla completa (celular) ----------
+   "Ampliar" lo saca de la página y lo pone encima de todo: ahí se mueve con un dedo. El
+   panel de la línea elegida queda debajo, como la hoja inferior de una app de mapas. */
+.mapa .boton-ampliar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 44px;
+  padding: 0 0.8rem 0 0.7rem;
+  border: 0;
+  border-radius: var(--radio-control);
+  background: var(--superficie);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.22);
+  color: var(--tinta);
+  font: 700 var(--t-0) / 1 var(--letra);
+  cursor: pointer;
+}
+
+.mapa .boton-ampliar svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.mapa .boton-ampliar:focus-visible {
+  outline: 3px solid var(--foco-halo);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--foco-anillo);
+}
+
+.mapa-contenedor.mapa-amplio {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  margin: 0;
+  border: 0;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  background: var(--superficie);
+}
+
+.mapa-contenedor.mapa-amplio .mapa {
+  flex: 1;
+  height: auto;
+  min-height: 0;
+}
+
+/* La calle elegida, en una franja sobre el mapa ampliado. */
+.mapa-lugar {
+  display: none;
+}
+
+.mapa-amplio .mapa-lugar:not(:empty) {
+  display: block;
+  margin: 0;
+  padding: 0.6rem var(--margen);
+  border-bottom: 1px solid var(--linea);
+  overflow: hidden;
+  color: var(--tinta);
+  font: 700 var(--t-1, 1.1rem) / 1.25 var(--serif);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Cerrar es lo que más se busca: en el color de acción. */
+.mapa-amplio .mapa .boton-ampliar {
+  background: var(--accion);
+  color: var(--sobre-accion);
+}
+
+/* Debajo del mapa ampliado, la página no se mueve. */
+html.con-mapa-amplio {
+  overflow: hidden;
+}
+
+/* En pantallas anchas el mapa ya es grande y se mueve con el ratón. */
+@media (min-width: 900px) {
+  .mapa .boton-ampliar {
+    display: none;
+  }
+}
+
 @media (min-width: 900px) {
   .disposicion {
     display: grid;

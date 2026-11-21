@@ -2129,7 +2129,8 @@ async function iniciar() {
     pintarPunto();
     pintarBici(masCercano(punto, bicicletas));
     mapa.mostrar(punto, zona, cercanas);
-    history.replaceState(null, "", hashDesdePunto(punto));
+    // Se conserva el estado: ahí se anota si el mapa está ampliado (mapa.js).
+    history.replaceState(history.state, "", hashDesdePunto(punto));
     guardar(CLAVE_ULTIMO_PUNTO, textoDeLugar(punto, nombrar ? null : nombreActual));
     if (nombrar) nombrarPunto(punto);
     if (origen) {
@@ -2385,7 +2386,7 @@ async function iniciar() {
     puntoActual = null;
     zonaActual = null;
     nombreActual = null;
-    history.replaceState(null, "", location.pathname);
+    history.replaceState(history.state, "", location.pathname);
     $("direccion").value = "";
     $("destino").value = "";
     limpiarDireccion();
@@ -2449,7 +2450,17 @@ async function iniciar() {
   };
   window.addEventListener("hashchange", () => {
     const punto = puntoDesdeHash(location.hash);
-    if (punto) abrir(punto, t("puntoEnlace"));
+    if (!punto || (puntoActual && distanciaMetros(punto, puntoActual) < 1)) return;
+    abrir(punto, t("puntoEnlace"));
+  });
+  // Al cerrar el mapa ampliado con "atrás", el historial vuelve a la dirección de cuando se
+  // amplió: se deja la del punto de ahora, para no saltar a la calle anterior.
+  // El nombre de la calle, también sobre el mapa ampliado: al tocar otra calle ahí, se ve cuál es.
+  const copiarLugar = () => ($("mapa-lugar").textContent = $("punto-nombre").textContent);
+  new MutationObserver(copiarLugar).observe($("punto-nombre"), { childList: true, characterData: true, subtree: true });
+  copiarLugar();
+  window.addEventListener("morlaco:mapa-cerrado", () => {
+    history.replaceState(history.state, "", puntoActual ? hashDesdePunto(puntoActual) : location.pathname);
   });
 
   pintarLugares();
