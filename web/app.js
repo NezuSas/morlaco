@@ -55,9 +55,11 @@ import {
   dolares,
   estacionCercana,
   frecuenciaTranvia,
+  horarioTranvia,
   lineasPorCalle,
   lineasCercanas,
   pasajeDeOpcion,
+  trazadosTranvia,
 } from "./buses.js";
 import { alarguesUnidos, paradasDeRecorrido, planificar, prepararLineas } from "./rutas.js";
 import { SVG_BICI, crearMapa } from "./mapa.js";
@@ -848,6 +850,8 @@ function pintarParadas(cercanas) {
 }
 
 let recorridosOficiales = null;
+let datosTranvia = null; // el tranvía en datos/manual/transporte.json: frecuencia y horario
+let estacionesDelTranvia = null; // datos/buses/tranvia.geojson, con el orden de cada sentido
 let paradasRegistradas = null; // datos/buses/paradas.geojson, para dibujar las de cada línea
 
 /**
@@ -915,9 +919,15 @@ function alTocarLinea(boton, botones, linea, mapa) {
     return;
   }
   boton.setAttribute("aria-pressed", "true");
-  mapa.resaltarLinea(alarguesUnidos(linea.trazados), {
+  // El tranvía se dibuja uniendo sus estaciones en orden (el trazado del municipio está
+  // incompleto) y no está en el horario de los buses: el suyo sale de su frecuencia y de sus
+  // horas de servicio, igual para los dos sentidos. Sin ese recorrido no se estima nada.
+  const trazosTranvia = linea.tipo === "tranvia" ? trazadosTranvia(estacionesDelTranvia) : null;
+  const delTranvia = trazosTranvia ? horarioTranvia(datosTranvia) : null;
+  mapa.resaltarLinea(trazosTranvia ?? alarguesUnidos(linea.trazados), {
     linea: linea.linea,
-    horarios: linea.horarios,
+    horarios: delTranvia ? { ida: delTranvia, retorno: delTranvia } : linea.horarios,
+    velocidad: delTranvia ? datosTranvia.velocidad_kmh : undefined,
     tipo: linea.tipo,
     paradas: paradasRegistradas,
   });
@@ -1965,6 +1975,8 @@ async function iniciar() {
     ),
   );
   paradasRegistradas = paradas;
+  datosTranvia = transporte?.tranvia ?? null;
+  estacionesDelTranvia = estacionesTranvia;
 
   const fechas = Object.values(estado ?? {})
     .map((f) => f.actualizado)
@@ -2160,7 +2172,12 @@ async function iniciar() {
     { cargarJson, sinMovimiento: SIN_MOVIMIENTO, centro: puntoDesdeHash(location.hash) ?? leerLugar(leer(CLAVE_ULTIMO_PUNTO)) },
   );
   mapa.marcarHoy(recoleccionDeHoy(zonas).todas);
-  mapa.agregarCapas(bicicletas, estacionesTranvia);
+  // Con la capa del tranvía prendida se ven también sus unidades en camino (estimadas).
+  mapa.agregarCapas(bicicletas, estacionesTranvia, {
+    trazos: trazadosTranvia(estacionesTranvia),
+    horario: horarioTranvia(datosTranvia),
+    velocidad: datosTranvia?.velocidad_kmh,
+  });
   pintarBasuraManual(basura, diasFeriado);
 
   $("buscar").addEventListener("submit", async (evento) => {

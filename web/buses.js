@@ -163,6 +163,37 @@ export function frecuenciaTranvia(tranvia, fecha = new Date()) {
   return tipoDeDia(fecha) === "lunes_viernes" ? frecuencia.lunes_viernes : frecuencia.fin_de_semana;
 }
 
+/**
+ * El horario de hoy del tranvía con la forma del de un bus ({ inicio, fin, intervalo_min }),
+ * para estimar por dónde van los tranvías. null si falta el horario o la frecuencia.
+ */
+export function horarioTranvia(tranvia, fecha = new Date()) {
+  const intervalo = frecuenciaTranvia(tranvia, fecha);
+  const { inicio, fin } = tranvia?.horario ?? {};
+  return intervalo && inicio && fin ? { inicio, fin, intervalo_min: intervalo } : null;
+}
+
+/**
+ * El recorrido del tranvía en cada sentido, uniendo sus estaciones en el orden que da la web
+ * del Tranvía. El trazado del municipio no sirve para esto: en un sentido mide 3 km de los 10
+ * y en el otro salta de un lado a otro. null si las estaciones no traen su orden.
+ */
+export function trazadosTranvia(estaciones) {
+  const de = (hacia, sentido) => {
+    const enOrden = (estaciones?.features ?? [])
+      .filter((f) => Number.isFinite(f.properties.orden?.[hacia]))
+      .sort((a, b) => a.properties.orden[hacia] - b.properties.orden[hacia]);
+    if (enOrden.length < 2) return null;
+    return {
+      type: "Feature",
+      properties: { linea: "Tranvía", tipo: "tranvia", sentido, hacia },
+      geometry: { type: "LineString", coordinates: enOrden.map((f) => f.geometry.coordinates) },
+    };
+  };
+  const trazos = [de("Parque Industrial", "ida"), de("Río Tarqui", "retorno")];
+  return trazos.every(Boolean) ? trazos : null;
+}
+
 /** La estación del tranvía más cercana (hasta 800 m), con su distancia. */
 export function estacionCercana(punto, estaciones) {
   return masCercano(punto, estaciones, 800);

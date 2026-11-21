@@ -117,7 +117,8 @@ Si escribes solo una calle ("Av. Solano"), ves las líneas que la recorren.
 ### En el mapa
 
 El mapa muestra las zonas de recolección (resaltadas las que tienen recolección hoy), tu punto, las paradas
-y los buses que vienen según su frecuencia. Con el botón de capas se prenden las estaciones del tranvía, la
+y los buses que vienen según su frecuencia. Al elegir el tranvía también se ven sus unidades en camino,
+estimadas con su frecuencia y su horario habitual (no es su posición real). Con el botón de capas se prenden las estaciones del tranvía, la
 BiciPública, las ciclovías y los puntos de carga para autos eléctricos.
 
 ## Qué más hace

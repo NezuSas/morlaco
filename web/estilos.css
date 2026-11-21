@@ -3407,6 +3407,13 @@ button.linea[aria-pressed="true"] {
   --color-bus: var(--bus-retorno);
 }
 
+/* Un bus o un tranvía: cada marcador muestra solo su dibujo. El tranvía va sin número. */
+.bus-estimado.tranvia .glifo-bus,
+.bus-estimado:not(.tranvia) .glifo-tranvia,
+.bus-estimado.tranvia .bus-numero {
+  display: none;
+}
+
 /* Todos los marcadores del mapa comparten el borde claro y la misma sombra: se leen como una
    sola familia, aunque cada uno tenga su forma y su color. */
 .etiqueta-zona,
@@ -3480,19 +3487,24 @@ button.linea[aria-pressed="true"] {
   visibility: hidden;
 }
 
-/* De lejos, cada bus es un punto de su color. */
-.mapa-lejos .bus-estimado {
+/* De lejos, cada bus es un punto de su color. Los tranvías son pocos y van entre las "T" de
+   sus estaciones: conservan su dibujo, encima de ellas, para que no se pierdan. */
+.bus-estimado.tranvia {
+  z-index: 3;
+}
+
+.mapa-lejos .bus-estimado:not(.tranvia) {
   width: 14px;
   height: 14px;
 }
 
-.mapa-lejos .bus-gota,
-.mapa-lejos .bus-glifo,
-.mapa-lejos .bus-numero {
+.mapa-lejos .bus-estimado:not(.tranvia) .bus-gota,
+.mapa-lejos .bus-estimado:not(.tranvia) .bus-glifo,
+.mapa-lejos .bus-estimado:not(.tranvia) .bus-numero {
   display: none;
 }
 
-.mapa-lejos .bus-estimado::before {
+.mapa-lejos .bus-estimado:not(.tranvia)::before {
   content: "";
   width: 11px;
   height: 11px;

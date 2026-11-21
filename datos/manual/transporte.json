@@ -100,6 +100,14 @@
   "tranvia": {
     "frecuencia_min": { "lunes_viernes": 8, "fin_de_semana": 15 },
     "horas_pico": ["06:00-09:00", "12:00-19:00"],
+    "horario": {
+      "inicio": "05:50",
+      "fin": "22:00",
+      "nota": "Horario habitual del servicio comercial. Cambia en feriados y por mantenimiento.",
+      "fuente": "https://elmercurio.com.ec/actualidad/2024/12/30/horario-tranvia-cuenca-diciembre-enero/"
+    },
+    "velocidad_kmh": 18,
+    "velocidad_nota": "Media con las paradas incluidas: unos 32 minutos para los 9,6 km de punta a punta, según los tiempos entre estaciones que muestra la página de itinerarios del Tranvía (vistos el 21 de noviembre de 2026). Sirve para estimar por dónde van los tranvías; no es un dato oficial.",
     "desde": "2025-10-15",
     "fuente": "https://elmercurio.com.ec/cuenca/2025/10/07/tranvia-cuenca-servicios-cambios/",
     "pagina": "https://tranvia.cuenca.gob.ec/itinerarios/#/itinerarios"

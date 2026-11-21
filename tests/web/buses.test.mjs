@@ -8,7 +8,9 @@ import {
   dolares,
   estacionCercana,
   frecuenciaTranvia,
+  horarioTranvia,
   pasajeDeOpcion,
+  trazadosTranvia,
   describirFrecuencia,
   horarioDeHoy,
   lineasCercanas,
@@ -115,6 +117,36 @@ test("frecuenciaTranvia: 8 min entre semana y 15 el fin de semana", () => {
   assert.equal(frecuenciaTranvia(tranvia, lunes10h), 8);
   assert.equal(frecuenciaTranvia(tranvia, enCuenca("2026-11-14T10:00")), 15); // sábado
   assert.equal(frecuenciaTranvia(null, lunes10h), null);
+});
+
+test("horarioTranvia: el horario del día con la forma del de un bus", () => {
+  const tranvia = { frecuencia_min: { lunes_viernes: 8, fin_de_semana: 15 }, horario: { inicio: "05:50", fin: "22:00" } };
+  assert.deepEqual(horarioTranvia(tranvia, lunes10h), { inicio: "05:50", fin: "22:00", intervalo_min: 8 });
+  assert.equal(horarioTranvia(tranvia, enCuenca("2026-11-14T10:00")).intervalo_min, 15); // sábado
+  // Sin horas de servicio o sin frecuencia no hay con qué estimar.
+  assert.equal(horarioTranvia({ frecuencia_min: { lunes_viernes: 8, fin_de_semana: 15 } }, lunes10h), null);
+  assert.equal(horarioTranvia({ horario: { inicio: "05:50", fin: "22:00" } }, lunes10h), null);
+  assert.equal(horarioTranvia(null, lunes10h), null);
+});
+
+test("trazadosTranvia une las estaciones de cada sentido en su orden", () => {
+  const estacion = (id, lon, orden) => ({ type: "Feature", properties: { id, orden }, geometry: { type: "Point", coordinates: [lon, -2.9] } });
+  const estaciones = {
+    features: [
+      estacion("B", -79.02, { "Parque Industrial": 2, "Río Tarqui": 2 }),
+      estacion("C", -79.0, { "Parque Industrial": 3, "Río Tarqui": 1 }),
+      estacion("A", -79.04, { "Parque Industrial": 1, "Río Tarqui": 3 }),
+      estacion("solo-ida", -79.01, { "Parque Industrial": 2.5 }),
+    ],
+  };
+  const [ida, retorno] = trazadosTranvia(estaciones);
+  assert.deepEqual(ida.properties, { linea: "Tranvía", tipo: "tranvia", sentido: "ida", hacia: "Parque Industrial" });
+  assert.deepEqual(ida.geometry.coordinates.map((c) => c[0]), [-79.04, -79.02, -79.01, -79.0]);
+  assert.equal(retorno.properties.hacia, "Río Tarqui");
+  assert.deepEqual(retorno.geometry.coordinates.map((c) => c[0]), [-79.0, -79.02, -79.04]);
+  // Sin el orden (datos viejos) no hay recorrido: la página usa el trazado del municipio.
+  assert.equal(trazadosTranvia({ features: [estacion("A", -79.04, {}), estacion("B", -79.02, {})] }), null);
+  assert.equal(trazadosTranvia(null), null);
 });
 
 test("pasajeDeOpcion suma cada bus y el tranvía", () => {

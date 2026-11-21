@@ -188,6 +188,7 @@ EN: dict[str, dict[str, Any]] = {
             "id": "Station code",
             "nombre": "Name",
             "hacia": "Directions that stop there",
+            "orden": "Position along each direction (1 is the first station)",
         },
     },
     "transporte-manual": {
@@ -499,6 +500,7 @@ CONJUNTOS: list[dict[str, Any]] = [
             "id": "Código de la estación",
             "nombre": "Nombre",
             "hacia": "Sentidos que paran ahí",
+            "orden": "Lugar en el recorrido de cada sentido (1 es la primera estación)",
         },
         "fuente_morlaco": "tranvia",
         "frecuencia": "diaria",

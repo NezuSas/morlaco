@@ -52,7 +52,11 @@ const CADA_BUSES_QUIETO_MS = 15000; // si se pidió reducir el movimiento: a sal
 const SVG_GOTA =
   '<svg class="bus-gota" viewBox="0 0 40 48" aria-hidden="true"><path d="M20 3 L30.2 17.9 A13 13 0 1 1 9.8 17.9 Z" fill="var(--color-bus)" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"/></svg>';
 const SVG_GLIFO =
-  '<svg class="bus-glifo" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="12" rx="3" fill="currentColor"/><rect x="4" y="7.3" width="3.6" height="3.8" rx=".8" fill="var(--color-bus)"/><rect x="8.6" y="7.3" width="3.6" height="3.8" rx=".8" fill="var(--color-bus)"/><rect x="13.2" y="7.3" width="3.6" height="3.8" rx=".8" fill="var(--color-bus)"/><rect x="17.8" y="7.3" width="2.6" height="6.5" rx=".8" fill="var(--color-bus)"/><rect x="2" y="13.6" width="20" height="1" fill="var(--color-bus)" opacity=".45"/><circle cx="7" cy="17.4" r="2.3" fill="currentColor" stroke="var(--color-bus)" stroke-width="1.3"/><circle cx="17" cy="17.4" r="2.3" fill="currentColor" stroke="var(--color-bus)" stroke-width="1.3"/></svg>';
+  '<svg class="bus-glifo glifo-bus" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="12" rx="3" fill="currentColor"/><rect x="4" y="7.3" width="3.6" height="3.8" rx=".8" fill="var(--color-bus)"/><rect x="8.6" y="7.3" width="3.6" height="3.8" rx=".8" fill="var(--color-bus)"/><rect x="13.2" y="7.3" width="3.6" height="3.8" rx=".8" fill="var(--color-bus)"/><rect x="17.8" y="7.3" width="2.6" height="6.5" rx=".8" fill="var(--color-bus)"/><rect x="2" y="13.6" width="20" height="1" fill="var(--color-bus)" opacity=".45"/><circle cx="7" cy="17.4" r="2.3" fill="currentColor" stroke="var(--color-bus)" stroke-width="1.3"/><circle cx="17" cy="17.4" r="2.3" fill="currentColor" stroke="var(--color-bus)" stroke-width="1.3"/></svg>';
+// El tranvía de lado, con su pantógrafo y sobre el riel: en el mapa no se confunde con un bus
+// ni con la "T" de las estaciones.
+const SVG_GLIFO_TRANVIA =
+  '<svg class="bus-glifo glifo-tranvia" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 2.4h7M10.2 5.6l1.8-3.2 1.8 3.2" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><rect x="1.5" y="6" width="21" height="11.5" rx="4" fill="currentColor"/><rect x="3.6" y="8.2" width="3.6" height="4.2" rx=".9" fill="var(--color-bus)"/><rect x="8" y="8.2" width="3.6" height="4.2" rx=".9" fill="var(--color-bus)"/><rect x="12.4" y="8.2" width="3.6" height="4.2" rx=".9" fill="var(--color-bus)"/><rect x="16.8" y="8.2" width="3.6" height="4.2" rx=".9" fill="var(--color-bus)"/><rect x="1.5" y="14.2" width="21" height="1" fill="var(--color-bus)" opacity=".45"/><rect x="0.5" y="19.4" width="23" height="1.4" rx=".7" fill="currentColor"/></svg>';
 const PROPIO = "m-"; // prefijo de las fuentes y capas de Morlaco, para conservarlas al cambiar de estilo
 
 // El bus de frente de los letreros de parada (relleno, para que se lea en tamaño pequeño).
@@ -1202,6 +1206,58 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
     }
     if (clave === "ciclovias" || clave === "tranvia") ajustarCiclovias();
     if (clave !== "ciclovias") grupos[clave].forEach((m) => (visibles.has(clave) ? m.addTo(mapa) : m.remove()));
+    if (clave === "tranvia") moverTranvias();
+  }
+
+  // ---------- Tranvías en camino, con la capa del tranvía ----------
+  // Con la capa prendida se ven también los tranvías, estimados con su frecuencia y su horario,
+  // desde cualquier calle. Si la línea elegida es el propio tranvía, ya los muestra ella.
+  let tranviaVivo = null; // [{ medida, largo, horario, velocidad, sentido, hacia }], uno por sentido
+  let tranviasMarcas = [];
+  function prepararTranvias({ trazos, horario, velocidad } = {}) {
+    if (!trazos || !horario) return;
+    tranviaVivo = trazos.map((f) => {
+      const medida = medirRecorrido(puntosDeTrazado(f.geometry));
+      return { medida, largo: medida.total, horario, velocidad, sentido: f.properties.sentido, hacia: f.properties.hacia };
+    });
+    // Avanzan despacio: con moverlos una vez por segundo basta.
+    setInterval(() => !document.hidden && moverTranvias(), 1000);
+    moverTranvias();
+  }
+  function moverTranvias() {
+    if (!tranviaVivo) return;
+    const ver = visibles.has("tranvia") && lineaActual?.tipo !== "tranvia";
+    const posiciones = [];
+    if (ver) {
+      const ahora = new Date();
+      for (const r of tranviaVivo) {
+        for (const metros of busesEnCamino(r.horario, r.largo, ahora, r.velocidad)) {
+          posiciones.push({ ...puntoEnRecorrido(r.medida, (metros / r.largo) * r.medida.total), r });
+        }
+      }
+    }
+    while (tranviasMarcas.length < posiciones.length) tranviasMarcas.push(marcaDeBus());
+    tranviasMarcas.forEach((tranvia, i) => {
+      const p = posiciones[i];
+      if (!p) {
+        if (tranvia.puesta) tranvia.marca.remove();
+        tranvia.puesta = false;
+        return;
+      }
+      const nodo = tranvia.marca.getElement();
+      nodo.style.setProperty("--rumbo", `${p.rumbo}deg`);
+      tranvia.marca.setLngLat([p.lon, p.lat]);
+      if (tranvia.de !== p.r) {
+        tranvia.de = p.r;
+        nodo.classList.add("tranvia");
+        nodo.classList.toggle("retorno", p.r.sentido === "retorno");
+        nodo.dataset.texto = t("tranviaEstimado", { destino: p.r.hacia });
+      }
+      if (!tranvia.puesta) {
+        tranvia.marca.addTo(mapa);
+        tranvia.puesta = true;
+      }
+    });
   }
 
   // ---------- Línea elegida: puntas, sentido y buses estimados ----------
@@ -1333,8 +1389,8 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
       });
       nota.hidden = false;
       nota.textContent = t("varianteNota");
-    } else if (datosLinea.tipo === "tranvia") {
-      nota.hidden = true; // del tranvía no hay horario de salidas para estimar
+    } else if (datosLinea.tipo === "tranvia" && !recorridos.some((r) => r.horario)) {
+      nota.hidden = true; // sin el horario del tranvía no hay con qué estimar
     } else {
       nota.hidden = false;
       arrancarBuses();
@@ -1343,7 +1399,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
     reencuadre();
   }
 
-  function mostrarLinea(principales, { linea, horarios, tipo, paradas, variantes = [] }) {
+  function mostrarLinea(principales, { linea, horarios, tipo, paradas, variantes = [], velocidad }) {
     lineaActual = { linea, tipo, horarios };
     datosLinea = { principales, variantes, paradas, tipo };
     const de = (sentido) => principales.find((f) => f.properties.sentido === sentido);
@@ -1351,6 +1407,8 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
       const medida = medirRecorrido(puntosDeTrazado(f.geometry));
       return {
         linea,
+        tipo,
+        velocidad, // la del tranvía; sin ella vale la de los buses
         sentido: f.properties.sentido,
         color: f.properties.sentido,
         hacia: f.properties.hacia,
@@ -1448,7 +1506,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
   function marcaDeBus() {
     const nodo = document.createElement("div");
     nodo.className = "bus-estimado";
-    nodo.innerHTML = `${SVG_GOTA}${SVG_GLIFO}<span class="bus-numero"></span>`;
+    nodo.innerHTML = `${SVG_GOTA}${SVG_GLIFO}${SVG_GLIFO_TRANVIA}<span class="bus-numero"></span>`;
     // El centro de la gota (no el del marcador, que incluye el número) cae sobre la calle.
     const marca = new maplibregl.Marker({ element: nodo, offset: [0, 3] });
     const ver = () => etiquetaFlotante.setLngLat(marca.getLngLat()).setText(nodo.dataset.texto).addTo(mapa);
@@ -1463,12 +1521,12 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
 
   /** Pone cada bus donde va ahora según el horario, y dice cuántos hay en camino. */
   function moverBuses() {
-    if (!enRuta && (!lineaActual || lineaActual.tipo === "tranvia" || varianteActual)) return;
+    if (!enRuta && (!lineaActual || varianteActual)) return;
     const ahora = new Date();
     const posiciones = [];
     for (const r of recorridos) {
       if (!enRuta && sentidoVisible !== "ambos" && sentidoVisible !== r.sentido) continue;
-      for (const metros of busesEnCamino(r.horario, r.largo, ahora)) {
+      for (const metros of busesEnCamino(r.horario, r.largo, ahora, r.velocidad)) {
         const fraccion = metros / r.largo;
         // En una ruta solo cuentan los buses que todavía vienen hacia tu parada: los que ya
         // pasaron no te sirven y harían dudar del "ya no pasan".
@@ -1491,8 +1549,13 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
       if (bus.de !== p.r) {
         bus.de = p.r;
         nodo.classList.toggle("retorno", p.r.color === "retorno");
-        nodo.querySelector(".bus-numero").textContent = p.r.linea;
-        nodo.dataset.texto = t("busEstimado", { linea: p.r.linea, destino: p.r.hacia });
+        // El tranvía lleva su propio dibujo y no necesita número: solo hay una línea.
+        const esTranvia = p.r.tipo === "tranvia";
+        nodo.classList.toggle("tranvia", esTranvia);
+        nodo.querySelector(".bus-numero").textContent = esTranvia ? "" : p.r.linea;
+        nodo.dataset.texto = esTranvia
+          ? t("tranviaEstimado", { destino: p.r.hacia })
+          : t("busEstimado", { linea: p.r.linea, destino: p.r.hacia });
       }
       if (!bus.puesta) {
         bus.marca.addTo(mapa);
@@ -1517,20 +1580,22 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
       return;
     }
     const sinHorario = recorridos.every((r) => r.horario === undefined);
+    const tranvias = lineaActual.tipo === "tranvia";
     const texto = sinHorario
       ? t("busesSinHorario")
       : posiciones.length === 0
-        ? t("busesSinServicio")
+        ? t(tranvias ? "tranviasSinServicio" : "busesSinServicio")
         : posiciones.length === 1
-          ? t("busesEnCaminoUno")
-          : t("busesEnCamino", { n: posiciones.length });
+          ? t(tranvias ? "tranviasEnCaminoUno" : "busesEnCaminoUno")
+          : t(tranvias ? "tranviasEnCamino" : "busesEnCamino", { n: posiciones.length });
     if (nota.textContent !== texto) nota.textContent = texto;
   }
 
   let control = null;
 
   return {
-    agregarCapas(bicicletas, estaciones) {
+    agregarCapas(bicicletas, estaciones, tranvia) {
+      prepararTranvias(tranvia);
       control = prepararCapas(bicicletas, estaciones);
     },
     mostrarCapa(clave) {
@@ -1563,7 +1628,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
      * Dibuja una línea (o la quita con null): cada sentido con su color y sus flechas, las
      * puntas A y B, un selector de sentido y los buses en camino, estimados con el horario.
      */
-    resaltarLinea(trazados, { linea, horarios, tipo, paradas } = {}) {
+    resaltarLinea(trazados, { linea, horarios, tipo, paradas, velocidad } = {}) {
       etiquetaFlotante.remove();
       limpiarLinea();
       // Sin restos de una ruta buscada antes: se ve solo la línea.
@@ -1577,7 +1642,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
       discretas(true);
       // La ruta normal y, en el selector, sus variantes (cada alargue como ruta completa).
       const principales = trazados.filter((t) => t.properties.tipo !== "alargue");
-      mostrarLinea(principales, { linea, horarios, tipo, paradas, variantes: variantesDeLinea(trazados) });
+      mostrarLinea(principales, { linea, horarios, tipo, paradas, velocidad, variantes: variantesDeLinea(trazados) });
     },
     /**
      * Dibuja una opción de "¿qué bus me lleva?": tramos a pie punteados, en bus llenos y

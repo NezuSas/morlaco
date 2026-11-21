@@ -6,6 +6,9 @@ cada sentido tiene paradas distintas (por la Gran Colombia hacia Río Tarqui y p
 la Mariscal Lamar hacia el Parque Industrial), así que una estación se identifica
 por su código y sus coordenadas.
 
+El orden de cada sentido se guarda también: con él la página une las estaciones y
+sabe por dónde va la línea (el trazado que publica el municipio está incompleto).
+
 No se usan los horarios en vivo de la web: llegan por un canal no documentado.
 La frecuencia publicada (cada 8 minutos entre semana, 15 los fines de semana) va
 en datos/manual/transporte.json.
@@ -48,12 +51,15 @@ def parsear_estaciones(contenido: bytes) -> dict[str, Any]:
                     "id": fila["id_est"],
                     "nombre": nombre_propio(fila.get("nombre") or fila["id_est"]),
                     "hacia": [],
+                    "orden": {},
                 },
                 "geometry": {"type": "Point", "coordinates": [round(lon, 5), round(lat, 5)]},
             },
         )
         if SENTIDOS[sentido] not in estacion["properties"]["hacia"]:
             estacion["properties"]["hacia"].append(SENTIDOS[sentido])
+        if isinstance(fila.get("orden"), int):
+            estacion["properties"]["orden"][SENTIDOS[sentido]] = fila["orden"]
     if len(estaciones) < 10:
         raise ValueError(f"La API del tranvía devolvió solo {len(estaciones)} estaciones")
     return {
@@ -63,7 +69,8 @@ def parsear_estaciones(contenido: bytes) -> dict[str, Any]:
             "fuente": "Tranvía de Cuenca (GAD Municipal)",
             "pagina": PAGINA,
             "datos": API,
-            "nota": "hacia indica en qué sentido para el tranvía en esa estación.",
+            "nota": "hacia indica en qué sentido para el tranvía en esa estación; orden, su "
+            "lugar en el recorrido de cada sentido (1 es la primera).",
         },
         "features": list(estaciones.values()),
     }

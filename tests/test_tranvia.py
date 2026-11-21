@@ -5,8 +5,9 @@ import pytest
 from morlaco.fuentes import tranvia
 
 
-def fila(codigo, sentido, lat, lon, nombre):
+def fila(codigo, sentido, lat, lon, nombre, orden=None):
     return {
+        "orden": orden,
         "id_est": codigo,
         "est_sentido": sentido,
         "est_latitud": lat,
@@ -18,8 +19,8 @@ def fila(codigo, sentido, lat, lon, nombre):
 FILAS = [
     fila("RTA", "SN", -2.91965, -79.03882, "Río Tarqui"),
     fila("RTA", "NS", -2.91965, -79.039, "Río Tarqui"),
-    fila("ESA", "SN", -2.9144, -79.0375, "EL Salado"),
-    fila("ESA", "NS", -2.9144, -79.0375, "EL Salado"),
+    fila("ESA", "SN", -2.9144, -79.0375, "EL Salado", 2),
+    fila("ESA", "NS", -2.9144, -79.0375, "EL Salado", 18),
     fila("SAN", "NS", -2.89481, -78.99994, "Gaspar Sangurima"),
     fila("HMI", "SN", -2.8964, -79.00233, "Hermano Miguel"),
     fila("OLA", "NS", -2.89173, -79.02465, "Ordonez Lazo"),
@@ -39,11 +40,14 @@ def test_parsear_estaciones():
         "id": "ESA",
         "nombre": "El Salado",
         "hacia": ["Parque Industrial", "Río Tarqui"],
+        # Su lugar en el recorrido de cada sentido, para unir las estaciones en orden.
+        "orden": {"Parque Industrial": 2, "Río Tarqui": 18},
     }
     assert salado["geometry"]["coordinates"] == [-79.0375, -2.9144]
     # Río Tarqui tiene un andén por sentido, a unos metros: dos puntos.
     assert len(por_id["RTA"]) == 2
     assert por_id["HMI"][0]["properties"]["hacia"] == ["Parque Industrial"]
+    assert por_id["HMI"][0]["properties"]["orden"] == {}  # la API no lo trajo
     assert por_id["OLA"][0]["properties"]["nombre"] == "Ordóñez Lazo"
 
 
