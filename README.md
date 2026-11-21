@@ -6,60 +6,168 @@
 <h3 align="center">¿Qué pasa hoy en tu calle? Basura, luz, agua, farmacias, buses y aire de Cuenca, Ecuador.</h3>
 
 <p align="center">
-  <a href="https://nezusas.github.io/morlaco/web/"><b>Abrir Morlaco</b></a> ·
-  <a href="https://nezusas.github.io/morlaco/web/datos.html">Datos abiertos</a> ·
-  <a href="CONTRIBUTING.md">Colaborar</a> ·
+  <a href="https://nezusas.github.io/morlaco/web/"><b>Abrir Morlaco</b></a> |
+  <a href="https://nezusas.github.io/morlaco/web/datos.html">Datos abiertos</a> |
+  <a href="CONTRIBUTING.md">Colaborar</a> |
   <a href="https://github.com/NezuSas/morlaco/issues/new/choose">Avisar de un error</a>
 </p>
 
 <p align="center">
   <a href="https://nezusas.github.io/morlaco/web/">
-    <img src="docs/imagenes/busqueda.gif" alt="Se escribe «Calle Larga y Her» en Morlaco, se elige la sugerencia «Hermano Miguel» y aparece el letrero de la esquina, el resumen de hoy, cuándo pasa el recolector, los cortes de agua, las farmacias de turno y la calidad del aire, con el mapa al lado" width="880">
+    <img src="docs/imagenes/busqueda.gif" alt="Se escribe «Calle Larga y Her» en Morlaco, se elige la sugerencia «Hermano Miguel» y aparece el nombre de la esquina sobre el encabezado azul, el resumen de hoy en fichas y las pestañas de basura, cortes, farmacias y aire, con el mapa al lado" width="880">
   </a>
 </p>
 
-Escribe tu esquina como se dan las direcciones en Cuenca ("Sucre y Borrero") y Morlaco te dice:
+Morlaco es una página web gratuita para quien vive en Cuenca. Escribes tu esquina y te dice, en una sola
+pantalla, lo que hoy hay que buscar en seis sitios distintos: cuándo pasa el recolector, si te van a cortar
+la luz o el agua, qué farmacia está de turno, qué bus te lleva y cómo está el aire.
 
-- **Cuándo pasa el recolector** por tu calle, qué va en cada funda y qué día va la funda celeste. Con un toque
-  te suscribes al **calendario de tu zona** y recibes un aviso antes de cada recolección. También qué pasa en
-  **feriados** y **dónde llevar lo que no va en las fundas** (orgánicos, vidrio, escombros, pilas).
-- **Si hay cortes de agua anunciados** por ETAPA en los próximos días, con sus sectores y horario.
-- **Si hay cortes de luz programados** por Centro Sur para hoy, y si publicó cronogramas nuevos (y para qué
-  provincias).
-- **Qué farmacias están de turno** esta semana (abiertas las 24 horas), ordenadas por cercanía y con su teléfono
-  para llamar.
-- **Qué líneas de bus pasan cerca**, cada cuánto pasan hoy, su recorrido en el mapa y sus **cambios
-  recientes**; las paradas más cercanas, la estación del tranvía más cercana y cada cuánto pasa, y el
-  **pasaje** vigente.
-- **Qué bus te lleva a donde vas**: escribe el destino y te propone líneas directas, con un transbordo o ir a
-  pie, con los pasos y el tiempo estimado, y la dibuja en el mapa.
-- **Qué buses pasan por una calle**: escribe solo la calle ("Av. Solano") y ves las líneas que la recorren y
-  por dónde pasa cada una según el recorrido oficial.
-- **Cómo está el aire y el sol**: el índice de calidad del aire de la estación de la EMOV más cercana, el
-  índice UV con su recomendación y la temperatura.
-- **Qué tienes cerca**: la zona WiFi gratis, el mercado, el punto para dejar pilas y el destacamento de la
-  Guardia Ciudadana más cercanos, con su horario o su teléfono.
-- **Dónde está la BiciPública más cercana**, y en el mapa las estaciones del tranvía, las ciclovías y los
-  puntos de carga para autos eléctricos.
-
-Puedes **compartir tu calle** por WhatsApp con un toque e **imprimir la hoja de tu zona** (días de recolección
-y farmacias de turno) para la refrigeradora o la cartelera del edificio.
-
-Todo sale de **fuentes oficiales y públicas** (EMAC EP, Centro Sur, ARCSA, la EMOV, el Tranvía, el portal
-Cuenca en Datos del municipio y OpenStreetMap) y, cuando una institución solo lo anuncia en redes, de la
-**prensa local** que la cita, revisada a mano. Los datos limpios quedan aquí, abiertos, para que cualquiera
-construya encima: una web, un bot, una app o un análisis. El mapa de dónde está cada dato y qué tan al día
-está vive en [`docs/fuentes.md`](docs/fuentes.md).
-
-<table>
-  <tr>
-    <td width="68%"><img src="docs/imagenes/escritorio.webp" alt="Morlaco en el escritorio: la esquina Mariscal Sucre y Presidente Borrero en un letrero de cerámica sobre un muro de azulejo azul, el resumen «Hoy en tu calle» con basura, farmacias, buses y aire, y el mapa de la zona 4 de recolección"></td>
-    <td width="32%"><img src="docs/imagenes/movil-oscuro.webp" alt="Morlaco en el móvil con el modo oscuro: el letrero de la esquina con los botones de WhatsApp y Compartir, y el resumen de basura, farmacias, buses y aire"></td>
-  </tr>
-</table>
+No pide cuenta, no tiene publicidad y no guarda nada tuyo en ningún servidor. Los datos salen de fuentes
+públicas y quedan aquí, abiertos, para que cualquiera los use.
 
 > Morlaco **no es un servicio oficial** ni está afiliado a EMAC EP, Centro Sur, ETAPA EP ni al GAD
 > Municipal de Cuenca. Cada archivo indica de dónde salió. Ante cualquier duda, manda la fuente oficial.
+
+## Contenido
+
+**Para usar la página**
+
+- [Cómo se usa](#cómo-se-usa)
+- [Qué te responde](#qué-te-responde)
+- [Qué más hace](#qué-más-hace)
+- [Privacidad](#privacidad)
+- [De dónde salen los datos](#de-dónde-salen-los-datos)
+- [In English](#in-english)
+
+**Para usar los datos**
+
+- [Qué datos hay](#qué-datos-hay)
+- [Buses en formato GTFS](#buses-en-formato-gtfs)
+
+**Para entender o cambiar el proyecto**
+
+- [Cómo funciona la página](#cómo-funciona-la-página)
+- [Uso](#uso)
+- [Desarrollo](#desarrollo)
+- [Próximos pasos](#próximos-pasos)
+- [Quién lo hace](#quién-lo-hace), [Colaborar](#colaborar) y [Licencia de los datos](#licencia-de-los-datos)
+
+## Cómo se usa
+
+1. **Abre** <https://nezusas.github.io/morlaco/web/> en el celular o en la computadora.
+2. **Di dónde estás**, de una de tres formas:
+   - escribe tu esquina como se dan las direcciones en Cuenca: "Sucre y Borrero", "Av. Solano y Remigio
+     Crespo". Mientras escribes, la página sugiere calles; después de la "y" solo propone las que de verdad
+     cruzan a la primera;
+   - toca **Usar mi ubicación**;
+   - o toca tu calle en el mapa.
+3. **Lee el resumen** "Hoy en tu calle" y, si quieres el detalle, entra a la pestaña de cada servicio.
+
+La próxima vez que abras la página, vuelve sola a tu calle.
+
+<table>
+  <tr>
+    <td width="68%"><img src="docs/imagenes/escritorio.webp" alt="Morlaco en el escritorio: la esquina Mariscal Sucre y Presidente Borrero en el encabezado azul con las cúpulas de la Catedral, el resumen «Hoy en tu calle» en fichas de basura, farmacias, buses y aire, y el mapa de la zona 4 de recolección"></td>
+    <td width="32%"><img src="docs/imagenes/movil-oscuro.webp" alt="Morlaco en el móvil con el modo oscuro: el nombre de la esquina bajo las cúpulas, cuándo pasa el recolector, el mapa y las pestañas del resumen"></td>
+  </tr>
+  <tr>
+    <td align="center">En la computadora, la respuesta a la izquierda y el mapa a la derecha.</td>
+    <td align="center">En el celular, con el modo oscuro del sistema.</td>
+  </tr>
+</table>
+
+## Qué te responde
+
+La respuesta está repartida en pestañas. **Resumen** junta lo principal en fichas; cada ficha lleva a su
+pestaña.
+
+| Pestaña | Lo que te dice |
+|---|---|
+| **Resumen** | Cuándo pasa el recolector, la farmacia de turno más cercana con su nombre, las líneas de bus que pasan por tu esquina y la calidad del aire. Cada ficha se tiñe según su estado: ámbar si el recolector pasa hoy, verde si todo está bien, rojo si hay un aviso. |
+| **Basura** | Los días y el horario de tu zona, cuánto falta para que empiece (cuando ya falta poco), el recorrido del recolector por la ciudad hoy, qué va en la funda negra y en la celeste y qué día toca la celeste. También qué pasa en feriados y dónde llevar lo que no va en las fundas (orgánicos, vidrio, escombros, pilas). |
+| **Cortes** | Los cortes de luz programados por Centro Sur para hoy, y si publicó cronogramas nuevos. Debajo, los cortes de agua anunciados por ETAPA para los próximos días, con sus sectores y horario. |
+| **Farmacias** | Las farmacias de turno de la semana (abiertas las 24 horas), ordenadas por cercanía, con su teléfono para llamar con un toque, un botón para verlas en el mapa y otro para que Google Maps te lleve. |
+| **Buses** | Qué bus te lleva a donde vas, las líneas que pasan cerca y cada cuánto pasan hoy, su recorrido en el mapa, las paradas y la estación del tranvía más cercanas, el pasaje vigente y los cambios recientes de líneas. |
+| **Cerca** | La zona WiFi gratis, el mercado, el punto para dejar pilas y el destacamento de la Guardia Ciudadana más cercanos, con su horario o su teléfono, y la estación de BiciPública más cercana. |
+| **Aire** | El índice de calidad del aire de la estación de la EMOV más cercana, con su recomendación, el índice UV y la temperatura. |
+
+### ¿Qué bus me lleva?
+
+En la pestaña **Buses** escribes a dónde vas y la página propone varias formas de llegar: con una línea
+directa, con un transbordo o a pie. Cada opción dice cuánto tarda, cuánto se camina, cuánto cuesta y cuándo
+pasa el próximo bus, y la que eliges se dibuja en el mapa con sus paradas. Si a esa hora la línea ya no
+pasa, lo dice, y de madrugada indica a qué hora pasa el primero.
+
+Si escribes solo una calle ("Av. Solano"), ves las líneas que la recorren.
+
+<table>
+  <tr>
+    <td width="68%"><img src="docs/imagenes/ruta.webp" alt="La pestaña Buses con el destino «Mall del Río»: tres opciones de ruta, la primera en la línea 5 con 32 minutos y sus tres pasos, y el recorrido dibujado en el mapa desde el centro hasta el destino"></td>
+    <td width="32%"><img src="docs/imagenes/movil-basura.webp" alt="La pestaña Basura en el móvil: «El lunes, de 20:00 a medianoche», el recorrido del recolector de hoy por zonas con la hora actual marcada, los días de la semana y qué va en cada funda"></td>
+  </tr>
+  <tr>
+    <td align="center">Una ruta al Mall del Río: las opciones a la izquierda y el recorrido en el mapa.</td>
+    <td align="center">La pestaña Basura, con el recorrido del día.</td>
+  </tr>
+</table>
+
+### En el mapa
+
+El mapa muestra las zonas de recolección (resaltadas las que tienen recolección hoy), tu punto, las paradas
+y los buses que vienen según su frecuencia. Con el botón de capas se prenden las estaciones del tranvía, la
+BiciPública, las ciclovías y los puntos de carga para autos eléctricos.
+
+## Qué más hace
+
+- **Avisarte antes de cada recolección.** Desde la pestaña Basura te suscribes al calendario de tu zona
+  (Google Calendar, iPhone u Outlook) y recibes un aviso una hora antes. Si EMAC cambia el horario, el
+  calendario se actualiza solo.
+- **Compartir tu calle.** El botón Compartir abre el menú de tu teléfono; en la computadora copia el enlace.
+  En "Más" está el envío directo por WhatsApp.
+- **Guardar dos lugares**, Casa y Trabajo, para volver a ellos con un toque.
+- **Instalarse como app** en el celular o la computadora. En Android y en Chrome o Edge aparece el botón
+  "Instalar"; en el iPhone, desde Safari, con Compartir y "Añadir a pantalla de inicio".
+- **Funcionar sin conexión** con los últimos datos descargados, útil en un corte de luz o sin megas.
+- **Hablar español e inglés.** Elige el idioma del navegador y tiene un botón para cambiarlo.
+- **Imprimir la hoja de tu zona**, con los días de recolección y las farmacias de turno, para la
+  refrigeradora o la cartelera del edificio.
+- **Un [cartel con código QR](https://nezusas.github.io/morlaco/web/cartel.html)** para la puerta de un
+  edificio, una tienda o la casa comunal.
+- **Páginas simples, sin mapa**, para quien llega desde un buscador: el
+  [horario de la basura por zona](https://nezusas.github.io/morlaco/web/info/), las farmacias de turno y los
+  cortes de agua.
+
+## Privacidad
+
+- **No hay cuentas, cookies ni analítica.**
+- La página recuerda **solo en tu navegador** el último punto que consultaste, tus dos lugares y el idioma.
+  En "Más", "Borrar dirección" quita el punto guardado.
+- Las direcciones se buscan **dentro de la página**, con un índice de calles que se descarga una vez. Solo
+  cuando lo que escribes no es una calle (un parque, un centro comercial) el texto se envía a Nominatim, de
+  OpenStreetMap, para ubicarlo.
+- La calidad del aire se pide a la web de la EMOV **sin enviarle tu ubicación**: la estación más cercana se
+  elige en tu navegador.
+- El mapa pide su programa (MapLibre) a unpkg y sus imágenes a OpenFreeMap, como cualquier mapa en línea.
+
+## De dónde salen los datos
+
+Todo sale de **fuentes oficiales y públicas** y, cuando una institución solo lo anuncia en redes, de la
+**prensa local** que la cita, revisada a mano.
+
+| Servicio | Fuente | Qué tan al día está |
+|---|---|---|
+| Recolección de basura | EMAC EP, mapa de zonas | Se revisa todos los días |
+| Cortes de luz | Centro Sur, suspensiones programadas | Se revisa todos los días, pero **Centro Sur no actualiza su cronograma desde julio de 2026**; la página lo dice |
+| Cortes de agua | ETAPA EP, a través de El Mercurio | Se busca todos los días y una persona confirma cada corte antes de mostrarlo |
+| Farmacias de turno | ARCSA, lista mensual de Azuay | Se revisa todos los días |
+| Buses | GAD Municipal, portal Cuenca en Datos | Horarios de 2025 y recorridos de 2022: manda el letrero del bus |
+| Tranvía | Tranvía de Cuenca | Se revisa todos los días |
+| Aire, sol y temperatura | Red de Monitoreo de la EMOV EP | En vivo, cada vez que abres la página |
+| Calles, ciclovías, BiciPública | OpenStreetMap | Se revisa cada lunes |
+
+El mapa completo de dónde está cada dato, qué tan al día está y qué no tiene fuente vive en
+[`docs/fuentes.md`](docs/fuentes.md). Los detalles y los errores conocidos de cada fuente están más abajo, en
+[Lo que hay que saber de cada fuente](#lo-que-hay-que-saber-de-cada-fuente).
 
 ## In English
 
@@ -78,6 +186,9 @@ hand is CC BY 4.0. Morlaco is built and maintained by [Nezu S.A.S.](https://www.
 and is not an official service.
 
 ## Qué datos hay
+
+Los datos limpios se publican como archivos estáticos para que cualquiera construya encima: una web, un
+bot, una app o un análisis.
 
 | Archivo | Qué contiene | Fuente |
 |---|---|---|
@@ -232,52 +343,59 @@ empresas vienen del CSV; como `agency_url` se usa la web de la EMOV, que regula 
 Para que estas rutas aparezcan en Google Maps, Google pide que el feed lo envíe el operador o la autoridad de
 transporte: este archivo puede servir de base para proponérselo a la EMOV o al municipio.
 
-## ¿Qué bus me lleva?
+## Cómo funciona la página
 
-Desde la respuesta de la página se escribe un destino y Morlaco busca, con los recorridos y las frecuencias
-del municipio:
+En [`web/`](web/) está la página, publicada en <https://nezusas.github.io/morlaco/web/>. Es HTML, CSS y
+JavaScript sin dependencias que instalar ni paso de compilación: lee los archivos de `datos/` y lo calcula
+todo en el navegador.
 
-- **líneas directas**: pasan a menos de 500 m del origen y, más adelante en su recorrido (en el sentido
-  correcto), a menos de 500 m del destino;
-- **con un transbordo**, si no hay al menos dos directas: dos líneas cuyos recorridos se acercan a menos de
-  200 m;
-- **a pie**, si el destino está a menos de 1,5 km (se prefiere caminar si tarda casi lo mismo).
+**El punto y la dirección de la página.** El punto elegido queda en la dirección
+(`web/#-2.89733,-79.00454`) y la pestaña abierta también (`?ver=buses`), así que el enlace que compartes
+abre donde tú estabas. Si tocas el mapa o usas tu ubicación, el punto toma el nombre de la esquina más
+cercana.
 
-El tiempo suma lo que se camina (4,5 km/h), lo que se va en bus (15 km/h) y la espera (media frecuencia de
-hoy). Las opciones con un bus que ya no pasa a esa hora quedan al final y lo dicen. El tranvía no tiene horario
-publicado: se remite a su web. Todo se calcula en el navegador, en milisegundos (`web/rutas.js`).
+**La búsqueda de direcciones.** Se hace dentro de la página con el índice de calles: no importan las tildes
+ni las mayúsculas, tolera una letra de más o de menos y entre calles con nombre parecido elige la que de
+verdad cruza a la otra. Si escribes una sola calle larga, la marca en el mapa, te pide la calle que la cruza
+y lista **los buses que pasan por ella**: las líneas cuyo trazado va pegado a la calle un buen tramo, no las
+que solo la cruzan. Solo cuando lo escrito no es una calle se pregunta a
+[Nominatim](https://nominatim.org), limitado a la ciudad de Cuenca.
 
-## La página web
+**El mapa.** Usa [MapLibre GL JS](https://maplibre.org) (licencia BSD) con los mapas vectoriales de
+[OpenFreeMap](https://openfreemap.org), hechos con datos de OpenStreetMap y de uso libre, sin clave ni
+cuenta. Los colores del mapa base son los de Morlaco, con una paleta para el día y otra para la noche. Lo
+dibuja la tarjeta gráfica (WebGL): el zoom es continuo y los recorridos se trazan con una animación; si el
+sistema pide reducir el movimiento, no se anima nada. En un navegador sin WebGL la página avisa y las
+respuestas salen igual.
 
-En [`web/`](web/) hay una página que usa estos datos, publicada en
-<https://nezusas.github.io/morlaco/web/>: escribes tu dirección, compartes tu ubicación o tocas
-el mapa, y te responde con el resumen "Hoy en tu calle" y una sección por servicio: basura, luz, agua,
-farmacias, buses y aire. El punto elegido queda en la dirección de la página (`web/#-2.89733,-79.00454`), así
-que se puede compartir; el botón **WhatsApp** abre el mensaje ya escrito para que salga la tarjeta con la
-imagen. Desde la respuesta te puedes suscribir al calendario de recolección de tu zona o **imprimir la hoja
-de tu zona**.
+**Sin conexión.** El service worker (`web/sw.js`) pide primero la página y los datos a la red y, si no hay
+conexión, usa la copia guardada. Guarda también las teselas del mapa ya vistas (hasta 300), con sus letras e
+iconos, y nunca las búsquedas de lugares.
 
-Mientras escribes, **sugiere calles** del índice; después de "y" solo propone las que cruzan la primera, así que
-la esquina siempre existe. La página abre con el último punto que consultaste y puedes guardar dos lugares,
-**Casa** y **Trabajo**, para volver a ellos con un toque; se guardan solo en tu navegador. Si tocas el mapa o
-usas tu ubicación, el punto toma el nombre de la esquina más cercana.
+**Idiomas.** Los textos de la interfaz están en `web/textos.js`, en español e inglés. Lo que viene de las
+fuentes (nombres de calles, paradas y destinos) se queda como se dice en Cuenca.
 
-**Se puede instalar como app** en el móvil o el computador: en Android y en Chrome o Edge aparece el botón
-"Instalar"; en el iPhone, desde Safari con Compartir → "Añadir a pantalla de inicio". Funciona **sin conexión**
-con los últimos datos descargados (útil en un corte de luz o sin datos): el service worker (`web/sw.js`) pide
-primero la página y los datos a la red y, si no hay conexión, usa la copia guardada. Guarda también las
-teselas del mapa ya vistas (hasta 300), con sus letras e iconos, y nunca las búsquedas de lugares.
+**Tipografías.** Alegreya y Alegreya Sans, de Huerta Tipográfica, con licencia SIL OFL. Van en
+[`web/fuentes/`](web/fuentes/), así que la página no pide nada a servidores de terceros salvo el mapa y la
+calidad del aire.
 
-La página está en **español e inglés**: elige el idioma del navegador y tiene un botón para cambiarlo. Lo que
-viene de las fuentes (nombres de calles, paradas y destinos) se queda como se dice en Cuenca.
+**Páginas simples.** En [`web/info/`](web/info/) (y en inglés en `web/info/en/`) están el horario de la
+basura de cada zona, las farmacias de turno de la semana y los cortes de agua anunciados. Son HTML fijo, sin
+JavaScript, para que los buscadores las encuentren ("horario de basura zona 4 Cuenca") y lleven a la
+página; cada zona tiene su imagen para compartir con el horario. Las escribe `morlaco actualizar` con los
+datos del día, junto con el mapa del sitio para buscadores ([`sitemap.xml`](sitemap.xml)). Si EMAC cambia el
+horario de una zona, hay que rehacer su imagen en `web/info/img/` (una prueba avisa si falta alguna).
 
-Las direcciones se escriben como se dan en Cuenca, con dos calles que se cruzan: "Sucre y Borrero",
-"Av. Solano y Remigio Crespo", "Bolívar esquina Benigno Malo". La búsqueda se hace dentro de la página con el
-índice de calles: no importan las tildes ni las mayúsculas, tolera una letra de más o de menos y entre calles
-con nombre parecido elige la que de verdad cruza a la otra. Si escribes una sola calle larga, la marca en el
-mapa, te pide la calle que la cruza y lista **los buses que pasan por ella**: las líneas cuyo trazado va pegado
-a la calle un buen tramo, no las que solo la cruzan. Solo cuando lo escrito no es una calle (un parque, un centro
-comercial) se pregunta a Nominatim de OpenStreetMap.
+**El cartel.** El [cartel para imprimir](https://nezusas.github.io/morlaco/web/cartel.html) lleva el código
+QR de la página. Se imprime en una hoja A4, en español o en inglés, y si eliges una zona dice también a qué
+hora pasa la basura (`cartel.html?zona=4`).
+
+**La tarjeta al compartir.** La imagen que sale en WhatsApp o en redes (`web/compartir.png`) se genera
+desde [`docs/compartir.html`](docs/compartir.html); ahí mismo está cómo rehacerla.
+
+**Accesibilidad.** Contraste suficiente en claro y en oscuro, navegación con teclado con un enlace para
+saltar al contenido, pestañas que se recorren con las flechas, títulos en orden para lectores de pantalla y
+controles de buen tamaño.
 
 Para verla en tu computadora, sirve la carpeta del proyecto (no solo `web/`, porque lee los datos de
 `datos/`) y abre <http://127.0.0.1:8765/web/>:
@@ -286,31 +404,19 @@ Para verla en tu computadora, sirve la carpeta del proyecto (no solo `web/`, por
 .venv/Scripts/python -m http.server 8765 --bind 127.0.0.1
 ```
 
-El mapa usa [MapLibre GL JS](https://maplibre.org) (licencia BSD) con los mapas vectoriales de
-[OpenFreeMap](https://openfreemap.org), hechos con datos de OpenStreetMap y de uso libre, sin clave ni cuenta.
-Lo dibuja la tarjeta gráfica (WebGL): el zoom es continuo, los recorridos de las líneas se trazan con una
-animación y el modo oscuro tiene su propio mapa; si el sistema pide reducir el movimiento, no se anima nada.
-En un navegador sin WebGL la página avisa y las respuestas salen igual. Los lugares que no son calles se ubican
-con [Nominatim](https://nominatim.org), limitado a la ciudad de Cuenca; la página lo avisa al pie. No usa
-cookies ni analítica: solo recuerda en el navegador el último punto elegido, tus lugares y el idioma. Las tipografías (Alegreya y
-Alegreya Sans, de Huerta Tipográfica, con licencia SIL OFL) van en [`web/fuentes/`](web/fuentes/), así que la
-página no pide nada a servidores de terceros salvo el mapa y la calidad del aire (a la EMOV, sin enviarle tu
-ubicación: la estación más cercana se elige en tu navegador).
+### Cómo se calcula «¿Qué bus me lleva?»
 
-Para quien no busca en el mapa hay **páginas simples** en [`web/info/`](web/info/) (y en inglés en
-`web/info/en/`): el horario de la basura de cada zona, las farmacias de turno de la semana y los cortes de agua
-anunciados. Son HTML fijo, sin JavaScript, para que los buscadores las encuentren ("horario de basura zona 4
-Cuenca") y lleven a la página; cada zona tiene su imagen para compartir con el horario. Las escribe
-`morlaco actualizar` con los datos del día, junto con el mapa del sitio para buscadores
-([`sitemap.xml`](sitemap.xml)). Si EMAC cambia el horario de una zona, hay que rehacer su imagen en
-`web/info/img/` (una prueba avisa si falta alguna).
+Con el punto elegido y un destino, Morlaco busca, con los recorridos y las frecuencias del municipio:
 
-El [**cartel para imprimir**](https://nezusas.github.io/morlaco/web/cartel.html) lleva el código QR de la página,
-para la puerta de un edificio, una tienda o la casa comunal. Se imprime en una hoja A4, en español o en inglés,
-y si eliges una zona dice también a qué hora pasa la basura (`cartel.html?zona=4`).
+- **líneas directas**: pasan a menos de 500 m del origen y, más adelante en su recorrido (en el sentido
+  correcto), a menos de 500 m del destino;
+- **con un transbordo**, si no hay al menos dos directas: dos líneas cuyos recorridos se acercan a menos de
+  200 m;
+- **a pie**, si el destino está a menos de 1,5 km (se prefiere caminar si tarda casi lo mismo).
 
-Se cuida la **accesibilidad**: contraste suficiente en claro y en oscuro, navegación con teclado con un
-enlace para saltar al contenido, títulos en orden para lectores de pantalla y controles de buen tamaño.
+El tiempo suma lo que se camina (4,5 km/h), lo que se va en bus (15 km/h) y la espera (media frecuencia de
+hoy). De cada línea se muestra una sola opción, la que deja más cerca. Las opciones con un bus que ya no pasa a esa hora quedan al final y lo dicen. El tranvía no tiene horario
+publicado: se remite a su web. Todo se calcula en el navegador, en milisegundos (`web/rutas.js`).
 
 ## Uso
 
@@ -373,8 +479,8 @@ node --test "tests/web/*.test.mjs"
 ```
 
 Las pruebas no usan la red: el parseo de cada fuente son funciones puras que se prueban con ejemplos (el PDF
-de Centro Sur de `tests/fixtures` es uno real). En la web pasa lo mismo: `web/logica.js` y `web/calles.js` no
-tocan el DOM ni la red, y sus pruebas corren con Node 20 o superior.
+de Centro Sur de `tests/fixtures` es uno real). En la web pasa lo mismo: `web/logica.js`, `web/calles.js`, `web/rutas.js` y
+los demás módulos marcados "sin DOM" no tocan la página ni la red, y sus pruebas corren con Node 20 o superior.
 
 ```
 src/morlaco/
@@ -384,11 +490,12 @@ src/morlaco/
   calendario.py       calendarios .ics de recolección por zona
   gtfs.py             feed GTFS de los buses (rutas, frecuencias, paradas y recorridos)
   geo.py              conversión de UTM a latitud y longitud
-  cli.py              comandos "morlaco actualizar" y "morlaco cambios"
+  cli.py              comandos "morlaco actualizar", "morlaco cambios" y "morlaco revisar"
   cambios.py          decide si hay algo que publicar tras actualizar
   catalogo.py         el catálogo de los datos (datos/indice.json) y su política de estabilidad
   paginas.py          las páginas simples para buscadores (web/info/) y el mapa del sitio
   revision.py         lo que se queda viejo: farmacias que se acaban, avisos que vencen, fuentes que fallan
+  revisar_gtfs.py     comprobaciones propias del feed GTFS
   fuentes/
     emac.py           zonas de recolección (KML)
     centrosur.py      suspensiones de luz (PDF) y cronogramas sueltos (API de WordPress)
@@ -397,12 +504,14 @@ src/morlaco/
     movilidad.py      BiciPública, ciclovías y carga eléctrica (API Overpass)
     farmacias.py      farmacias de turno (PDF mensual de ARCSA)
     agua.py           avisos de cortes de agua en la prensa, por confirmar (API de El Mercurio)
+    feriados.py       avisos de días de descanso en la prensa, por revisar (API de El Mercurio)
     cerca.py          WiFi, mercados, pilas y Guardia Ciudadana (CSV del portal Cuenca en Datos)
     tranvia.py        estaciones del tranvía (API de su web)
     calles.py         índice de calles (API Overpass de OpenStreetMap)
 web/
   index.html          la página
   datos.html, datos.js  la página "Datos abiertos", hecha a partir del catálogo
+  cartel.html, cartel.js  el cartel con código QR para imprimir
   logica.js           zonas, próxima recolección, cortes de hoy, paradas cercanas (sin DOM)
   textos.js           textos de la interfaz en español e inglés
   sw.js               service worker: la página y los datos sin conexión
@@ -411,9 +520,19 @@ web/
   buses.js            líneas cercanas y su frecuencia del día (sin DOM)
   aire.js             calidad del aire: leer la respuesta de la EMOV y elegir estación (sin DOM)
   rutas.js            "¿qué bus me lleva?": directas, con transbordo o a pie (sin DOM)
-  app.js              mapa, búsqueda y pintado de la respuesta
+  vehiculos.js        dónde va cada bus según su frecuencia y cuándo llega el próximo (sin DOM)
+  lugares.js          Casa y Trabajo, guardados en el navegador (sin DOM)
+  mapa.js             el mapa: capas, colores, marcadores y el trazado de rutas
+  app.js              búsqueda, pestañas y pintado de la respuesta
   estilos.css
   fuentes/            tipografías Alegreya y Alegreya Sans, con su licencia
+  info/               páginas simples para buscadores (las escribe paginas.py)
+tests/                pruebas de Python (pytest)
+tests/web/            pruebas de la web (node --test)
+docs/
+  fuentes.md          dónde está cada dato y qué tan al día está
+  compartir.html      de dónde sale la tarjeta que se ve al compartir el enlace
+  imagenes/           capturas de este README
 ```
 
 Para añadir una fuente: crea un módulo en `fuentes/` con una función `obtener(descargar) -> Resultado`,
