@@ -1446,7 +1446,8 @@ a.ficha .pastilla.estado-alerta {
 }
 
 /* En la ficha el estado no va en pastilla: tiñe la ficha entera y colorea la respuesta. */
-.resumen .ficha-valor.pastilla {
+.resumen .ficha-valor.pastilla,
+.resumen a.ficha .ficha-valor.pastilla {
   justify-self: stretch;
   margin-left: 0;
   padding: 0;

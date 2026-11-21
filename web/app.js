@@ -1273,12 +1273,24 @@ function pintarAire(estacion, { uv = null, clima = null } = {}) {
   const extras = [uv ? t("resumenUv", { valor: uv.valor, nivel: nivelUv.toLowerCase() }) : null, clima ? `${clima.temperatura} °C` : null]
     .filter(Boolean)
     .join(", ");
-  const valorFicha = estacion ? t("aireNiveles")[estacion.nivel - 1] : t("resumenUv", { valor: uv?.valor, nivel: nivelUv?.toLowerCase() ?? "" });
-  const detalleFicha = estacion ? [t("resumenAire", { valor: estacion.valor, estacion: estacion.nombre }), extras].filter(Boolean).join(". ") : extras;
-  // Buena en verde, moderada en ámbar y de ahí para arriba en rojo (o el sol, si no hay aire).
-  const gravedad = estacion ? estacion.nivel : uv ? (uv.nivel <= 2 ? 1 : uv.nivel === 3 ? 2 : 3) : 0;
+  const textoUv = uv ? t("resumenUv", { valor: uv.valor, nivel: nivelUv.toLowerCase() }) : "";
+  const temperatura = clima ? `${clima.temperatura} °C` : null;
+  // La ficha se pone en rojo si el aire está mal o si el sol está muy alto. El titular dice
+  // siempre lo que la pone así: con el aire bueno y el sol muy alto, un "Buena" en rojo confundía.
+  const aireMal = (estacion?.nivel ?? 0) >= 3;
+  const solFuerte = (uv?.nivel ?? 0) >= 4;
+  const mandaElSol = !estacion || (solFuerte && !aireMal);
+  const valorFicha = mandaElSol ? textoUv || temperatura : t("aireNiveles")[estacion.nivel - 1];
+  const detalleFicha = !estacion
+    ? uv ? temperatura : null
+    : mandaElSol
+      ? [t("resumenAireCon", { nivel: t("aireNiveles")[estacion.nivel - 1].toLowerCase(), valor: estacion.valor, estacion: estacion.nombre }), temperatura].filter(Boolean).join(". ")
+      : [t("resumenAire", { valor: estacion.valor, estacion: estacion.nombre }), extras].filter(Boolean).join(". ");
+  // Buena en verde, moderada en ámbar y de ahí para arriba en rojo; con el sol, lo mismo.
+  const gravedadUv = uv ? (uv.nivel <= 2 ? 1 : uv.nivel === 3 ? 2 : 3) : 0;
+  const gravedad = mandaElSol ? gravedadUv : estacion.nivel;
   const estado = gravedad === 1 ? "ok" : gravedad === 2 ? "atencion" : gravedad >= 3 ? "alerta" : null;
-  const { li } = ficha("aire", valorFicha, detalleFicha, { aviso: (estacion?.nivel ?? 0) >= 3 || (uv?.nivel ?? 0) >= 4, estado });
+  const { li } = ficha("aire", valorFicha, detalleFicha, { aviso: aireMal || solFuerte, estado });
   li.classList.add("ficha-aire");
   $("resumen").append(li);
 

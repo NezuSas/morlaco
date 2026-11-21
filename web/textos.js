@@ -198,6 +198,7 @@ const TEXTOS = {
     tituloAire: "Calidad del aire",
     aireNiveles: ["Buena", "Moderada", "Insalubre para grupos sensibles", "Insalubre", "Muy insalubre", "Peligrosa"],
     resumenAire: "Índice {valor} en la estación {estacion}",
+    resumenAireCon: "Aire: {nivel}, índice {valor} en la estación {estacion}",
     aireResumen: "{nivel}, con un índice de {valor} sobre 500.",
     aireRecomendaciones: [
       "Buen día para hacer deporte o estar afuera.",
@@ -695,6 +696,7 @@ const TEXTOS = {
     tituloAire: "Air quality",
     aireNiveles: ["Good", "Moderate", "Unhealthy for sensitive groups", "Unhealthy", "Very unhealthy", "Hazardous"],
     resumenAire: "Index {valor} at the {estacion} station",
+    resumenAireCon: "Air: {nivel}, index {valor} at the {estacion} station",
     aireResumen: "{nivel}, with an index of {valor} out of 500.",
     aireRecomendaciones: [
       "A good day for sport or being outside.",
