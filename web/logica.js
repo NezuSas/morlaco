@@ -346,6 +346,13 @@ export function enlaceReporteDireccion(texto) {
  * Enlaces para suscribirse al calendario de recolección de una zona.
  * `base` es la dirección de la página; los .ics están en ../datos/ respecto a web/.
  */
+/** Los enlaces para suscribirse al calendario de cortes de agua (datos/agua/cortes.ics). */
+export function enlacesCalendarioAgua(base) {
+  const archivo = new URL("../datos/agua/cortes.ics", base).href;
+  const webcal = archivo.replace(/^https?:/, "webcal:");
+  return { archivo, webcal, google: `https://calendar.google.com/calendar/render?cid=${encodeURIComponent(webcal)}` };
+}
+
 export function enlacesCalendario(zona, base) {
   // Google Calendar guarda una copia de cada dirección durante horas. Al cambiar el
   // aspecto de los calendarios se sube esta versión para que las suscripciones nuevas

@@ -996,6 +996,30 @@ button.ubicarme {
   height: 1.2rem;
 }
 
+/* Los lugares guardados a un toque: bajo el nombre de la calle y bajo "¿A dónde vas?". */
+.atajos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.5rem;
+  margin-top: 0.7rem;
+  color: var(--tinta-suave);
+  font-size: var(--t-0);
+}
+
+.atajos[hidden] {
+  display: none;
+}
+
+button.lugar.atajo {
+  min-height: 2.25rem;
+  padding: 0.25rem 0.8rem;
+  border-color: var(--borde-boton);
+  background: transparent;
+  color: var(--cupula);
+  font-size: var(--t-0);
+}
+
 /* Tus lugares (Casa, Trabajo), junto al buscador. */
 .mis-lugares {
   margin-top: 1.1rem;
@@ -2575,6 +2599,21 @@ button.linea[aria-pressed="true"] {
 }
 
 /* Cambio reciente de una línea, bajo su frecuencia. */
+/* Cuánto falta para el próximo bus, un renglón por sentido. */
+.proximos {
+  display: grid;
+  gap: 0.1rem;
+  margin-top: 0.2rem;
+  color: var(--tinta-suave);
+  font-size: var(--t-0);
+  line-height: 1.3;
+}
+
+.proximos strong {
+  color: var(--tinta);
+  white-space: nowrap;
+}
+
 .aviso-linea {
   display: block;
   margin-top: 0.35rem;
@@ -3405,6 +3444,13 @@ button.linea[aria-pressed="true"] {
 
 .bus-estimado.retorno {
   --color-bus: var(--bus-retorno);
+}
+
+/* En una ruta, el bus que ya pasó por tu parada: se ve, pero atenuado. (La opacidad va en
+   lo de adentro: la del propio marcador la maneja MapLibre.) De lejos, donde cada bus es un
+   punto sobre el trazo de su mismo color, no se atenúa: desaparecería. */
+.mapa:not(.mapa-lejos) .bus-estimado.pasado > * {
+  opacity: 0.55;
 }
 
 /* Un bus o un tranvía: cada marcador muestra solo su dibujo. El tranvía va sin número. */

@@ -51,6 +51,51 @@ export function puntoEnRecorrido({ coords, acumulado, total }, metros) {
 }
 
 /**
+ * Dónde queda un punto respecto de un recorrido: los metros desde el inicio hasta el lugar
+ * del recorrido más cercano al punto (`metros`) y a cuánto está de él (`distancia`).
+ */
+export function lugarEnRecorrido(punto, { coords, acumulado }) {
+  const porLon = 111_320 * Math.cos((punto.lat * Math.PI) / 180);
+  const porLat = 110_540;
+  const plano = ([lon, lat]) => [(lon - punto.lon) * porLon, (lat - punto.lat) * porLat];
+  let mejor = null;
+  for (let i = 1; i < coords.length; i++) {
+    const [ax, ay] = plano(coords[i - 1]);
+    const [bx, by] = plano(coords[i]);
+    const dx = bx - ax;
+    const dy = by - ay;
+    const largo2 = dx * dx + dy * dy;
+    // El punto está en el origen: se busca el lugar del segmento más cercano a él.
+    const r = largo2 ? Math.max(0, Math.min(1, -(ax * dx + ay * dy) / largo2)) : 0;
+    const distancia = Math.hypot(ax + r * dx, ay + r * dy);
+    if (!mejor || distancia < mejor.distancia) {
+      mejor = { distancia, metros: acumulado[i - 1] + r * (acumulado[i] - acumulado[i - 1]) };
+    }
+  }
+  return mejor;
+}
+
+/**
+ * Cuánto falta para el próximo bus de una línea en cada sentido que pasa cerca del punto
+ * (a `maximoMetros` como mucho): [{ sentido, hacia, minutos }], con minutos en null si hoy ya
+ * no pasa ninguno. `trazados` son los recorridos de la línea (sin alargues) y `horarios`, el de
+ * hoy por sentido. Es una estimación por frecuencia, como la de los buses del mapa.
+ */
+export function proximosDeLinea(punto, trazados, horarios, { maximoMetros = 350, fecha = new Date(), velocidadKmH = VELOCIDAD_KMH } = {}) {
+  const proximos = [];
+  for (const f of trazados ?? []) {
+    const { sentido, hacia, tipo } = f.properties;
+    const horario = horarios?.[sentido];
+    if (tipo === "alargue" || !horario) continue;
+    const medida = medirRecorrido(puntosDeTrazado(f.geometry));
+    const lugar = lugarEnRecorrido(punto, medida);
+    if (!lugar || lugar.distancia > maximoMetros) continue;
+    proximos.push({ sentido, hacia, minutos: minutosAlProximo(horario, medida.total, lugar.metros, fecha, velocidadKmH) });
+  }
+  return proximos;
+}
+
+/**
  * Los metros que lleva recorridos cada bus que está en camino a esta hora, según el horario
  * del día ({ inicio, fin, intervalo_min }). Vacío fuera del horario o sin frecuencia.
  */

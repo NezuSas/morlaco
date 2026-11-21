@@ -10,7 +10,7 @@ from collections.abc import Callable, Sequence
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from morlaco import cambios, catalogo, paginas, red, revision
+from morlaco import calendario, cambios, catalogo, paginas, red, revision
 from morlaco.comun import Resultado
 from morlaco.fuentes import (
     agua,
@@ -113,6 +113,11 @@ def actualizar(
             "error": f"{type(error).__name__}: {error}",
         }
     escribir_json(ruta_estado, dict(sorted(estado.items())))
+    # El calendario de cortes de agua sale de lo anotado a mano: se rehace en cada pasada.
+    manual_agua = salida / "manual" / "agua.json"
+    if manual_agua.exists():
+        agua = json.loads(manual_agua.read_text(encoding="utf-8"))
+        escribir(salida / calendario.ARCHIVO_AGUA, calendario.calendario_agua(agua))
     # El catálogo no lleva fechas: solo cambia si cambia la descripción de los datos.
     catalogo.escribir_indice(salida)
     # Las páginas para buscadores viven en web/, junto a datos/ (solo en el repositorio real).

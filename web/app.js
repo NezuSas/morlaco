@@ -14,6 +14,7 @@ import {
   enlaceReporteDireccion,
   enlaceWhatsApp,
   enlacesCalendario,
+  enlacesCalendarioAgua,
   estadoLuz,
   faltaRecoleccion,
   franjasDeHoy,
@@ -62,6 +63,7 @@ import {
   trazadosTranvia,
 } from "./buses.js";
 import { alarguesUnidos, paradasDeRecorrido, planificar, prepararLineas } from "./rutas.js";
+import { proximosDeLinea } from "./vehiculos.js";
 import { SVG_BICI, crearMapa } from "./mapa.js";
 import { minutosAlProximo } from "./vehiculos.js";
 import { PAGINA_AIRE, URL_AIRE, URL_CLIMA, URL_UV, aireCercano, leerAire, leerClima, leerUv } from "./aire.js";
@@ -608,6 +610,23 @@ function pintarCalendario(zona) {
   );
 }
 
+/** Botones para suscribirse al calendario de cortes de agua: el aviso llega sin abrir la página. */
+function pintarCalendarioAgua() {
+  const enlaces = enlacesCalendarioAgua(location.href);
+  const externo = { target: "_blank", rel: "noopener" };
+  $("agua-calendario").replaceChildren(
+    elemento("p", { class: "calendario-titulo" }, t("aguaCalendarioTitulo")),
+    elemento(
+      "div",
+      { class: "calendario-botones" },
+      elemento("a", { class: "boton-claro", href: enlaces.google, ...externo }, "Google Calendar"),
+      elemento("a", { class: "boton-claro", href: enlaces.webcal }, t("calendarioApple")),
+      elemento("a", { class: "enlace-claro", href: enlaces.archivo, download: "cortes-de-agua-cuenca.ics" }, t("calendarioDescargar")),
+    ),
+    elemento("p", { class: "detalle" }, t("aguaCalendarioNota")),
+  );
+}
+
 function pintarLuz(suspensiones) {
   const caja = $("luz-estado");
   if (!suspensiones) {
@@ -907,6 +926,15 @@ function verMapaEnCelular() {
   document.querySelector(".mapa-contenedor")?.scrollIntoView({ behavior: SIN_MOVIMIENTO ? "auto" : "smooth", block: "start" });
 }
 
+/**
+ * Entre qué puntas va una línea. Las del tranvía son sus estaciones finales (el archivo del
+ * municipio llama "Control Sur" a la de Río Tarqui).
+ */
+function destinosDe(linea) {
+  const trazos = linea.tipo === "tranvia" ? trazadosTranvia(estacionesDelTranvia) : null;
+  return trazos ? trazos.map((f) => f.properties.hacia) : linea.destinos;
+}
+
 /** Tocar una línea la dibuja en el mapa y muestra por dónde pasa; tocarla otra vez lo quita. */
 function alTocarLinea(boton, botones, linea, mapa) {
   const activa = boton.getAttribute("aria-pressed") === "true";
@@ -964,7 +992,7 @@ function pintarBusesDeCalle(calle, lineas, rutas, mapa) {
         elemento(
           "span",
           { class: "linea-texto" },
-          elemento("strong", {}, esTranvia ? t("tranvia") : t("linea", { linea: l.linea }), " ", elemento("span", { class: "destinos" }, describirDestinos(l.destinos))),
+          elemento("strong", {}, esTranvia ? t("tranvia") : t("linea", { linea: l.linea }), " ", elemento("span", { class: "destinos" }, describirDestinos(destinosDe(l)))),
           elemento("span", { class: "frecuencia" }, esTranvia ? t("tranviaDetalle") : describirFrecuencia(l.horario)),
           elemento("span", { class: "frecuencia" }, t("busesCalleRecorre", { distancia: formatoDistancia(l.metros) })),
         ),
@@ -976,6 +1004,36 @@ function pintarBusesDeCalle(calle, lineas, rutas, mapa) {
   );
   caja.replaceChildren(titulo, lista, elemento("p", { class: "detalle" }, t("busesCalleNota")));
   caja.hidden = false;
+}
+
+// "Hacia Ricaurte: en unos 4 min": cuánto falta para el próximo bus de cada sentido. Los
+// minutos envejecen, así que la lista los vuelve a calcular cada medio minuto.
+let ponerProximos = [];
+setInterval(() => !document.hidden && ponerProximos.forEach((poner) => poner()), 30_000);
+
+function cuandoPasa(minutos) {
+  if (minutos === null) return t("proximoNoHoy");
+  if (minutos < 1.5) return t("proximoYa");
+  // Falta más de una hora (de madrugada, por ejemplo): se dice la hora, no los minutos.
+  if (minutos > 60) return t("proximoHora", { hora: horaDentroDe(minutos) });
+  return t("proximoMin", { minutos: Math.round(minutos) });
+}
+
+/** El renglón de los próximos buses de una línea, o null si no hay con qué estimarlos. */
+function proximosDe(punto, trazados, horarios, velocidadKmH) {
+  if (!punto || !trazados || !horarios) return null;
+  const calcular = () => proximosDeLinea(punto, trazados, horarios, { velocidadKmH });
+  if (!calcular().length) return null;
+  const caja = elemento("span", { class: "proximos" });
+  const poner = () =>
+    caja.replaceChildren(
+      ...calcular().map((p) =>
+        elemento("span", { class: "proximo" }, t("sentidoHacia", { destino: p.hacia }), ": ", elemento("strong", {}, cuandoPasa(p.minutos))),
+      ),
+    );
+  poner();
+  ponerProximos.push(poner);
+  return caja;
 }
 
 /** Lista de líneas cercanas; al tocar una se resalta su recorrido en el mapa. */
@@ -993,10 +1051,17 @@ function pintarLineas(cercanas, mapa, { punto, transporte, estaciones } = {}) {
     return;
   }
   const botones = [];
+  ponerProximos = [];
+  // El tranvía, con su recorrido por estaciones y su propio horario.
+  const trazosTranvia = trazadosTranvia(estaciones);
+  const delTranvia = horarioTranvia(transporte?.tranvia);
   lista.replaceChildren(
     ...cercanas.map((l) => {
       const esTranvia = l.tipo === "tranvia";
       let detalle = esTranvia ? t("tranviaDetalle") : describirFrecuencia(l.horario);
+      const proximos = esTranvia
+        ? proximosDe(punto, trazosTranvia, delTranvia && { ida: delTranvia, retorno: delTranvia }, transporte?.tranvia?.velocidad_kmh)
+        : proximosDe(punto, l.trazados, l.horarios);
       // Del tranvía cuenta la estación (donde se sube), no la vía: una sola distancia.
       let metros = l.metros;
       if (esTranvia) {
@@ -1017,8 +1082,9 @@ function pintarLineas(cercanas, mapa, { punto, transporte, estaciones } = {}) {
         elemento(
           "span",
           { class: "linea-texto" },
-          elemento("strong", {}, esTranvia ? t("tranvia") : t("linea", { linea: l.linea }), " ", elemento("span", { class: "destinos" }, describirDestinos(l.destinos))),
+          elemento("strong", {}, esTranvia ? t("tranvia") : t("linea", { linea: l.linea }), " ", elemento("span", { class: "destinos" }, describirDestinos(destinosDe(l)))),
           elemento("span", { class: "frecuencia" }, detalle),
+          proximos,
           ...avisos.map((a) =>
             elemento("span", { class: "aviso-linea" }, elemento("strong", {}, t("avisoLinea"), ": "), a[idioma()] ?? a.es),
           ),
@@ -1285,22 +1351,21 @@ function pintarAire(estacion, { uv = null, clima = null } = {}) {
     .join(", ");
   const textoUv = uv ? t("resumenUv", { valor: uv.valor, nivel: nivelUv.toLowerCase() }) : "";
   const temperatura = clima ? `${clima.temperatura} °C` : null;
-  // La ficha se pone en rojo si el aire está mal o si el sol está muy alto. El titular dice
-  // siempre lo que la pone así: con el aire bueno y el sol muy alto, un "Buena" en rojo confundía.
-  const aireMal = (estacion?.nivel ?? 0) >= 3;
-  const solFuerte = (uv?.nivel ?? 0) >= 4;
-  const mandaElSol = !estacion || (solFuerte && !aireMal);
+  // Verde, ámbar o rojo según lo peor de los dos. El sol alto o muy alto, que en Cuenca es
+  // cosa de casi todos los mediodías, va en ámbar: el rojo queda para el sol extremo y el aire
+  // malo, o nadie lo miraría. El titular dice siempre lo que le da el color a la ficha.
+  const gravedadAire = estacion ? Math.min(estacion.nivel, 3) : 0;
+  const gravedadUv = uv ? (uv.nivel <= 2 ? 1 : uv.nivel <= 4 ? 2 : 3) : 0;
+  const mandaElSol = !estacion || gravedadUv > gravedadAire;
   const valorFicha = mandaElSol ? textoUv || temperatura : t("aireNiveles")[estacion.nivel - 1];
   const detalleFicha = !estacion
     ? uv ? temperatura : null
     : mandaElSol
       ? [t("resumenAireCon", { nivel: t("aireNiveles")[estacion.nivel - 1].toLowerCase(), valor: estacion.valor, estacion: estacion.nombre }), temperatura].filter(Boolean).join(". ")
       : [t("resumenAire", { valor: estacion.valor, estacion: estacion.nombre }), extras].filter(Boolean).join(". ");
-  // Buena en verde, moderada en ámbar y de ahí para arriba en rojo; con el sol, lo mismo.
-  const gravedadUv = uv ? (uv.nivel <= 2 ? 1 : uv.nivel === 3 ? 2 : 3) : 0;
-  const gravedad = mandaElSol ? gravedadUv : estacion.nivel;
+  const gravedad = Math.max(gravedadAire, gravedadUv);
   const estado = gravedad === 1 ? "ok" : gravedad === 2 ? "atencion" : gravedad >= 3 ? "alerta" : null;
-  const { li } = ficha("aire", valorFicha, detalleFicha, { aviso: aireMal || solFuerte, estado });
+  const { li } = ficha("aire", valorFicha, detalleFicha, { aviso: gravedad >= 3, estado });
   li.classList.add("ficha-aire");
   $("resumen").append(li);
 
@@ -2047,6 +2112,35 @@ async function iniciar() {
     for (const boton of document.querySelectorAll(".lugar-boton")) {
       boton.setAttribute("aria-pressed", String(boton.dataset.lugar === clave));
     }
+    pintarAtajos();
+  };
+
+  /**
+   * Los otros lugares guardados, a un toque: bajo el nombre de la calle, para pasar de Casa a
+   * Trabajo sin buscar; y bajo "¿A dónde vas?", para pedir la ruta hasta allá.
+   */
+  const pintarAtajos = () => {
+    const aqui = puntoActual ? lugarDe(puntoActual, lugares) : null;
+    const otros = LUGARES.filter((clave) => lugares[clave] && clave !== aqui);
+    const botones = (alTocar) =>
+      otros.map((clave) => {
+        const boton = elemento("button", { type: "button", class: "lugar atajo" }, nombreLugar(clave));
+        boton.addEventListener("click", () => alTocar(clave));
+        return boton;
+      });
+    $("otros-lugares").hidden = !otros.length;
+    $("otros-lugares").replaceChildren(
+      elemento("span", {}, t("atajoVer")),
+      ...botones((clave) => elegir(lugares[clave], nombreLugar(clave), lugares[clave].nombre, { nombrar: !lugares[clave].nombre })),
+    );
+    $("ir-lugares").hidden = !otros.length;
+    $("ir-lugares").replaceChildren(
+      elemento("span", {}, t("atajoIr")),
+      ...botones((clave) => {
+        $("destino").value = nombreLugar(clave);
+        $("ruta").requestSubmit();
+      }),
+    );
   };
 
   /** Los lugares guardados, junto al buscador, para volver a ellos con un toque. */
@@ -2117,6 +2211,7 @@ async function iniciar() {
     // Un corte de agua de hoy o de mañana sale también en el resumen.
     const posibles = avisosAguaPorConfirmar(avisosAgua, agua);
     const proximo = pintarAgua(agua, posibles)[0];
+    pintarCalendarioAgua();
     const posible = avisoCercano(posibles);
     $("resumen").querySelector(".ficha-agua")?.remove();
     if (proximo && proximo.fecha <= horaCuenca(new Date(Date.now() + 86_400_000)).fecha) {
@@ -2257,7 +2352,11 @@ async function iniciar() {
     if (boton) boton.disabled = true;
     aviso.textContent = t("rutaBuscando");
     try {
-      const destino = await ubicarTexto(texto);
+      // "Casa" o "Trabajo" son los lugares guardados: no hay que buscarlos.
+      const mio = LUGARES.find((clave) => lugares[clave] && nombreLugar(clave).toLowerCase() === texto.toLowerCase());
+      const destino = mio
+        ? { punto: { lat: lugares[mio].lat, lon: lugares[mio].lon }, texto: lugares[mio].nombre ? `${nombreLugar(mio)} (${lugares[mio].nombre})` : nombreLugar(mio) }
+        : await ubicarTexto(texto);
       if (destino.error) {
         // Sin destino válido no queda la ruta anterior dibujada ni su nota.
         quitarRuta();
@@ -2441,6 +2540,7 @@ async function iniciar() {
       guardar(CLAVE_LUGARES, JSON.stringify(lugares));
       pintarPunto();
       pintarLugares();
+      pintarAtajos();
     });
   }
 

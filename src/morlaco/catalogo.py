@@ -71,6 +71,12 @@ EN: dict[str, dict[str, Any]] = {
         "frecuencia": "daily",
         "campos": {},
     },
+    "agua-calendario": {
+        "titulo": "Water cuts calendar",
+        "descripcion": "A calendar to subscribe to from Google Calendar, Apple or Outlook: each confirmed water cut is an event, with a reminder the evening before.",
+        "frecuencia": "by hand, the same day as the notice",
+        "campos": {},
+    },
     "basura-manual": {
         "titulo": "Holidays and where to take things",
         "descripcion": "What happens to collection on public holidays, what goes in the light-blue bag and where to take organic waste, glass, rubble, batteries and bulky items. In Spanish and English.",
@@ -363,6 +369,20 @@ CONJUNTOS: list[dict[str, Any]] = [
             "cortes[]": "fecha, desde, hasta, sectores y motivo (es/en) y fuente (nombre, url)",
             "descartados[]": "Notas revisadas que no eran cortes de ETAPA en Cuenca",
         },
+        "fuente_morlaco": None,
+        "frecuencia": "a mano, el mismo día del aviso",
+        "fuente": "El Mercurio, citando a ETAPA EP",
+        "licencia": MORLACO,
+    },
+    {
+        "id": "agua-calendario",
+        "archivo": "agua/cortes.ics",
+        "formato": "iCalendar (.ics)",
+        "tema": "agua",
+        "titulo": "Calendario de cortes de agua",
+        "descripcion": "Un calendario para suscribirse desde Google Calendar, Apple u Outlook: cada corte "
+        "confirmado es un evento, con aviso la tarde anterior.",
+        "campos": {},
         "fuente_morlaco": None,
         "frecuencia": "a mano, el mismo día del aviso",
         "fuente": "El Mercurio, citando a ETAPA EP",

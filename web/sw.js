@@ -7,7 +7,7 @@
 //   las teselas de OpenFreeMap toca, y esa versión cambia cada semana.
 // - La búsqueda de lugares (Nominatim) nunca se guarda.
 
-const CACHE_PAGINA = "morlaco-pagina-v40";
+const CACHE_PAGINA = "morlaco-pagina-v43";
 const CACHE_EXTERNOS = "morlaco-externos-v2";
 const CACHE_MAPA = "morlaco-mapa-v3";
 const CACHES = [CACHE_PAGINA, CACHE_EXTERNOS, CACHE_MAPA];

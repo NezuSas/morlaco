@@ -447,6 +447,11 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
   const discretas = (si) => {
     zonasDiscretas = si;
     aplicarZonas();
+    // Si la etiqueta de una zona estaba a la vista al elegir la línea, se va con ella.
+    if (si) {
+      mapa.getCanvas().style.cursor = "";
+      etiquetaFlotante?.remove();
+    }
   };
 
   // Las paradas van encima de todos los trazos, también del de la ruta.
@@ -1020,6 +1025,9 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
 
   // Los días de la zona al pasar el ratón.
   mapa.on("mousemove", `${PROPIO}zonas-relleno`, (e) => {
+    // Con una línea o una ruta a la vista las zonas son solo un contorno de fondo: su etiqueta
+    // no sale, que ahí lo que se mira son los buses y las paradas.
+    if (zonasDiscretas) return;
     // MapLibre entrega las listas como texto: se usa la zona original.
     const p = zonas.features.find((z) => z.properties.zona === e.features[0].properties.zona)?.properties;
     if (!p) return;
@@ -1528,10 +1536,12 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
       if (!enRuta && sentidoVisible !== "ambos" && sentidoVisible !== r.sentido) continue;
       for (const metros of busesEnCamino(r.horario, r.largo, ahora, r.velocidad)) {
         const fraccion = metros / r.largo;
-        // En una ruta solo cuentan los buses que todavía vienen hacia tu parada: los que ya
-        // pasaron no te sirven y harían dudar del "ya no pasan".
-        if (enRuta && fraccion > r.desde) continue;
-        posiciones.push({ ...puntoEnRecorrido(r.medida, fraccion * r.medida.total), r });
+        // En una ruta se ven los buses que vienen hacia tu parada y, atenuados, los que ya la
+        // pasaron y van por el tramo que vas a recorrer: si te subes cerca del inicio de la
+        // línea no viene ninguno todavía, y un mapa sin buses parecía un error. Los que ya
+        // dejaron atrás tu bajada no aportan nada.
+        if (enRuta && fraccion > r.hasta) continue;
+        posiciones.push({ ...puntoEnRecorrido(r.medida, fraccion * r.medida.total), r, pasado: enRuta && fraccion > r.desde });
       }
     }
     while (busesMarcas.length < posiciones.length) busesMarcas.push(marcaDeBus());
@@ -1545,9 +1555,12 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
       const nodo = bus.marca.getElement();
       nodo.style.setProperty("--rumbo", `${p.rumbo}deg`);
       bus.marca.setLngLat([p.lon, p.lat]);
-      // El resto solo cambia cuando el marcador pasa a otro bus.
-      if (bus.de !== p.r) {
+      // El resto solo cambia cuando el marcador pasa a otro bus, o cuando el bus pasa tu parada.
+      const pasado = Boolean(p.pasado);
+      if (bus.de !== p.r || bus.pasado !== pasado) {
         bus.de = p.r;
+        bus.pasado = pasado;
+        nodo.classList.toggle("pasado", pasado);
         nodo.classList.toggle("retorno", p.r.color === "retorno");
         // El tranvía lleva su propio dibujo y no necesita número: solo hay una línea.
         const esTranvia = p.r.tipo === "tranvia";
@@ -1555,7 +1568,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
         nodo.querySelector(".bus-numero").textContent = esTranvia ? "" : p.r.linea;
         nodo.dataset.texto = esTranvia
           ? t("tranviaEstimado", { destino: p.r.hacia })
-          : t("busEstimado", { linea: p.r.linea, destino: p.r.hacia });
+          : t(pasado ? "busPasado" : "busEstimado", { linea: p.r.linea, destino: p.r.hacia });
       }
       if (!bus.puesta) {
         bus.marca.addTo(mapa);

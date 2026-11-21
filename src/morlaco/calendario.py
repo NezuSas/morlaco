@@ -175,3 +175,94 @@ def calendario_zona(zona: dict[str, Any]) -> str:
 
     plegadas = [trozo for linea in lineas for trozo in plegar(linea)]
     return "\r\n".join(plegadas) + "\r\n"
+
+
+# ---------- Cortes de agua ----------
+
+ARCHIVO_AGUA = "agua/cortes.ics"
+# El aviso llega la tarde anterior: da tiempo de llenar un balde.
+AVISO_AGUA_HORAS = 12
+
+
+def _evento_agua(corte: dict[str, Any], uid: str) -> list[str]:
+    fecha = date.fromisoformat(corte["fecha"])
+    texto = corte.get("es", {})
+    desde, hasta = corte.get("desde"), corte.get("hasta")
+    fuente = corte.get("fuente", {})
+    if desde and hasta:
+        cuando = [
+            f"DTSTART;TZID={ZONA_HORARIA}:{_fecha_hora(fecha, desde)}",
+            f"DTEND;TZID={ZONA_HORARIA}:{_fecha_hora(fecha, hasta)}",
+        ]
+        horario = f"🕐 De {desde} a {hasta}."
+    else:  # sin horario publicado: todo el día
+        cuando = [
+            f"DTSTART;VALUE=DATE:{fecha:%Y%m%d}",
+            f"DTEND;VALUE=DATE:{fecha + timedelta(days=1):%Y%m%d}",
+        ]
+        horario = "🕐 Sin horario publicado."
+    del_corte = [
+        horario,
+        f"📍 Sectores: {texto['sectores']}." if texto.get("sectores") else "",
+        f"🔧 {texto['motivo']}." if texto.get("motivo") else "",
+    ]
+    de_donde = [
+        f"Fuente: {fuente['nombre']}. {fuente.get('url', '')}".strip() if fuente else "",
+        "ETAPA EP anuncia sus cortes en redes sociales y en su línea 188; Morlaco los toma "
+        "de la prensa, así que puede haber cortes que no estén aquí.",
+        f"Consulta tu calle en Morlaco: {PAGINA}",
+    ]
+    descripcion = "\n".join([*filter(None, del_corte), "", *filter(None, de_donde)])
+    return [
+        "BEGIN:VEVENT",
+        f"UID:{uid}@nezusas.github.io",
+        f"DTSTAMP:{SELLO}",
+        *cuando,
+        "SUMMARY:💧 Corte de agua en Cuenca",
+        f"DESCRIPTION:{escapar(descripcion)}",
+        f"LOCATION:{escapar(texto.get('sectores') or 'Cuenca, Ecuador')}",
+        f"URL:{PAGINA}?ver=cortes",
+        "TRANSP:TRANSPARENT",
+        "BEGIN:VALARM",
+        "ACTION:DISPLAY",
+        f"TRIGGER:-PT{AVISO_AGUA_HORAS}H",
+        f"DESCRIPTION:{escapar('Corte de agua programado en Cuenca: revisa si es en tu sector.')}",
+        "END:VALARM",
+        "END:VEVENT",
+    ]
+
+
+def calendario_agua(agua: dict[str, Any]) -> str:
+    """El .ics de los cortes de agua confirmados (datos/manual/agua.json), uno por evento.
+
+    Como el de la basura, es una suscripción: cuando se anota un corte nuevo, aparece solo en
+    el calendario de cada persona, con un aviso la tarde anterior. Sin cortes es un
+    calendario vacío, que sigue siendo válido."""
+    lineas = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//Morlaco//Cortes de agua de Cuenca//ES",
+        "CALSCALE:GREGORIAN",
+        "METHOD:PUBLISH",
+        f"X-WR-CALNAME:{escapar('💧 Cortes de agua (Cuenca)')}",
+        "X-WR-CALDESC:"
+        + escapar(
+            "Cortes de agua programados en Cuenca que la prensa publica citando a ETAPA EP. "
+            "Publicado por Morlaco."
+        ),
+        f"X-WR-TIMEZONE:{ZONA_HORARIA}",
+        "REFRESH-INTERVAL;VALUE=DURATION:PT6H",
+        "X-PUBLISHED-TTL:PT6H",
+        "COLOR:steelblue",
+        "X-APPLE-CALENDAR-COLOR:#2F7FB8",
+        *_ZONA_HORARIA_ICAL,
+    ]
+    vistos: dict[str, int] = {}
+    for corte in sorted(agua.get("cortes", []), key=lambda c: (c["fecha"], c.get("desde") or "")):
+        base = f"morlaco-agua-{corte['fecha']}-{(corte.get('desde') or 'dia').replace(':', '')}"
+        vistos[base] = vistos.get(base, 0) + 1
+        uid = base if vistos[base] == 1 else f"{base}-{vistos[base]}"
+        lineas += _evento_agua(corte, uid)
+    lineas.append("END:VCALENDAR")
+    plegadas = [trozo for linea in lineas for trozo in plegar(linea)]
+    return "\r\n".join(plegadas) + "\r\n"

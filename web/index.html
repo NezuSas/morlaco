@@ -188,6 +188,8 @@
             <p id="punto-zona" class="punto-zona"></p>
             <!-- Lo primero que se quiere saber, arriba del todo (en el celular, antes del mapa). -->
             <p id="punto-hoy" class="punto-hoy" hidden></p>
+            <!-- Los otros lugares guardados (Casa, Trabajo), para pasar a ellos con un toque. -->
+            <div id="otros-lugares" class="atajos" hidden></div>
             <div class="punto-acciones">
               <!-- A la vista, lo de todos los días; el resto, en "Más". -->
               <button type="button" id="cambiar-punto" class="en-muro" data-t="cambiarPunto">Cambiar de lugar</button>
@@ -310,6 +312,7 @@
                 <span data-t="tituloAgua">Cortes de agua</span>
               </h2>
               <div id="agua-estado"></div>
+              <div id="agua-calendario" class="calendario"></div>
             </section>
 
             <section id="s-farmacias" role="tabpanel" class="tarjeta-seccion servicio-farmacias farmacias" aria-labelledby="t-farmacias">
@@ -343,6 +346,8 @@
                   <button type="submit" data-t="buscarRuta">Buscar ruta</button>
                   <ul id="sug-destino" class="sugerencias" role="listbox" hidden data-t-aria-label="sugerenciasCalles" aria-label="Calles sugeridas"></ul>
                 </div>
+                <!-- Los lugares guardados, como destino: la ruta de todos los días con un toque. -->
+                <div id="ir-lugares" class="atajos" hidden></div>
                 <p id="ruta-mensaje" class="mensaje" role="status" aria-live="polite"></p>
               </form>
               <ol id="ruta-opciones" class="ruta-opciones"></ol>

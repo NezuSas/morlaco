@@ -103,14 +103,15 @@ _ETIQUETAS = re.compile(
     r"\b(CALLE|BARRIO|CARRETERO|KIL[OÓ]METRO|MANZANA|CONJUNTO|BLOQUE|EDIFICIO|PISO|LOCAL|AV\.?ENIDA)\s*:\s*",
     re.IGNORECASE,
 )
-_SIN_DATO = re.compile(r"\b(S/N|S/I|SIN INTERSECCI[OÓ]N)\b|(?<!\w)SN(?!\w)", re.IGNORECASE)
+# "NA" (no aplica) es el relleno de ARCSA en las casillas vacías: "NA LARGA NA NA NA 10-81".
+_SIN_DATO = re.compile(r"\b(S/N|S/I|SIN INTERSECCI[OÓ]N)\b|(?<!\w)(SN|N/?A)(?!\w)", re.IGNORECASE)
 _NUMERO_CASA = re.compile(r"^(.*?\D)\s+(\d+\s*-\s*\d+)\s+(.+)$")
 
 
 def direccion_legible(texto: str) -> str:
     """'CALLE: VEGA MUÑOZ 6-72 BORRERO' -> 'Vega Muñoz 6-72 y Borrero'.
 
-    Quita las etiquetas del sistema de ARCSA ("CALLE:", "BARRIO:") y los "S/N"; si hay
+    Quita las etiquetas del sistema de ARCSA ("CALLE:", "BARRIO:"), los "S/N" y los "NA"; si hay
     un número de casa al estilo de Cuenca (o "S/N" en su lugar), lo que sigue es la
     calle que cruza."""
     limpio = limpiar(_ETIQUETAS.sub(" ", texto or ""))

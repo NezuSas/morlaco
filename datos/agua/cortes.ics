@@ -1,0 +1,53 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Morlaco//Cortes de agua de Cuenca//ES
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:💧 Cortes de agua (Cuenca)
+X-WR-CALDESC:Cortes de agua programados en Cuenca que la prensa publica cit
+ ando a ETAPA EP. Publicado por Morlaco.
+X-WR-TIMEZONE:America/Guayaquil
+REFRESH-INTERVAL;VALUE=DURATION:PT6H
+X-PUBLISHED-TTL:PT6H
+COLOR:steelblue
+X-APPLE-CALENDAR-COLOR:#2F7FB8
+BEGIN:VTIMEZONE
+TZID:America/Guayaquil
+BEGIN:STANDARD
+DTSTART:19700101T000000
+TZOFFSETFROM:-0500
+TZOFFSETTO:-0500
+TZNAME:-05
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+UID:morlaco-agua-2026-11-20-0900@nezusas.github.io
+DTSTAMP:20260101T000000Z
+DTSTART;TZID=America/Guayaquil:20261120T090000
+DTEND;TZID=America/Guayaquil:20261120T180000
+SUMMARY:💧 Corte de agua en Cuenca
+DESCRIPTION:🕐 De 09:00 a 18:00.\n📍 Sectores: Av. González Suárez\, 
+ av. Paseo de los Cañaris\, Pisarcápac\, av. Huayna-Cápac\, Del Rollo\, 
+ Barrial Blanco\, av. de las Américas\, río Milchichig\, Terminal Terrest
+ re\, Aeropuerto Mariscal Lamar\, Totoracocha\, Cementerio Municipal\, Las 
+ Retamas\, Ciudadela de la UNE y Mercado 12 de Abril.\n🔧 Interconexión 
+ de una tubería nueva en la calle Barrial Blanco\, entre Héroes de Verdel
+ oma y Turuhuayco.\n\nFuente: El Mercurio\, citando a ETAPA EP. https://elm
+ ercurio.com.ec/cuenca/2026/11/19/agua-cuenca-suspension-sectores-tuberia/\
+ nETAPA EP anuncia sus cortes en redes sociales y en su línea 188\; Morlac
+ o los toma de la prensa\, así que puede haber cortes que no estén aquí.
+ \nConsulta tu calle en Morlaco: https://nezusas.github.io/morlaco/web/
+LOCATION:Av. González Suárez\, av. Paseo de los Cañaris\, Pisarcápac\, 
+ av. Huayna-Cápac\, Del Rollo\, Barrial Blanco\, av. de las Américas\, r
+ ío Milchichig\, Terminal Terrestre\, Aeropuerto Mariscal Lamar\, Totoraco
+ cha\, Cementerio Municipal\, Las Retamas\, Ciudadela de la UNE y Mercado 1
+ 2 de Abril
+URL:https://nezusas.github.io/morlaco/web/?ver=cortes
+TRANSP:TRANSPARENT
+BEGIN:VALARM
+ACTION:DISPLAY
+TRIGGER:-PT12H
+DESCRIPTION:Corte de agua programado en Cuenca: revisa si es en tu sector.
+END:VALARM
+END:VEVENT
+END:VCALENDAR

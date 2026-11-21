@@ -128,7 +128,12 @@ BiciPública, las ciclovías y los puntos de carga para autos eléctricos.
   calendario se actualiza solo.
 - **Compartir tu calle.** El botón Compartir abre el menú de tu teléfono; en la computadora copia el enlace.
   En "Más" está el envío directo por WhatsApp.
-- **Guardar dos lugares**, Casa y Trabajo, para volver a ellos con un toque.
+- **Guardar dos lugares**, Casa y Trabajo. Quedan a la vista bajo el nombre de la calle, para pasar de uno a
+  otro con un toque, y bajo "¿A dónde vas?", para pedir la ruta de todos los días sin escribirla.
+- **Decirte cuánto falta para el próximo bus** de cada línea cercana, en cada sentido ("Hacia Ricaurte: en
+  unos 3 min"). Es una estimación con la frecuencia de la línea, no un GPS.
+- **Avisarte de los cortes de agua.** Desde la pestaña Cortes te suscribes a un calendario: cada corte
+  confirmado aparece solo, con un aviso la tarde anterior.
 - **Instalarse como app** en el celular o la computadora. En Android y en Chrome o Edge aparece el botón
   "Instalar"; en el iPhone, desde Safari, con Compartir y "Añadir a pantalla de inicio".
 - **Funcionar sin conexión** con los últimos datos descargados, útil en un corte de luz o sin megas.

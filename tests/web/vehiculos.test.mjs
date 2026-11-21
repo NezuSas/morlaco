@@ -3,9 +3,11 @@ import { test } from "node:test";
 
 import {
   busesEnCamino,
+  lugarEnRecorrido,
   medirRecorrido,
   minutosAlProximo,
   minutosDelDia,
+  proximosDeLinea,
   puntoEnRecorrido,
   puntosDeTrazado,
 } from "../../web/vehiculos.js";
@@ -94,4 +96,33 @@ test("cuánto falta para que el próximo bus llegue a la parada", () => {
   // Después de la última salida que llega a la parada, ninguno.
   assert.equal(minutosAlProximo(HORARIO, 15_000, 2500, new Date("2026-11-19T01:30:00Z")), null);
   assert.equal(minutosAlProximo(undefined, 15_000, 2500, DIEZ), null);
+});
+
+test("lugarEnRecorrido: los metros hasta el lugar del recorrido más cercano al punto", () => {
+  // Un recorrido recto hacia el este por el ecuador de Cuenca: unos 1.112 m por centésima.
+  const medida = medirRecorrido([[-79.02, -2.9], [-79.01, -2.9], [-79.0, -2.9]]);
+  const lugar = lugarEnRecorrido({ lon: -79.005, lat: -2.899 }, medida);
+  assert.ok(Math.abs(lugar.metros - medida.total * 0.75) < 5);
+  assert.ok(Math.abs(lugar.distancia - 110) < 5); // una milésima de grado al norte
+  // Antes del inicio, el lugar más cercano es el propio inicio.
+  assert.equal(lugarEnRecorrido({ lon: -79.03, lat: -2.9 }, medida).metros, 0);
+});
+
+test("proximosDeLinea: el próximo bus de cada sentido que pasa cerca", () => {
+  const trazo = (sentido, hacia, coords, tipo = "linea") => ({ properties: { sentido, hacia, tipo }, geometry: { type: "LineString", coordinates: coords } });
+  const trazados = [
+    trazo("ida", "Norte", [[-79.02, -2.9], [-79.0, -2.9]]),
+    trazo("retorno", "Sur", [[-79.0, -2.95], [-79.02, -2.95]]), // a más de 5 km: no cuenta
+    trazo("ida", "Alargue", [[-79.02, -2.9], [-79.0, -2.9]], "alargue"),
+  ];
+  const punto = { lon: -79.01, lat: -2.9 }; // a mitad del recorrido de ida (unos 1.112 m)
+  const proximos = proximosDeLinea(punto, trazados, { ida: HORARIO, retorno: HORARIO }, { fecha: DIEZ });
+  assert.equal(proximos.length, 1);
+  assert.equal(proximos[0].hacia, "Norte");
+  // Sale uno a las 10:00 y tarda unos 4,4 min en recorrer 1.112 m a 15 km/h.
+  assert.ok(Math.abs(proximos[0].minutos - 4.45) < 0.1);
+  // De noche ya no pasa; y sin horario del sentido no se estima nada.
+  assert.equal(proximosDeLinea(punto, trazados, { ida: HORARIO }, { fecha: new Date("2026-11-19T02:00:00Z") })[0].minutos, null);
+  assert.deepEqual(proximosDeLinea(punto, trazados, { ida: null }, { fecha: DIEZ }), []);
+  assert.deepEqual(proximosDeLinea(punto, undefined, undefined), []);
 });

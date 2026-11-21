@@ -220,6 +220,29 @@
       }
     },
     {
+      "id": "agua-calendario",
+      "archivo": "agua/cortes.ics",
+      "formato": "iCalendar (.ics)",
+      "tema": "agua",
+      "titulo": "Calendario de cortes de agua",
+      "descripcion": "Un calendario para suscribirse desde Google Calendar, Apple u Outlook: cada corte confirmado es un evento, con aviso la tarde anterior.",
+      "campos": {},
+      "fuente_morlaco": null,
+      "frecuencia": "a mano, el mismo día del aviso",
+      "fuente": "El Mercurio, citando a ETAPA EP",
+      "licencia": "CC BY 4.0 (Morlaco); los datos de cada fuente conservan su licencia",
+      "url": "https://nezusas.github.io/morlaco/datos/agua/cortes.ics",
+      "en": {
+        "titulo": "Water cuts calendar",
+        "descripcion": "A calendar to subscribe to from Google Calendar, Apple or Outlook: each confirmed water cut is an event, with a reminder the evening before.",
+        "frecuencia": "by hand, the same day as the notice",
+        "campos": {},
+        "formato": "iCalendar (.ics)",
+        "fuente": "El Mercurio, quoting ETAPA EP",
+        "licencia": "CC BY 4.0 (Morlaco); each source's data keeps its own license"
+      }
+    },
+    {
       "id": "agua-avisos",
       "archivo": "agua/avisos.json",
       "formato": "JSON",

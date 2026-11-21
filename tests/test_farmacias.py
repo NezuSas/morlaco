@@ -70,6 +70,7 @@ def test_telefono_para_llamar(texto, esperado):
         ("CALLE: MARISCAL SUCRE SN HERMANO MIGUEL", "Mariscal Sucre y Hermano Miguel"),
         ("CALLE: AV.HURTADO DE MENDOZA 11-73 AV. PASEO DE LOS CANARIS", "Av. Hurtado de Mendoza 11-73 y Av. Paseo de los Cañaris"),
         ("CALLE: BELLA UNION S/N SIN INTERSECCION", "Bella Unión"),
+        ("CALLE: NA LARGA NA NA NA 10-81 SANTA TERESITA", "Larga 10-81 y Santa Teresita"),
     ],
 )  # fmt: skip
 def test_direccion_legible(texto, esperado):

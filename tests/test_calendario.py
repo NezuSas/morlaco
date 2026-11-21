@@ -117,3 +117,46 @@ def test_descripcion_dice_que_sacar_y_cuando():
     assert "Patrimonio Cultural de la Humanidad" in texto_negra
     assert "funda celeste (reciclables) antes de las 20:00" in celeste["DESCRIPTION"]
     assert negra["LOCATION"] == "Zona 4 de recolección\\, Cuenca\\, Ecuador"
+
+
+AGUA = {
+    "cortes": [
+        {
+            "fecha": "2026-11-20",
+            "desde": "09:00",
+            "hasta": "18:00",
+            "es": {"sectores": "Totoracocha, Las Retamas", "motivo": "Una tubería nueva"},
+            "fuente": {"nombre": "El Mercurio", "url": "https://ejemplo.ec/nota"},
+        },
+        {"fecha": "2026-11-05", "es": {"sectores": "Baños"}},
+    ]
+}
+
+
+def test_calendario_agua_un_evento_por_corte():
+    ics = calendario.calendario_agua(AGUA)
+    assert ics.startswith("BEGIN:VCALENDAR\r\n") and ics.endswith("END:VCALENDAR\r\n")
+    assert all(len(linea.encode()) <= 75 for linea in ics.split("\r\n"))
+    primero, segundo = eventos(ics)
+    # En orden de fecha. Sin horario publicado, el corte ocupa el día entero.
+    assert primero["DTSTART;VALUE=DATE"] == "20261105"
+    assert primero["DTEND;VALUE=DATE"] == "20261106"
+    assert "\\n\\n\\n" not in primero["DESCRIPTION"]  # sin renglones vacíos de más
+    assert segundo["DTSTART;TZID=America/Guayaquil"] == "20261120T090000"
+    assert segundo["DTEND;TZID=America/Guayaquil"] == "20261120T180000"
+    assert segundo["UID"] == "morlaco-agua-2026-11-20-0900@nezusas.github.io"
+    assert "Totoracocha" in segundo["DESCRIPTION"] and "Una tubería nueva" in segundo["DESCRIPTION"]
+    assert "TRIGGER:-PT12H" in ics  # el aviso, la tarde anterior
+
+
+def test_calendario_agua_sin_cortes_es_valido():
+    ics = calendario.calendario_agua({"cortes": []})
+    assert "BEGIN:VEVENT" not in ics
+    assert ics.endswith("END:VCALENDAR\r\n")
+
+
+def test_calendario_agua_no_repite_identificadores():
+    corte = {"fecha": "2026-11-20", "desde": "09:00", "hasta": "12:00", "es": {"sectores": "A"}}
+    ics = calendario.calendario_agua({"cortes": [corte, {**corte, "es": {"sectores": "B"}}]})
+    uids = [linea for linea in ics.split("\r\n") if linea.startswith("UID:")]
+    assert len(uids) == len(set(uids)) == 2
