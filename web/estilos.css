@@ -647,6 +647,31 @@ button.boton-tema[hidden] {
   .enlace-datos {
     display: none;
   }
+  /* En el celular caben la marca, "Instalar", el idioma y el modo: todo más junto. */
+  .barra {
+    gap: 0.5rem;
+  }
+  .barra-acciones {
+    gap: 0.4rem;
+  }
+  button.idioma:not(.boton-tema) {
+    padding-inline: 0.6rem;
+    white-space: nowrap;
+  }
+}
+
+/* En las pantallas más angostas, la marca un poco menor para que nada se salga. */
+@media (max-width: 350px) {
+  .barra {
+    padding-inline: 0.75rem;
+  }
+  .marca {
+    gap: 0.4rem;
+    font-size: 1.3rem;
+  }
+  button.idioma:not(.boton-tema) {
+    padding-inline: 0.45rem;
+  }
 }
 
 .sin-conexion {
