@@ -1,7 +1,7 @@
 import json
 from datetime import date
 
-from morlaco.fuentes import agua
+from morlaco.fuentes import agua, prensa
 
 
 def nota(titulo, contenido, fecha="2026-10-13T08:18:48", enlace=None):
@@ -68,11 +68,13 @@ def test_obtener_une_las_busquedas_sin_repetir():
         return json.dumps(NOTAS).encode()
 
     resultado = agua.obtener(descargar, hoy=date(2026, 11, 10))
-    assert len(pedidas) == len(agua.BUSQUEDAS)
+    # Las búsquedas del agua y, en la misma pasada, las de cierres de vías y cortes de luz.
+    otras = len(prensa.BUSQUEDAS_CIERRES) + len(prensa.BUSQUEDAS_LUZ)
+    assert len(pedidas) == len(agua.BUSQUEDAS) + otras
     assert all("after=2026-10-20" in url for url in pedidas)
     datos = resultado.archivos["agua/avisos.json"]
     assert len(datos["avisos"]) == 2  # las mismas notas en cada búsqueda cuentan una vez
-    assert resultado.resumen == {"avisos": 2}
+    assert resultado.resumen["avisos"] == 2
 
 
 def test_pendientes_quita_los_confirmados_y_los_descartados():

@@ -5,7 +5,7 @@
 
 import { CENTRO_CUENCA, LIMITES_CUENCA, horaDentroDe, horaLegible, nombreDia, nombreParada, puntoEnGeometria } from "./logica.js";
 import { paradasDeRecorrido, variantesDeLinea } from "./rutas.js";
-import { listar, t } from "./textos.js";
+import { idioma, listar, t } from "./textos.js";
 import { busesEnCamino, medirRecorrido, minutosAlProximo, puntoEnRecorrido, puntosDeTrazado } from "./vehiculos.js";
 
 // MapLibre se carga en index.html, con versión fija y hash de integridad.
@@ -65,6 +65,11 @@ const SVG_PARADA =
 export const SVG_BICI =
   '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="16" r="3.5"/><circle cx="18" cy="16" r="3.5"/><path d="M6 16l4-7h5l3 7M10 9l2 7M14 6h3"/></svg>';
 // La cruz de las farmacias.
+// Un hospital con emergencias: "H" en rojo; un centro de salud: "H" en verde.
+const marcaSalud = (tipo) => `<span class="marca-capa salud${tipo === "emergencias" ? "" : " centro"}">H</span>`;
+// Un mercado: la canasta de la feria.
+const SVG_MERCADO =
+  '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10h16l-1.6 9a1.5 1.5 0 0 1-1.5 1.2H7.1a1.5 1.5 0 0 1-1.5-1.2zM8 10l3-6M16 10l-3-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 14v3M12 14v3M15 14v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
 const SVG_CRUZ = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 3.5h5v6h6v5h-6v6h-5v-6h-6v-5h6z" fill="currentColor"/></svg>';
 const SVG_RAYO =
   '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M13.5 2.5 5 13.5h6.2l-1 8 8.8-11h-6.3z"/></svg>';
@@ -194,7 +199,7 @@ function sinMapa(contenedor) {
   contenedor.replaceChildren(Object.assign(document.createElement("p"), { textContent: t("mapaNoDisponible") }));
 }
 
-const METODOS = ["agregarCapas", "mostrarCapa", "resaltar", "resaltarLinea", "dibujarRuta", "mostrar", "mostrarFarmacias", "verFarmacia", "marcarHoy", "olvidar"];
+const METODOS = ["agregarMercados", "agregarSalud", "mostrarCercanos", "verLugar", "agregarCapas", "mostrarCapa", "resaltar", "resaltarLinea", "dibujarRuta", "mostrar", "mostrarFarmacias", "verFarmacia", "marcarHoy", "olvidar"];
 
 /**
  * El mapa de la página. Se devuelve enseguida: la página no espera a MapLibre para mostrar
@@ -1107,6 +1112,8 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
     }
   });
 
+  let cercanos = []; // mercados y salud cerca de la calle elegida, siempre a la vista
+  let lugarPedido = null; // el mercado u hospital que se pidió ver desde una lista
   let paradas = [];
   let farmacias = []; // las de turno más cercanas, en su esquina aproximada
   let vezFarmacia = 0; // sube con cada "Ver en el mapa": solo la última muestra su nombre
@@ -1140,7 +1147,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
   }
 
   // ---------- Capas de movilidad ----------
-  const grupos = { tranvia: [], bicis: [], carga: [] };
+  const grupos = { tranvia: [], bicis: [], carga: [], mercados: [], salud: [] };
   const pendientes = new Map();
   function prepararCapas(bicicletas, estaciones) {
     if (estaciones) {
@@ -1163,6 +1170,8 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
     if (estaciones) {
       // Los dos sentidos: en el centro el tranvía va por la Gran Colombia y vuelve por la Mariscal Lamar.
       pendientes.set("tranvia", async () => {
+        // Por los rieles (o por las estaciones); el trazado del municipio es el último recurso.
+        if (trazosTranvia) return poner("tranvia", coleccion(trazosTranvia));
         const lineas = await cargarJson("buses/lineas.geojson");
         poner("tranvia", coleccion(lineas.features.filter((f) => f.properties.tipo === "tranvia")));
       });
@@ -1182,6 +1191,8 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
       ["bicis", t("capaBicis"), t("capaBicisQue"), `<span class="marca-capa bici">${SVG_BICI}</span>`],
       ["ciclovias", t("capaCiclovias"), t("capaCicloviasQue"), '<span class="muestra-ciclovia"><i></i><i></i></span>'],
       ["carga", t("capaCarga"), t("capaCargaQue"), `<span class="marca-capa carga">${SVG_RAYO}</span>`],
+      ...(grupos.mercados.length ? [["mercados", t("capaMercados"), t("capaMercadosQue"), `<span class="marca-capa mercado">${SVG_MERCADO}</span>`]] : []),
+      ...(grupos.salud.length ? [["salud", t("capaSalud"), t("capaSaludQue"), '<span class="marca-capa salud">H</span>']] : []),
     ];
     const control = document.createElement("details");
     control.className = "maplibregl-ctrl control-capas";
@@ -1231,9 +1242,11 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
   // ---------- Tranvías en camino, con la capa del tranvía ----------
   // Con la capa prendida se ven también los tranvías, estimados con su frecuencia y su horario,
   // desde cualquier calle. Si la línea elegida es el propio tranvía, ya los muestra ella.
+  let trazosTranvia = null; // el recorrido del tranvía, para dibujar su capa
   let tranviaVivo = null; // [{ medida, largo, horario, velocidad, sentido, hacia }], uno por sentido
   let tranviasMarcas = [];
   function prepararTranvias({ trazos, horario, velocidad } = {}) {
+    trazosTranvia = trazos ?? null;
     if (!trazos || !horario) return;
     tranviaVivo = trazos.map((f) => {
       const medida = medirRecorrido(puntosDeTrazado(f.geometry));
@@ -1489,6 +1502,8 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
   function mostrarBusesDeRuta(tramos) {
     recorridos = tramos.map((tramo) => ({
       linea: tramo.linea,
+      tipo: tramo.tipo,
+      velocidad: tramo.velocidad,
       sentido: tramo.sentido,
       color: "ida", // del azul de la ruta dibujada
       hacia: tramo.hacia,
@@ -1590,16 +1605,18 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
     if (enRuta) {
       // Lo que importa en una ruta: cuándo llega el próximo bus a la parada.
       const [primero] = recorridos;
-      const faltan = minutosAlProximo(primero.horario, primero.largo, primero.metrosSubida, ahora);
+      const faltan = minutosAlProximo(primero.horario, primero.largo, primero.metrosSubida, ahora, primero.velocidad);
+      // "El próximo tranvía…" o "El próximo bus de la línea 5…": cada uno con su frase.
+      const de = (bus, tranvia) => (primero.tipo === "tranvia" ? tranvia : bus);
       const texto =
         faltan === null
-          ? t("rutaSinBusAhora", { linea: primero.linea })
+          ? t(de("rutaSinBusAhora", "rutaSinTranviaAhora"), { linea: primero.linea })
           : faltan < 1.5
-            ? t("rutaProximoBusYa", { linea: primero.linea })
+            ? t(de("rutaProximoBusYa", "rutaProximoTranviaYa"), { linea: primero.linea })
             : faltan > 60
               ? // Falta más de una hora (de madrugada, por ejemplo): se dice la hora, no los minutos.
-                t("rutaPrimerBus", { linea: primero.linea, hora: horaDentroDe(faltan, ahora) })
-              : t("rutaProximoBus", { linea: primero.linea, minutos: Math.round(faltan) });
+                t(de("rutaPrimerBus", "rutaPrimerTranvia"), { linea: primero.linea, hora: horaDentroDe(faltan, ahora) })
+              : t(de("rutaProximoBus", "rutaProximoTranvia"), { linea: primero.linea, minutos: Math.round(faltan) });
       if (nota.textContent !== texto) nota.textContent = texto;
       return;
     }
@@ -1639,7 +1656,10 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
       poner("rutaBus", vacio());
       rutaMarcas = quitar(rutaMarcas);
       paradas = quitar(paradas);
+      cercanos = quitar(cercanos);
       farmacias = quitar(farmacias);
+      lugarPedido?.remove();
+      lugarPedido = null;
       elegido?.remove();
       elegido = null;
       estadoZonas = { elegida: null };
@@ -1729,10 +1749,11 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
         });
       });
       discretas(true);
-      // Los buses estimados, solo en rutas normales: no se sabe qué buses hacen cada variante.
+      // Los buses (y tranvías) estimados, solo en rutas normales: no se sabe qué buses hacen
+      // cada variante. El tranvía entra cuando trae su horario.
       // Esperan a que el trazo termine, para no aparecer sobre la nada.
       const conHorario = opcion.tramos.filter(
-        (t) => t.modo === "bus" && t.tipo !== "tranvia" && !t.variante && t.horario && t.largo > 0,
+        (t) => t.modo === "bus" && !t.variante && t.horario && t.largo > 0,
       );
       contenedor.classList.add("trazando");
       if (conHorario.length) mostrarBusesDeRuta(conHorario);
@@ -1779,10 +1800,14 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
       contenedor.classList.add("con-punto");
       aplicarEstadoZonas();
       paradas = quitar(paradas);
+      cercanos = quitar(cercanos);
       farmacias = quitar(farmacias);
+      lugarPedido?.remove();
+      lugarPedido = null;
       cercanas.forEach((parada, i) => {
         const m = marcador(`<span class="etiqueta-parada">${SVG_PARADA}${i + 1}</span>`, [parada.lon, parada.lat], {
-          texto: nombreParada(parada),
+          // Con las líneas que paran ahí, si la página las sabe (al tocarla en el teléfono).
+          texto: parada.lineasTexto ? `${nombreParada(parada)}. ${parada.lineasTexto}` : nombreParada(parada),
           clase: "aparece",
         });
         paradas.push(m.addTo(mapa));
@@ -1796,6 +1821,8 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
     /** Las farmacias de turno más cercanas: una cruz verde en la esquina de su dirección. */
     mostrarFarmacias(lista) {
       farmacias = quitar(farmacias);
+      lugarPedido?.remove();
+      lugarPedido = null;
       for (const f of lista) {
         farmacias.push(
           marcador(`<span class="etiqueta-farmacia">${SVG_CRUZ}</span>`, [f.lon, f.lat], {
@@ -1803,6 +1830,51 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
             clase: "aparece",
           }).addTo(mapa),
         );
+      }
+    },
+    /** Los hospitales y centros de salud como capa (datos/ciudad/salud.json). Antes de agregarCapas. */
+    agregarSalud(salud) {
+      grupos.salud = (salud?.lugares ?? []).map((l) =>
+        marcador(marcaSalud(l.tipo), [l.lon, l.lat], { texto: t(l.tipo === "emergencias" ? "saludMapaEmergencias" : "saludMapa", { nombre: l.nombre }) }),
+      );
+    },
+    /**
+     * Lo que hay cerca de la calle elegida, siempre a la vista como las farmacias: los mercados
+     * y la atención de salud más cercanos. Se esconden con una línea o una ruta dibujada.
+     */
+    mostrarCercanos(lista) {
+      cercanos = quitar(cercanos);
+      for (const lugar of lista) {
+        const html = lugar.tipo === "mercado" ? `<span class="marca-capa mercado">${SVG_MERCADO}</span>` : marcaSalud(lugar.tipoSalud);
+        cercanos.push(marcador(html, [lugar.lon, lugar.lat], { texto: lugar.texto, clase: "aparece cercano" }).addTo(mapa));
+      }
+    },
+    /** Los mercados municipales como capa (datos/ciudad/cerca.geojson). Antes de agregarCapas. */
+    agregarMercados(coleccion) {
+      grupos.mercados = (coleccion?.features ?? [])
+        .filter((f) => f.properties.tipo === "mercado")
+        .map((f) =>
+          marcador(`<span class="marca-capa mercado">${SVG_MERCADO}</span>`, f.geometry.coordinates, {
+            texto: [f.properties.nombre, f.properties.horario?.[idioma()] ?? f.properties.horario?.es].filter(Boolean).join(", "),
+          }),
+        );
+    },
+    /**
+     * Lleva el mapa a un lugar de una lista (un mercado, un hospital) y lo marca, con su nombre.
+     * Solo hay uno marcado a la vez: el anterior se quita.
+     */
+    verLugar({ nombre, lat, lon, tipo, tipoSalud }) {
+      lugarPedido?.remove();
+      const html = tipo === "mercado" ? `<span class="marca-capa mercado">${SVG_MERCADO}</span>` : marcaSalud(tipoSalud);
+      lugarPedido = marcador(html, [lon, lat], { texto: nombre, clase: "aparece pedida" }).addTo(mapa);
+      const mostrarNombre = () => etiquetaFlotante.setLngLat([lon, lat]).setText(nombre).addTo(mapa);
+      const zoom = Math.max(mapa.getZoom(), 15.5);
+      if (SIN_MOVIMIENTO) {
+        mapa.jumpTo({ center: [lon, lat], zoom });
+        mostrarNombre();
+      } else {
+        mapa.once("moveend", mostrarNombre);
+        mapa.flyTo({ center: [lon, lat], zoom, speed: 1.4, curve: 1.42, essential: false });
       }
     },
     /** Lleva el mapa a una farmacia de la lista, con su cruz y su nombre a la vista. */
@@ -1854,7 +1926,10 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
       poner("rutaBus", vacio());
       rutaMarcas = quitar(rutaMarcas);
       paradas = quitar(paradas);
+      cercanos = quitar(cercanos);
       farmacias = quitar(farmacias);
+      lugarPedido?.remove();
+      lugarPedido = null;
       cancelAnimationFrame(movimiento);
       elegido?.remove();
       elegido = null;

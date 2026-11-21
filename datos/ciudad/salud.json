@@ -1,0 +1,319 @@
+{
+  "metadata": {
+    "titulo": "Hospitales y centros de salud de Cuenca",
+    "fuente": "OpenStreetMap, vía la API Overpass",
+    "atribucion": "© colaboradores de OpenStreetMap",
+    "licencia": "Open Database License (ODbL) 1.0",
+    "nota": "tipo: emergencias (hospital marcado con servicio de emergencias), centro_salud (centro o subcentro de salud) u hospital (otros hospitales y clínicas de atención general). Sin dentistas, rehabilitación ni laboratorios. Los datos son de la comunidad: conviene confirmar antes de ir."
+  },
+  "lugares": [
+    {
+      "nombre": "CENTRO DE SALUD CARLOS ELIZALDE",
+      "tipo": "centro_salud",
+      "lat": -2.92017,
+      "lon": -79.04382,
+      "telefono": null
+    },
+    {
+      "nombre": "CENTRO DE SALUD LLACAO",
+      "tipo": "centro_salud",
+      "lat": -2.84016,
+      "lon": -78.94233,
+      "telefono": null
+    },
+    {
+      "nombre": "Centro de Salud El Cebollar",
+      "tipo": "centro_salud",
+      "lat": -2.87227,
+      "lon": -79.03503,
+      "telefono": null
+    },
+    {
+      "nombre": "Centro de Salud IESS",
+      "tipo": "centro_salud",
+      "lat": -2.90475,
+      "lon": -78.99143,
+      "telefono": null
+    },
+    {
+      "nombre": "Centro de Salud Mariano Estrella",
+      "tipo": "centro_salud",
+      "lat": -2.88089,
+      "lon": -79.00871,
+      "telefono": "+593 7 2847427"
+    },
+    {
+      "nombre": "Centro de Salud Parque Iberia",
+      "tipo": "centro_salud",
+      "lat": -2.90993,
+      "lon": -79.0244,
+      "telefono": null
+    },
+    {
+      "nombre": "Centro de Salud Pumapungo No 1",
+      "tipo": "centro_salud",
+      "lat": -2.90719,
+      "lon": -78.9954,
+      "telefono": null
+    },
+    {
+      "nombre": "Centro de Salud Tomebamba - Monay",
+      "tipo": "centro_salud",
+      "lat": -2.91086,
+      "lon": -78.98379,
+      "telefono": null
+    },
+    {
+      "nombre": "Centro de Salud UNE-Totoracocha",
+      "tipo": "centro_salud",
+      "lat": -2.89414,
+      "lon": -78.97787,
+      "telefono": null
+    },
+    {
+      "nombre": "Centro de salud Tandacatu",
+      "tipo": "centro_salud",
+      "lat": -2.89927,
+      "lon": -79.01694,
+      "telefono": null
+    },
+    {
+      "nombre": "Centro de salud n°2",
+      "tipo": "centro_salud",
+      "lat": -2.888,
+      "lon": -79.00767,
+      "telefono": null
+    },
+    {
+      "nombre": "Centro de salud tipo C materno infantil del iess",
+      "tipo": "centro_salud",
+      "lat": -2.90509,
+      "lon": -78.99174,
+      "telefono": "0728161500"
+    },
+    {
+      "nombre": "Clinica Santa Ana hospital",
+      "tipo": "emergencias",
+      "lat": -2.90705,
+      "lon": -79.00096,
+      "telefono": null
+    },
+    {
+      "nombre": "Clinica Santa Cecilia",
+      "tipo": "hospital",
+      "lat": -2.9047,
+      "lon": -78.99837,
+      "telefono": null
+    },
+    {
+      "nombre": "Clínica Cuenca",
+      "tipo": "hospital",
+      "lat": -2.89917,
+      "lon": -78.99326,
+      "telefono": null
+    },
+    {
+      "nombre": "Clínica Gran Colombiana",
+      "tipo": "hospital",
+      "lat": -2.89775,
+      "lon": -78.99734,
+      "telefono": null
+    },
+    {
+      "nombre": "Clínica La Paz",
+      "tipo": "hospital",
+      "lat": -2.90345,
+      "lon": -78.99457,
+      "telefono": null
+    },
+    {
+      "nombre": "Clínica Latinoamericana Cia. Ltda.",
+      "tipo": "emergencias",
+      "lat": -2.89289,
+      "lon": -79.01769,
+      "telefono": null
+    },
+    {
+      "nombre": "Clínica Latinoamericana Torre 2",
+      "tipo": "hospital",
+      "lat": -2.89375,
+      "lon": -79.01724,
+      "telefono": null
+    },
+    {
+      "nombre": "Hospital Básico Municipal de Baños",
+      "tipo": "hospital",
+      "lat": -2.90718,
+      "lon": -79.0592,
+      "telefono": null
+    },
+    {
+      "nombre": "Hospital Básico Municipal de El Valle",
+      "tipo": "hospital",
+      "lat": -2.91894,
+      "lon": -78.96212,
+      "telefono": null
+    },
+    {
+      "nombre": "Hospital Humanitario Pablo Jaramillo Crespo",
+      "tipo": "hospital",
+      "lat": -2.89838,
+      "lon": -79.02847,
+      "telefono": null
+    },
+    {
+      "nombre": "Hospital Militar",
+      "tipo": "hospital",
+      "lat": -2.9032,
+      "lon": -79.00408,
+      "telefono": null
+    },
+    {
+      "nombre": "Hospital Monte Sinaí",
+      "tipo": "emergencias",
+      "lat": -2.9086,
+      "lon": -79.00745,
+      "telefono": null
+    },
+    {
+      "nombre": "Hospital Municipal del Niño y la Mujer",
+      "tipo": "emergencias",
+      "lat": -2.86611,
+      "lon": -78.98206,
+      "telefono": null
+    },
+    {
+      "nombre": "Hospital Munipal MEDISOL 12 de Abril",
+      "tipo": "hospital",
+      "lat": -2.90258,
+      "lon": -78.99278,
+      "telefono": null
+    },
+    {
+      "nombre": "Hospital Regional Vicente Corral Moscoso",
+      "tipo": "emergencias",
+      "lat": -2.91117,
+      "lon": -78.9927,
+      "telefono": null
+    },
+    {
+      "nombre": "Hospital San Juan de Dios",
+      "tipo": "emergencias",
+      "lat": -2.90826,
+      "lon": -79.00068,
+      "telefono": null
+    },
+    {
+      "nombre": "Hospital Universitario Católico",
+      "tipo": "emergencias",
+      "lat": -2.89303,
+      "lon": -78.99765,
+      "telefono": null
+    },
+    {
+      "nombre": "Hospital Universitario del Río",
+      "tipo": "hospital",
+      "lat": -2.89311,
+      "lon": -78.96098,
+      "telefono": null
+    },
+    {
+      "nombre": "Hospital de Ricaurte",
+      "tipo": "hospital",
+      "lat": -2.85664,
+      "lon": -78.96352,
+      "telefono": null
+    },
+    {
+      "nombre": "Hospital del Rio",
+      "tipo": "hospital",
+      "lat": -2.89287,
+      "lon": -78.96106,
+      "telefono": null
+    },
+    {
+      "nombre": "Hospital regional José Carrasco Arteaga (IESS)",
+      "tipo": "emergencias",
+      "lat": -2.89859,
+      "lon": -78.97015,
+      "telefono": null
+    },
+    {
+      "nombre": "SUBCENTRO DE SALUD EL VALLE",
+      "tipo": "centro_salud",
+      "lat": -2.93875,
+      "lon": -78.96355,
+      "telefono": null
+    },
+    {
+      "nombre": "Sub Centro de Salud Sayausi",
+      "tipo": "centro_salud",
+      "lat": -2.874,
+      "lon": -79.0744,
+      "telefono": "+593 7 2370505"
+    },
+    {
+      "nombre": "Subcentro Barrial Blanco",
+      "tipo": "centro_salud",
+      "lat": -2.87978,
+      "lon": -78.98764,
+      "telefono": null
+    },
+    {
+      "nombre": "Subcentro de Salud El Cebollar",
+      "tipo": "centro_salud",
+      "lat": -2.88229,
+      "lon": -79.01832,
+      "telefono": null
+    },
+    {
+      "nombre": "Subcentro de Salud El Paraiso",
+      "tipo": "centro_salud",
+      "lat": -2.90698,
+      "lon": -78.98786,
+      "telefono": null
+    },
+    {
+      "nombre": "Subcentro de Salud Machangara",
+      "tipo": "centro_salud",
+      "lat": -2.88193,
+      "lon": -78.9659,
+      "telefono": null
+    },
+    {
+      "nombre": "Subcentro de Salud Nulti",
+      "tipo": "centro_salud",
+      "lat": -2.86795,
+      "lon": -78.92843,
+      "telefono": "+593 7 875739"
+    },
+    {
+      "nombre": "Subcentro de Salud Ricaurte",
+      "tipo": "centro_salud",
+      "lat": -2.85983,
+      "lon": -78.96173,
+      "telefono": "+593 7 4209089"
+    },
+    {
+      "nombre": "Subcentro de Salud Sinincay",
+      "tipo": "centro_salud",
+      "lat": -2.85151,
+      "lon": -79.0139,
+      "telefono": "+593 7 4146869"
+    },
+    {
+      "nombre": "Subcentro de Salud Uncovia",
+      "tipo": "centro_salud",
+      "lat": -2.87135,
+      "lon": -78.98095,
+      "telefono": "+593 7 2900059"
+    },
+    {
+      "nombre": "Subcentro de San Joaquín",
+      "tipo": "centro_salud",
+      "lat": -2.89683,
+      "lon": -79.0499,
+      "telefono": "+593 7 4177255"
+    }
+  ]
+}

@@ -9,11 +9,89 @@
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#1d4489",
-  "categories": ["utilities", "navigation", "travel"],
+  "categories": [
+    "utilities",
+    "navigation",
+    "travel"
+  ],
   "icons": [
-    { "src": "iconos/icono-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "iconos/icono-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "iconos/icono-adaptable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
-    { "src": "icono.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+    {
+      "src": "iconos/icono-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "iconos/icono-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "iconos/icono-adaptable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icono.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Casa",
+      "short_name": "Casa",
+      "description": "Lo de hoy en tu casa guardada",
+      "url": "./?lugar=casa",
+      "icons": [
+        {
+          "src": "iconos/icono-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Trabajo",
+      "short_name": "Trabajo",
+      "description": "Lo de hoy en tu trabajo guardado",
+      "url": "./?lugar=trabajo",
+      "icons": [
+        {
+          "src": "iconos/icono-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Farmacias de turno",
+      "short_name": "Farmacias",
+      "description": "Las farmacias de turno más cercanas",
+      "url": "./?ver=farmacias",
+      "icons": [
+        {
+          "src": "iconos/icono-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "¿Qué bus me lleva?",
+      "short_name": "Buses",
+      "description": "Las líneas y rutas de bus desde tu calle",
+      "url": "./?ver=buses",
+      "icons": [
+        {
+          "src": "iconos/icono-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
   ]
 }

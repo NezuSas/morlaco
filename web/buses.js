@@ -174,11 +174,15 @@ export function horarioTranvia(tranvia, fecha = new Date()) {
 }
 
 /**
- * El recorrido del tranvía en cada sentido, uniendo sus estaciones en el orden que da la web
- * del Tranvía. El trazado del municipio no sirve para esto: en un sentido mide 3 km de los 10
- * y en el otro salta de un lado a otro. null si las estaciones no traen su orden.
+ * El recorrido del tranvía en cada sentido: por sus rieles si se tiene ese archivo o, si no,
+ * uniendo sus estaciones en el orden que da la web del Tranvía. El trazado del municipio no
+ * sirve para esto: en un sentido mide 3 km de los 10 y en el otro salta de un lado a otro.
+ * null si no hay ni recorrido ni orden de las estaciones.
  */
 export function trazadosTranvia(estaciones) {
+  // Lo mejor es el recorrido por los rieles (datos/buses/tranvia-recorrido.geojson), que la
+  // página deja junto a las estaciones; sin él, las estaciones unidas en línea recta.
+  if (estaciones?.recorrido?.length === 2) return estaciones.recorrido;
   const de = (hacia, sentido) => {
     const enOrden = (estaciones?.features ?? [])
       .filter((f) => Number.isFinite(f.properties.orden?.[hacia]))

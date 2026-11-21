@@ -147,6 +147,9 @@ test("trazadosTranvia une las estaciones de cada sentido en su orden", () => {
   // Sin el orden (datos viejos) no hay recorrido: la página usa el trazado del municipio.
   assert.equal(trazadosTranvia({ features: [estacion("A", -79.04, {}), estacion("B", -79.02, {})] }), null);
   assert.equal(trazadosTranvia(null), null);
+  // Con el recorrido por los rieles a mano, ese es el que vale.
+  const rieles = [{ properties: { sentido: "ida" } }, { properties: { sentido: "retorno" } }];
+  assert.equal(trazadosTranvia({ ...estaciones, recorrido: rieles }), rieles);
 });
 
 test("pasajeDeOpcion suma cada bus y el tranvía", () => {

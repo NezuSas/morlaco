@@ -255,6 +255,10 @@
 
             <section id="s-resumen" class="seccion-resumen" role="tabpanel" aria-labelledby="t-hoy">
               <h2 id="t-hoy" class="titulo-hoy" data-t="hoyEnTuCalle">Hoy en tu calle</h2>
+              <!-- Lo de hoy en una frase: lo único que hace falta leer al abrir. -->
+              <p id="resumen-frase" class="resumen-frase" hidden></p>
+              <!-- La línea que la persona marcó como suya, con su próximo bus. -->
+              <div id="mi-linea" class="mi-linea" hidden></div>
               <ul id="resumen" class="resumen"></ul>
               <p id="resumen-nota" class="resumen-nota" hidden></p>
               <details id="sobre-datos" class="sobre-datos">
@@ -286,6 +290,7 @@
               <p id="basura-fundas" class="fundas"></p>
               <p id="basura-zona" class="detalle"></p>
               <p id="basura-feriados" class="feriados" hidden></p>
+              <p id="feriados-calendario" class="detalle feriados-calendario"></p>
               <details id="donde-llevar" class="donde-llevar" hidden>
                 <summary data-t="dondeLlevarTitulo">¿Dónde llevo lo que no va en las fundas?</summary>
                 <dl></dl>
@@ -305,6 +310,8 @@
                 <span data-t="tituloLuz">Cortes de luz programados</span>
               </h2>
               <div id="luz-estado"></div>
+              <!-- Cortes de energía que anuncia la prensa citando a la Centro Sur (sin revisar). -->
+              <div id="luz-prensa" class="avisos-prensa" hidden></div>
             </section>
 
             <section id="s-agua" role="tabpanel" class="servicio-agua" aria-labelledby="t-agua">
@@ -349,10 +356,15 @@
                 <!-- Los lugares guardados, como destino: la ruta de todos los días con un toque. -->
                 <div id="ir-lugares" class="atajos" hidden></div>
                 <p id="ruta-mensaje" class="mensaje" role="status" aria-live="polite"></p>
+                <button type="button" id="compartir-ruta" class="secundario compartir-ruta" hidden>
+                  <span data-t="compartirRuta">Compartir esta ruta</span>
+                </button>
               </form>
               <ol id="ruta-opciones" class="ruta-opciones"></ol>
               <p id="ruta-nota" class="detalle" hidden data-t="rutaNota"></p>
               <div id="pasaje" class="pasaje" hidden></div>
+              <!-- Cierres de vías y desvíos que anuncia la prensa (sin revisar). -->
+              <div id="cierres-vias" class="avisos-prensa" hidden></div>
               <h3 class="subtitulo" data-t="subtituloLineas">Líneas que pasan cerca</h3>
               <ul id="lineas" class="lineas"></ul>
               <p id="lineas-nota" class="detalle"></p>
@@ -367,8 +379,14 @@
               <h2 id="t-cerca">
                 <span data-t="tituloCerca">Cerca de ti</span>
               </h2>
+              <!-- Emergencias y salud: el 911, el hospital con emergencias y el centro de salud más cercanos. -->
+              <div id="salud" class="salud"></div>
               <ul id="cerca-lista" class="cerca-lista"></ul>
               <p id="cerca-nota" class="detalle"></p>
+              <!-- Todos los mercados municipales, del más cercano al más lejano. -->
+              <div id="mercados"></div>
+              <!-- Las páginas oficiales para trámites y pagos. -->
+              <div id="tramites"></div>
             </section>
 
             <section id="s-aire" role="tabpanel" class="servicio-aire aire" aria-labelledby="t-aire" hidden>
@@ -408,7 +426,7 @@
           <p data-t="pieAviso">
             Las calles se buscan en esta página; solo cuando buscas un lugar (como un parque o un centro comercial),
             el texto se envía a OpenStreetMap (Nominatim) para ubicarlo. La calidad del aire se pide a la web
-            de la EMOV, sin enviarle tu ubicación.
+            de la EMOV y el pronóstico de lluvia a Open-Meteo, sin enviarles tu ubicación.
           </p>
           <p class="autoria" data-t-html="pieAutoria">
             Hecho en Cuenca por <a href="https://www.nezuecuador.com/">Nezu S.A.S.</a> Código y datos abiertos.

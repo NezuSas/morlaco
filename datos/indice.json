@@ -243,6 +243,110 @@
       }
     },
     {
+      "id": "feriados-calendario",
+      "archivo": "feriados/feriados.ics",
+      "formato": "iCalendar (.ics)",
+      "tema": "ciudad",
+      "titulo": "Calendario de feriados",
+      "descripcion": "Un calendario para suscribirse desde Google Calendar, Apple u Outlook con los días de descanso de Cuenca: feriados nacionales con su traslado, el local y las suspensiones.",
+      "campos": {},
+      "fuente_morlaco": null,
+      "frecuencia": "a mano",
+      "fuente": "Decretos y calendario oficial publicados en prensa",
+      "licencia": "CC BY 4.0 (Morlaco); los datos de cada fuente conservan su licencia",
+      "url": "https://nezusas.github.io/morlaco/datos/feriados/feriados.ics",
+      "en": {
+        "titulo": "Days off calendar",
+        "descripcion": "A calendar to subscribe to from Google Calendar, Apple or Outlook with Cuenca's days off: national holidays as moved by law, the local one and decreed suspensions.",
+        "frecuencia": "by hand",
+        "campos": {},
+        "formato": "iCalendar (.ics)",
+        "fuente": "Decrees and the official calendar, as published in the press",
+        "licencia": "CC BY 4.0 (Morlaco); each source's data keeps its own license"
+      }
+    },
+    {
+      "id": "tramites",
+      "archivo": "manual/tramites.json",
+      "formato": "JSON",
+      "tema": "ciudad",
+      "titulo": "Trámites, pagos y reclamos: las páginas oficiales",
+      "descripcion": "Enlaces, mantenidos a mano, a las páginas oficiales del municipio, ETAPA, Centro Sur, EMOV, EMAC y el tranvía, con para qué sirve cada una. En español e inglés.",
+      "campos": {
+        "tramites[]": "entidad, es, en y url"
+      },
+      "fuente_morlaco": null,
+      "frecuencia": "a mano",
+      "fuente": "Páginas oficiales de cada entidad",
+      "licencia": "CC BY 4.0 (Morlaco); los datos de cada fuente conservan su licencia",
+      "url": "https://nezusas.github.io/morlaco/datos/manual/tramites.json",
+      "en": {
+        "titulo": "Paperwork, payments and complaints: the official pages",
+        "descripcion": "Hand-kept links to the official pages of the city, ETAPA, Centro Sur, EMOV, EMAC and the tram, with what each one is for. In Spanish and English.",
+        "frecuencia": "by hand",
+        "campos": {
+          "tramites[]": "entidad, es, en and url"
+        },
+        "formato": "JSON",
+        "fuente": "Each organisation's official page",
+        "licencia": "CC BY 4.0 (Morlaco); each source's data keeps its own license"
+      }
+    },
+    {
+      "id": "cierres-vias",
+      "archivo": "movilidad/cierres.json",
+      "formato": "JSON",
+      "tema": "transporte",
+      "titulo": "Cierres de vías y desvíos anunciados en la prensa",
+      "descripcion": "Notas de prensa de las últimas tres semanas cuyo título anuncia un cierre de vías o un desvío en Cuenca. Sin revisar: la página las muestra con su título y su enlace.",
+      "campos": {
+        "avisos[]": "publicado, titulo, enlace, resumen, menciona_emov y, si la nota los dice, fecha, desde y hasta (null si no)"
+      },
+      "fuente_morlaco": "agua",
+      "frecuencia": "diaria",
+      "fuente": "El Mercurio",
+      "licencia": "Información pública de la institución; cita la fuente",
+      "url": "https://nezusas.github.io/morlaco/datos/movilidad/cierres.json",
+      "en": {
+        "titulo": "Road closures and detours reported in the press",
+        "descripcion": "Recent press articles whose headline announces a road closure or a detour in Cuenca. Not reviewed: the page shows them with their headline and link.",
+        "frecuencia": "daily",
+        "campos": {
+          "avisos[]": "publicado, titulo, enlace, resumen, menciona_emov and, if the article says so, fecha, desde and hasta (null otherwise)"
+        },
+        "formato": "JSON",
+        "fuente": "El Mercurio",
+        "licencia": "Public information from the institution; cite the source"
+      }
+    },
+    {
+      "id": "luz-avisos",
+      "archivo": "luz/avisos.json",
+      "formato": "JSON",
+      "tema": "luz",
+      "titulo": "Avisos de cortes de luz en la prensa",
+      "descripcion": "Notas de prensa de las últimas tres semanas cuyo título anuncia cortes de energía que tocan a Cuenca o al Azuay. Sin revisar: la página muestra las que citan a la Centro Sur.",
+      "campos": {
+        "avisos[]": "publicado, titulo, enlace, resumen, menciona_centrosur y, si la nota los dice, fecha, desde y hasta (null si no)"
+      },
+      "fuente_morlaco": "agua",
+      "frecuencia": "diaria",
+      "fuente": "El Mercurio",
+      "licencia": "Información pública de la institución; cita la fuente",
+      "url": "https://nezusas.github.io/morlaco/datos/luz/avisos.json",
+      "en": {
+        "titulo": "Power cut notices in the press",
+        "descripcion": "Recent press articles whose headline announces power cuts affecting Cuenca or Azuay. Not reviewed: the page shows the ones that quote Centro Sur.",
+        "frecuencia": "daily",
+        "campos": {
+          "avisos[]": "publicado, titulo, enlace, resumen, menciona_centrosur and, if the article says so, fecha, desde and hasta (null otherwise)"
+        },
+        "formato": "JSON",
+        "fuente": "El Mercurio",
+        "licencia": "Public information from the institution; cite the source"
+      }
+    },
+    {
       "id": "agua-avisos",
       "archivo": "agua/avisos.json",
       "formato": "JSON",
@@ -452,6 +556,37 @@
       }
     },
     {
+      "id": "tranvia-recorrido",
+      "archivo": "buses/tranvia-recorrido.geojson",
+      "formato": "GeoJSON (líneas)",
+      "tema": "transporte",
+      "titulo": "Recorrido del tranvía",
+      "descripcion": "El camino de cada sentido por los rieles, uniendo sus estaciones en orden. El trazado del municipio está incompleto para el tranvía.",
+      "campos": {
+        "sentido": "ida (hacia Parque Industrial) o retorno (hacia Río Tarqui)",
+        "hacia": "Estación final de ese sentido",
+        "longitud_km": "Largo del recorrido"
+      },
+      "fuente_morlaco": "tranvia",
+      "frecuencia": "diaria",
+      "fuente": "OpenStreetMap y Tranvía de Cuenca",
+      "licencia": "ODbL 1.0 (© colaboradores de OpenStreetMap)",
+      "url": "https://nezusas.github.io/morlaco/datos/buses/tranvia-recorrido.geojson",
+      "en": {
+        "titulo": "Tram route",
+        "descripcion": "The path of each direction along the tram tracks, joining its stations in order. The city's own shapefile is incomplete for the tram.",
+        "frecuencia": "daily",
+        "campos": {
+          "sentido": "ida (to Parque Industrial) or retorno (to Río Tarqui)",
+          "hacia": "Terminal station of that direction",
+          "longitud_km": "Length of the path"
+        },
+        "formato": "GeoJSON (lines)",
+        "fuente": "OpenStreetMap and Tranvía de Cuenca",
+        "licencia": "ODbL 1.0 (© OpenStreetMap contributors)"
+      }
+    },
+    {
       "id": "tranvia-estaciones",
       "archivo": "buses/tranvia.geojson",
       "formato": "GeoJSON (puntos)",
@@ -513,6 +648,70 @@
         "formato": "JSON",
         "fuente": "City announcements published in El Mercurio",
         "licencia": "CC BY 4.0 (Morlaco); each source's data keeps its own license"
+      }
+    },
+    {
+      "id": "salud",
+      "archivo": "ciudad/salud.json",
+      "formato": "JSON",
+      "tema": "ciudad",
+      "titulo": "Hospitales y centros de salud",
+      "descripcion": "Hospitales y centros de salud públicos de Cuenca, un punto por cada uno, de OpenStreetMap: sirven para mostrar el hospital con emergencias y el centro de salud más cercanos.",
+      "campos": {
+        "nombre": "Nombre",
+        "tipo": "emergencias (hospital con emergencias), centro_salud u hospital",
+        "lat, lon": "Coordenadas del punto",
+        "telefono": "Teléfono, si OpenStreetMap lo tiene"
+      },
+      "fuente_morlaco": "calles",
+      "frecuencia": "semanal",
+      "fuente": "OpenStreetMap",
+      "licencia": "ODbL 1.0 (© colaboradores de OpenStreetMap)",
+      "url": "https://nezusas.github.io/morlaco/datos/ciudad/salud.json",
+      "en": {
+        "titulo": "Hospitals and health centres",
+        "descripcion": "Hospitals and public health centres in Cuenca, one point each, from OpenStreetMap: used to show the nearest hospital with an emergency department and the nearest health centre.",
+        "frecuencia": "weekly",
+        "campos": {
+          "nombre": "Name",
+          "tipo": "emergencias (hospital with emergency department), centro_salud or hospital",
+          "lat, lon": "Coordinates of the point",
+          "telefono": "Phone, if OpenStreetMap has it"
+        },
+        "formato": "JSON",
+        "fuente": "OpenStreetMap",
+        "licencia": "ODbL 1.0 (© OpenStreetMap contributors)"
+      }
+    },
+    {
+      "id": "barrios",
+      "archivo": "ciudad/barrios.json",
+      "formato": "JSON",
+      "tema": "ciudad",
+      "titulo": "Barrios, sectores y poblados",
+      "descripcion": "Parroquias, barrios y urbanizaciones de Cuenca y sus alrededores, un punto por cada uno: sirven para buscar por barrio y para saber si un corte de agua anunciado cae cerca de una calle.",
+      "campos": {
+        "nombre": "Nombre",
+        "tipo": "parroquia, urbanizacion o el tipo de lugar de OpenStreetMap (suburb, village…)",
+        "lat, lon": "Coordenadas del punto"
+      },
+      "fuente_morlaco": "calles",
+      "frecuencia": "semanal",
+      "fuente": "OpenStreetMap",
+      "licencia": "ODbL 1.0 (© colaboradores de OpenStreetMap)",
+      "url": "https://nezusas.github.io/morlaco/datos/ciudad/barrios.json",
+      "en": {
+        "titulo": "Neighbourhoods, sectors and villages",
+        "descripcion": "Named places in and around Cuenca, one point each: used to search by neighbourhood and to tell whether an announced water cut is near a street.",
+        "frecuencia": "weekly",
+        "campos": {
+          "nombre": "Name",
+          "tipo": "parroquia (parish), urbanizacion (housing estate) or the OpenStreetMap place type",
+          "lat, lon": "Coordinates of the point"
+        },
+        "formato": "JSON",
+        "fuente": "OpenStreetMap",
+        "licencia": "ODbL 1.0 (© OpenStreetMap contributors)"
       }
     },
     {

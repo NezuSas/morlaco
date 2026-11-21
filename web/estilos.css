@@ -1629,6 +1629,43 @@ a.ficha .pastilla.estado-alerta {
 }
 
 /* La luz, en una línea, cuando Centro Sur no tiene datos al día. */
+/* Lo de hoy en una frase, bajo el título. */
+.resumen-frase {
+  margin-top: 0.6rem;
+  color: var(--tinta);
+  font-size: var(--t-1);
+  line-height: 1.45;
+}
+
+/* La línea marcada como propia: su número y cuánto falta, antes de las fichas. */
+.mi-linea {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 0.9rem;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-control);
+  background: var(--cal);
+}
+
+.mi-linea[hidden] {
+  display: none;
+}
+
+.mi-linea-texto {
+  display: grid;
+  min-width: 0;
+}
+
+.mi-linea .proximos {
+  margin-top: 0.1rem;
+}
+
+.mi-linea-boton {
+  margin-bottom: 0.6rem;
+}
+
 .resumen-nota {
   display: flex;
   align-items: flex-start;
@@ -2665,6 +2702,188 @@ button.linea[aria-pressed="true"] {
   white-space: nowrap;
 }
 
+/* El enlace al calendario de feriados, bajo el aviso del próximo día de descanso. */
+.feriados-calendario {
+  margin-top: 0.5rem;
+}
+
+/* Mercados y salud: cada fila se toca para verla en el mapa; "Cómo llegar" sale solo en la elegida. */
+.lugares-lista {
+  list-style: none;
+  padding: 0;
+  margin: 0.3rem 0 0;
+}
+
+.lugares-lista > li {
+  border-bottom: 1px solid var(--linea);
+}
+
+button.lugar-fila {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.8rem;
+  width: calc(100% + 1rem);
+  margin: 0 -0.5rem;
+  padding: 0.65rem 0.5rem;
+  border: 0;
+  border-radius: var(--radio-control);
+  background: transparent;
+  color: var(--tinta);
+  font-weight: 400;
+  text-align: left;
+}
+
+button.lugar-fila:hover {
+  background: var(--cal);
+}
+
+button.lugar-fila[aria-pressed="true"] {
+  background: var(--seleccion-fondo);
+}
+
+.lugar-extra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1.2rem;
+  padding: 0.2rem 0 0.75rem;
+}
+
+.lugar-extra[hidden] {
+  display: none;
+}
+
+.mercados-horario {
+  margin: 0.2rem 0 0;
+  color: var(--tinta-suave);
+}
+
+/* Emergencias, arriba de "Cerca de ti": una tarjeta como las del resumen, sin teñir. Lo único
+   rojo es el ícono y el botón de llamar, que es lo que tiene que encontrarse rápido. */
+.emergencia {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.8rem 0 0.4rem;
+  padding: 0.75rem 0.8rem;
+  border: 1px solid var(--linea);
+  border-radius: var(--radio-control);
+  background: var(--superficie);
+  box-shadow: 0 1px 2px rgb(16 32 64 / 0.06);
+}
+
+.emergencia-icono {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--alerta) 12%, var(--superficie));
+  color: var(--alerta);
+}
+
+.emergencia-icono .icono {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.emergencia-texto {
+  display: grid;
+  line-height: 1.3;
+}
+
+.emergencia-texto span {
+  color: var(--tinta-suave);
+  font-size: var(--t-0);
+}
+
+.boton-llamar-911 {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 1rem;
+  border-radius: 999px;
+  background: var(--alerta);
+  color: var(--superficie);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.boton-llamar-911:focus-visible {
+  outline: 3px solid var(--foco-halo);
+  outline-offset: 2px;
+}
+
+/* Mercados y trámites, en la pestaña Cerca. */
+.plegable > summary {
+  padding: 0.5rem 0;
+  color: var(--cupula);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cerca-texto .abierto {
+  color: var(--ok);
+}
+
+.cerca-texto .cerrado {
+  color: var(--tinta-suave);
+}
+
+.compartir-ruta {
+  margin-top: 0.5rem;
+}
+
+.compartir-ruta[hidden] {
+  display: none;
+}
+
+.parada-texto {
+  display: grid;
+  min-width: 0;
+}
+
+.tramites-lista {
+  list-style: none;
+  padding: 0;
+  margin: 0.4rem 0 0;
+}
+
+.tramites-lista li {
+  display: grid;
+  gap: 0.1rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--linea);
+}
+
+.tramites-lista a {
+  font-weight: 700;
+}
+
+/* Avisos de la prensa (cierres de vías, cortes de luz): una lista corta en su sección. */
+.avisos-prensa {
+  margin-top: 1.5rem;
+}
+
+.avisos-prensa[hidden] {
+  display: none;
+}
+
+/* Si un corte de agua nombra (o no) un sector cerca de la calle consultada. */
+.corte-cerca {
+  display: block;
+  margin-top: 0.35rem;
+  color: var(--tinta-suave);
+  font-size: var(--t-0);
+}
+
+.corte-cerca.toca {
+  color: var(--alerta);
+  font-weight: 700;
+}
+
 .aviso-linea {
   display: block;
   margin-top: 0.35rem;
@@ -3003,6 +3222,30 @@ button.linea[aria-pressed="true"] {
 .marca-capa.tranvia {
   background: var(--tranvia);
   font: 700 0.8rem/1 var(--letra);
+}
+
+.marca-capa.mercado {
+  background: var(--ladrillo);
+}
+
+.marca-capa.mercado svg {
+  width: 15px;
+  height: 15px;
+}
+
+.marca-capa.salud {
+  background: var(--alerta);
+  font: 700 0.8rem/1 var(--letra);
+}
+
+.marca-capa.salud.centro {
+  background: var(--tomebamba);
+}
+
+/* Lo cercano (mercados y salud) se esconde con una línea o una ruta a la vista, como las
+   farmacias: ahí manda el recorrido. El que se pidió desde la lista sí se ve. */
+.mapa.zonas-discretas .marca-gl.cercano:not(.pedida) > * {
+  display: none;
 }
 
 .marca-capa.carga {

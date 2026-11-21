@@ -18,6 +18,21 @@ test("el manifiesto tiene lo que piden los navegadores para instalar la app", ()
   }
 });
 
+test("los atajos del ícono llevan a lo que la página sabe abrir", () => {
+  const manifiesto = JSON.parse(readFileSync(new URL("manifest.webmanifest", web), "utf8"));
+  assert.ok(manifiesto.shortcuts.length >= 3 && manifiesto.shortcuts.length <= 4);
+  const pestanas = readFileSync(new URL("index.html", web), "utf8");
+  for (const atajo of manifiesto.shortcuts) {
+    assert.ok(atajo.name && atajo.url.startsWith("./?"), atajo.name);
+    const parametros = new URLSearchParams(atajo.url.slice(2));
+    const ver = parametros.get("ver");
+    if (ver) assert.match(pestanas, new RegExp(`href="#s-${ver}"`), `no hay pestaña ${ver}`);
+    const lugar = parametros.get("lugar");
+    if (lugar) assert.ok(["casa", "trabajo"].includes(lugar), lugar);
+    for (const icono of atajo.icons ?? []) assert.ok(existsSync(new URL(icono.src, web)), `no existe ${icono.src}`);
+  }
+});
+
 test("todos los archivos que precarga el service worker existen", () => {
   const sw = readFileSync(new URL("sw.js", web), "utf8");
   const lista = /const PRECARGA = \[([\s\S]*?)\];/.exec(sw)[1];

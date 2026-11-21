@@ -128,6 +128,28 @@ BiciPública, las ciclovías y los puntos de carga para autos eléctricos.
   calendario se actualiza solo.
 - **Compartir tu calle.** El botón Compartir abre el menú de tu teléfono; en la computadora copia el enlace.
   En "Más" está el envío directo por WhatsApp.
+- **Decirte lo de hoy en una frase**, arriba del resumen: si pasa el recolector, si hay cortes anunciados,
+  cuándo llega tu bus, si va a llover y cómo está el sol.
+- **Poner tu línea arriba.** Marcas una línea de bus (o el tranvía) como tuya y su próximo paso sale siempre
+  al inicio, en las calles por donde pasa.
+- **Avisar si va a llover** en las próximas horas, con el pronóstico abierto de Open-Meteo para el centro de
+  Cuenca.
+- **Buscar por barrio o parroquia** ("Totoracocha", "El Vecino"), además de por calle o lugar.
+- **Decir si un corte de agua nombra tu sector**, comparando los sectores del aviso con tu calle y tu barrio.
+- **Mostrar cierres de vías y cortes de luz que anuncia la prensa**, sin revisar y con el enlace a la nota.
+- **Marcar en el mapa lo que tienes cerca**: los dos mercados más cercanos, el hospital con emergencias y el
+  centro de salud público más cercano, siempre a la vista alrededor de tu calle (se esconden mientras miras una
+  línea o una ruta). Todos los mercados y todos los centros de salud están, además, como capas del mapa.
+- **Listar los mercados municipales**, del más cercano al más lejano; al tocar uno (o el hospital), el mapa va
+  hasta él. Y las páginas oficiales de trámites, pagos y reclamos.
+- **Emergencias y salud**: el botón para llamar al ECU 911 y el hospital con emergencias y el centro de salud
+  público más cercanos, de OpenStreetMap.
+- **Decir qué buses pasan por cada parada cercana** y cuándo llega el próximo de cada línea.
+- **Compartir una ruta**: un enlace que abre la misma búsqueda de bus desde la misma calle. Si el destino es
+  tu Casa o tu Trabajo, se manda solo su punto, no el nombre.
+- **Avisar de los días de descanso** en la frase del día, con un calendario de feriados al que suscribirse.
+- **Atajos al mantener presionado el ícono** de la app instalada: Casa, Trabajo, farmacias de turno y buses.
+- **Decir de cuándo son los datos sin conexión** ("actualizados hace 5 h").
 - **Guardar dos lugares**, Casa y Trabajo. Quedan a la vista bajo el nombre de la calle, para pasar de uno a
   otro con un toque, y bajo "¿A dónde vas?", para pedir la ruta de todos los días sin escribirla.
 - **Decirte cuánto falta para el próximo bus** de cada línea cercana, en cada sentido ("Hacia Ricaurte: en
@@ -164,6 +186,8 @@ BiciPública, las ciclovías y los puntos de carga para autos eléctricos.
   OpenStreetMap, para ubicarlo.
 - La calidad del aire se pide a la web de la EMOV **sin enviarle tu ubicación**: la estación más cercana se
   elige en tu navegador.
+- El pronóstico de lluvia se pide a Open-Meteo siempre para el mismo punto, el centro de Cuenca: tampoco
+  recibe tu ubicación.
 - El mapa pide su programa (MapLibre) a unpkg y sus imágenes a OpenFreeMap, como cualquier mapa en línea.
 
 ## De dónde salen los datos
@@ -507,6 +531,17 @@ Las pruebas no usan la red: el parseo de cada fuente son funciones puras que se 
 de Centro Sur de `tests/fixtures` es uno real). En la web pasa lo mismo: `web/logica.js`, `web/calles.js`, `web/rutas.js` y
 los demás módulos marcados "sin DOM" no tocan la página ni la red, y sus pruebas corren con Node 20 o superior.
 
+Para lo que solo se ve en la pantalla hay una prueba aparte, que sí usa la red y un navegador (Chrome o Edge):
+
+```bash
+node tests/ui/celular.mjs
+```
+
+Abre la página a 320, 360 y 412 px y en escritorio, recorre cada pestaña, despliega el menú "Más", las capas
+del mapa, una línea de bus, el mapa ampliado y las sugerencias del buscador, y avisa si algo se sale de la
+pantalla o no cabe en su contenedor (el panel de capas dentro del mapa, por ejemplo). También falla si la
+página muestra errores en la consola. Conviene correrla antes de enviar cualquier cambio de la web.
+
 ```
 src/morlaco/
   red.py              descargas HTTP con reintentos (lo único que toca la red)
@@ -554,6 +589,7 @@ web/
   info/               páginas simples para buscadores (las escribe paginas.py)
 tests/                pruebas de Python (pytest)
 tests/web/            pruebas de la web (node --test)
+tests/ui/             la página en tamaño de celular, con un navegador
 docs/
   fuentes.md          dónde está cada dato y qué tan al día está
   compartir.html      de dónde sale la tarjeta que se ve al compartir el enlace

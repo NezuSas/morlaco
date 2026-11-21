@@ -1,0 +1,2219 @@
+{
+  "metadata": {
+    "titulo": "Barrios, sectores y poblados de Cuenca",
+    "fuente": "OpenStreetMap, vía la API Overpass",
+    "atribucion": "© colaboradores de OpenStreetMap",
+    "licencia": "Open Database License (ODbL) 1.0",
+    "nota": "Un punto por lugar (no su contorno). tipo es parroquia (límite administrativo), urbanizacion (área residencial con nombre) o la etiqueta place de OpenStreetMap: suburb, neighbourhood, quarter, village, hamlet, locality o town."
+  },
+  "barrios": [
+    {
+      "nombre": "3 de Noviembre",
+      "tipo": "hamlet",
+      "lat": -2.84051,
+      "lon": -78.93813
+    },
+    {
+      "nombre": "Acchayacu",
+      "tipo": "hamlet",
+      "lat": -2.96938,
+      "lon": -79.02284
+    },
+    {
+      "nombre": "Agua Santa",
+      "tipo": "hamlet",
+      "lat": -2.9376,
+      "lon": -78.9964
+    },
+    {
+      "nombre": "Allpayacu",
+      "tipo": "hamlet",
+      "lat": -2.86865,
+      "lon": -78.92044
+    },
+    {
+      "nombre": "Altos de Machangara",
+      "tipo": "hamlet",
+      "lat": -2.82661,
+      "lon": -78.97978
+    },
+    {
+      "nombre": "Altos del horizonte 2",
+      "tipo": "urbanizacion",
+      "lat": -2.90955,
+      "lon": -79.06163
+    },
+    {
+      "nombre": "Ascención",
+      "tipo": "hamlet",
+      "lat": -2.94757,
+      "lon": -79.00505
+    },
+    {
+      "nombre": "Asunción",
+      "tipo": "neighbourhood",
+      "lat": -2.92724,
+      "lon": -79.0011
+    },
+    {
+      "nombre": "Auquilula",
+      "tipo": "parroquia",
+      "lat": -2.93483,
+      "lon": -78.92917
+    },
+    {
+      "nombre": "Auzhangata",
+      "tipo": "hamlet",
+      "lat": -2.89156,
+      "lon": -78.93223
+    },
+    {
+      "nombre": "Ayasana",
+      "tipo": "hamlet",
+      "lat": -2.9386,
+      "lon": -78.95636
+    },
+    {
+      "nombre": "Baguanchi",
+      "tipo": "hamlet",
+      "lat": -2.90284,
+      "lon": -78.95618
+    },
+    {
+      "nombre": "Baguanchi Chico",
+      "tipo": "hamlet",
+      "lat": -2.93063,
+      "lon": -78.944
+    },
+    {
+      "nombre": "Baguanchi El Valle",
+      "tipo": "hamlet",
+      "lat": -2.92969,
+      "lon": -78.95441
+    },
+    {
+      "nombre": "Balzay Alto",
+      "tipo": "quarter",
+      "lat": -2.89112,
+      "lon": -79.05436
+    },
+    {
+      "nombre": "Balzay Bajo",
+      "tipo": "quarter",
+      "lat": -2.89153,
+      "lon": -79.04917
+    },
+    {
+      "nombre": "Barabon",
+      "tipo": "hamlet",
+      "lat": -2.9232,
+      "lon": -79.09154
+    },
+    {
+      "nombre": "Barabón Chico Alto",
+      "tipo": "quarter",
+      "lat": -2.89848,
+      "lon": -79.05577
+    },
+    {
+      "nombre": "Barabón Chico Bajo",
+      "tipo": "quarter",
+      "lat": -2.8974,
+      "lon": -79.06041
+    },
+    {
+      "nombre": "Barrio Central de Miraflores",
+      "tipo": "neighbourhood",
+      "lat": -2.87299,
+      "lon": -78.9997
+    },
+    {
+      "nombre": "Barrio La Floresta",
+      "tipo": "neighbourhood",
+      "lat": -2.87975,
+      "lon": -79.0042
+    },
+    {
+      "nombre": "Barrio La Policía",
+      "tipo": "neighbourhood",
+      "lat": -2.90073,
+      "lon": -78.9834
+    },
+    {
+      "nombre": "Barrio Lazareto",
+      "tipo": "neighbourhood",
+      "lat": -2.88205,
+      "lon": -79.00858
+    },
+    {
+      "nombre": "Barrio Los Tilos",
+      "tipo": "neighbourhood",
+      "lat": -2.90762,
+      "lon": -79.06009
+    },
+    {
+      "nombre": "Barrio San Francisco",
+      "tipo": "neighbourhood",
+      "lat": -2.87131,
+      "lon": -78.96362
+    },
+    {
+      "nombre": "Barrio Santa Fe",
+      "tipo": "neighbourhood",
+      "lat": -2.86879,
+      "lon": -79.00613
+    },
+    {
+      "nombre": "Barrio Virgen de la Nube",
+      "tipo": "neighbourhood",
+      "lat": -2.88001,
+      "lon": -78.95366
+    },
+    {
+      "nombre": "Barrio la Alborada",
+      "tipo": "neighbourhood",
+      "lat": -2.9047,
+      "lon": -78.97105
+    },
+    {
+      "nombre": "Baños",
+      "tipo": "village",
+      "lat": -2.92328,
+      "lon": -79.0659
+    },
+    {
+      "nombre": "Bella Vista",
+      "tipo": "hamlet",
+      "lat": -2.93193,
+      "lon": -79.01152
+    },
+    {
+      "nombre": "Bellavista",
+      "tipo": "parroquia",
+      "lat": -2.88313,
+      "lon": -79.01641
+    },
+    {
+      "nombre": "Bellavista El valle",
+      "tipo": "neighbourhood",
+      "lat": -2.9352,
+      "lon": -78.95709
+    },
+    {
+      "nombre": "Boquerón",
+      "tipo": "hamlet",
+      "lat": -2.9544,
+      "lon": -78.99048
+    },
+    {
+      "nombre": "Borma",
+      "tipo": "hamlet",
+      "lat": -2.82728,
+      "lon": -78.93058
+    },
+    {
+      "nombre": "Buena Esperanza",
+      "tipo": "hamlet",
+      "lat": -2.85383,
+      "lon": -78.92994
+    },
+    {
+      "nombre": "CONDOMINIO BALCONES DEL VALLE - ETAPA II",
+      "tipo": "urbanizacion",
+      "lat": -2.93686,
+      "lon": -78.96192
+    },
+    {
+      "nombre": "Cabañas Caracol",
+      "tipo": "neighbourhood",
+      "lat": -2.83742,
+      "lon": -79.03171
+    },
+    {
+      "nombre": "Cabullín",
+      "tipo": "hamlet",
+      "lat": -2.89606,
+      "lon": -78.94496
+    },
+    {
+      "nombre": "Callacsí",
+      "tipo": "hamlet",
+      "lat": -2.92301,
+      "lon": -79.08153
+    },
+    {
+      "nombre": "Capillapamba",
+      "tipo": "hamlet",
+      "lat": -2.92611,
+      "lon": -79.07506
+    },
+    {
+      "nombre": "Capulispamba",
+      "tipo": "neighbourhood",
+      "lat": -2.86066,
+      "lon": -78.93118
+    },
+    {
+      "nombre": "Carapungo",
+      "tipo": "hamlet",
+      "lat": -2.9119,
+      "lon": -78.95639
+    },
+    {
+      "nombre": "Carmen de Guzho",
+      "tipo": "hamlet",
+      "lat": -2.92535,
+      "lon": -79.03655
+    },
+    {
+      "nombre": "Casa Hacienda",
+      "tipo": "urbanizacion",
+      "lat": -2.921,
+      "lon": -78.9662
+    },
+    {
+      "nombre": "Casablanca",
+      "tipo": "urbanizacion",
+      "lat": -2.88028,
+      "lon": -78.95093
+    },
+    {
+      "nombre": "Castilla Cruz",
+      "tipo": "hamlet",
+      "lat": -2.91564,
+      "lon": -78.97423
+    },
+    {
+      "nombre": "Cauito",
+      "tipo": "hamlet",
+      "lat": -2.92652,
+      "lon": -78.92929
+    },
+    {
+      "nombre": "Cañaribamba",
+      "tipo": "parroquia",
+      "lat": -2.90463,
+      "lon": -78.98992
+    },
+    {
+      "nombre": "Cdla. de los Ingenieros",
+      "tipo": "urbanizacion",
+      "lat": -2.88984,
+      "lon": -78.96049
+    },
+    {
+      "nombre": "Chacarrumi",
+      "tipo": "quarter",
+      "lat": -2.89883,
+      "lon": -79.04609
+    },
+    {
+      "nombre": "Chaguacorral",
+      "tipo": "hamlet",
+      "lat": -2.96511,
+      "lon": -79.01419
+    },
+    {
+      "nombre": "Chicapamba",
+      "tipo": "hamlet",
+      "lat": -2.92663,
+      "lon": -78.99214
+    },
+    {
+      "nombre": "Chicta rrumi",
+      "tipo": "neighbourhood",
+      "lat": -2.86833,
+      "lon": -79.0089
+    },
+    {
+      "nombre": "Chilcapamba",
+      "tipo": "village",
+      "lat": -2.92626,
+      "lon": -78.9759
+    },
+    {
+      "nombre": "Chugchuguzo",
+      "tipo": "hamlet",
+      "lat": -2.92732,
+      "lon": -79.09967
+    },
+    {
+      "nombre": "Ciudadela Artesanal",
+      "tipo": "neighbourhood",
+      "lat": -2.88772,
+      "lon": -78.99173
+    },
+    {
+      "nombre": "Ciudadela Barzallo",
+      "tipo": "neighbourhood",
+      "lat": -2.86766,
+      "lon": -78.98654
+    },
+    {
+      "nombre": "Ciudadela Corcho Cordero",
+      "tipo": "neighbourhood",
+      "lat": -2.92353,
+      "lon": -79.05175
+    },
+    {
+      "nombre": "Ciudadela El Cisne",
+      "tipo": "neighbourhood",
+      "lat": -2.90256,
+      "lon": -78.98215
+    },
+    {
+      "nombre": "Ciudadela El Rosal",
+      "tipo": "neighbourhood",
+      "lat": -2.8591,
+      "lon": -78.99024
+    },
+    {
+      "nombre": "Ciudadela Las Orquideas",
+      "tipo": "neighbourhood",
+      "lat": -2.86521,
+      "lon": -78.98891
+    },
+    {
+      "nombre": "Ciudadela de las Enfermeras",
+      "tipo": "neighbourhood",
+      "lat": -2.92783,
+      "lon": -78.97638
+    },
+    {
+      "nombre": "Ciudadela de los Medicos",
+      "tipo": "neighbourhood",
+      "lat": -2.86728,
+      "lon": -78.97725
+    },
+    {
+      "nombre": "Ciudadela las Palmeras",
+      "tipo": "urbanizacion",
+      "lat": -2.91953,
+      "lon": -79.04988
+    },
+    {
+      "nombre": "Cochapamba",
+      "tipo": "hamlet",
+      "lat": -2.94431,
+      "lon": -78.95965
+    },
+    {
+      "nombre": "Cochas",
+      "tipo": "hamlet",
+      "lat": -2.91324,
+      "lon": -78.93013
+    },
+    {
+      "nombre": "Colina de Cullca",
+      "tipo": "neighbourhood",
+      "lat": -2.88144,
+      "lon": -79.00311
+    },
+    {
+      "nombre": "Colinas de Chaullabamba",
+      "tipo": "neighbourhood",
+      "lat": -2.85717,
+      "lon": -78.92239
+    },
+    {
+      "nombre": "Colinas de San Miguel",
+      "tipo": "urbanizacion",
+      "lat": -2.8692,
+      "lon": -79.05509
+    },
+    {
+      "nombre": "Colinas de Ucubamba",
+      "tipo": "hamlet",
+      "lat": -2.88084,
+      "lon": -78.94009
+    },
+    {
+      "nombre": "Comosloma",
+      "tipo": "neighbourhood",
+      "lat": -2.87148,
+      "lon": -78.92574
+    },
+    {
+      "nombre": "Conchan",
+      "tipo": "hamlet",
+      "lat": -2.9524,
+      "lon": -78.94638
+    },
+    {
+      "nombre": "Condominio \"El Portón 2\"",
+      "tipo": "urbanizacion",
+      "lat": -2.84962,
+      "lon": -78.98564
+    },
+    {
+      "nombre": "Condominio Altamisa",
+      "tipo": "urbanizacion",
+      "lat": -2.91054,
+      "lon": -79.06194
+    },
+    {
+      "nombre": "Condominio Balcones de Chaullabamba",
+      "tipo": "urbanizacion",
+      "lat": -2.86152,
+      "lon": -78.92053
+    },
+    {
+      "nombre": "Condominio Balcones del Valle - Etapa 1",
+      "tipo": "urbanizacion",
+      "lat": -2.93654,
+      "lon": -78.96248
+    },
+    {
+      "nombre": "Condominio Buenaventura",
+      "tipo": "urbanizacion",
+      "lat": -2.84489,
+      "lon": -78.98381
+    },
+    {
+      "nombre": "Condominio Canal del Bosque",
+      "tipo": "urbanizacion",
+      "lat": -2.87509,
+      "lon": -79.05142
+    },
+    {
+      "nombre": "Condominio El Portón 1",
+      "tipo": "urbanizacion",
+      "lat": -2.84822,
+      "lon": -78.98571
+    },
+    {
+      "nombre": "Condominio Galicia",
+      "tipo": "neighbourhood",
+      "lat": -2.92596,
+      "lon": -79.03997
+    },
+    {
+      "nombre": "Condominio Isabela",
+      "tipo": "urbanizacion",
+      "lat": -2.88199,
+      "lon": -78.95029
+    },
+    {
+      "nombre": "Condominio Jacaranda",
+      "tipo": "urbanizacion",
+      "lat": -2.87728,
+      "lon": -79.06242
+    },
+    {
+      "nombre": "Condominio Jardines del Machangara",
+      "tipo": "urbanizacion",
+      "lat": -2.88477,
+      "lon": -78.96001
+    },
+    {
+      "nombre": "Condominio La Verbena",
+      "tipo": "urbanizacion",
+      "lat": -2.88303,
+      "lon": -79.02594
+    },
+    {
+      "nombre": "Condominio La toscana",
+      "tipo": "urbanizacion",
+      "lat": -2.87089,
+      "lon": -78.96412
+    },
+    {
+      "nombre": "Condominio Los Robles",
+      "tipo": "urbanizacion",
+      "lat": -2.84308,
+      "lon": -78.98446
+    },
+    {
+      "nombre": "Condominio Malaga",
+      "tipo": "urbanizacion",
+      "lat": -2.87233,
+      "lon": -78.96458
+    },
+    {
+      "nombre": "Condominio Miraflores",
+      "tipo": "urbanizacion",
+      "lat": -2.88252,
+      "lon": -78.99043
+    },
+    {
+      "nombre": "Condominio Paris",
+      "tipo": "urbanizacion",
+      "lat": -2.88142,
+      "lon": -78.95032
+    },
+    {
+      "nombre": "Condominio Ricuarte",
+      "tipo": "urbanizacion",
+      "lat": -2.85986,
+      "lon": -78.97411
+    },
+    {
+      "nombre": "Condominio Rio Machangara",
+      "tipo": "urbanizacion",
+      "lat": -2.88402,
+      "lon": -78.96372
+    },
+    {
+      "nombre": "Condominio San Sebastián",
+      "tipo": "urbanizacion",
+      "lat": -2.87641,
+      "lon": -79.03625
+    },
+    {
+      "nombre": "Condominio San Vicente de Paul",
+      "tipo": "urbanizacion",
+      "lat": -2.90272,
+      "lon": -79.00494
+    },
+    {
+      "nombre": "Condominio Santa Rosa",
+      "tipo": "urbanizacion",
+      "lat": -2.8858,
+      "lon": -79.02506
+    },
+    {
+      "nombre": "Condominio Tarqui",
+      "tipo": "urbanizacion",
+      "lat": -2.92029,
+      "lon": -79.0344
+    },
+    {
+      "nombre": "Condominio Terrazas de la Verbena",
+      "tipo": "urbanizacion",
+      "lat": -2.88449,
+      "lon": -79.02569
+    },
+    {
+      "nombre": "Condominio la Pradera",
+      "tipo": "urbanizacion",
+      "lat": -2.86206,
+      "lon": -78.97928
+    },
+    {
+      "nombre": "Condominio los tilos",
+      "tipo": "urbanizacion",
+      "lat": -2.91002,
+      "lon": -79.0626
+    },
+    {
+      "nombre": "CondominioTurin",
+      "tipo": "urbanizacion",
+      "lat": -2.91234,
+      "lon": -79.06214
+    },
+    {
+      "nombre": "Condominios Araucana",
+      "tipo": "urbanizacion",
+      "lat": -2.88965,
+      "lon": -78.95831
+    },
+    {
+      "nombre": "Condominios IESS",
+      "tipo": "urbanizacion",
+      "lat": -2.89732,
+      "lon": -78.96725
+    },
+    {
+      "nombre": "Condominios Narancay",
+      "tipo": "urbanizacion",
+      "lat": -2.92651,
+      "lon": -79.04751
+    },
+    {
+      "nombre": "Condominios del Ejército",
+      "tipo": "urbanizacion",
+      "lat": -2.87948,
+      "lon": -78.96078
+    },
+    {
+      "nombre": "Condominnio Riviera",
+      "tipo": "urbanizacion",
+      "lat": -2.86738,
+      "lon": -78.96166
+    },
+    {
+      "nombre": "Conjunto Portones del Río",
+      "tipo": "urbanizacion",
+      "lat": -2.91798,
+      "lon": -79.00885
+    },
+    {
+      "nombre": "Conjunto Residencial \"Las Praderas de Bemani\"",
+      "tipo": "urbanizacion",
+      "lat": -2.8464,
+      "lon": -78.99062
+    },
+    {
+      "nombre": "Conjunto Residencial Tres de Noviemrbre",
+      "tipo": "urbanizacion",
+      "lat": -2.90235,
+      "lon": -79.00703
+    },
+    {
+      "nombre": "Corazon de Jesus",
+      "tipo": "neighbourhood",
+      "lat": -2.85782,
+      "lon": -78.97787
+    },
+    {
+      "nombre": "Corazon de Jesus de Pumayunga",
+      "tipo": "hamlet",
+      "lat": -2.87276,
+      "lon": -79.02174
+    },
+    {
+      "nombre": "Corazón de Jesus",
+      "tipo": "hamlet",
+      "lat": -2.85685,
+      "lon": -78.94139
+    },
+    {
+      "nombre": "Corazón de Jesús",
+      "tipo": "hamlet",
+      "lat": -2.85867,
+      "lon": -79.09234
+    },
+    {
+      "nombre": "Cristo del Consuelo",
+      "tipo": "quarter",
+      "lat": -2.89565,
+      "lon": -79.0403
+    },
+    {
+      "nombre": "Cruce de Monay",
+      "tipo": "hamlet",
+      "lat": -2.91405,
+      "lon": -78.96577
+    },
+    {
+      "nombre": "Cruce del Carmen",
+      "tipo": "neighbourhood",
+      "lat": -2.86283,
+      "lon": -79.0075
+    },
+    {
+      "nombre": "Cruz Verde",
+      "tipo": "quarter",
+      "lat": -2.89708,
+      "lon": -79.04335
+    },
+    {
+      "nombre": "Cruz del camino",
+      "tipo": "locality",
+      "lat": -2.95412,
+      "lon": -78.98949
+    },
+    {
+      "nombre": "Cuatro Esquinas",
+      "tipo": "neighbourhood",
+      "lat": -2.88458,
+      "lon": -78.9418
+    },
+    {
+      "nombre": "Cuidadela Jardin de laSierra",
+      "tipo": "urbanizacion",
+      "lat": -2.90586,
+      "lon": -78.97242
+    },
+    {
+      "nombre": "Cumbres de Loreto",
+      "tipo": "urbanizacion",
+      "lat": -2.91354,
+      "lon": -79.04796
+    },
+    {
+      "nombre": "Cámara de Industrias",
+      "tipo": "urbanizacion",
+      "lat": -2.90556,
+      "lon": -79.00327
+    },
+    {
+      "nombre": "Departamentos \"El Jardin\"",
+      "tipo": "urbanizacion",
+      "lat": -2.90742,
+      "lon": -78.98994
+    },
+    {
+      "nombre": "Despacho del Valle",
+      "tipo": "neighbourhood",
+      "lat": -2.92633,
+      "lon": -78.95968
+    },
+    {
+      "nombre": "Domay",
+      "tipo": "hamlet",
+      "lat": -2.82436,
+      "lon": -78.93455
+    },
+    {
+      "nombre": "Edificio Atlántida",
+      "tipo": "urbanizacion",
+      "lat": -2.91688,
+      "lon": -79.00685
+    },
+    {
+      "nombre": "Edificios Arias",
+      "tipo": "urbanizacion",
+      "lat": -2.90211,
+      "lon": -78.99504
+    },
+    {
+      "nombre": "El Aguacate",
+      "tipo": "neighbourhood",
+      "lat": -2.91145,
+      "lon": -78.97017
+    },
+    {
+      "nombre": "El Arenal",
+      "tipo": "hamlet",
+      "lat": -2.87697,
+      "lon": -78.92302
+    },
+    {
+      "nombre": "El Balcon del Guabo",
+      "tipo": "hamlet",
+      "lat": -2.8244,
+      "lon": -78.95855
+    },
+    {
+      "nombre": "El Batán",
+      "tipo": "parroquia",
+      "lat": -2.89307,
+      "lon": -79.04494
+    },
+    {
+      "nombre": "El Calvario",
+      "tipo": "hamlet",
+      "lat": -2.9343,
+      "lon": -79.03237
+    },
+    {
+      "nombre": "El Carmen",
+      "tipo": "hamlet",
+      "lat": -2.92348,
+      "lon": -78.94687
+    },
+    {
+      "nombre": "El Carmen de Sinincay",
+      "tipo": "village",
+      "lat": -2.85985,
+      "lon": -79.02013
+    },
+    {
+      "nombre": "El Cebollar",
+      "tipo": "locality",
+      "lat": -2.88373,
+      "lon": -79.02442
+    },
+    {
+      "nombre": "El Cedillo",
+      "tipo": "hamlet",
+      "lat": -2.91285,
+      "lon": -78.94732
+    },
+    {
+      "nombre": "El Chorro",
+      "tipo": "parroquia",
+      "lat": -2.96119,
+      "lon": -78.93065
+    },
+    {
+      "nombre": "El Cisne",
+      "tipo": "village",
+      "lat": -2.84681,
+      "lon": -78.93348
+    },
+    {
+      "nombre": "El Cáñaro",
+      "tipo": "hamlet",
+      "lat": -2.89221,
+      "lon": -79.07714
+    },
+    {
+      "nombre": "El Despacho",
+      "tipo": "neighbourhood",
+      "lat": -2.92685,
+      "lon": -78.96214
+    },
+    {
+      "nombre": "El Guabo de Sidcay",
+      "tipo": "hamlet",
+      "lat": -2.82178,
+      "lon": -78.96082
+    },
+    {
+      "nombre": "El Huasi",
+      "tipo": "urbanizacion",
+      "lat": -2.90559,
+      "lon": -79.00149
+    },
+    {
+      "nombre": "El Mirador",
+      "tipo": "hamlet",
+      "lat": -2.84203,
+      "lon": -78.94629
+    },
+    {
+      "nombre": "El Recreo",
+      "tipo": "hamlet",
+      "lat": -2.96029,
+      "lon": -79.04062
+    },
+    {
+      "nombre": "El Rosario",
+      "tipo": "hamlet",
+      "lat": -2.90517,
+      "lon": -78.9424
+    },
+    {
+      "nombre": "El Sagrario",
+      "tipo": "parroquia",
+      "lat": -2.8993,
+      "lon": -79.00215
+    },
+    {
+      "nombre": "El Salado",
+      "tipo": "parroquia",
+      "lat": -2.92808,
+      "lon": -78.92523
+    },
+    {
+      "nombre": "El Tablon de Miraflores",
+      "tipo": "neighbourhood",
+      "lat": -2.87036,
+      "lon": -78.99424
+    },
+    {
+      "nombre": "El Tablon de las Orquideas",
+      "tipo": "neighbourhood",
+      "lat": -2.86331,
+      "lon": -78.9949
+    },
+    {
+      "nombre": "El Tablón",
+      "tipo": "hamlet",
+      "lat": -2.90929,
+      "lon": -78.95001
+    },
+    {
+      "nombre": "El Valle",
+      "tipo": "parroquia",
+      "lat": -2.94599,
+      "lon": -78.96832
+    },
+    {
+      "nombre": "El Vecino",
+      "tipo": "parroquia",
+      "lat": -2.88046,
+      "lon": -78.99084
+    },
+    {
+      "nombre": "El Verde",
+      "tipo": "hamlet",
+      "lat": -2.96618,
+      "lon": -79.00319
+    },
+    {
+      "nombre": "El bosque de Chilcapamba",
+      "tipo": "neighbourhood",
+      "lat": -2.9281,
+      "lon": -78.9728
+    },
+    {
+      "nombre": "Ensayana",
+      "tipo": "hamlet",
+      "lat": -2.92078,
+      "lon": -79.07502
+    },
+    {
+      "nombre": "Entrada a Jesús del Gran Poder",
+      "tipo": "hamlet",
+      "lat": -2.86732,
+      "lon": -79.00629
+    },
+    {
+      "nombre": "Francisco Xavier",
+      "tipo": "quarter",
+      "lat": -2.89846,
+      "lon": -79.04956
+    },
+    {
+      "nombre": "Fátima",
+      "tipo": "neighbourhood",
+      "lat": -2.85093,
+      "lon": -79.01726
+    },
+    {
+      "nombre": "Gil Ramírez Dávalos",
+      "tipo": "parroquia",
+      "lat": -2.89649,
+      "lon": -79.00786
+    },
+    {
+      "nombre": "Guadalupano Alto",
+      "tipo": "hamlet",
+      "lat": -2.9277,
+      "lon": -79.06451
+    },
+    {
+      "nombre": "Gualalcay",
+      "tipo": "hamlet",
+      "lat": -2.96106,
+      "lon": -78.98825
+    },
+    {
+      "nombre": "Guarivina",
+      "tipo": "hamlet",
+      "lat": -2.93839,
+      "lon": -79.0404
+    },
+    {
+      "nombre": "Gulag",
+      "tipo": "hamlet",
+      "lat": -2.86673,
+      "lon": -79.08607
+    },
+    {
+      "nombre": "Gullanzhapa",
+      "tipo": "hamlet",
+      "lat": -2.97922,
+      "lon": -78.99773
+    },
+    {
+      "nombre": "Guncay",
+      "tipo": "hamlet",
+      "lat": -2.91889,
+      "lon": -78.96081
+    },
+    {
+      "nombre": "Higospamba",
+      "tipo": "hamlet",
+      "lat": -2.89073,
+      "lon": -78.94931
+    },
+    {
+      "nombre": "Huayna Cápac",
+      "tipo": "parroquia",
+      "lat": -2.91247,
+      "lon": -78.99879
+    },
+    {
+      "nombre": "Huayraloma",
+      "tipo": "hamlet",
+      "lat": -2.85671,
+      "lon": -78.93722
+    },
+    {
+      "nombre": "Huishil",
+      "tipo": "village",
+      "lat": -2.90829,
+      "lon": -79.06725
+    },
+    {
+      "nombre": "Jalshi",
+      "tipo": "neighbourhood",
+      "lat": -2.86926,
+      "lon": -78.93108
+    },
+    {
+      "nombre": "Jesus del Gran Poder",
+      "tipo": "hamlet",
+      "lat": -2.8309,
+      "lon": -78.9752
+    },
+    {
+      "nombre": "Jesús del Gran Poder",
+      "tipo": "village",
+      "lat": -2.86541,
+      "lon": -79.01353
+    },
+    {
+      "nombre": "Juan Pablo",
+      "tipo": "quarter",
+      "lat": -2.89947,
+      "lon": -79.05224
+    },
+    {
+      "nombre": "La \"T\" del Cebollar",
+      "tipo": "urbanizacion",
+      "lat": -2.88411,
+      "lon": -79.02002
+    },
+    {
+      "nombre": "La Alborada",
+      "tipo": "hamlet",
+      "lat": -2.85771,
+      "lon": -78.93914
+    },
+    {
+      "nombre": "La Caldera",
+      "tipo": "hamlet",
+      "lat": -2.8223,
+      "lon": -78.97336
+    },
+    {
+      "nombre": "La Dolorosa",
+      "tipo": "neighbourhood",
+      "lat": -2.8458,
+      "lon": -78.97198
+    },
+    {
+      "nombre": "La Florida",
+      "tipo": "quarter",
+      "lat": -2.90022,
+      "lon": -79.0412
+    },
+    {
+      "nombre": "La Hermita",
+      "tipo": "neighbourhood",
+      "lat": -2.87154,
+      "lon": -79.06481
+    },
+    {
+      "nombre": "La Libertad",
+      "tipo": "hamlet",
+      "lat": -2.87569,
+      "lon": -79.06335
+    },
+    {
+      "nombre": "La Merced",
+      "tipo": "hamlet",
+      "lat": -2.94434,
+      "lon": -79.03435
+    },
+    {
+      "nombre": "La Merced Dos",
+      "tipo": "hamlet",
+      "lat": -2.85527,
+      "lon": -78.94558
+    },
+    {
+      "nombre": "La Merced de Zhiquir",
+      "tipo": "hamlet",
+      "lat": -2.85085,
+      "lon": -78.92252
+    },
+    {
+      "nombre": "La Nueva Dolorosa",
+      "tipo": "hamlet",
+      "lat": -2.85246,
+      "lon": -78.93607
+    },
+    {
+      "nombre": "La Playa",
+      "tipo": "hamlet",
+      "lat": -2.84286,
+      "lon": -78.94231
+    },
+    {
+      "nombre": "La Pradera",
+      "tipo": "hamlet",
+      "lat": -2.95046,
+      "lon": -79.04459
+    },
+    {
+      "nombre": "La Rioja Condominio",
+      "tipo": "urbanizacion",
+      "lat": -2.83576,
+      "lon": -78.9843
+    },
+    {
+      "nombre": "La Unión",
+      "tipo": "hamlet",
+      "lat": -2.84508,
+      "lon": -78.93795
+    },
+    {
+      "nombre": "La Unión Alta",
+      "tipo": "hamlet",
+      "lat": -2.91349,
+      "lon": -79.05766
+    },
+    {
+      "nombre": "La Verbena II",
+      "tipo": "urbanizacion",
+      "lat": -2.88317,
+      "lon": -79.02626
+    },
+    {
+      "nombre": "La Victoria",
+      "tipo": "hamlet",
+      "lat": -2.94447,
+      "lon": -78.97679
+    },
+    {
+      "nombre": "La Y del Cebollar",
+      "tipo": "neighbourhood",
+      "lat": -2.8842,
+      "lon": -79.01597
+    },
+    {
+      "nombre": "Laguna del sol",
+      "tipo": "quarter",
+      "lat": -2.94151,
+      "lon": -78.95823
+    },
+    {
+      "nombre": "Lancón",
+      "tipo": "hamlet",
+      "lat": -2.9238,
+      "lon": -78.93318
+    },
+    {
+      "nombre": "Las Antenas",
+      "tipo": "neighbourhood",
+      "lat": -2.91324,
+      "lon": -79.05135
+    },
+    {
+      "nombre": "Las Cuatro Esquinas",
+      "tipo": "neighbourhood",
+      "lat": -2.86938,
+      "lon": -78.96559
+    },
+    {
+      "nombre": "Las Palmeras",
+      "tipo": "quarter",
+      "lat": -2.89477,
+      "lon": -79.04511
+    },
+    {
+      "nombre": "Laureles",
+      "tipo": "parroquia",
+      "lat": -2.94081,
+      "lon": -78.92552
+    },
+    {
+      "nombre": "Llacao",
+      "tipo": "village",
+      "lat": -2.83729,
+      "lon": -78.94176
+    },
+    {
+      "nombre": "Llanda Pata",
+      "tipo": "hamlet",
+      "lat": -2.93768,
+      "lon": -78.93492
+    },
+    {
+      "nombre": "Loma De Nulti Alto",
+      "tipo": "neighbourhood",
+      "lat": -2.87042,
+      "lon": -78.9287
+    },
+    {
+      "nombre": "Los Angeles",
+      "tipo": "village",
+      "lat": -2.85135,
+      "lon": -78.98131
+    },
+    {
+      "nombre": "Los Geranios",
+      "tipo": "hamlet",
+      "lat": -2.91593,
+      "lon": -78.96873
+    },
+    {
+      "nombre": "Los Laureles",
+      "tipo": "neighbourhood",
+      "lat": -2.94109,
+      "lon": -79.0543
+    },
+    {
+      "nombre": "Los Naranjos",
+      "tipo": "hamlet",
+      "lat": -2.89136,
+      "lon": -78.94086
+    },
+    {
+      "nombre": "Los Ramales",
+      "tipo": "hamlet",
+      "lat": -2.87096,
+      "lon": -79.07889
+    },
+    {
+      "nombre": "Los Tilos Bajos",
+      "tipo": "neighbourhood",
+      "lat": -2.91228,
+      "lon": -79.06267
+    },
+    {
+      "nombre": "Los Trigales",
+      "tipo": "neighbourhood",
+      "lat": -2.86771,
+      "lon": -78.99096
+    },
+    {
+      "nombre": "Los Álamos",
+      "tipo": "urbanizacion",
+      "lat": -2.90603,
+      "lon": -79.05107
+    },
+    {
+      "nombre": "Lourdes",
+      "tipo": "hamlet",
+      "lat": -2.84656,
+      "lon": -78.95372
+    },
+    {
+      "nombre": "Maluay",
+      "tipo": "hamlet",
+      "lat": -2.95679,
+      "lon": -78.95443
+    },
+    {
+      "nombre": "Manzanoloma",
+      "tipo": "hamlet",
+      "lat": -2.94761,
+      "lon": -79.06146
+    },
+    {
+      "nombre": "Martínez",
+      "tipo": "hamlet",
+      "lat": -2.96667,
+      "lon": -78.93333
+    },
+    {
+      "nombre": "María Auxiliadora de la Dolorosa",
+      "tipo": "neighbourhood",
+      "lat": -2.84064,
+      "lon": -78.96684
+    },
+    {
+      "nombre": "Mayancela",
+      "tipo": "village",
+      "lat": -2.84459,
+      "lon": -78.99971
+    },
+    {
+      "nombre": "Medio Ejido",
+      "tipo": "quarter",
+      "lat": -2.90184,
+      "lon": -79.04347
+    },
+    {
+      "nombre": "Michica",
+      "tipo": "neighbourhood",
+      "lat": -2.90198,
+      "lon": -78.93321
+    },
+    {
+      "nombre": "Miduvi",
+      "tipo": "urbanizacion",
+      "lat": -2.87889,
+      "lon": -78.95073
+    },
+    {
+      "nombre": "Minas",
+      "tipo": "village",
+      "lat": -2.92693,
+      "lon": -79.0858
+    },
+    {
+      "nombre": "Mira Valle",
+      "tipo": "urbanizacion",
+      "lat": -2.848,
+      "lon": -78.96086
+    },
+    {
+      "nombre": "Misicata",
+      "tipo": "village",
+      "lat": -2.90594,
+      "lon": -79.0484
+    },
+    {
+      "nombre": "Molino Pamba",
+      "tipo": "neighbourhood",
+      "lat": -2.87062,
+      "lon": -78.95441
+    },
+    {
+      "nombre": "Monay",
+      "tipo": "parroquia",
+      "lat": -2.90106,
+      "lon": -78.97437
+    },
+    {
+      "nombre": "Monay Chico",
+      "tipo": "hamlet",
+      "lat": -2.90266,
+      "lon": -78.95062
+    },
+    {
+      "nombre": "Morochoquigua",
+      "tipo": "hamlet",
+      "lat": -2.94681,
+      "lon": -78.99187
+    },
+    {
+      "nombre": "Narancay Alto",
+      "tipo": "hamlet",
+      "lat": -2.93264,
+      "lon": -79.05278
+    },
+    {
+      "nombre": "Narancay Bajo",
+      "tipo": "neighbourhood",
+      "lat": -2.93611,
+      "lon": -79.04554
+    },
+    {
+      "nombre": "Naranjos Tres Esquinas",
+      "tipo": "hamlet",
+      "lat": -2.8885,
+      "lon": -78.93671
+    },
+    {
+      "nombre": "Negas",
+      "tipo": "hamlet",
+      "lat": -2.83471,
+      "lon": -78.94559
+    },
+    {
+      "nombre": "Nero",
+      "tipo": "village",
+      "lat": -2.95227,
+      "lon": -79.06645
+    },
+    {
+      "nombre": "Nulti",
+      "tipo": "village",
+      "lat": -2.86663,
+      "lon": -78.93001
+    },
+    {
+      "nombre": "Ochoa León",
+      "tipo": "village",
+      "lat": -2.83379,
+      "lon": -78.98493
+    },
+    {
+      "nombre": "Orillas Del Rio",
+      "tipo": "urbanizacion",
+      "lat": -2.88286,
+      "lon": -78.94958
+    },
+    {
+      "nombre": "PLAZA DEL OTORONGO",
+      "tipo": "urbanizacion",
+      "lat": -2.89692,
+      "lon": -79.01251
+    },
+    {
+      "nombre": "Paccha",
+      "tipo": "parroquia",
+      "lat": -2.90176,
+      "lon": -78.92767
+    },
+    {
+      "nombre": "Pachamama",
+      "tipo": "hamlet",
+      "lat": -2.84073,
+      "lon": -78.92793
+    },
+    {
+      "nombre": "Pampa de Zamora",
+      "tipo": "neighbourhood",
+      "lat": -2.84402,
+      "lon": -78.96122
+    },
+    {
+      "nombre": "Paredones",
+      "tipo": "hamlet",
+      "lat": -2.96175,
+      "lon": -78.97947
+    },
+    {
+      "nombre": "Paseo Desarrollo",
+      "tipo": "neighbourhood",
+      "lat": -2.94414,
+      "lon": -78.96724
+    },
+    {
+      "nombre": "Paseo del Sol",
+      "tipo": "urbanizacion",
+      "lat": -2.90427,
+      "lon": -78.99043
+    },
+    {
+      "nombre": "Patamarca Bellavista",
+      "tipo": "hamlet",
+      "lat": -2.84358,
+      "lon": -78.98811
+    },
+    {
+      "nombre": "Patapamba",
+      "tipo": "hamlet",
+      "lat": -2.95928,
+      "lon": -79.01414
+    },
+    {
+      "nombre": "Pavos Reales",
+      "tipo": "neighbourhood",
+      "lat": -2.90145,
+      "lon": -78.94838
+    },
+    {
+      "nombre": "Peñasol",
+      "tipo": "neighbourhood",
+      "lat": -2.90536,
+      "lon": -78.93489
+    },
+    {
+      "nombre": "Pinchizana Alto",
+      "tipo": "hamlet",
+      "lat": -2.88638,
+      "lon": -79.08239
+    },
+    {
+      "nombre": "Pinchizana Bajo",
+      "tipo": "hamlet",
+      "lat": -2.87705,
+      "lon": -79.0805
+    },
+    {
+      "nombre": "Playa Los Angeles",
+      "tipo": "parroquia",
+      "lat": -2.97656,
+      "lon": -78.92728
+    },
+    {
+      "nombre": "Playas del Machangara",
+      "tipo": "neighbourhood",
+      "lat": -2.86114,
+      "lon": -78.98012
+    },
+    {
+      "nombre": "Poligono de Tiro",
+      "tipo": "neighbourhood",
+      "lat": -2.87998,
+      "lon": -78.94223
+    },
+    {
+      "nombre": "Portete",
+      "tipo": "hamlet",
+      "lat": -2.82405,
+      "lon": -78.94119
+    },
+    {
+      "nombre": "Primera División Cuenca",
+      "tipo": "neighbourhood",
+      "lat": -2.87637,
+      "lon": -78.99539
+    },
+    {
+      "nombre": "Primero de Enero",
+      "tipo": "neighbourhood",
+      "lat": -2.92522,
+      "lon": -78.97306
+    },
+    {
+      "nombre": "Puca Cruz Alto",
+      "tipo": "hamlet",
+      "lat": -2.97934,
+      "lon": -78.95155
+    },
+    {
+      "nombre": "Pucay",
+      "tipo": "neighbourhood",
+      "lat": -2.8666,
+      "lon": -78.927
+    },
+    {
+      "nombre": "Puerto de Palos",
+      "tipo": "hamlet",
+      "lat": -2.92412,
+      "lon": -79.02883
+    },
+    {
+      "nombre": "Pumayunga",
+      "tipo": "village",
+      "lat": -2.86953,
+      "lon": -79.02479
+    },
+    {
+      "nombre": "Pumayunga Alto",
+      "tipo": "hamlet",
+      "lat": -2.8655,
+      "lon": -79.02718
+    },
+    {
+      "nombre": "Punta Corral",
+      "tipo": "hamlet",
+      "lat": -2.94457,
+      "lon": -79.01794
+    },
+    {
+      "nombre": "Quillopungo",
+      "tipo": "hamlet",
+      "lat": -2.95421,
+      "lon": -78.97654
+    },
+    {
+      "nombre": "Quituiña",
+      "tipo": "hamlet",
+      "lat": -2.8949,
+      "lon": -78.92405
+    },
+    {
+      "nombre": "Racar",
+      "tipo": "village",
+      "lat": -2.85521,
+      "lon": -79.03865
+    },
+    {
+      "nombre": "Rayoloma",
+      "tipo": "urbanizacion",
+      "lat": -2.90395,
+      "lon": -78.96144
+    },
+    {
+      "nombre": "Reina de la Paz",
+      "tipo": "hamlet",
+      "lat": -2.8504,
+      "lon": -78.92969
+    },
+    {
+      "nombre": "Reina del Cisne",
+      "tipo": "hamlet",
+      "lat": -2.89837,
+      "lon": -78.95904
+    },
+    {
+      "nombre": "Ricaurte",
+      "tipo": "parroquia",
+      "lat": -2.85554,
+      "lon": -78.9596
+    },
+    {
+      "nombre": "Rio Amarillo",
+      "tipo": "neighbourhood",
+      "lat": -2.88289,
+      "lon": -79.05223
+    },
+    {
+      "nombre": "Rio Amarillo Putuzhi",
+      "tipo": "urbanizacion",
+      "lat": -2.88517,
+      "lon": -79.05367
+    },
+    {
+      "nombre": "Rumiloma",
+      "tipo": "hamlet",
+      "lat": -2.94634,
+      "lon": -79.04005
+    },
+    {
+      "nombre": "Samana",
+      "tipo": "hamlet",
+      "lat": -2.86724,
+      "lon": -78.9244
+    },
+    {
+      "nombre": "San Andres Alto",
+      "tipo": "neighbourhood",
+      "lat": -2.82634,
+      "lon": -79.00452
+    },
+    {
+      "nombre": "San Andrés",
+      "tipo": "hamlet",
+      "lat": -2.82205,
+      "lon": -78.9907
+    },
+    {
+      "nombre": "San Antonio de Gapal",
+      "tipo": "hamlet",
+      "lat": -2.93161,
+      "lon": -78.9906
+    },
+    {
+      "nombre": "San Antonio de los Laureles",
+      "tipo": "parroquia",
+      "lat": -2.94988,
+      "lon": -78.92668
+    },
+    {
+      "nombre": "San Blas",
+      "tipo": "parroquia",
+      "lat": -2.90103,
+      "lon": -78.99507
+    },
+    {
+      "nombre": "San Francisco de Mosquera",
+      "tipo": "parroquia",
+      "lat": -2.97543,
+      "lon": -78.9382
+    },
+    {
+      "nombre": "San Francisco de Tixán",
+      "tipo": "hamlet",
+      "lat": -2.83378,
+      "lon": -78.99512
+    },
+    {
+      "nombre": "San Isidro",
+      "tipo": "neighbourhood",
+      "lat": -2.92337,
+      "lon": -79.00125
+    },
+    {
+      "nombre": "San Jacinto",
+      "tipo": "neighbourhood",
+      "lat": -2.84179,
+      "lon": -78.97705
+    },
+    {
+      "nombre": "San Joaquín",
+      "tipo": "village",
+      "lat": -2.89534,
+      "lon": -79.0517
+    },
+    {
+      "nombre": "San José",
+      "tipo": "village",
+      "lat": -2.92998,
+      "lon": -78.97921
+    },
+    {
+      "nombre": "San José Barabon",
+      "tipo": "hamlet",
+      "lat": -2.9085,
+      "lon": -79.07668
+    },
+    {
+      "nombre": "San Juan Loma",
+      "tipo": "neighbourhood",
+      "lat": -2.929,
+      "lon": -78.97092
+    },
+    {
+      "nombre": "San Martin",
+      "tipo": "hamlet",
+      "lat": -2.85267,
+      "lon": -78.94125
+    },
+    {
+      "nombre": "San Martin de Ricaute",
+      "tipo": "neighbourhood",
+      "lat": -2.8526,
+      "lon": -78.95376
+    },
+    {
+      "nombre": "San Miguel",
+      "tipo": "village",
+      "lat": -2.84302,
+      "lon": -78.98116
+    },
+    {
+      "nombre": "San Miguel de Baguanchi",
+      "tipo": "hamlet",
+      "lat": -2.91593,
+      "lon": -78.93876
+    },
+    {
+      "nombre": "San Miguel de Putusí",
+      "tipo": "hamlet",
+      "lat": -2.87273,
+      "lon": -79.05425
+    },
+    {
+      "nombre": "San Pedro",
+      "tipo": "hamlet",
+      "lat": -2.85249,
+      "lon": -78.94788
+    },
+    {
+      "nombre": "San Pedro Hierbabuena",
+      "tipo": "hamlet",
+      "lat": -2.9455,
+      "lon": -78.99891
+    },
+    {
+      "nombre": "San Pedro del Cebollar",
+      "tipo": "village",
+      "lat": -2.87788,
+      "lon": -79.02949
+    },
+    {
+      "nombre": "San Sebastián",
+      "tipo": "parroquia",
+      "lat": -2.87117,
+      "lon": -79.0406
+    },
+    {
+      "nombre": "San Vicente",
+      "tipo": "hamlet",
+      "lat": -2.87732,
+      "lon": -78.92956
+    },
+    {
+      "nombre": "San Vicente de Sinincay",
+      "tipo": "neighbourhood",
+      "lat": -2.84992,
+      "lon": -78.99469
+    },
+    {
+      "nombre": "Santa Ana",
+      "tipo": "village",
+      "lat": -2.93649,
+      "lon": -78.92009
+    },
+    {
+      "nombre": "Santa Anita",
+      "tipo": "hamlet",
+      "lat": -2.96199,
+      "lon": -79.0228
+    },
+    {
+      "nombre": "Santa Catalina del Valle",
+      "tipo": "hamlet",
+      "lat": -2.9358,
+      "lon": -78.95266
+    },
+    {
+      "nombre": "Santa Cecilia",
+      "tipo": "neighbourhood",
+      "lat": -2.86381,
+      "lon": -78.9229
+    },
+    {
+      "nombre": "Santa Cruz",
+      "tipo": "neighbourhood",
+      "lat": -2.84148,
+      "lon": -78.95182
+    },
+    {
+      "nombre": "Santa Maria",
+      "tipo": "hamlet",
+      "lat": -2.83353,
+      "lon": -78.95126
+    },
+    {
+      "nombre": "Santa Maria del Vergel",
+      "tipo": "hamlet",
+      "lat": -2.91719,
+      "lon": -78.98882
+    },
+    {
+      "nombre": "Santa Martha",
+      "tipo": "hamlet",
+      "lat": -2.95388,
+      "lon": -78.98251
+    },
+    {
+      "nombre": "Santa María del Vergel",
+      "tipo": "urbanizacion",
+      "lat": -2.92063,
+      "lon": -78.99452
+    },
+    {
+      "nombre": "SantaTeresita",
+      "tipo": "hamlet",
+      "lat": -2.88191,
+      "lon": -79.07146
+    },
+    {
+      "nombre": "Sarahuayco",
+      "tipo": "hamlet",
+      "lat": -2.92655,
+      "lon": -78.97304
+    },
+    {
+      "nombre": "Sayausi",
+      "tipo": "village",
+      "lat": -2.87318,
+      "lon": -79.0731
+    },
+    {
+      "nombre": "Shinshín",
+      "tipo": "hamlet",
+      "lat": -2.92585,
+      "lon": -79.06895
+    },
+    {
+      "nombre": "Sinincay",
+      "tipo": "parroquia",
+      "lat": -2.84991,
+      "lon": -79.01474
+    },
+    {
+      "nombre": "Solispay",
+      "tipo": "hamlet",
+      "lat": -2.94236,
+      "lon": -78.98827
+    },
+    {
+      "nombre": "Sucre",
+      "tipo": "parroquia",
+      "lat": -2.90408,
+      "lon": -79.01623
+    },
+    {
+      "nombre": "Sunsun",
+      "tipo": "hamlet",
+      "lat": -2.95835,
+      "lon": -79.08737
+    },
+    {
+      "nombre": "Tacalzhapa",
+      "tipo": "parroquia",
+      "lat": -2.94587,
+      "lon": -78.93646
+    },
+    {
+      "nombre": "Templo Chino",
+      "tipo": "neighbourhood",
+      "lat": -2.8696,
+      "lon": -79.05606
+    },
+    {
+      "nombre": "Terrreno",
+      "tipo": "urbanizacion",
+      "lat": -2.91455,
+      "lon": -79.00139
+    },
+    {
+      "nombre": "Tierra Blanca",
+      "tipo": "hamlet",
+      "lat": -2.96091,
+      "lon": -78.96277
+    },
+    {
+      "nombre": "Toctepamba",
+      "tipo": "parroquia",
+      "lat": -2.92194,
+      "lon": -78.92443
+    },
+    {
+      "nombre": "Totoracocha",
+      "tipo": "parroquia",
+      "lat": -2.89136,
+      "lon": -78.98268
+    },
+    {
+      "nombre": "Totoracocha Baja",
+      "tipo": "hamlet",
+      "lat": -2.96232,
+      "lon": -78.99527
+    },
+    {
+      "nombre": "Totoracocha de El Valle",
+      "tipo": "hamlet",
+      "lat": -2.96999,
+      "lon": -78.99122
+    },
+    {
+      "nombre": "Tres Claveles",
+      "tipo": "hamlet",
+      "lat": -2.96011,
+      "lon": -79.03123
+    },
+    {
+      "nombre": "Trinidad",
+      "tipo": "hamlet",
+      "lat": -2.94163,
+      "lon": -79.00962
+    },
+    {
+      "nombre": "Turi",
+      "tipo": "parroquia",
+      "lat": -2.94634,
+      "lon": -79.01999
+    },
+    {
+      "nombre": "Turupamba",
+      "tipo": "hamlet",
+      "lat": -2.87179,
+      "lon": -79.09793
+    },
+    {
+      "nombre": "Tutapa",
+      "tipo": "hamlet",
+      "lat": -2.9653,
+      "lon": -78.98778
+    },
+    {
+      "nombre": "Tutupali Grande",
+      "tipo": "hamlet",
+      "lat": -2.97883,
+      "lon": -79.08615
+    },
+    {
+      "nombre": "URBANIZACIÓN LOS CAPULIES",
+      "tipo": "neighbourhood",
+      "lat": -2.83976,
+      "lon": -78.98377
+    },
+    {
+      "nombre": "Ucholoma",
+      "tipo": "hamlet",
+      "lat": -2.93018,
+      "lon": -79.05724
+    },
+    {
+      "nombre": "Ucubamba",
+      "tipo": "quarter",
+      "lat": -2.87737,
+      "lon": -78.94523
+    },
+    {
+      "nombre": "Ucubamba Alto",
+      "tipo": "hamlet",
+      "lat": -2.88647,
+      "lon": -78.9451
+    },
+    {
+      "nombre": "Union y Progreso",
+      "tipo": "hamlet",
+      "lat": -2.89233,
+      "lon": -78.93686
+    },
+    {
+      "nombre": "Urbanización \"El Porton del Machangara\"",
+      "tipo": "urbanizacion",
+      "lat": -2.83754,
+      "lon": -78.98396
+    },
+    {
+      "nombre": "Urbanización CICA Ochoa Leon",
+      "tipo": "neighbourhood",
+      "lat": -2.83859,
+      "lon": -78.98411
+    },
+    {
+      "nombre": "Urbanización Cial",
+      "tipo": "urbanizacion",
+      "lat": -2.82214,
+      "lon": -78.98675
+    },
+    {
+      "nombre": "Urbanización Ciudad del Río",
+      "tipo": "urbanizacion",
+      "lat": -2.9469,
+      "lon": -79.04485
+    },
+    {
+      "nombre": "Urbanización Del Molino del Arco",
+      "tipo": "neighbourhood",
+      "lat": -2.88462,
+      "lon": -79.01829
+    },
+    {
+      "nombre": "Urbanización El Arroyo",
+      "tipo": "urbanizacion",
+      "lat": -2.90536,
+      "lon": -79.03915
+    },
+    {
+      "nombre": "Urbanización La Alameda",
+      "tipo": "urbanizacion",
+      "lat": -2.97995,
+      "lon": -79.04051
+    },
+    {
+      "nombre": "Urbanización La Campania",
+      "tipo": "urbanizacion",
+      "lat": -2.9186,
+      "lon": -78.9505
+    },
+    {
+      "nombre": "Urbanización Laguna del Sol",
+      "tipo": "urbanizacion",
+      "lat": -2.94153,
+      "lon": -78.95795
+    },
+    {
+      "nombre": "Urbanización Lomas de Narancay",
+      "tipo": "urbanizacion",
+      "lat": -2.93163,
+      "lon": -79.04454
+    },
+    {
+      "nombre": "Urbanización Los Almendros",
+      "tipo": "urbanizacion",
+      "lat": -2.90986,
+      "lon": -78.95672
+    },
+    {
+      "nombre": "Urbanización Los Capulíes",
+      "tipo": "urbanizacion",
+      "lat": -2.84021,
+      "lon": -78.98371
+    },
+    {
+      "nombre": "Urbanización Los Cerezos",
+      "tipo": "urbanizacion",
+      "lat": -2.87944,
+      "lon": -79.03875
+    },
+    {
+      "nombre": "Urbanización Los Geranios",
+      "tipo": "urbanizacion",
+      "lat": -2.88465,
+      "lon": -79.01624
+    },
+    {
+      "nombre": "Urbanización Los Nogales",
+      "tipo": "urbanizacion",
+      "lat": -2.86021,
+      "lon": -78.936
+    },
+    {
+      "nombre": "Urbanización Misicata 2000",
+      "tipo": "urbanizacion",
+      "lat": -2.90838,
+      "lon": -79.05998
+    },
+    {
+      "nombre": "Urbanización Paseo de los Cerezos",
+      "tipo": "urbanizacion",
+      "lat": -2.87971,
+      "lon": -79.03329
+    },
+    {
+      "nombre": "Urbanización Portón de Sevilla",
+      "tipo": "urbanizacion",
+      "lat": -2.90689,
+      "lon": -79.03629
+    },
+    {
+      "nombre": "Urbanización Praderas de Buenos Aires",
+      "tipo": "urbanizacion",
+      "lat": -2.87419,
+      "lon": -79.06852
+    },
+    {
+      "nombre": "Urbanización Santa Sofia",
+      "tipo": "neighbourhood",
+      "lat": -2.92306,
+      "lon": -78.95874
+    },
+    {
+      "nombre": "Urbanización Vidal",
+      "tipo": "urbanizacion",
+      "lat": -2.8932,
+      "lon": -78.98777
+    },
+    {
+      "nombre": "Urbanización Villa Dorada",
+      "tipo": "neighbourhood",
+      "lat": -2.86563,
+      "lon": -78.98784
+    },
+    {
+      "nombre": "Urbanización de Familia Vargas",
+      "tipo": "urbanizacion",
+      "lat": -2.88437,
+      "lon": -79.01659
+    },
+    {
+      "nombre": "Urbanización de los Ingenieros - Ochoa León",
+      "tipo": "urbanizacion",
+      "lat": -2.83961,
+      "lon": -78.98405
+    },
+    {
+      "nombre": "Urbanización del Austro",
+      "tipo": "urbanizacion",
+      "lat": -2.88582,
+      "lon": -78.97774
+    },
+    {
+      "nombre": "Urbanización la Recoleta",
+      "tipo": "urbanizacion",
+      "lat": -2.9202,
+      "lon": -79.02372
+    },
+    {
+      "nombre": "Ventanillas",
+      "tipo": "neighbourhood",
+      "lat": -2.86274,
+      "lon": -78.92807
+    },
+    {
+      "nombre": "Viola",
+      "tipo": "hamlet",
+      "lat": -2.88363,
+      "lon": -78.93216
+    },
+    {
+      "nombre": "Virgen de las Nieves",
+      "tipo": "hamlet",
+      "lat": -2.8708,
+      "lon": -78.99614
+    },
+    {
+      "nombre": "Virgen del Cisne",
+      "tipo": "hamlet",
+      "lat": -2.91889,
+      "lon": -78.98007
+    },
+    {
+      "nombre": "Vista Sol",
+      "tipo": "urbanizacion",
+      "lat": -2.90899,
+      "lon": -79.05276
+    },
+    {
+      "nombre": "Vista Valle",
+      "tipo": "urbanizacion",
+      "lat": -2.8577,
+      "lon": -78.92047
+    },
+    {
+      "nombre": "Voluntad de Dios",
+      "tipo": "hamlet",
+      "lat": -2.84341,
+      "lon": -78.92951
+    },
+    {
+      "nombre": "Yanaturo",
+      "tipo": "hamlet",
+      "lat": -2.96962,
+      "lon": -78.99056
+    },
+    {
+      "nombre": "Yanaturo Alto",
+      "tipo": "village",
+      "lat": -2.86929,
+      "lon": -79.01467
+    },
+    {
+      "nombre": "Yanaturo Bajo",
+      "tipo": "village",
+      "lat": -2.87598,
+      "lon": -79.01026
+    },
+    {
+      "nombre": "Yanuncay",
+      "tipo": "parroquia",
+      "lat": -2.91828,
+      "lon": -79.03359
+    },
+    {
+      "nombre": "Zhiquir",
+      "tipo": "hamlet",
+      "lat": -2.8439,
+      "lon": -78.9252
+    },
+    {
+      "nombre": "Zhucay",
+      "tipo": "hamlet",
+      "lat": -2.96073,
+      "lon": -79.04993
+    },
+    {
+      "nombre": "condominio",
+      "tipo": "urbanizacion",
+      "lat": -2.90944,
+      "lon": -79.04014
+    },
+    {
+      "nombre": "departamentos",
+      "tipo": "urbanizacion",
+      "lat": -2.88576,
+      "lon": -78.9868
+    }
+  ]
+}

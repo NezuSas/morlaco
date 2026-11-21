@@ -78,3 +78,30 @@ test("el último destino se recuerda 12 horas", () => {
   assert.equal(leerDestino("basura", ahora), null);
   assert.equal(leerDestino(null, ahora), null);
 });
+
+test("sectoresDeTexto separa los sectores de un aviso", async () => {
+  const { sectoresDeTexto } = await import("../../web/lugares.js");
+  assert.deepEqual(sectoresDeTexto("Av. González Suárez, Totoracocha, Las Retamas y Mercado 12 de Abril."), [
+    "Av. González Suárez",
+    "Totoracocha",
+    "Las Retamas",
+    "Mercado 12 de Abril",
+  ]);
+  assert.deepEqual(sectoresDeTexto(""), []);
+});
+
+test("sectoresCerca: qué sectores de un corte quedan cerca del punto", async () => {
+  const { sectoresCerca } = await import("../../web/lugares.js");
+  const barrios = [
+    { nombre: "Totoracocha", tipo: "parroquia", lat: -2.8914, lon: -78.9827 },
+    { nombre: "Las Retamas", tipo: "neighbourhood", lat: -2.95, lon: -79.05 },
+  ];
+  // La calle del aviso está a 100 m; otra, a 2 km; una tercera no se conoce.
+  const metrosACalle = (nombre) => ({ "Av. González Suárez": 100, "Del Rollo": 2000 })[nombre] ?? null;
+  const punto = { lat: -2.8935, lon: -78.985 }; // a unos 350 m del centro de Totoracocha
+  const { cerca, reconocidos } = sectoresCerca(punto, "Av. González Suárez, Del Rollo, sector Totoracocha, Las Retamas y Pisarcápac", { barrios, metrosACalle });
+  assert.deepEqual(cerca, ["Av. González Suárez", "sector Totoracocha"]);
+  assert.equal(reconocidos, 4); // Pisarcápac no se pudo ubicar
+  // Sin nada reconocido no se afirma nada.
+  assert.deepEqual(sectoresCerca(punto, "Pisarcápac", { barrios, metrosACalle }), { cerca: [], reconocidos: 0 });
+});

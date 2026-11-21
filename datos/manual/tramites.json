@@ -1,0 +1,45 @@
+{
+  "metadata": {
+    "titulo": "Trámites, pagos y reclamos: las páginas oficiales",
+    "nota": "Se mantiene a mano. Solo enlaces a las páginas oficiales de cada entidad, comprobados uno por uno: Morlaco no copia horarios de oficinas ni requisitos, que cambian y no se publican en formato abierto.",
+    "revisado": "2026-11-21"
+  },
+  "tramites": [
+    {
+      "entidad": "GAD Municipal de Cuenca",
+      "es": "Trámites municipales en línea: predios, patentes, permisos y certificados.",
+      "en": "Municipal paperwork online: property tax, business licences, permits and certificates.",
+      "url": "https://enlinea.cuenca.gob.ec/"
+    },
+    {
+      "entidad": "ETAPA EP",
+      "es": "Agua, alcantarillado, internet y telefonía: planillas, reclamos y daños (una fuga, un corte que no estaba anunciado).",
+      "en": "Water, sewerage, internet and phone: bills, claims and faults (a leak, an unannounced cut).",
+      "url": "https://www.etapa.net.ec/"
+    },
+    {
+      "entidad": "Centro Sur",
+      "es": "Luz: planillas, reclamos y daños (un poste caído, un barrio sin luz).",
+      "en": "Electricity: bills, claims and faults (a fallen pole, a neighbourhood without power).",
+      "url": "https://www.centrosur.gob.ec/"
+    },
+    {
+      "entidad": "EMOV EP",
+      "es": "Tránsito y buses: matriculación, revisión vehicular, multas y quejas del servicio de buses.",
+      "en": "Traffic and buses: vehicle registration, inspection, fines and bus service complaints.",
+      "url": "https://www.emov.gob.ec/"
+    },
+    {
+      "entidad": "EMAC EP",
+      "es": "Aseo: recolección, reciclaje, escombros y la basura que no se recogió.",
+      "en": "Waste: collection, recycling, rubble and rubbish that was not picked up.",
+      "url": "https://emac.gob.ec/"
+    },
+    {
+      "entidad": "Tranvía de Cuenca",
+      "es": "Tarjetas, tarifas e itinerarios del tranvía.",
+      "en": "Tram cards, fares and timetables.",
+      "url": "https://tranvia.cuenca.gob.ec/"
+    }
+  ]
+}

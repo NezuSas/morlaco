@@ -118,6 +118,10 @@ def actualizar(
     if manual_agua.exists():
         agua = json.loads(manual_agua.read_text(encoding="utf-8"))
         escribir(salida / calendario.ARCHIVO_AGUA, calendario.calendario_agua(agua))
+    manual_feriados = salida / "manual" / "feriados.json"
+    if manual_feriados.exists():
+        feriados = json.loads(manual_feriados.read_text(encoding="utf-8"))
+        escribir(salida / calendario.ARCHIVO_FERIADOS, calendario.calendario_feriados(feriados))
     # El catálogo no lleva fechas: solo cambia si cambia la descripción de los datos.
     catalogo.escribir_indice(salida)
     # Las páginas para buscadores viven en web/, junto a datos/ (solo en el repositorio real).

@@ -266,3 +266,58 @@ def calendario_agua(agua: dict[str, Any]) -> str:
     lineas.append("END:VCALENDAR")
     plegadas = [trozo for linea in lineas for trozo in plegar(linea)]
     return "\r\n".join(plegadas) + "\r\n"
+
+
+# ---------- Días de descanso ----------
+
+ARCHIVO_FERIADOS = "feriados/feriados.ics"
+
+
+def calendario_feriados(feriados: dict[str, Any]) -> str:
+    """El .ics de los días de descanso (datos/manual/feriados.json): un evento de día entero
+    por fecha, con su fuente. Al suscribirse, los que se anoten después aparecen solos."""
+    lineas = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//Morlaco//Feriados de Cuenca//ES",
+        "CALSCALE:GREGORIAN",
+        "METHOD:PUBLISH",
+        f"X-WR-CALNAME:{escapar('📅 Feriados (Cuenca)')}",
+        "X-WR-CALDESC:"
+        + escapar(
+            "Días de descanso en Cuenca: feriados nacionales con su traslado, el feriado local y "
+            "las suspensiones de jornada. Publicado por Morlaco."
+        ),
+        f"X-WR-TIMEZONE:{ZONA_HORARIA}",
+        "REFRESH-INTERVAL;VALUE=DURATION:P1D",
+        "X-PUBLISHED-TTL:P1D",
+        "COLOR:seagreen",
+    ]
+    for dia in sorted(feriados.get("dias", []), key=lambda d: d["fecha"]):
+        fecha = date.fromisoformat(dia["fecha"])
+        fuente = dia.get("fuente", {})
+        descripcion = "\n".join(
+            filter(
+                None,
+                [
+                    f"Fuente: {fuente.get('nombre', '')} {fuente.get('url', '')}".strip()
+                    if fuente
+                    else "",
+                    f"Consulta tu calle en Morlaco: {PAGINA}",
+                ],
+            )
+        )
+        lineas += [
+            "BEGIN:VEVENT",
+            f"UID:morlaco-feriado-{dia['fecha']}@nezusas.github.io",
+            f"DTSTAMP:{SELLO}",
+            f"DTSTART;VALUE=DATE:{fecha:%Y%m%d}",
+            f"DTEND;VALUE=DATE:{fecha + timedelta(days=1):%Y%m%d}",
+            f"SUMMARY:{escapar('📅 ' + dia['es'][:1].upper() + dia['es'][1:])}",
+            f"DESCRIPTION:{escapar(descripcion)}",
+            "TRANSP:TRANSPARENT",
+            "END:VEVENT",
+        ]
+    lineas.append("END:VCALENDAR")
+    plegadas = [trozo for linea in lineas for trozo in plegar(linea)]
+    return "\r\n".join(plegadas) + "\r\n"

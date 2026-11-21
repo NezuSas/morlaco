@@ -56,3 +56,77 @@ def test_parsear_estaciones_rechaza_respuestas_raras():
         tranvia.parsear_estaciones(b'{"error": "x"}')
     with pytest.raises(ValueError):
         tranvia.parsear_estaciones(json.dumps(FILAS[:3]).encode())
+
+
+def riel(*puntos, **etiquetas):
+    return {
+        "type": "way",
+        "tags": {"railway": "tram", **etiquetas},
+        "geometry": [{"lon": lon, "lat": lat} for lon, lat in puntos],
+    }
+
+
+# Dos vías paralelas, una por sentido (separadas unos 11 m), y un desvío al patio taller.
+RIELES = json.dumps(
+    {
+        "elements": [
+            riel((-79.03, -2.9), (-79.02, -2.9), (-79.02, -2.89), (-79.01, -2.89)),  # hacia el este
+            riel((-79.01, -2.8901), (-79.02, -2.8901), (-79.0201, -2.9001), (-79.03, -2.9001)),
+            riel((-79.02, -2.9), (-79.02, -2.95), service="yard"),
+        ]
+    }
+).encode()
+
+
+def estacion(codigo, lon, lat, **orden):
+    return {
+        "type": "Feature",
+        "properties": {"id": codigo, "nombre": codigo, "hacia": list(orden), "orden": orden},
+        "geometry": {"type": "Point", "coordinates": [lon, lat]},
+    }
+
+
+ESTACIONES = {
+    "features": [
+        estacion("A", -79.03, -2.90005, **{"Parque Industrial": 1, "Río Tarqui": 2}),
+        estacion("B", -79.01, -2.89005, **{"Parque Industrial": 2, "Río Tarqui": 1}),
+    ]
+}
+
+
+def test_recorrido_sigue_los_rieles_por_la_via_de_cada_sentido():
+    datos = tranvia.parsear_recorrido(ESTACIONES, RIELES)
+    ida, retorno = datos["features"]
+    assert (ida["properties"]["sentido"], ida["properties"]["hacia"]) == (
+        "ida",
+        "Parque Industrial",
+    )
+    assert retorno["properties"]["hacia"] == "Río Tarqui"
+    # Dobla en la esquina en vez de cortar en diagonal: unos 3,3 km, no los 2,5 km en línea recta.
+    assert 3.2 < ida["properties"]["longitud_km"] < 3.4
+    assert [-79.02, -2.9] in ida["geometry"]["coordinates"]
+    # Cada sentido va por su vía (la del retorno está 11 m al sur) y no entra al patio taller.
+    assert all(lat in (-2.9, -2.89) for _, lat in ida["geometry"]["coordinates"])
+    assert all(lat in (-2.8901, -2.9001) for _, lat in retorno["geometry"]["coordinates"])
+    assert retorno["geometry"]["coordinates"][0] == [-79.01, -2.8901]
+
+
+def test_recorrido_falla_si_una_estacion_no_tiene_riel_cerca():
+    lejos = {
+        "features": [
+            *ESTACIONES["features"][:1],
+            estacion("C", -78.95, -2.85, **{"Parque Industrial": 2, "Río Tarqui": 1}),
+        ]
+    }  # noqa: E501
+    with pytest.raises(ValueError):
+        tranvia.parsear_recorrido(lejos, RIELES)
+
+
+def test_obtener_publica_las_estaciones_aunque_falten_los_rieles():
+    def sin_rieles(url):
+        if "overpass" in url:
+            raise OSError("sin respuesta")
+        return json.dumps(FILAS).encode()
+
+    resultado = tranvia.obtener(sin_rieles)
+    assert list(resultado.archivos) == ["buses/tranvia.geojson"]

@@ -180,4 +180,19 @@ def obtener(descargar: red.Descargador = red.descargar, hoy: date | None = None)
         },
         "avisos": avisos,
     }
-    return Resultado(archivos={"agua/avisos.json": datos}, resumen={"avisos": len(avisos)})
+    archivos: dict[str, Any] = {"agua/avisos.json": datos}
+    # En la misma pasada, los otros avisos de prensa (cierres de vías y cortes de luz): son la
+    # misma API y así se revisan tan seguido como el agua. Se importa aquí porque prensa.py
+    # usa las funciones de este módulo.
+    from morlaco.fuentes import prensa
+
+    otros = prensa.obtener(descargar, hoy)
+    archivos.update(otros)
+    resumen = {"avisos": len(avisos)}
+    resumen.update(
+        {
+            ruta.split("/")[1].removesuffix(".json") + "_" + ruta.split("/")[0]: len(a["avisos"])
+            for ruta, a in otros.items()
+        }
+    )
+    return Resultado(archivos=archivos, resumen=resumen)

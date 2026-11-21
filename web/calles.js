@@ -431,3 +431,24 @@ export function ubicarEsquina(texto, indice) {
   const cruce = cruceDeCalles(buscarCalles(calles[0], indice), buscarCalles(calles[1], indice));
   return cruce ? cruce.punto : null;
 }
+
+/**
+ * Cuando una dirección no es una esquina reconocible, dónde queda más o menos: el barrio o la
+ * parroquia que nombra o, si no, la mitad de una calle suya que sea corta (en una avenida larga
+ * "la mitad" no dice nada). Devuelve { lat, lon, por: "barrio" | "calle" } o null.
+ */
+export function ubicarAproximado(texto, indice, barrios = [], maximoMetros = 1500) {
+  const escrita = ` ${palabras(texto).join(" ")} `;
+  const [barrio] = barrios
+    .map((b) => ({ b, nombre: palabras(b.nombre).join(" ") }))
+    // Un nombre muy corto ("Sucre") aparece en demasiadas direcciones como calle.
+    .filter(({ nombre }) => nombre.length >= 7 && escrita.includes(` ${nombre} `))
+    .sort((a, c) => c.nombre.length - a.nombre.length);
+  if (barrio) return { lat: barrio.b.lat, lon: barrio.b.lon, por: "barrio" };
+  for (const parte of interpretarBusqueda(texto).calles) {
+    const [calle] = buscarCalles(parte, indice, 1);
+    if (!calle || calle.sobrantes || calle.inexactas || longitudMetros(calle.feature) > maximoMetros) continue;
+    return { ...puntoMedio(calle.feature), por: "calle" };
+  }
+  return null;
+}

@@ -346,9 +346,9 @@ export function enlaceReporteDireccion(texto) {
  * Enlaces para suscribirse al calendario de recolección de una zona.
  * `base` es la dirección de la página; los .ics están en ../datos/ respecto a web/.
  */
-/** Los enlaces para suscribirse al calendario de cortes de agua (datos/agua/cortes.ics). */
-export function enlacesCalendarioAgua(base) {
-  const archivo = new URL("../datos/agua/cortes.ics", base).href;
+/** Los enlaces para suscribirse a un calendario de datos/ (agua/cortes.ics, feriados/feriados.ics…). */
+export function enlacesCalendarioAgua(base, ruta = "agua/cortes.ics") {
+  const archivo = new URL(`../datos/${ruta}`, base).href;
   const webcal = archivo.replace(/^https?:/, "webcal:");
   return { archivo, webcal, google: `https://calendar.google.com/calendar/render?cid=${encodeURIComponent(webcal)}` };
 }
@@ -483,4 +483,31 @@ export function filtrarFarmacias(farmacias, texto) {
   const buscado = normalizar(texto);
   if (!buscado) return farmacias;
   return farmacias.filter((f) => normalizar(`${f.nombre} ${f.direccion}`).includes(buscado));
+}
+
+/**
+ * Los avisos de prensa (cierres de vías, cortes de luz) que todavía vienen al caso: los que
+ * tienen fecha de hoy en adelante o, si la nota no la dice, los publicados en los últimos
+ * `dias`. Con `campo`, solo los que lo traen en true (los que citan a la empresa, por ejemplo).
+ * Del más próximo al más lejano.
+ */
+export function avisosDePrensaVigentes(datos, fecha = new Date(), { dias = 2, campo = null } = {}) {
+  const hoy = horaCuenca(fecha).fecha;
+  const limite = horaCuenca(new Date(fecha.getTime() - dias * 86_400_000)).fecha;
+  return (datos?.avisos ?? [])
+    .filter((a) => (!campo || a[campo]) && (a.fecha ? a.fecha >= hoy : (a.publicado ?? "") >= limite))
+    .sort((a, b) => (a.fecha ?? a.publicado ?? "").localeCompare(b.fecha ?? b.publicado ?? ""));
+}
+
+/**
+ * ¿Está abierto ahora un lugar cuyo horario dice "De 08:00 a 18:00"? Devuelve { abierto, abre,
+ * cierra } o null si el texto no trae un horario así (no se adivina).
+ */
+export function estadoHorario(texto, fecha = new Date()) {
+  const horas = /(\d{1,2})[:h](\d{2})\D+(\d{1,2})[:h](\d{2})/.exec(texto ?? "");
+  if (!horas) return null;
+  const abre = `${horas[1].padStart(2, "0")}:${horas[2]}`;
+  const cierra = `${horas[3].padStart(2, "0")}:${horas[4]}`;
+  const { minutos } = horaCuenca(fecha);
+  return { abierto: minutos >= aMinutos(abre) && minutos < aMinutos(cierra), abre, cierra };
 }

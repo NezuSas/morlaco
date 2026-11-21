@@ -450,3 +450,32 @@ test("avisosAguaPorConfirmar: los de ETAPA sin revisar, hasta que pasa su corte"
   assert.deepEqual(enlaces("2026-11-20T18:30:00-05:00"), ["sin-fecha", "manana"]);
   assert.deepEqual(avisosAguaPorConfirmar(null, null), []);
 });
+
+test("avisosDePrensaVigentes: los de hoy en adelante o recién publicados", async () => {
+  const { avisosDePrensaVigentes } = await import("../../web/logica.js");
+  const viernes = new Date("2026-11-13T15:00:00Z"); // 10:00 en Cuenca
+  const datos = {
+    avisos: [
+      { titulo: "pasado", fecha: "2026-11-12", publicado: "2026-11-11" },
+      { titulo: "domingo", fecha: "2026-11-15", publicado: "2026-11-13", cita: true },
+      { titulo: "hoy", fecha: "2026-11-13", publicado: "2026-11-12", cita: false },
+      { titulo: "sin fecha, de ayer", fecha: null, publicado: "2026-11-12", cita: true },
+      { titulo: "sin fecha, viejo", fecha: null, publicado: "2026-11-05", cita: true },
+    ],
+  };
+  assert.deepEqual(avisosDePrensaVigentes(datos, viernes).map((a) => a.titulo), ["sin fecha, de ayer", "hoy", "domingo"]);
+  assert.deepEqual(avisosDePrensaVigentes(datos, viernes, { campo: "cita" }).map((a) => a.titulo), ["sin fecha, de ayer", "domingo"]);
+  assert.deepEqual(avisosDePrensaVigentes(null, viernes), []);
+});
+
+test("estadoHorario: abierto o cerrado según el horario escrito", async () => {
+  const { estadoHorario } = await import("../../web/logica.js");
+  const a_las_10 = new Date("2026-11-18T15:00:00Z");
+  const a_las_19 = new Date("2026-11-19T00:00:00Z");
+  assert.deepEqual(estadoHorario("De 08:00 a 18:00", a_las_10), { abierto: true, abre: "08:00", cierra: "18:00" });
+  assert.equal(estadoHorario("De 08:00 a 18:00", a_las_19).abierto, false);
+  assert.equal(estadoHorario("De 8h00 a 13h30", a_las_10).cierra, "13:30");
+  // Sin horario reconocible no se adivina.
+  assert.equal(estadoHorario("Lunes a domingo", a_las_10), null);
+  assert.equal(estadoHorario(undefined, a_las_10), null);
+});

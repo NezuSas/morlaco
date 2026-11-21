@@ -130,3 +130,47 @@ export function leerDestino(guardado, ahora = Date.now(), horas = HORAS_DESTINO)
     return null;
   }
 }
+
+// ---------- ¿Un corte anunciado por sectores cae cerca de un punto? ----------
+
+// Palabras que acompañan al nombre y no lo distinguen ("av. González Suárez", "sector Monay").
+const GENERICAS = new Set(["av", "avenida", "calle", "sector", "barrio", "ciudadela", "cdla", "urbanizacion", "parroquia", "rio", "mercado"]);
+const sinGenericas = (texto) => palabras(texto).filter((p) => !GENERICAS.has(p)).join(" ");
+
+/** Los sectores de un aviso ("A, B y C"), uno por uno. */
+export function sectoresDeTexto(texto) {
+  return (texto ?? "")
+    .split(/\s*[,;]\s*|\s+(?:y|e|and)\s+(?=[A-ZÁÉÍÓÚÑa-z])/)
+    .map((s) => s.trim().replace(/\.$/, ""))
+    .filter(Boolean);
+}
+
+// Hasta dónde se considera "cerca": una parroquia es grande; un barrio o una calle, no.
+const CERCA_M = { parroquia: 1200, barrio: 700, calle: 250 };
+
+/**
+ * De los sectores que nombra un corte, los que quedan cerca del punto. Un sector puede ser un
+ * barrio o una parroquia (`barrios`, con su punto) o una calle (`metrosACalle(nombre)` da los
+ * metros hasta ella, o null si no la conoce). `reconocidos` cuenta los que se pudieron ubicar:
+ * si es 0, no se sabe nada y no hay que decir que el corte queda lejos.
+ */
+export function sectoresCerca(punto, texto, { barrios = [], metrosACalle = () => null } = {}) {
+  const cerca = [];
+  let reconocidos = 0;
+  for (const sector of sectoresDeTexto(texto)) {
+    const nombre = sinGenericas(sector);
+    if (!nombre) continue;
+    const barrio = barrios.find((b) => sinGenericas(b.nombre) === nombre);
+    if (barrio) {
+      reconocidos++;
+      const limite = barrio.tipo === "parroquia" ? CERCA_M.parroquia : CERCA_M.barrio;
+      if (distanciaMetros(punto, barrio) <= limite) cerca.push(sector);
+      continue;
+    }
+    const metros = metrosACalle(sector);
+    if (metros === null || metros === undefined) continue;
+    reconocidos++;
+    if (metros <= CERCA_M.calle) cerca.push(sector);
+  }
+  return { cerca, reconocidos };
+}

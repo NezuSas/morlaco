@@ -94,3 +94,24 @@ test("leerUv y leerClima: el último dato si es reciente; si no, nada", () => {
   assert.equal(leerClima({ ...clima, temperatura: 99 }, a_las_1230), null);
   assert.deepEqual(leerClima({ ...clima, humedad: null }, a_las_1230).humedad, null);
 });
+
+test("leerLluvia: desde cuándo es probable la lluvia en las próximas horas", async () => {
+  const { leerLluvia } = await import("../../web/aire.js");
+  const horas = Array.from({ length: 24 }, (_, h) => `2026-11-21T${String(h).padStart(2, "0")}:00`);
+  const respuesta = (probabilidades, mm = []) => ({ hourly: { time: horas, precipitation_probability: probabilidades, precipitation: mm } });
+  const a_las_1010 = new Date("2026-11-21T15:10:00Z"); // 10:10 en Cuenca
+  const seca = Array(24).fill(10);
+  assert.deepEqual(leerLluvia(respuesta(seca), a_las_1010), { desde: null, probabilidad: 10, ahora: false });
+  // Probable a las 15:00: se dice desde cuándo y con qué probabilidad.
+  const tarde = seca.with(15, 70).with(16, 90);
+  assert.deepEqual(leerLluvia(respuesta(tarde), a_las_1010), { desde: "15:00", probabilidad: 70, ahora: false });
+  // Ya en esta hora.
+  assert.deepEqual(leerLluvia(respuesta(seca.with(10, 80)), a_las_1010), { desde: "10:00", probabilidad: 80, ahora: true });
+  // Con poca probabilidad pero agua prevista por el modelo, también cuenta.
+  assert.equal(leerLluvia(respuesta(seca, Array(24).fill(0).with(12, 1.2)), a_las_1010).desde, "12:00");
+  // Lo que pase más allá de ocho horas no entra; y la lluvia de la mañana ya pasó.
+  assert.equal(leerLluvia(respuesta(seca.with(22, 95).with(8, 95)), a_las_1010).desde, null);
+  // Sin las horas de hoy (respuesta vieja o rota), nada.
+  assert.equal(leerLluvia(respuesta(seca), new Date("2026-11-25T15:10:00Z")), null);
+  assert.equal(leerLluvia(null), null);
+});

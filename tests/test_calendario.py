@@ -160,3 +160,23 @@ def test_calendario_agua_no_repite_identificadores():
     ics = calendario.calendario_agua({"cortes": [corte, {**corte, "es": {"sectores": "B"}}]})
     uids = [linea for linea in ics.split("\r\n") if linea.startswith("UID:")]
     assert len(uids) == len(set(uids)) == 2
+
+
+def test_calendario_feriados_un_evento_de_dia_entero_por_fecha():
+    feriados = {
+        "dias": [
+            {
+                "fecha": "2027-01-01",
+                "es": "año Nuevo",
+                "fuente": {"nombre": "Decreto", "url": "https://x.ec"},
+            },
+            {"fecha": "2026-12-25", "es": "Navidad"},
+        ]
+    }
+    ics = calendario.calendario_feriados(feriados)
+    navidad, anio = eventos(ics)
+    assert navidad["DTSTART;VALUE=DATE"] == "20261225" and navidad["DTEND;VALUE=DATE"] == "20261226"
+    assert navidad["UID"] == "morlaco-feriado-2026-12-25@nezusas.github.io"
+    assert anio["SUMMARY"].endswith("Año Nuevo")  # con mayúscula inicial
+    assert "Decreto" in anio["DESCRIPTION"]
+    assert all(len(linea.encode()) <= 75 for linea in ics.split("\r\n"))

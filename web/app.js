@@ -9,6 +9,8 @@ import {
   CORREO_AVISOS,
   cercanosPorTipo,
   avisosAguaPorConfirmar,
+  avisosDePrensaVigentes,
+  estadoHorario,
   cortesAgua,
   enlaceCorreoAviso,
   enlaceReporteDireccion,
@@ -41,12 +43,14 @@ import {
 import {
   buscarCalles,
   cruceDeCalles,
+  distanciaALinea as distanciaACalle,
   esquinaCercana,
   interpretarBusqueda,
   longitudMetros,
   prepararIndice,
   puntoMedio,
   sugerirCalles,
+  ubicarAproximado,
   ubicarEsquina,
 } from "./calles.js";
 import {
@@ -66,7 +70,7 @@ import { alarguesUnidos, paradasDeRecorrido, planificar, prepararLineas } from "
 import { proximosDeLinea } from "./vehiculos.js";
 import { SVG_BICI, crearMapa } from "./mapa.js";
 import { minutosAlProximo } from "./vehiculos.js";
-import { PAGINA_AIRE, URL_AIRE, URL_CLIMA, URL_UV, aireCercano, leerAire, leerClima, leerUv } from "./aire.js";
+import { PAGINA_AIRE, PAGINA_LLUVIA, URL_AIRE, URL_CLIMA, URL_LLUVIA, URL_UV, aireCercano, leerAire, leerClima, leerLluvia, leerUv } from "./aire.js";
 import {
   LUGARES,
   cambiarLugar,
@@ -75,6 +79,7 @@ import {
   leerLugares,
   lugarDe,
   lugarPorNombre,
+  sectoresCerca,
   sugerirLugares,
   textoDeDestino,
   textoDeLugar,
@@ -91,6 +96,7 @@ const CLAVE_ULTIMO_PUNTO = "morlaco:ultimo-punto";
 const CLAVE_LUGARES = "morlaco:lugares";
 const CLAVE_IDIOMA = "morlaco:idioma";
 const CLAVE_DESTINO = "morlaco:destino";
+const CLAVE_MI_LINEA = "morlaco:mi-linea";
 const SIN_MOVIMIENTO = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const $ = (id) => document.getElementById(id);
@@ -415,6 +421,168 @@ function pintarBasura(zona, rural) {
 
 
 /** "Cerca de ti": la WiFi gratis, el mercado, el punto de pilas y la Guardia Ciudadana más cercanos. */
+/**
+ * Lo primero de "Cerca de ti": a quién llamar en una emergencia y dónde queda la atención de
+ * salud más cercana (datos/ciudad/salud.json, de OpenStreetMap).
+ */
+function pintarSalud(punto, salud, mapa) {
+  const mas = (tipo) =>
+    (salud?.lugares ?? [])
+      .filter((l) => l.tipo === tipo)
+      .map((l) => ({ ...l, metros: Math.round(distanciaMetros(punto, l)) }))
+      .sort((a, b) => a.metros - b.metros)[0];
+  const filas = [
+    [t("saludEmergencias"), mas("emergencias")],
+    [t("saludCentro"), mas("centro_salud")],
+  ].filter(([, lugar]) => lugar);
+  $("salud").replaceChildren(
+    // Una tarjeta tranquila, como las del resumen: el rojo solo en el ícono y en el botón.
+    elemento(
+      "div",
+      { class: "emergencia" },
+      elemento("span", { class: "emergencia-icono", "aria-hidden": "true" }, icono("#i-telefono")),
+      elemento("span", { class: "emergencia-texto" }, elemento("strong", {}, t("emergenciaTitulo")), elemento("span", {}, t("emergenciaTexto"))),
+      elemento("a", { class: "boton-llamar-911", href: "tel:911", "aria-label": t("emergenciaLlamarAria") }, t("emergenciaLlamar")),
+    ),
+    filas.length
+      ? listaDeLugares(
+          filas.map(([etiqueta, lugar]) => ({ ...lugar, etiqueta, tipoMapa: "salud", tipoSalud: lugar.tipo, llamar: lugar.telefono })),
+          mapa,
+        )
+      : null,
+    filas.length ? elemento("p", { class: "detalle" }, t("saludNota")) : null,
+  );
+}
+
+/**
+ * Lo que se marca siempre en el mapa alrededor de la calle: los dos mercados más cercanos (a
+ * menos de 2 km) y el hospital con emergencias y el centro de salud más cercanos (a menos de
+ * 4 km). Lejos de todo no se marca nada: en el mapa no se vería y solo confundiría.
+ */
+function lugaresCercanos(punto, cerca, salud) {
+  const conDistancia = (lugar) => ({ ...lugar, metros: distanciaMetros(punto, lugar) });
+  const porCercania = (a, b) => a.metros - b.metros;
+  const mercados = (cerca?.features ?? [])
+    .filter((f) => f.properties.tipo === "mercado")
+    .map((f) => conDistancia({ nombre: f.properties.nombre, lon: f.geometry.coordinates[0], lat: f.geometry.coordinates[1] }))
+    .filter((m) => m.metros <= 2000)
+    .sort(porCercania)
+    .slice(0, 2)
+    .map((m) => ({ ...m, tipo: "mercado", texto: t("mercadoMapa", { nombre: m.nombre }) }));
+  const deSalud = (tipo) =>
+    (salud?.lugares ?? [])
+      .filter((l) => l.tipo === tipo)
+      .map(conDistancia)
+      .filter((l) => l.metros <= 4000)
+      .sort(porCercania)
+      .slice(0, 1)
+      .map((l) => ({ ...l, tipo: "salud", tipoSalud: tipo, texto: t(tipo === "emergencias" ? "saludMapaEmergencias" : "saludMapa", { nombre: l.nombre }) }));
+  return [...mercados, ...deSalud("emergencias"), ...deSalud("centro_salud")];
+}
+
+/**
+ * Una lista de lugares (mercados, salud) donde cada fila se toca: el mapa va hasta el lugar y,
+ * solo en esa fila, aparece "Cómo llegar". Así la lista no repite el mismo enlace veinte veces.
+ */
+function listaDeLugares(lugares, mapa, { detalle = () => null } = {}) {
+  const botones = [];
+  return elemento(
+    "ul",
+    { class: "lugares-lista" },
+    ...lugares.map((lugar) => {
+      const extra = elemento(
+        "div",
+        { class: "lugar-extra", hidden: "" },
+        elemento("a", { href: `https://www.google.com/maps/dir/?api=1&destination=${lugar.lat},${lugar.lon}`, target: "_blank", rel: "noopener" }, t("comoLlegar")),
+      );
+      const boton = elemento(
+        "button",
+        { type: "button", class: "lugar-fila", "aria-pressed": "false", "aria-label": t("verEnMapaDe", { lugar: lugar.nombre }) },
+        elemento(
+          "span",
+          { class: "cerca-texto" },
+          lugar.etiqueta ? elemento("span", { class: "cerca-tipo" }, lugar.etiqueta) : null,
+          elemento("strong", {}, lugar.nombre),
+          lugar.direccion && lugar.direccion !== lugar.nombre ? elemento("span", { class: "frecuencia" }, lugar.direccion) : null,
+          detalle(lugar),
+        ),
+        elemento("span", { class: "metros" }, formatoDistancia(lugar.metros)),
+      );
+      boton.addEventListener("click", () => {
+        const yaEstaba = boton.getAttribute("aria-pressed") === "true";
+        for (const b of botones) {
+          b.setAttribute("aria-pressed", "false");
+          b.parentElement.querySelector(".lugar-extra").hidden = true;
+        }
+        if (yaEstaba) return;
+        boton.setAttribute("aria-pressed", "true");
+        extra.hidden = false;
+        mapa?.verLugar({ nombre: lugar.nombre, lat: lugar.lat, lon: lugar.lon, tipo: lugar.tipoMapa, tipoSalud: lugar.tipoSalud });
+        verMapaEnCelular();
+      });
+      botones.push(boton);
+      const llamar = lugar.llamar ? botonLlamar(lugar.llamar, lugar.nombre) : null;
+      if (llamar) extra.append(llamar);
+      return elemento("li", {}, boton, extra);
+    }),
+  );
+}
+
+/**
+ * Todos los mercados municipales, del más cercano al más lejano. Si todos tienen el mismo
+ * horario (hoy es así), se dice una vez arriba, con si están abiertos ahora, en vez de en cada fila.
+ */
+function pintarMercados(punto, coleccion, mapa) {
+  const caja = $("mercados");
+  const mercados = (coleccion?.features ?? [])
+    .filter((f) => f.properties.tipo === "mercado")
+    .map((f) => ({ ...f.properties, lon: f.geometry.coordinates[0], lat: f.geometry.coordinates[1], tipoMapa: "mercado" }))
+    .map((m) => ({ ...m, metros: Math.round(distanciaMetros(punto, m)) }))
+    .sort((a, b) => a.metros - b.metros);
+  if (!mercados.length) return caja.replaceChildren();
+  const horarioDe = (m) => m.horario?.[idioma()] ?? m.horario?.es ?? "";
+  const comun = mercados.every((m) => horarioDe(m) === horarioDe(mercados[0])) ? horarioDe(mercados[0]) : null;
+  const estadoComun = comun ? estadoHorario(mercados[0].horario?.es) : null;
+  const estado = (texto) =>
+    texto ? elemento("strong", { class: texto.abierto ? "abierto" : "cerrado" }, t(texto.abierto ? "abiertosAhora" : "cerradosAhora")) : null;
+  caja.replaceChildren(
+    elemento("h3", { class: "subtitulo" }, t("mercadosTitulo")),
+    comun ? elemento("p", { class: "mercados-horario" }, estado(estadoComun), estadoComun ? " · " : "", (estadoComun ? (x) => x : enMayuscula)(t("mercadosHorarioComun", { horario: comun.toLowerCase() }))) : null,
+    elemento(
+      "details",
+      { class: "plegable" },
+      elemento("summary", {}, t("mercadosVer", { n: mercados.length })),
+      listaDeLugares(mercados, mapa, {
+        // Solo si su horario es distinto del de todos.
+        detalle: (m) => (comun ? null : horarioDe(m) ? elemento("span", { class: "frecuencia" }, horarioDe(m)) : null),
+      }),
+      elemento("p", { class: "detalle" }, t("mercadosNota")),
+    ),
+  );
+}
+
+/** Las páginas oficiales para trámites y pagos (datos/manual/tramites.json). */
+function pintarTramites(datos) {
+  const lista = datos?.tramites ?? [];
+  if (!lista.length) return $("tramites").replaceChildren();
+  $("tramites").replaceChildren(
+    elemento("h3", { class: "subtitulo" }, t("tramitesTitulo")),
+    elemento(
+      "ul",
+      { class: "tramites-lista" },
+      ...lista.map((tramite) =>
+        elemento(
+          "li",
+          {},
+          elemento("a", { href: tramite.url, target: "_blank", rel: "noopener" }, tramite.entidad),
+          elemento("span", { class: "frecuencia" }, tramite[idioma()] ?? tramite.es),
+        ),
+      ),
+    ),
+    elemento("p", { class: "detalle" }, t("tramitesNota")),
+  );
+}
+
 function pintarCerca(punto, coleccion) {
   const lista = $("cerca-lista");
   const nota = $("cerca-nota");
@@ -467,6 +635,32 @@ function cuandoAviso(aviso) {
   if (aviso.fecha && aviso.desde && aviso.hasta) return t("aguaHorario", { dia: fechaDia(aviso.fecha), desde: aviso.desde, hasta: horaLegible(aviso.hasta) });
   if (aviso.fecha) return fechaDia(aviso.fecha);
   return t("aguaPublicado", { dia: fechaDia(aviso.publicado) });
+}
+
+/**
+ * Avisos de la prensa sin revisar (cierres de vías, cortes de luz), en su caja: cuándo, el
+ * título de la nota y el enlace para leerla. Sin avisos, la caja se esconde.
+ */
+function pintarAvisosDePrensa(caja, avisos, { titulo, nota }) {
+  caja.hidden = !avisos.length;
+  if (!avisos.length) return caja.replaceChildren();
+  caja.replaceChildren(
+    elemento("h3", { class: "subtitulo" }, titulo),
+    elemento(
+      "ul",
+      { class: "cortes" },
+      ...avisos.map((a) =>
+        elemento(
+          "li",
+          {},
+          elemento("span", { class: "horario" }, enMayuscula(cuandoAviso(a))),
+          a.titulo,
+          elemento("span", { class: "frecuencia" }, elemento("a", { href: a.enlace, target: "_blank", rel: "noopener" }, t("aguaLeerNota"))),
+        ),
+      ),
+    ),
+    elemento("p", { class: "detalle" }, nota),
+  );
 }
 
 /** Los avisos que citan a ETAPA y nadie ha revisado: se muestran, pero diciendo que falta confirmarlos. */
@@ -575,6 +769,16 @@ function pintarBasuraManual(basura, diasFeriado) {
   } else if (vigente) {
     aviso.append(feriados[idioma()] ?? feriados.es);
   }
+
+  // Suscribirse a los días de descanso, como a la basura y al agua.
+  const enlaces = enlacesCalendarioAgua(location.href, "feriados/feriados.ics");
+  $("feriados-calendario").replaceChildren(
+    t("feriadosCalendario"),
+    " ",
+    elemento("a", { href: enlaces.google, target: "_blank", rel: "noopener" }, "Google Calendar"),
+    " · ",
+    elemento("a", { href: enlaces.webcal }, t("calendarioApple")),
+  );
 
   const destinos = basura?.donde_llevar ?? [];
   const caja = $("donde-llevar");
@@ -770,7 +974,7 @@ function pintarFarmacias(datos, punto, alUbicar = () => {}, alMapa = () => {}, v
           elemento("strong", {}, f.nombre),
           elemento("span", {}, f.direccion),
           f.metros !== null
-            ? elemento("span", { class: "frecuencia" }, t("aproximado", { distancia: formatoDistancia(f.metros) }))
+            ? elemento("span", { class: "frecuencia" }, t(f.porZona ? "aproximadoZona" : "aproximado", { distancia: formatoDistancia(f.metros) }))
             : null,
           f.lugar
             ? elemento(
@@ -823,12 +1027,14 @@ function pintarFarmacias(datos, punto, alUbicar = () => {}, alMapa = () => {}, v
 
   // Orden por cercanía: necesita el índice de calles (se descarga una vez y queda guardado).
   if (punto) {
-    cargarIndiceCalles()
-      .then((indice) => {
+    Promise.all([cargarIndiceCalles(), cargarBarrios()])
+      .then(([indice, barrios]) => {
         lista = lista
           .map((f) => {
-            const lugar = ubicarEsquina(f.direccion, indice);
-            return { ...f, lugar, metros: lugar ? Math.round(distanciaMetros(punto, lugar)) : null };
+            // La esquina exacta o, si la dirección no la da, el barrio o la calle que nombra.
+            const esquina = ubicarEsquina(f.direccion, indice);
+            const lugar = esquina ?? ubicarAproximado(f.direccion, indice, barrios);
+            return { ...f, lugar, porZona: !esquina && Boolean(lugar), metros: lugar ? Math.round(distanciaMetros(punto, lugar)) : null };
           })
           .sort((a, b) => (a.metros ?? Infinity) - (b.metros ?? Infinity));
         if (lista.some((f) => f.metros !== null)) orden.hidden = false;
@@ -848,25 +1054,71 @@ function pintarFarmacias(datos, punto, alUbicar = () => {}, alMapa = () => {}, v
   }
 }
 
-function pintarParadas(cercanas) {
+// Una parada "tiene" una línea si su recorrido pasa a menos de esto.
+const LINEA_EN_PARADA_M = 35;
+
+/**
+ * Qué buses pasan por una parada y cuándo llega el próximo de cada uno (en su sentido que
+ * pasa por ahí): [{ linea, hacia, minutos }], los que llegan antes primero. Es la misma
+ * estimación por frecuencia que en la lista de líneas.
+ */
+function proximosEnParada(parada, lineas, rutas) {
+  if (!lineas) return [];
+  const punto = { lat: parada.lat, lon: parada.lon };
+  return lineasCercanas(punto, lineas, rutas, { maximoMetros: LINEA_EN_PARADA_M })
+    .filter((l) => l.tipo !== "tranvia" && l.horarios)
+    .flatMap((l) => proximosDeLinea(punto, l.trazados, l.horarios, { maximoMetros: LINEA_EN_PARADA_M }).map((p) => ({ linea: l.linea, ...p })))
+    .filter((p) => p.minutos !== null)
+    .sort((a, b) => a.minutos - b.minutos);
+}
+
+function pintarParadas(cercanas, { lineas = null, rutas = [] } = {}) {
   const lista = $("paradas");
   if (!cercanas.length) {
     lista.replaceChildren(
       elemento("li", { class: "sin-numero" }, t("paradasNinguna")),
     );
-  } else {
-    lista.replaceChildren(
-      ...cercanas.map((p) =>
-        elemento(
-          "li",
-          {},
-          elemento("span", {}, nombreParada(p)),
-          elemento("span", { class: "metros" }, formatoDistancia(p.metros)),
-        ),
-      ),
-    );
+    return;
   }
+  lista.replaceChildren(
+    ...cercanas.map((p) => {
+      // Debajo de cada parada, los próximos buses: se recalculan con la lista de líneas.
+      const proximos = elemento("span", { class: "proximos" });
+      const poner = () => {
+        const vienen = proximosEnParada(p, lineas, rutas).slice(0, 4);
+        proximos.replaceChildren(
+          ...vienen.map((v) =>
+            elemento("span", { class: "proximo" }, t("paradaLinea", { linea: v.linea, destino: v.hacia }), ": ", elemento("strong", {}, cuandoPasa(v.minutos))),
+          ),
+        );
+        proximos.hidden = !vienen.length;
+      };
+      poner();
+      paradasProximos.push(poner);
+      return elemento(
+        "li",
+        {},
+        elemento("span", { class: "parada-texto" }, elemento("span", {}, nombreParada(p)), proximos),
+        elemento("span", { class: "metros" }, formatoDistancia(p.metros)),
+      );
+    }),
+  );
 }
+// Los minutos de las paradas envejecen como los de las líneas: se rehacen cada medio minuto.
+let paradasProximos = [];
+
+// Sin conexión, de cuándo son los datos guardados: "de hace 3 horas" dice más que "los últimos".
+let ultimaActualizacion = null;
+function pintarSinConexion() {
+  const aviso = $("sin-conexion");
+  if (!ultimaActualizacion || Number.isNaN(ultimaActualizacion.getTime())) return;
+  const horas = Math.max(0, (Date.now() - ultimaActualizacion.getTime()) / 3_600_000);
+  const hace = horas < 1 ? t("haceMenosDeUnaHora") : horas < 48 ? t("haceHoras", { n: Math.round(horas) }) : t("haceDias", { n: Math.round(horas / 24) });
+  aviso.textContent = t("sinConexionDesde", { hace });
+}
+// El destino de la ruta que se está mirando, tal como se compartiría (?ir=…).
+let rutaCompartible = null;
+setInterval(() => !document.hidden && paradasProximos.forEach((poner) => poner()), 30_000);
 
 let recorridosOficiales = null;
 let datosTranvia = null; // el tranvía en datos/manual/transporte.json: frecuencia y horario
@@ -880,9 +1132,9 @@ let paradasRegistradas = null; // datos/buses/paradas.geojson, para dibujar las 
 async function pintarPasaPor(nodo, linea) {
   const principales = linea.trazados.filter((f) => f.properties.tipo !== "alargue");
   const nombres = new Set(principales.flatMap((f) => paradasDeRecorrido(f, paradasRegistradas).map((p) => p.id)));
-  const partes = nombres.size ? [elemento("p", {}, t("paradasEnMapa", { n: nombres.size }))] : [];
+  const partes = [botonMiLinea(linea), ...(nombres.size ? [elemento("p", {}, t("paradasEnMapa", { n: nombres.size }))] : [])];
   nodo.replaceChildren(...partes);
-  nodo.hidden = !partes.length;
+  nodo.hidden = false;
   try {
     recorridosOficiales ??= cargarJson("buses/recorridos.json");
     const { recorridos } = await recorridosOficiales;
@@ -1036,10 +1288,75 @@ function proximosDe(punto, trazados, horarios, velocidadKmH) {
   return caja;
 }
 
+// ---------- Mi línea ----------
+// La línea que la persona marca como suya sale arriba del resumen, con su próximo bus, cada
+// vez que consulta una calle por donde pasa. Se guarda solo en el dispositivo.
+let contextoLineas = null; // lo último que pintó la lista: de ahí sale "mi línea"
+
+function pintarMiLinea() {
+  const caja = $("mi-linea");
+  const mia = leer(CLAVE_MI_LINEA);
+  const { cercanas, punto, transporte, estaciones } = contextoLineas ?? {};
+  const linea = mia ? cercanas?.find((l) => l.linea === mia) : null;
+  const esTranvia = linea?.tipo === "tranvia";
+  const delTranvia = esTranvia ? horarioTranvia(transporte?.tranvia) : null;
+  const trazados = esTranvia ? trazadosTranvia(estaciones) : linea?.trazados;
+  const horarios = esTranvia ? delTranvia && { ida: delTranvia, retorno: delTranvia } : linea?.horarios;
+  const calcular = () =>
+    linea && punto && trazados && horarios
+      ? proximosDeLinea(punto, trazados, horarios, { velocidadKmH: esTranvia ? transporte?.tranvia?.velocidad_kmh : undefined })
+      : [];
+  if (!calcular().length) {
+    caja.hidden = true;
+    caja.replaceChildren();
+    ponerFrase("bus", null);
+    return;
+  }
+  const nombre = esTranvia ? t("tranvia") : t("linea", { linea: linea.linea });
+  const lista = elemento("span", { class: "proximos" });
+  const poner = () => {
+    const proximos = calcular();
+    lista.replaceChildren(
+      ...proximos.map((p) => elemento("span", { class: "proximo" }, t("sentidoHacia", { destino: p.hacia }), ": ", elemento("strong", {}, cuandoPasa(p.minutos)))),
+    );
+    // En la frase del día, el que llega antes.
+    const antes = proximos.filter((p) => p.minutos !== null).sort((a, b) => a.minutos - b.minutos)[0];
+    ponerFrase("bus", antes ? t("fraseBus", { linea: nombre, cuando: cuandoPasa(antes.minutos), destino: antes.hacia }) : t("fraseBusNo", { linea: nombre }));
+  };
+  poner();
+  ponerProximos.push(poner);
+  caja.replaceChildren(
+    elemento("span", { class: `numero-linea${esTranvia ? " tranvia" : ""}`, "aria-hidden": "true" }, esTranvia ? "T" : linea.linea),
+    elemento("span", { class: "mi-linea-texto" }, elemento("strong", {}, t("miLinea", { linea: nombre })), lista),
+  );
+  caja.hidden = false;
+}
+
+/** El botón para marcar (o desmarcar) una línea como la propia, en el detalle de la línea. */
+function botonMiLinea(linea) {
+  const boton = elemento("button", { type: "button", class: "secundario mi-linea-boton" });
+  const pintar = () => {
+    const mia = leer(CLAVE_MI_LINEA) === linea.linea;
+    boton.setAttribute("aria-pressed", String(mia));
+    boton.textContent = t(mia ? "miLineaQuitar" : "miLineaPoner");
+  };
+  boton.addEventListener("click", () => {
+    if (leer(CLAVE_MI_LINEA) === linea.linea) borrar(CLAVE_MI_LINEA);
+    else guardar(CLAVE_MI_LINEA, linea.linea);
+    pintar();
+    pintarMiLinea();
+  });
+  pintar();
+  return boton;
+}
+
 /** Lista de líneas cercanas; al tocar una se resalta su recorrido en el mapa. */
 function pintarLineas(cercanas, mapa, { punto, transporte, estaciones } = {}) {
   const lista = $("lineas");
   const nota = $("lineas-nota");
+  // Sin líneas cerca (o sin datos) tampoco hay "tu línea" que mostrar.
+  contextoLineas = null;
+  pintarMiLinea();
   if (cercanas === null) {
     lista.replaceChildren(elemento("li", { class: "sin-lineas" }, t("lineasError")));
     nota.textContent = "";
@@ -1052,6 +1369,8 @@ function pintarLineas(cercanas, mapa, { punto, transporte, estaciones } = {}) {
   }
   const botones = [];
   ponerProximos = [];
+  contextoLineas = { cercanas, punto, transporte, estaciones };
+  pintarMiLinea();
   // El tranvía, con su recorrido por estaciones y su propio horario.
   const trazosTranvia = trazadosTranvia(estaciones);
   const delTranvia = horarioTranvia(transporte?.tranvia);
@@ -1244,11 +1563,34 @@ function pintarAireCuenca(estaciones, { clima = null } = {}) {
 const enMayuscula = (texto) => texto.charAt(0).toUpperCase() + texto.slice(1);
 
 /** Las cuatro fichas de "Hoy en tu calle". Devuelve cómo actualizar la de farmacias. */
+// ---------- Lo de hoy, en una frase ----------
+// Cada parte (la basura, el agua, tu línea, el sol, la lluvia) llega a su tiempo: la frase se
+// vuelve a armar con las que haya, siempre en el mismo orden.
+const ORDEN_FRASE = ["feriado", "basura", "agua", "luz", "vias", "bus", "lluvia", "sol"];
+let partesFrase = {};
+function ponerFrase(clave, texto) {
+  if (texto) partesFrase[clave] = texto;
+  else delete partesFrase[clave];
+  const partes = ORDEN_FRASE.map((c) => partesFrase[c]).filter(Boolean);
+  $("resumen-frase").hidden = !partes.length;
+  $("resumen-frase").textContent = partes.join(" ");
+}
+
 function pintarResumen({ zona, suspensiones, turnos, cercanas }) {
   const fichas = [];
 
   const p = zona?.properties;
   const proxima = p ? proximaRecoleccion(p) : null;
+  ponerFrase(
+    "basura",
+    !proxima
+      ? null
+      : proxima.estado === "ahora"
+        ? t("fraseBasuraAhora", { hasta: horaLegible(proxima.hasta) })
+        : proxima.estado === "hoy"
+          ? t("fraseBasuraHoy", { desde: proxima.desde, hasta: horaLegible(proxima.hasta) })
+          : t("fraseBasuraNo"),
+  );
   fichas.push(
     ficha(
       "basura",
@@ -1333,11 +1675,20 @@ const nombreContaminante = (clave) => {
  * "Aire hoy": un renglón en el resumen y su sección, con la estación de la EMOV más cercana.
  * Sin dato reciente (o sin conexión con la EMOV) no se muestra nada.
  */
-function pintarAire(estacion, { uv = null, clima = null } = {}) {
+function pintarAire(estacion, { uv = null, clima = null, lluvia = null } = {}) {
   $("resumen").querySelector(".ficha-aire")?.remove();
   // De noche el índice UV es 0 y no dice nada: se deja solo la temperatura.
   if (uv && !(uv.valor > 0)) uv = null;
-  const hay = Boolean(estacion || uv || clima);
+  // ¿Llevo paraguas? La lluvia de las próximas horas, en la frase del día y en su sección.
+  const textoLluvia = !lluvia
+    ? null
+    : lluvia.desde === null
+      ? t("lluviaNo")
+      : lluvia.ahora
+        ? t("lluviaAhora", { probabilidad: lluvia.probabilidad })
+        : t("lluviaDesde", { hora: lluvia.desde, probabilidad: lluvia.probabilidad });
+  ponerFrase("lluvia", textoLluvia);
+  const hay = Boolean(estacion || uv || clima || lluvia);
   $("s-aire").hidden = !hay;
   $("nav-aire").hidden = !hay;
   if (!hay) return;
@@ -1363,6 +1714,8 @@ function pintarAire(estacion, { uv = null, clima = null } = {}) {
     : mandaElSol
       ? [t("resumenAireCon", { nivel: t("aireNiveles")[estacion.nivel - 1].toLowerCase(), valor: estacion.valor, estacion: estacion.nombre }), temperatura].filter(Boolean).join(". ")
       : [t("resumenAire", { valor: estacion.valor, estacion: estacion.nombre }), extras].filter(Boolean).join(". ");
+  // En la frase del día, el sol solo cuando hay que cuidarse de él.
+  ponerFrase("sol", uv && uv.nivel >= 3 ? t("fraseSol", { nivel: nivelUv.toLowerCase(), valor: uv.valor }) : null);
   const gravedad = Math.max(gravedadAire, gravedadUv);
   const estado = gravedad === 1 ? "ok" : gravedad === 2 ? "atencion" : gravedad >= 3 ? "alerta" : null;
   const { li } = ficha("aire", valorFicha, detalleFicha, { aviso: gravedad >= 3, estado });
@@ -1370,6 +1723,13 @@ function pintarAire(estacion, { uv = null, clima = null } = {}) {
   $("resumen").append(li);
 
   const bloquesSol = [];
+  if (lluvia) {
+    bloquesSol.push(
+      elemento("h3", { class: "subtitulo" }, t("lluviaTitulo")),
+      elemento("p", { class: "luz-resumen" }, textoLluvia),
+      elemento("p", { class: "detalle" }, t("lluviaFuente"), elemento("a", { href: PAGINA_LLUVIA, target: "_blank", rel: "noopener" }, "Open-Meteo"), "."),
+    );
+  }
   if (uv) {
     bloquesSol.push(
       elemento("h3", { class: "subtitulo" }, t("uvTitulo")),
@@ -1633,12 +1993,13 @@ function textoCuando(opcion, transporte) {
   if (opcion.fueraDeHorario) {
     cuando.push(t("rutaFueraHorario"));
     // De madrugada, antes del primer bus: se dice a qué hora empieza a pasar.
-    const faltan = primero && primero.tipo !== "tranvia" && !primero.variante ? minutosAlProximo(primero.horario, primero.largo, primero.metrosSubida) : null;
+    const faltan = primero && primero.horario && !primero.variante ? minutosAlProximo(primero.horario, primero.largo, primero.metrosSubida, undefined, primero.velocidad) : null;
     if (faltan !== null && faltan > 1.5) cuando.push(t("rutaPrimeroHora", { hora: horaDentroDe(faltan) }));
-  } else if (primero?.tipo === "tranvia") {
+  } else if (primero?.tipo === "tranvia" && !primero.horario) {
+    // Sin su horario no se estima cuándo pasa: se dice solo la frecuencia.
     cuando.push(minutosTranvia ? t("rutaTranviaCada", { minutos: minutosTranvia }) : t("rutaTranviaHorario"));
   } else if (primero) {
-    const faltan = primero.variante ? null : minutosAlProximo(primero.horario, primero.largo, primero.metrosSubida);
+    const faltan = primero.variante ? null : minutosAlProximo(primero.horario, primero.largo, primero.metrosSubida, undefined, primero.velocidad);
     if (faltan !== null) {
       cuando.push(
         faltan < 1.5 ? t("rutaProximoYa") : faltan > 60 ? t("rutaProximoHora", { hora: horaDentroDe(faltan) }) : t("rutaProximo", { minutos: Math.round(faltan) }),
@@ -1842,7 +2203,7 @@ function autocompletar(campo, lista, alCompletar) {
           "li",
           { id: `${lista.id}-${i}`, role: "option", "aria-selected": "false" },
           sugerencia.nombre,
-          sugerencia.lugar ? elemento("span", { class: "tipo-sugerencia" }, t("sugerenciaLugar")) : null,
+          sugerencia.lugar ? elemento("span", { class: "tipo-sugerencia" }, t(sugerencia.lugar.barrio ? "sugerenciaBarrio" : "sugerenciaLugar")) : null,
         );
         // mousedown sin efecto: así el campo no pierde el foco antes del clic.
         li.addEventListener("mousedown", (evento) => evento.preventDefault());
@@ -1927,9 +2288,60 @@ const LARGO_MAXIMO_SIN_CRUCE = 600;
 let lugaresConocidos = null;
 
 /** La lista de lugares conocidos, pedida una vez; vacía si no se puede leer. */
+let barriosCargados = null;
+/** Los barrios, parroquias y urbanizaciones (datos/ciudad/barrios.json); sin ellos, ninguno. */
+function cargarBarrios() {
+  barriosCargados ??= cargarJson("ciudad/barrios.json")
+    .then((d) => d.barrios ?? [])
+    .catch(() => {
+      barriosCargados = null;
+      return [];
+    });
+  return barriosCargados;
+}
+
+/**
+ * Marca, en la lista de cortes de agua, los que nombran un sector o una calle cerca del punto
+ * (y devuelve esos sectores del primero). Es una ayuda, no una certeza: los avisos nombran los
+ * sectores a su manera y no todos se pueden ubicar.
+ */
+async function marcarCortesCerca(punto, cortes) {
+  if (!cortes.length) return [];
+  const [barrios, indice] = await Promise.all([cargarBarrios(), cargarIndiceCalles().catch(() => null)]);
+  const metrosACalle = (nombre) => {
+    if (!indice) return null;
+    const [calle] = buscarCalles(nombre, indice, 1);
+    // Solo si el nombre encaja entero: un parecido lejano no es la calle del aviso.
+    return calle && !calle.sobrantes && !calle.inexactas ? distanciaACalle(punto, calle.feature.geometry) : null;
+  };
+  const filas = [...document.querySelectorAll("#agua-estado .cortes > li")];
+  let delPrimero = [];
+  cortes.forEach((corte, i) => {
+    const texto = corte[idioma()] ?? corte.es;
+    const { cerca, reconocidos } = sectoresCerca(punto, texto.sectores, { barrios, metrosACalle });
+    if (i === 0) delPrimero = cerca;
+    filas[i]?.querySelector(".corte-cerca")?.remove();
+    if (!reconocidos) return;
+    filas[i]?.append(
+      elemento(
+        "span",
+        { class: `corte-cerca${cerca.length ? " toca" : ""}` },
+        cerca.length ? t("aguaCerca", { sectores: listar(cerca) }) : t("aguaLejos"),
+      ),
+    );
+  });
+  return delPrimero;
+}
+
 async function cargarLugaresConocidos() {
-  lugaresConocidos ??= cargarJson("manual/lugares.json")
-    .then((d) => d.lugares ?? [])
+  // Los lugares conocidos (terminal, mercados…) y, después, los barrios, parroquias y
+  // urbanizaciones de OpenStreetMap: así "Totoracocha" o "El Vecino" también se encuentran.
+  lugaresConocidos ??= Promise.all([cargarJson("manual/lugares.json"), cargarBarrios()])
+    .then(([d, barrios]) => {
+      const conocidos = d.lugares ?? [];
+      const nombres = new Set(conocidos.map((l) => l.nombre.toLowerCase()));
+      return [...conocidos, ...barrios.filter((b) => !nombres.has(b.nombre.toLowerCase())).map((b) => ({ ...b, barrio: true }))];
+    })
     .catch(() => {
       lugaresConocidos = null; // se reintenta la próxima vez
       return [];
@@ -2076,7 +2488,7 @@ async function iniciar() {
     mensaje(t("errorDatos"), true);
     return;
   }
-  const [suspensiones, paradas, estado, lineas, rutas, bicicletas, turnosFarmacias, transporte, estacionesTranvia, basura, agua, cerca, diasFeriado, avisosAgua] = await Promise.all(
+  const [suspensiones, paradas, estado, lineas, rutas, bicicletas, turnosFarmacias, transporte, estacionesTranvia, recorridoTranvia, basura, agua, cerca, diasFeriado, avisosAgua, cierresVias, avisosLuz, tramites, salud] = await Promise.all(
     [
       "luz/suspensiones.json",
       "buses/paradas.geojson",
@@ -2087,17 +2499,24 @@ async function iniciar() {
       "farmacias/turnos.json",
       "manual/transporte.json",
       "buses/tranvia.geojson",
+      "buses/tranvia-recorrido.geojson",
       "manual/basura.json",
       "manual/agua.json",
       "ciudad/cerca.geojson",
       "manual/feriados.json",
       "agua/avisos.json",
+      "movilidad/cierres.json",
+      "luz/avisos.json",
+      "manual/tramites.json",
+      "ciudad/salud.json",
     ].map((r) =>
       cargarJson(r).catch(() => null),
     ),
   );
   paradasRegistradas = paradas;
   datosTranvia = transporte?.tranvia ?? null;
+  // El recorrido por los rieles viaja con las estaciones: lo usa todo lo que dibuja el tranvía.
+  if (estacionesTranvia && recorridoTranvia?.features?.length === 2) estacionesTranvia.recorrido = recorridoTranvia.features;
   estacionesDelTranvia = estacionesTranvia;
 
   const fechas = Object.values(estado ?? {})
@@ -2111,6 +2530,8 @@ async function iniciar() {
       timeZone: "America/Guayaquil",
     });
     $("actualizado").textContent = t("actualizado", { fecha: enCuenca.format(new Date(fechas.at(-1))) });
+    ultimaActualizacion = new Date(fechas.at(-1));
+    pintarSinConexion();
   }
 
   let puntoActual = null;
@@ -2134,13 +2555,14 @@ async function iniciar() {
     try {
       // Las tres consultas van juntas; si una falla, las otras se muestran igual.
       const pedir = (url) => fetch(url, { signal: control.signal }).then((r) => (r.ok ? r.json() : null));
-      const [ica, uv, clima] = await Promise.allSettled([URL_AIRE, URL_UV, URL_CLIMA].map(pedir));
+      const [ica, uv, clima, lluvia] = await Promise.allSettled([URL_AIRE, URL_UV, URL_CLIMA, URL_LLUVIA].map(pedir));
       estacionesAire = ica.status === "fulfilled" ? leerAire(ica.value) : [];
       extrasAire = {
         uv: uv.status === "fulfilled" ? leerUv(uv.value) : null,
         clima: clima.status === "fulfilled" ? leerClima(clima.value) : null,
+        lluvia: lluvia.status === "fulfilled" ? leerLluvia(lluvia.value) : null,
       };
-      if (!estacionesAire.length && !extrasAire.uv && !extrasAire.clima) throw new Error("EMOV sin datos");
+      if (!estacionesAire.length && !extrasAire.uv && !extrasAire.clima && !extrasAire.lluvia) throw new Error("sin datos");
     } catch {
       estacionesAire = [];
       extrasAire = {};
@@ -2237,6 +2659,20 @@ async function iniciar() {
 
   const elegir = (punto, origen, nombre, { nombrar = false } = {}) => {
     puntoActual = punto;
+    partesFrase = {}; // la frase de otra calle se arma de nuevo
+    // Un día de descanso hoy o en los próximos tres días, al inicio de la frase.
+    const feriado = proximoFeriado(diasFeriado, undefined, 3);
+    if (feriado) {
+      const nombre = feriado.dia[idioma()] ?? feriado.dia.es;
+      ponerFrase(
+        "feriado",
+        feriado.faltan === 0
+          ? t("fraseFeriadoHoy", { nombre })
+          : feriado.faltan === 1
+            ? t("fraseFeriadoManana", { nombre })
+            : t("fraseFeriadoDia", { fecha: fechaDia(feriado.dia.fecha), nombre }),
+      );
+    }
     nombreActual = nombre ?? null;
     nombreProvisional = nombrar;
     $("ruta-opciones").replaceChildren();
@@ -2255,7 +2691,13 @@ async function iniciar() {
     elegirPestana("s-resumen", { desplazar: false });
     pintarBasura(zona, basura?.rural);
     pintarLuz(suspensiones);
-    pintarParadas(cercanas);
+    paradasProximos = [];
+    pintarParadas(cercanas, { lineas, rutas: rutas?.rutas ?? [] });
+    // En el mapa, al tocar una parada: qué líneas pasan por ahí.
+    for (const parada of cercanas) {
+      const numeros = lineas ? lineasCercanas(parada, lineas, rutas?.rutas ?? [], { maximoMetros: LINEA_EN_PARADA_M }).filter((l) => l.tipo !== "tranvia").map((l) => l.linea) : [];
+      parada.lineasTexto = numeros.length ? t("paradaPasan", { lineas: listar(numeros) }) : null;
+    }
     const cercanasLineas = lineas ? lineasCercanas(punto, lineas, rutas?.rutas ?? []) : null;
     pintarLineas(cercanasLineas, mapa, { punto, transporte, estaciones: estacionesTranvia });
     pintarPasaje(transporte?.tarifas, transporte?.metadata?.revisado);
@@ -2269,7 +2711,35 @@ async function iniciar() {
     const posibles = avisosAguaPorConfirmar(avisosAgua, agua);
     const proximo = pintarAgua(agua, posibles)[0];
     pintarCalendarioAgua();
+    // Si un corte nombra un sector o una calle cerca de aquí, se dice (cuando lleguen las calles).
+    marcarCortesCerca(punto, cortesAgua(agua)).then((cerca) => {
+      if (puntoActual !== punto || !cerca.length) return;
+      const detalle = $("resumen").querySelector(".ficha-agua .ficha-detalle");
+      if (detalle && proximo) detalle.textContent = t("aguaCerca", { sectores: listar(cerca) });
+      if (partesFrase.agua && proximo) ponerFrase("agua", `${partesFrase.agua} ${t("fraseAguaCerca")}`);
+    });
     const posible = avisoCercano(posibles);
+    const hoyCuenca = horaCuenca().fecha;
+    // Lo que anuncia la prensa y nadie ha revisado: cierres de vías (una semana) y cortes de
+    // luz que citan a la Centro Sur.
+    const cierres = avisosDePrensaVigentes(cierresVias, undefined, { dias: 2 });
+    pintarAvisosDePrensa($("cierres-vias"), cierres, { titulo: t("cierresTitulo"), nota: t("cierresNota") });
+    ponerFrase("vias", cierres.some((a) => a.fecha === hoyCuenca) ? t("fraseVias") : null);
+    const cortesLuz = avisosDePrensaVigentes(avisosLuz, undefined, { dias: 2, campo: "menciona_centrosur" });
+    pintarAvisosDePrensa($("luz-prensa"), cortesLuz, { titulo: t("luzPrensaTitulo"), nota: t("luzPrensaNota") });
+    ponerFrase("luz", cortesLuz.length ? t("fraseLuzPosible") : null);
+    ponerFrase(
+      "agua",
+      proximo?.fecha === hoyCuenca
+        ? t("fraseAguaHoy")
+        : proximo && proximo.fecha <= horaCuenca(new Date(Date.now() + 86_400_000)).fecha
+          ? t("fraseAguaManana")
+          : posible
+            ? t("fraseAguaPosible")
+            : agua
+              ? t("fraseAguaNo")
+              : null,
+    );
     $("resumen").querySelector(".ficha-agua")?.remove();
     if (proximo && proximo.fecha <= horaCuenca(new Date(Date.now() + 86_400_000)).fecha) {
       const texto = proximo[idioma()] ?? proximo.es;
@@ -2287,12 +2757,18 @@ async function iniciar() {
       li.classList.add("ficha-agua");
       $("resumen").append(li);
     }
+    pintarSalud(punto, salud, mapa);
     pintarCerca(punto, cerca);
+    pintarMercados(punto, cerca, mapa);
+    pintarTramites(tramites);
     pintarAire(aireCercano(punto, estacionesAire), extrasAire);
     actualizarAire();
     pintarPunto();
     pintarBici(masCercano(punto, bicicletas));
     mapa.mostrar(punto, zona, cercanas);
+    // Siempre a la vista en el mapa, como las farmacias: los mercados y la salud más cercanos.
+    // (Después de mostrar: al cambiar de calle, el mapa quita lo de la anterior.)
+    mapa.mostrarCercanos(lugaresCercanos(punto, cerca, salud));
     // Se conserva el estado: ahí se anota si el mapa está ampliado (mapa.js).
     history.replaceState(history.state, "", hashDesdePunto(punto));
     guardar(CLAVE_ULTIMO_PUNTO, textoDeLugar(punto, nombrar ? null : nombreActual));
@@ -2325,6 +2801,9 @@ async function iniciar() {
   );
   mapa.marcarHoy(recoleccionDeHoy(zonas).todas);
   // Con la capa del tranvía prendida se ven también sus unidades en camino (estimadas).
+  // Los mercados y la salud, también como capas del mapa.
+  mapa.agregarMercados(cerca);
+  mapa.agregarSalud(salud);
   mapa.agregarCapas(bicicletas, estacionesTranvia, {
     trazos: trazadosTranvia(estacionesTranvia),
     horario: horarioTranvia(datosTranvia),
@@ -2409,11 +2888,15 @@ async function iniciar() {
     if (boton) boton.disabled = true;
     aviso.textContent = t("rutaBuscando");
     try {
-      // "Casa" o "Trabajo" son los lugares guardados: no hay que buscarlos.
+      // "Casa" o "Trabajo" son los lugares guardados: no hay que buscarlos. Un punto
+      // ("-2.9,-79.0", de una ruta compartida) tampoco.
       const mio = LUGARES.find((clave) => lugares[clave] && nombreLugar(clave).toLowerCase() === texto.toLowerCase());
+      const enPunto = /^(-?\d+\.\d+),\s*(-?\d+\.\d+)$/.exec(texto);
       const destino = mio
         ? { punto: { lat: lugares[mio].lat, lon: lugares[mio].lon }, texto: lugares[mio].nombre ? `${nombreLugar(mio)} (${lugares[mio].nombre})` : nombreLugar(mio) }
-        : await ubicarTexto(texto);
+        : enPunto
+          ? { punto: { lat: Number(enPunto[1]), lon: Number(enPunto[2]) }, texto: t("rutaPuntoCompartido") }
+          : await ubicarTexto(texto);
       if (destino.error) {
         // Sin destino válido no queda la ruta anterior dibujada ni su nota.
         quitarRuta();
@@ -2421,7 +2904,9 @@ async function iniciar() {
         aviso.classList.add("error");
         return;
       }
-      recorridos ??= prepararLineas(lineas, rutas?.rutas ?? []);
+      recorridos ??= prepararLineas(lineas, rutas?.rutas ?? [], undefined, {
+        tranvia: { trazos: trazadosTranvia(estacionesTranvia), horario: horarioTranvia(datosTranvia), velocidad: datosTranvia?.velocidad_kmh },
+      });
       const opciones = planificar(puntoActual, destino.punto, recorridos);
       if (!opciones.length) {
         quitarRuta();
@@ -2431,6 +2916,10 @@ async function iniciar() {
       }
       aviso.textContent = t("rutaDestino", { texto: destino.texto });
       pintarOpciones(opciones, destino.punto, mapa, paradas, transporte);
+      // Para compartirla: un lugar guardado ("Casa") no lo conoce quien recibe el enlace, así
+      // que se manda su punto; lo demás, tal como se escribió.
+      rutaCompartible = mio || /^-?\d+\.\d+,\s*-?\d+\.\d+$/.test(texto) ? `${destino.punto.lat.toFixed(5)},${destino.punto.lon.toFixed(5)}` : texto;
+      $("compartir-ruta").hidden = false;
       // Para volver a verla si la página se recarga (en la parada, con el teléfono en el bolsillo).
       guardar(CLAVE_DESTINO, textoDeDestino(texto));
     } catch {
@@ -2484,6 +2973,27 @@ async function iniciar() {
 
   // Compartir tu calle: el menú del teléfono (otras apps) o, si no hay, copiar el enlace.
   let relojCompartir = 0;
+  // "Compartir esta ruta": un enlace que abre la misma búsqueda desde la misma calle.
+  $("compartir-ruta").addEventListener("click", async () => {
+    if (!rutaCompartible || !puntoActual) return;
+    const enlace = new URL(location.href);
+    enlace.searchParams.set("ver", "buses");
+    enlace.searchParams.set("ir", rutaCompartible);
+    enlace.hash = hashDesdePunto(puntoActual);
+    const rotulo = $("compartir-ruta").querySelector("span");
+    try {
+      if (navigator.share && window.matchMedia("(pointer: coarse)").matches) {
+        await navigator.share({ title: t("compartirRutaTitulo"), url: enlace.href });
+        return;
+      }
+      await navigator.clipboard.writeText(`${t("compartirRutaTitulo")} ${enlace.href}`);
+      rotulo.textContent = t("compartirListo");
+      setTimeout(() => (rotulo.textContent = t("compartirRuta")), 2500);
+    } catch (error) {
+      if (error?.name !== "AbortError") mensaje(t("compartirError", { enlace: enlace.href }));
+    }
+  });
+
   $("compartir").addEventListener("click", async () => {
     const nombre = nombreProvisional ? null : nombreActual;
     const texto = nombre ? t("compartirTexto", { calle: nombre }) : t("compartirTextoSinCalle");
@@ -2543,6 +3053,8 @@ async function iniciar() {
   const limpiarDireccion = prepararLimpiar($("direccion"));
   // Sin destino, la ruta que se veía también se va, del panel y del mapa.
   const quitarRuta = () => {
+    $("compartir-ruta").hidden = true;
+    rutaCompartible = null;
     $("ruta-opciones").replaceChildren();
     $("ruta-nota").hidden = true;
     $("ruta-mensaje").textContent = "";
@@ -2645,15 +3157,32 @@ async function iniciar() {
 
   pintarLugares();
   const enlace = puntoDesdeHash(location.hash);
-  if (enlace) abrir(enlace, ultimo && distanciaMetros(enlace, ultimo) < 15 ? t("puntoGuardado") : t("puntoEnlace"));
+  // Un atajo del ícono de la app (?lugar=casa) abre ese lugar guardado; sin él, lo de siempre.
+  const pedido = new URLSearchParams(location.search).get("lugar");
+  const atajo = LUGARES.includes(pedido) ? lugares[pedido] : null;
+  if (pedido) {
+    // Sin ese lugar guardado (en otro teléfono, o borrado), queda lo de siempre.
+    const sinAtajo = new URL(location.href);
+    sinAtajo.searchParams.delete("lugar");
+    history.replaceState(history.state, "", sinAtajo);
+  }
+  if (atajo) elegir(atajo, nombreLugar(pedido), atajo.nombre, { nombrar: !atajo.nombre });
+  else if (enlace) abrir(enlace, ultimo && distanciaMetros(enlace, ultimo) < 15 ? t("puntoGuardado") : t("puntoEnlace"));
   else if (ultimo) abrir({ lat: ultimo.lat, lon: ultimo.lon }, t("puntoGuardado"));
   // Si el enlace pedía una pestaña (?ver=farmacias), se abre esa.
   if (PESTANA_PEDIDA && puntoActual) elegirPestana(`s-${PESTANA_PEDIDA}`, { desplazar: false });
   // Ya se sabe qué mostrar: fuera la espera que puso index.html (sin portada de un instante).
   document.documentElement.classList.remove("abriendo-punto");
 
-  // Y la ruta que se estaba mirando, si fue hace menos de 12 horas.
-  const destinoGuardado = leerDestino(leer(CLAVE_DESTINO));
+  // Una ruta compartida (?ir=…) se busca enseguida; si no, la que se estaba mirando, si fue
+  // hace menos de 12 horas.
+  const rutaPedida = new URLSearchParams(location.search).get("ir");
+  const destinoGuardado = rutaPedida || leerDestino(leer(CLAVE_DESTINO));
+  if (rutaPedida) {
+    const sinRuta = new URL(location.href);
+    sinRuta.searchParams.delete("ir");
+    history.replaceState(history.state, "", sinRuta);
+  }
   if (destinoGuardado && puntoActual) {
     $("destino").value = destinoGuardado;
     limpiarDestino();
@@ -2668,6 +3197,7 @@ function prepararApp() {
   const aviso = $("sin-conexion");
   const actualizarConexion = () => {
     aviso.hidden = navigator.onLine;
+    pintarSinConexion();
   };
   window.addEventListener("online", actualizarConexion);
   window.addEventListener("offline", actualizarConexion);

@@ -204,3 +204,18 @@ Reglas para usarla en Morlaco:
 2. Citar la nota con su enlace y fecha.
 3. Ponerle fecha de caducidad al dato.
 4. Si dos notas se contradicen, manda la más reciente y se anota la duda.
+
+## Añadidas el 21 de noviembre de 2026
+
+| Fuente | Qué da | Cómo se usa |
+|---|---|---|
+| [OpenStreetMap, vía Overpass](https://overpass-api.de/) | Rieles del tranvía; parroquias, barrios y urbanizaciones con nombre | Automática: los rieles con la fuente `tranvia` (diaria) y los barrios con `calles` (semanal). De ahí salen `datos/buses/tranvia-recorrido.geojson` y `datos/ciudad/barrios.json` |
+| [El Mercurio, API pública](https://elmercurio.com.ec/cuenca/) | Notas que anuncian cierres de vías y cortes de energía | Automática, en la misma pasada que los avisos de agua. Sin revisar: la página las muestra con su enlace (`datos/movilidad/cierres.json`, `datos/luz/avisos.json`) |
+| [Open-Meteo](https://open-meteo.com/) | Probabilidad de lluvia por horas | La pide la página en vivo, siempre para el centro de Cuenca (no se guarda en `datos/`) |
+| Páginas oficiales de cada entidad | Enlaces para trámites, pagos y reclamos | A mano, en `datos/manual/tramites.json` |
+| [OpenStreetMap, vía Overpass](https://overpass-api.de/) | Hospitales y centros de salud | Automática, con `calles` (semanal): `datos/ciudad/salud.json` |
+
+No se encontró una fuente abierta con los días de feria de cada mercado, los horarios de las oficinas
+municipales, los puntos de recarga de las tarjetas del bus y del tranvía ni la disponibilidad en vivo de la
+BiciPública (el portal Cuenca en Datos solo tiene sus estaciones): por eso la página no los muestra.
+

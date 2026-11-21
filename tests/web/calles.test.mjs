@@ -226,3 +226,24 @@ test("sugerirCalles con las calles reales es rápido", (t) => {
   sugerirCalles("Av. de las Américas y ", real);
   assert.ok(performance.now() - inicio < 1500, "una avenida larga tampoco tarda mucho");
 });
+
+test("ubicarAproximado: el barrio que nombra la dirección o la mitad de una calle corta", async () => {
+  const { prepararIndice, ubicarAproximado } = await import("../../web/calles.js");
+  const calle = (nombre, coords) => ({ type: "Feature", properties: { nombre, otros_nombres: [], rango: 3 }, geometry: { type: "MultiLineString", coordinates: [coords] } });
+  const indice = prepararIndice({
+    features: [
+      calle("Las Malvinas", [[-79.01, -2.9], [-79.006, -2.9]]), // unos 440 m
+      calle("Avenida de las Américas", [[-79.05, -2.9], [-78.95, -2.9]]), // unos 11 km
+    ],
+  });
+  const barrios = [{ nombre: "Ciudadela Eucaliptos", tipo: "urbanizacion", lat: -2.88, lon: -78.98 }];
+  // Nombra un barrio: su punto.
+  assert.deepEqual(ubicarAproximado("Ciudadela Eucaliptos Federico González", indice, barrios), { lat: -2.88, lon: -78.98, por: "barrio" });
+  // Una calle corta que sí se conoce: su mitad.
+  const porCalle = ubicarAproximado("Las Malvinas y Calle Sin Nombre", indice, barrios);
+  assert.equal(porCalle.por, "calle");
+  assert.ok(Math.abs(porCalle.lon - -79.008) < 0.0005);
+  // Una avenida larga no dice dónde; y lo que no se conoce, tampoco.
+  assert.equal(ubicarAproximado("Avenida de las Américas y Sin Nombre", indice, barrios), null);
+  assert.equal(ubicarAproximado("Gullanzhapa y Vía Turi", indice, barrios), null);
+});

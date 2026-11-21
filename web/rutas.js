@@ -35,7 +35,13 @@ const distancia = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
  * la ruta normal, cada variante (un alargue unido a la ruta) es un recorrido más: así una
  * ruta hasta el Camino del Tejar puede ir en la 8 que sigue a Dolorosa.
  */
-export function prepararLineas(lineas, rutas = [], fecha = new Date()) {
+export function prepararLineas(lineas, rutas = [], fecha = new Date(), { tranvia = null } = {}) {
+  // El tranvía, por sus estaciones y con su horario (si se tienen): el trazado del municipio
+  // está incompleto y no trae horario. `tranvia` es { trazos, horario, velocidad }.
+  const delTranvia = tranvia?.trazos ?? null;
+  if (delTranvia) {
+    lineas = { ...lineas, features: [...lineas.features.filter((f) => f.properties.tipo !== "tranvia"), ...delTranvia] };
+  }
   const porLinea = new Map();
   for (const f of lineas.features) {
     if (!porLinea.has(f.properties.linea)) porLinea.set(f.properties.linea, []);
@@ -59,7 +65,8 @@ export function prepararLineas(lineas, rutas = [], fecha = new Date()) {
         variante: p.variante ?? null,
         puntos,
         acumulado,
-        horario: p.tipo === "tranvia" ? undefined : horarioDeHoy(p.linea, rutas, fecha),
+        horario: p.tipo === "tranvia" ? (delTranvia ? (tranvia.horario ?? undefined) : undefined) : horarioDeHoy(p.linea, rutas, fecha),
+        velocidad: p.tipo === "tranvia" && delTranvia ? tranvia.velocidad : undefined,
       };
     });
 }
@@ -133,7 +140,7 @@ function tramoBus(recorrido, subida, bajada, fecha, ajustes) {
   // En una variante no se sabe si ese último bus la hace: queda como fuera de horario.
   if (enEspera === null && !recorrido.variante && recorrido.horario?.fin && horaCuenca(fecha).minutos > aMinutos(recorrido.horario.fin)) {
     const largo = recorrido.acumulado.at(-1);
-    const faltan = minutosAlProximo(recorrido.horario, largo, subida.recorrido, fecha);
+    const faltan = minutosAlProximo(recorrido.horario, largo, subida.recorrido, fecha, recorrido.velocidad);
     if (faltan !== null) enEspera = faltan;
   }
   return {
@@ -143,6 +150,7 @@ function tramoBus(recorrido, subida, bajada, fecha, ajustes) {
     hacia: recorrido.hacia,
     variante: recorrido.variante,
     horario: recorrido.horario,
+    velocidad: recorrido.velocidad, // la del tranvía; sin ella vale la de los buses
     // En una variante no se sabe cuántos buses la hacen: se espera la frecuencia entera.
     espera: enEspera,
     metros: bajada.recorrido - subida.recorrido,

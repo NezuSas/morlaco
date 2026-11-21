@@ -1,0 +1,121 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Morlaco//Feriados de Cuenca//ES
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:📅 Feriados (Cuenca)
+X-WR-CALDESC:Días de descanso en Cuenca: feriados nacionales con su trasla
+ do\, el feriado local y las suspensiones de jornada. Publicado por Morlaco
+ .
+X-WR-TIMEZONE:America/Guayaquil
+REFRESH-INTERVAL;VALUE=DURATION:P1D
+X-PUBLISHED-TTL:P1D
+COLOR:seagreen
+BEGIN:VEVENT
+UID:morlaco-feriado-2026-11-20@nezusas.github.io
+DTSTAMP:20260101T000000Z
+DTSTART;VALUE=DATE:20261120
+DTEND;VALUE=DATE:20261121
+SUMMARY:📅 Suspensión de la jornada laboral (Decreto Ejecutivo 507)
+DESCRIPTION:Fuente: Vistazo (7 de noviembre de 2026) https://www.vistazo.co
+ m/actualidad/2026-11-07-por-que-ecuador-tendra-dia-descanso-20-noviembre-f
+ eriado-nacional-ecuador-decreto-BD11308180\nConsulta tu calle en Morlaco: 
+ https://nezusas.github.io/morlaco/web/
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:morlaco-feriado-2026-12-25@nezusas.github.io
+DTSTAMP:20260101T000000Z
+DTSTART;VALUE=DATE:20261225
+DTEND;VALUE=DATE:20261226
+SUMMARY:📅 Navidad
+DESCRIPTION:Fuente: Primicias (4 de noviembre de 2026) https://www.primicia
+ s.ec/sociedad/feriados-ecuador-fiestas-quito-navidad-loja-ano-nuevo-136312
+ /\nConsulta tu calle en Morlaco: https://nezusas.github.io/morlaco/web/
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:morlaco-feriado-2027-01-01@nezusas.github.io
+DTSTAMP:20260101T000000Z
+DTSTART;VALUE=DATE:20270101
+DTEND;VALUE=DATE:20270102
+SUMMARY:📅 Año Nuevo
+DESCRIPTION:Fuente: Primicias\, calendario oficial de 2027 https://www.prim
+ icias.ec/sociedad/feriados-ecuador2027-calendario-turismo-carnaval-semana-
+ santa-136547/\nConsulta tu calle en Morlaco: https://nezusas.github.io/mor
+ laco/web/
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:morlaco-feriado-2027-02-08@nezusas.github.io
+DTSTAMP:20260101T000000Z
+DTSTART;VALUE=DATE:20270208
+DTEND;VALUE=DATE:20270209
+SUMMARY:📅 Carnaval
+DESCRIPTION:Fuente: Primicias\, calendario oficial de 2027 https://www.prim
+ icias.ec/sociedad/feriados-ecuador2027-calendario-turismo-carnaval-semana-
+ santa-136547/\nConsulta tu calle en Morlaco: https://nezusas.github.io/mor
+ laco/web/
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:morlaco-feriado-2027-02-09@nezusas.github.io
+DTSTAMP:20260101T000000Z
+DTSTART;VALUE=DATE:20270209
+DTEND;VALUE=DATE:20270210
+SUMMARY:📅 Carnaval
+DESCRIPTION:Fuente: Primicias\, calendario oficial de 2027 https://www.prim
+ icias.ec/sociedad/feriados-ecuador2027-calendario-turismo-carnaval-semana-
+ santa-136547/\nConsulta tu calle en Morlaco: https://nezusas.github.io/mor
+ laco/web/
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:morlaco-feriado-2027-03-26@nezusas.github.io
+DTSTAMP:20260101T000000Z
+DTSTART;VALUE=DATE:20270326
+DTEND;VALUE=DATE:20270327
+SUMMARY:📅 Viernes Santo
+DESCRIPTION:Fuente: Primicias\, calendario oficial de 2027 https://www.prim
+ icias.ec/sociedad/feriados-ecuador2027-calendario-turismo-carnaval-semana-
+ santa-136547/\nConsulta tu calle en Morlaco: https://nezusas.github.io/mor
+ laco/web/
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:morlaco-feriado-2027-04-12@nezusas.github.io
+DTSTAMP:20260101T000000Z
+DTSTART;VALUE=DATE:20270412
+DTEND;VALUE=DATE:20270413
+SUMMARY:📅 Fundación de Cuenca (solo en el cantón)
+DESCRIPTION:Fuente: El Mercurio\, el feriado de 2026 (en 2027 cae lunes y n
+ o se traslada) https://elmercurio.com.ec/cuenca/2026/04/06/cuenca-feriados
+ -abril/\nConsulta tu calle en Morlaco: https://nezusas.github.io/morlaco/w
+ eb/
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:morlaco-feriado-2027-04-30@nezusas.github.io
+DTSTAMP:20260101T000000Z
+DTSTART;VALUE=DATE:20270430
+DTEND;VALUE=DATE:20270501
+SUMMARY:📅 Día del Trabajo (trasladado del sábado 1 de mayo)
+DESCRIPTION:Fuente: Primicias\, calendario oficial de 2027 https://www.prim
+ icias.ec/sociedad/feriados-ecuador2027-calendario-turismo-carnaval-semana-
+ santa-136547/\nConsulta tu calle en Morlaco: https://nezusas.github.io/mor
+ laco/web/
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:morlaco-feriado-2027-05-24@nezusas.github.io
+DTSTAMP:20260101T000000Z
+DTSTART;VALUE=DATE:20270524
+DTEND;VALUE=DATE:20270525
+SUMMARY:📅 Batalla de Pichincha
+DESCRIPTION:Fuente: Primicias\, calendario oficial de 2027 https://www.prim
+ icias.ec/sociedad/feriados-ecuador2027-calendario-turismo-carnaval-semana-
+ santa-136547/\nConsulta tu calle en Morlaco: https://nezusas.github.io/mor
+ laco/web/
+TRANSP:TRANSPARENT
+END:VEVENT
+END:VCALENDAR

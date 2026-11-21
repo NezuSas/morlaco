@@ -5,13 +5,18 @@
 // (una solo CO y SO2), así que se prefiere la más cercana que mida partículas, que es lo
 // que más afecta a la salud en la ciudad.
 
-import { distanciaMetros } from "./logica.js";
+import { distanciaMetros, horaCuenca } from "./logica.js";
 
 export const URL_AIRE = "https://caire.emov.gob.ec/datos/ica/obtener";
 // El índice UV y la temperatura salen de la misma web, de su estación del Centro Histórico.
 export const URL_UV = "https://caire.emov.gob.ec/datos/iuv/obtenerUltimoIuv";
 export const URL_CLIMA = "https://caire.emov.gob.ec/datos/datos/obtenerUltimosMeteorologico";
 export const PAGINA_AIRE = "https://caire.emov.gob.ec/";
+// La lluvia de las próximas horas, del pronóstico abierto de Open-Meteo (CC BY 4.0). Se pide
+// siempre para el mismo punto, el centro de Cuenca: no se le envía la ubicación de nadie.
+export const URL_LLUVIA =
+  "https://api.open-meteo.com/v1/forecast?latitude=-2.9&longitude=-79.0&hourly=precipitation_probability,precipitation&forecast_days=2&timezone=America%2FGuayaquil";
+export const PAGINA_LLUVIA = "https://open-meteo.com/";
 
 /** Un dato más viejo que esto no se muestra: ya no dice cómo está el aire ahora. */
 const MAXIMO_HORAS = 4;
@@ -108,4 +113,32 @@ export function aireCercano(punto, estaciones) {
     if (!mejor || metros < mejor.metros) mejor = { ...estacion, metros: Math.round(metros) };
   }
   return mejor;
+}
+
+// Desde cuánto se dice "lluvia probable": la mitad de probabilidad, o que el modelo ya dé agua.
+const LLUVIA_PROBABLE = 50;
+const LLUVIA_MM = 0.5;
+
+/**
+ * La lluvia de las próximas `horas` según el pronóstico por horas: { desde, probabilidad,
+ * ahora }. `desde` es la primera hora ("15:00") en que la lluvia es probable, o null si no se
+ * espera; `probabilidad`, la de esa hora (o la más alta del tramo); `ahora`, si es esta misma
+ * hora. null si la respuesta no trae las horas de hoy.
+ */
+export function leerLluvia(respuesta, fecha = new Date(), horas = 8) {
+  const { time, precipitation_probability: probabilidades, precipitation: milimetros } = respuesta?.hourly ?? {};
+  if (!Array.isArray(time) || !Array.isArray(probabilidades)) return null;
+  const { fecha: hoy, minutos } = horaCuenca(fecha);
+  const inicio = time.indexOf(`${hoy}T${String(Math.floor(minutos / 60)).padStart(2, "0")}:00`);
+  if (inicio < 0) return null;
+  let maxima = 0;
+  for (let i = inicio; i < Math.min(inicio + horas, time.length); i++) {
+    const probabilidad = probabilidades[i];
+    if (!Number.isFinite(probabilidad)) continue;
+    maxima = Math.max(maxima, probabilidad);
+    if (probabilidad >= LLUVIA_PROBABLE || (milimetros?.[i] ?? 0) >= LLUVIA_MM) {
+      return { desde: time[i].slice(11, 16), probabilidad: Math.round(probabilidad), ahora: i === inicio };
+    }
+  }
+  return { desde: null, probabilidad: Math.round(maxima), ahora: false };
 }

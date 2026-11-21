@@ -1,0 +1,52 @@
+{
+  "metadata": {
+    "titulo": "Cierres de vías y desvíos anunciados en la prensa",
+    "fuente": "El Mercurio (Cuenca)",
+    "pagina": "https://elmercurio.com.ec/cuenca/",
+    "datos": "https://elmercurio.com.ec/wp-json/wp/v2/posts",
+    "desde": "2026-10-31",
+    "nota": "Notas cuyo título anuncia un cierre de vías o un desvío en Cuenca. Sin revisar: la página las muestra con su título y su enlace. La fecha y el horario se leen de la nota automáticamente y pueden faltar."
+  },
+  "avisos": [
+    {
+      "publicado": "2026-11-13",
+      "titulo": "Este fin de semana habrá cierres de vías en Cuenca",
+      "enlace": "https://elmercurio.com.ec/cuenca/2026/11/13/vias-cuenca-cierres-noviembre/",
+      "resumen": "La Dirección General de Gestión de Movilidad de la Alcaldía de Cuenca anunció que se cerrarán vías en dos sectores de la ciudad el sábado 14 y el domingo 15 de noviembre de 2026. El primer cierre será en la calle Daniel Durán, desde la Vicente Pacheco hasta la Federico Sánchez, en la parroquia Ricaurte….",
+      "menciona_emov": false,
+      "fecha": "2026-11-15",
+      "desde": "07:00",
+      "hasta": "22:00"
+    },
+    {
+      "publicado": "2026-11-12",
+      "titulo": "Un tramo de la avenida de las Américas, en sector de la Plaza de las Américas, se cerrará esta tarde",
+      "enlace": "https://elmercurio.com.ec/cuenca/2026/11/12/avenida-americas-cuenca-cierre/",
+      "resumen": "La tarde de este 12 de noviembre, entre las 14:30 y las 15:30, se cerrará un tramo de la avenida de las Américas, en el sector de la Plaza de las Américas, informó la Dirección de Gestión de Movilidad. Las razones del cierre se deben a que hará una intervención por reparaciones relacionadas con el…",
+      "menciona_emov": false,
+      "fecha": "2026-11-12",
+      "desde": "14:30",
+      "hasta": "15:30"
+    },
+    {
+      "publicado": "2026-11-06",
+      "titulo": "Varias vías de Cuenca se cerrarán este fin de semana",
+      "enlace": "https://elmercurio.com.ec/cuenca/2026/11/06/varias-vias-de-cuenca-se-cerraran-este-fin-de-semana/",
+      "resumen": "La Dirección General de Gestión de Movilidad de la Alcaldía de Cuenca anunció cierres viales para el sábado 7 y el domingo 8 de noviembre de 2026, por el Desfile de Veteranos de EE. UU. y Ecuador y por el partido entre Deportivo Cuenca y Orense. El sábado 7 de noviembre, de 09:30 a 11:30,…",
+      "menciona_emov": false,
+      "fecha": "2026-11-08",
+      "desde": "09:30",
+      "hasta": "11:30"
+    },
+    {
+      "publicado": "2026-11-02",
+      "titulo": "Huaynacapazo en Cuenca: tres escenarios, plan de contingencia y cierres viales",
+      "enlace": "https://elmercurio.com.ec/cuenca/2026/11/02/huaynacapazo-2026-cuenca-escenarios-seguridad/",
+      "resumen": "El Huaynacapazo se realizará este lunes 2 de noviembre de 2026, desde las 18:00, en la avenida Huayna Cápac de Cuenca, con tres tarimas de música y un operativo interinstitucional de seguridad. Las autoridades inspeccionaron las tarimas y el plan de contingencia, que prevé la movilización de alrededor de 250 recursos de seguridad, mientras los…",
+      "menciona_emov": false,
+      "fecha": "2026-11-02",
+      "desde": null,
+      "hasta": null
+    }
+  ]
+}
