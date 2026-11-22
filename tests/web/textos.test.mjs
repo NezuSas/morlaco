@@ -78,7 +78,7 @@ test("frecuencias, destinos y distancias en inglés", () => {
   usarIdioma("en");
   const h = { inicio: "05:50", fin: "21:15", intervalo_min: 9 };
   assert.equal(describirFrecuencia(h, enCuenca("2026-11-09T10:00")), "Every 9 min, 05:50 to 21:15");
-  assert.equal(describirFrecuencia(h, enCuenca("2026-11-09T22:00")), "Today 05:50 to 21:15; no more buses at this hour");
+  assert.equal(describirFrecuencia(h, enCuenca("2026-11-09T22:00")), "Today 05:50 to 21:15; no more departures");
   assert.equal(describirFrecuencia(null), "No service today");
   assert.equal(describirDestinos(["Mall del Rio", "Trigales Altos"]), "Between Mall del Rio and Trigales Altos");
   assert.equal(formatoDistancia(1240), "1.2 km");

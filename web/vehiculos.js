@@ -90,7 +90,8 @@ export function proximosDeLinea(punto, trazados, horarios, { maximoMetros = 350,
     const medida = medirRecorrido(puntosDeTrazado(f.geometry));
     const lugar = lugarEnRecorrido(punto, medida);
     if (!lugar || lugar.distancia > maximoMetros) continue;
-    proximos.push({ sentido, hacia, minutos: minutosAlProximo(horario, medida.total, lugar.metros, fecha, velocidadKmH) });
+    const proximo = proximoBus(horario, medida.total, lugar.metros, fecha, velocidadKmH);
+    proximos.push({ sentido, hacia, minutos: proximo?.minutos ?? null, ultimo: proximo?.ultimo ?? false });
   }
   return proximos;
 }
@@ -122,13 +123,22 @@ export function busesEnCamino(horario, largoMetros, fecha = new Date(), velocida
  * (la parada donde se sube), o null si hoy ya no sale ninguno que llegue.
  */
 export function minutosAlProximo(horario, largoMetros, metros, fecha = new Date(), velocidadKmH = VELOCIDAD_KMH) {
+  return proximoBus(horario, largoMetros, metros, fecha, velocidadKmH)?.minutos ?? null;
+}
+
+/**
+ * Lo mismo, y si ese es el último del día ({ minutos, ultimo }): pasada la hora de la última
+ * salida, ese bus todavía puede venir en camino. null si hoy ya no sale ninguno que llegue.
+ */
+export function proximoBus(horario, largoMetros, metros, fecha = new Date(), velocidadKmH = VELOCIDAD_KMH) {
   if (!horario?.inicio || !horario?.fin || !horario?.intervalo_min || !(largoMetros > 0)) return null;
   const ahora = minutosDelDia(fecha);
   const viaje = (Math.min(Math.max(metros, 0), largoMetros) / 1000 / velocidadKmH) * 60;
   const inicio = aMinutos(horario.inicio);
+  const fin = aMinutos(horario.fin);
   const cada = horario.intervalo_min;
   const k = Math.max(0, Math.ceil((ahora - viaje - inicio) / cada));
   const salida = inicio + k * cada;
-  if (salida > aMinutos(horario.fin)) return null;
-  return salida + viaje - ahora;
+  if (salida > fin) return null;
+  return { minutos: salida + viaje - ahora, ultimo: salida + cada > fin };
 }

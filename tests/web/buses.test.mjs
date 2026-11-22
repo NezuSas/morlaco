@@ -64,7 +64,7 @@ test("horarioDeHoy distingue sin servicio de sin datos", () => {
 test("describirFrecuencia", () => {
   const h = { inicio: "05:50", fin: "21:15", intervalo_min: 9 };
   assert.equal(describirFrecuencia(h, lunes10h), "Cada 9 min, de 05:50 a 21:15");
-  assert.equal(describirFrecuencia(h, enCuenca("2026-11-09T22:00")), "Hoy de 05:50 a 21:15; a esta hora ya no pasa");
+  assert.equal(describirFrecuencia(h, enCuenca("2026-11-09T22:00")), "Hoy de 05:50 a 21:15; ya no salen más buses");
   assert.equal(describirFrecuencia(h, enCuenca("2026-11-09T05:00")), "Empieza a las 05:50; hoy de 05:50 a 21:15");
   assert.equal(describirFrecuencia(null, lunes10h), "Hoy no tiene servicio");
   assert.equal(describirFrecuencia(undefined, lunes10h), "Sin horario publicado");
@@ -209,4 +209,16 @@ test("lineasPorCalle: el tranvía cuenta y va primero; una calle sin buses da un
     geometry: { type: "MultiLineString", coordinates: [[[-79.03, -2.87], [-79.02, -2.87]]] },
   };
   assert.deepEqual(lineasPorCalle(sinBuses, lineas, rutas), []);
+});
+
+test("horarioDeHoy va de la primera salida a la última de los dos sentidos", () => {
+  // Como la línea 30 los domingos: la ida sale hasta las 17:00 y la vuelta hasta las 18:00.
+  const dos = [
+    { linea: "30", sentido: "ida", horarios: { domingos: { inicio: "06:00", fin: "17:00", intervalo_min: 30 } } },
+    { linea: "30", sentido: "retorno", horarios: { domingos: { inicio: "06:30", fin: "18:00", intervalo_min: 30 } } },
+  ];
+  const domingo = new Date("2026-11-22T22:05:00Z"); // 17:05 en Cuenca
+  assert.deepEqual(horarioDeHoy("30", dos, domingo), { inicio: "06:00", fin: "18:00", intervalo_min: 30 });
+  // A las 17:05 todavía salen buses: no dice "ya no salen más".
+  assert.doesNotMatch(describirFrecuencia(horarioDeHoy("30", dos, domingo), domingo), /ya no salen/);
 });

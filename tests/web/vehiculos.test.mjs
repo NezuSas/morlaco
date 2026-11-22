@@ -6,6 +6,7 @@ import {
   lugarEnRecorrido,
   medirRecorrido,
   minutosAlProximo,
+  proximoBus,
   minutosDelDia,
   proximosDeLinea,
   puntoEnRecorrido,
@@ -125,4 +126,17 @@ test("proximosDeLinea: el próximo bus de cada sentido que pasa cerca", () => {
   assert.equal(proximosDeLinea(punto, trazados, { ida: HORARIO }, { fecha: new Date("2026-11-19T02:00:00Z") })[0].minutos, null);
   assert.deepEqual(proximosDeLinea(punto, trazados, { ida: null }, { fecha: DIEZ }), []);
   assert.deepEqual(proximosDeLinea(punto, undefined, undefined), []);
+});
+
+test("pasada la última salida, el bus que ya salió todavía viene, y se dice que es el último", () => {
+  const horario = { inicio: "06:00", fin: "17:00", intervalo_min: 30 };
+  // 17:05: el de las 17:00 va en camino; a 2,5 km del inicio (10 min a 15 km/h) llega en 5 min.
+  const tarde = new Date("2026-11-18T22:05:00Z");
+  const p = proximoBus(horario, 10_000, 2500, tarde);
+  assert.ok(Math.abs(p.minutos - 5) < 0.1, String(p.minutos));
+  assert.equal(p.ultimo, true);
+  // A las 10:00 no es el último.
+  assert.equal(proximoBus(horario, 10_000, 2500, DIEZ).ultimo, false);
+  // A las 17:20 ese ya pasó por ahí: hoy ya no hay.
+  assert.equal(proximoBus(horario, 10_000, 2500, new Date("2026-11-18T22:20:00Z")), null);
 });

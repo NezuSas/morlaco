@@ -2722,6 +2722,68 @@ button.linea {
   text-align: left;
 }
 
+/* Debajo del título, un renglón por sentido (destino y minutos en la columna de la
+   distancia) y los avisos: ocupan el ancho de la tarjeta junto al número. */
+button.linea {
+  align-items: start;
+  row-gap: 0.45rem;
+}
+
+button.linea > .linea-proximos,
+button.linea > .aviso-linea {
+  grid-column: 2 / -1;
+}
+
+button.linea > .aviso-linea {
+  margin-top: 0;
+}
+
+.linea-titulo {
+  font-size: var(--t-1);
+}
+
+.linea-proximos {
+  display: grid;
+  gap: 0.3rem;
+  font-size: var(--t-0);
+}
+
+.linea-proximo {
+  display: grid;
+  grid-template-columns: 1rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.linea-flecha {
+  display: grid;
+  color: var(--cupula);
+}
+
+.linea-flecha svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* El sentido que hoy ya no pasa: se ve, pero en segundo plano. */
+.linea-proximo.no-pasa .parada-destino,
+.linea-proximo.no-pasa .parada-minutos,
+.linea-proximo.no-pasa .linea-flecha {
+  color: var(--tinta-suave);
+  font-weight: 400;
+}
+
+.linea-ultimo {
+  display: inline-block;
+  margin-left: 0.4rem;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  background: var(--cal-hondo);
+  color: var(--tinta);
+  font-size: 0.85em;
+  white-space: nowrap;
+}
+
 button.linea:hover {
   background: var(--cal);
   border: 0;
@@ -3470,6 +3532,57 @@ button.lugar-fila[aria-pressed="true"] {
   border: 1.5px solid var(--tinta);
   font-size: var(--t-0);
   font-weight: 700;
+}
+
+/* Los próximos buses de una parada, como en su letrero: número, destino y minutos alineados a
+   la derecha, en la columna de la distancia. */
+.paradas .parada-proximos {
+  grid-column: 2 / -1;
+  display: grid;
+  gap: 0.3rem;
+  margin: -0.2rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--t-0);
+}
+
+.paradas .parada-proximos li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0;
+  border: 0;
+  counter-increment: none;
+}
+
+.paradas .parada-proximos li::before {
+  content: none;
+}
+
+.numero-linea.chico {
+  box-sizing: border-box;
+  min-width: 2.7rem; /* cabe "100" o "13B": los destinos quedan en una columna */
+  height: 1.45rem;
+  padding: 0 0.35rem;
+  font-size: var(--t-0);
+}
+
+.parada-destino {
+  min-width: 0;
+  color: var(--tinta-suave);
+  overflow-wrap: anywhere;
+}
+
+.parada-minutos {
+  color: var(--tinta);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.paradas-nota {
+  margin: 0.2rem 0 0;
 }
 
 .paradas li.sin-numero {

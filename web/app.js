@@ -1221,13 +1221,22 @@ function pintarParadas(cercanas, { lineas = null, rutas = [] } = {}) {
   }
   lista.replaceChildren(
     ...cercanas.map((p) => {
-      // Debajo de cada parada, los próximos buses: se recalculan con la lista de líneas.
-      const proximos = elemento("span", { class: "proximos" });
+      // Debajo de cada parada, los próximos buses, como en un letrero de parada: el número de
+      // la línea, hacia dónde va y los minutos a la derecha (que son aproximados lo dice una
+      // sola nota bajo el título, no cada renglón). Se recalculan con la lista de líneas.
+      const proximos = elemento("ul", { class: "parada-proximos" });
       const poner = () => {
         const vienen = proximosEnParada(p, lineas, rutas).slice(0, 4);
         proximos.replaceChildren(
           ...vienen.map((v) =>
-            elemento("span", { class: "proximo" }, t("paradaLinea", { linea: v.linea, destino: v.hacia }), ": ", elemento("strong", {}, cuandoPasa(v.minutos))),
+            elemento(
+              "li",
+              {},
+              elemento("span", { class: "oculto-accesible" }, t("lineaAccesible")),
+              elemento("span", { class: "numero-linea chico" }, v.linea),
+              elemento("span", { class: "parada-destino" }, elemento("span", { class: "oculto-accesible" }, t("haciaAccesible")), v.hacia),
+              elemento("strong", { class: "parada-minutos" }, cuandoPasaCorto(v.minutos)),
+            ),
           ),
         );
         proximos.hidden = !vienen.length;
@@ -1237,8 +1246,9 @@ function pintarParadas(cercanas, { lineas = null, rutas = [] } = {}) {
       return elemento(
         "li",
         {},
-        elemento("span", { class: "parada-texto" }, elemento("span", {}, nombreParada(p)), proximos),
+        elemento("span", { class: "parada-texto" }, nombreParada(p)),
         elemento("span", { class: "metros" }, formatoDistancia(p.metros)),
+        proximos,
       );
     }),
   );
@@ -1801,22 +1811,47 @@ function cuandoPasa(minutos) {
   return t("proximoMin", { minutos: Math.round(minutos) });
 }
 
+/** Lo mismo, corto, para la columna de minutos de las paradas: "2 min", "ya llega", "06:15". */
+function cuandoPasaCorto(minutos) {
+  if (minutos === null) return t("proximoNoHoyCorto");
+  if (minutos < 1.5) return t("proximoYaCorto");
+  if (minutos > 60) return horaDentroDe(minutos);
+  return t("proximoMinCorto", { minutos: Math.round(minutos) });
+}
+
 /** El renglón de los próximos buses de una línea, o null si no hay con qué estimarlos. */
 function proximosDe(punto, trazados, horarios, velocidadKmH) {
   if (!punto || !trazados || !horarios) return null;
   const calcular = () => proximosDeLinea(punto, trazados, horarios, { velocidadKmH });
   if (!calcular().length) return null;
-  const caja = elemento("span", { class: "proximos" });
+  // Un renglón por sentido, como en las paradas: hacia dónde y, a la derecha, los minutos.
+  // (Dentro de un botón solo caben spans: por eso no es una lista.)
+  const caja = elemento("span", { class: "linea-proximos" });
   const poner = () =>
     caja.replaceChildren(
-      ...calcular().map((p) =>
-        elemento("span", { class: "proximo" }, t("sentidoHacia", { destino: p.hacia }), ": ", elemento("strong", {}, cuandoPasa(p.minutos))),
-      ),
+      ...calcular().map((p) => {
+        const flecha = elemento("span", { class: "linea-flecha", "aria-hidden": "true" });
+        flecha.innerHTML = SVG_FLECHA;
+        return elemento(
+          "span",
+          { class: `linea-proximo${p.minutos === null ? " no-pasa" : ""}` },
+          flecha,
+          elemento(
+            "span",
+            { class: "parada-destino" },
+            elemento("span", { class: "oculto-accesible" }, t("haciaAccesible")),
+            p.hacia,
+            p.ultimo && p.minutos !== null ? elemento("span", { class: "linea-ultimo" }, t("proximoUltimo")) : null,
+          ),
+          elemento("strong", { class: "parada-minutos" }, cuandoPasaCorto(p.minutos)),
+        );
+      }),
     );
   poner();
   ponerProximos.push(poner);
   return caja;
 }
+const SVG_FLECHA = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8h10M9 4.5 12.5 8 9 11.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
 // ---------- Mi línea ----------
 // La línea que la persona marca como suya sale arriba del resumen, con su próximo bus, cada
@@ -1931,18 +1966,25 @@ function pintarLineas(cercanas, mapa, { punto, transporte, estaciones } = {}) {
         elemento(
           "span",
           { class: "linea-texto" },
-          elemento("strong", {}, esTranvia ? t("tranvia") : t("linea", { linea: l.linea }), " ", elemento("span", { class: "destinos" }, describirDestinos(destinosDe(l)))),
-          elemento("span", { class: "frecuencia" }, detalle),
-          proximos,
-          ...avisos.map((a) =>
-            elemento("span", { class: "aviso-linea" }, elemento("strong", {}, t("avisoLinea"), ": "), a[idioma()] ?? a.es),
+          // Con los renglones de cada sentido, los destinos ya se leen ahí: el título va solo.
+          elemento(
+            "strong",
+            { class: "linea-titulo" },
+            esTranvia ? t("tranvia") : t("linea", { linea: l.linea }),
+            proximos ? null : " ",
+            proximos ? null : elemento("span", { class: "destinos" }, describirDestinos(destinosDe(l))),
           ),
+          elemento("span", { class: "frecuencia" }, detalle),
         ),
         elemento(
           "span",
           { class: "metros" },
           distanciaParada(metros),
           elemento("span", { class: "minutos-pie" }, t("minutosPie", { n: minutosAPie(metros) })),
+        ),
+        proximos,
+        ...avisos.map((a) =>
+          elemento("span", { class: "aviso-linea" }, elemento("strong", {}, t("avisoLinea"), ": "), a[idioma()] ?? a.es),
         ),
       );
       const pasaPor = elemento("div", { class: "pasa-por", hidden: "" });

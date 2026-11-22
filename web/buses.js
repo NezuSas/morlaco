@@ -10,12 +10,23 @@ export function tipoDeDia(fecha = new Date()) {
   return diaIso <= 5 ? "lunes_viernes" : diaIso === 6 ? "sabados" : "domingos";
 }
 
-/** El horario de hoy de una línea según rutas.json (se toma el sentido de ida). */
+/**
+ * El horario de hoy de una línea según rutas.json, para decir cuándo pasa: de la primera
+ * salida a la última de cualquiera de sus dos sentidos (la vuelta puede salir hasta una hora
+ * después que la ida: mirar solo la ida decía "ya no salen más buses" con buses saliendo).
+ * La frecuencia es la de la ida.
+ */
 export function horarioDeHoy(linea, rutas, fecha = new Date()) {
   const filas = rutas.filter((r) => r.linea === linea);
   if (!filas.length) return undefined; // la línea no está en el CSV de horarios
-  const fila = filas.find((r) => r.sentido === "ida") ?? filas[0];
-  return fila.horarios?.[tipoDeDia(fecha)] ?? null; // null: hoy no tiene servicio
+  const dia = tipoDeDia(fecha);
+  const ida = filas.find((r) => r.sentido === "ida") ?? filas[0];
+  const deHoy = filas.map((r) => r.horarios?.[dia]).filter((h) => h?.inicio && h?.fin);
+  const base = ida.horarios?.[dia] ?? deHoy[0] ?? null; // null: hoy no tiene servicio
+  if (!base || deHoy.length < 2) return base;
+  const primero = deHoy.reduce((a, h) => (aMinutos(h.inicio) < aMinutos(a.inicio) ? h : a));
+  const ultimo = deHoy.reduce((a, h) => (aMinutos(h.fin) > aMinutos(a.fin) ? h : a));
+  return { ...base, inicio: primero.inicio, fin: ultimo.fin };
 }
 
 /** El horario de hoy de cada sentido ({ ida, retorno }), para estimar dónde van los buses. */
