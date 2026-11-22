@@ -153,6 +153,48 @@ window.__revisar = (nombre, w) => {
   }
   return [...new Set(problemas)].slice(0, 6);
 };
+// El contraste entre el texto de un elemento y lo que tiene detrás (su fondo y los de sus
+// padres, mezclados si son transparentes). Cualquier forma de color: se pinta un píxel.
+const __lienzo = document.createElement("canvas").getContext("2d", { willReadFrequently: true });
+const __rgba = (c) => {
+  __lienzo.clearRect(0, 0, 1, 1);
+  __lienzo.fillStyle = "#000";
+  __lienzo.fillStyle = c;
+  __lienzo.fillRect(0, 0, 1, 1);
+  const d = __lienzo.getImageData(0, 0, 1, 1).data;
+  return [d[0], d[1], d[2], d[3] / 255];
+};
+const __sobre = ([r, g, b, a], [R, G, B]) => [r * a + R * (1 - a), g * a + G * (1 - a), b * a + B * (1 - a)];
+const __luz = (rgb) => {
+  const [r, g, b] = rgb.map((v) => ((v /= 255) <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+};
+// Un degradado de fondo cuenta como opaco: se mide contra cada uno de sus colores y vale el peor.
+window.__contraste = (el) => {
+  const capas = [];
+  let base = [[255, 255, 255]];
+  for (let a = el; a; a = a.parentElement) {
+    const estilo = getComputedStyle(a);
+    const degradado = estilo.backgroundImage.includes("gradient") ? estilo.backgroundImage.match(/rgba?\([^)]*\)/g) : null;
+    if (degradado) {
+      base = degradado.map((c) => __rgba(c).slice(0, 3));
+      break;
+    }
+    const c = __rgba(estilo.backgroundColor);
+    if (c[3] > 0) capas.push(c);
+    if (c[3] >= 1) break;
+  }
+  capas.reverse();
+  return Math.min(
+    ...base.map((inicio) => {
+      let fondo = inicio;
+      for (const c of capas) fondo = __sobre(c, fondo);
+      const texto = __sobre(__rgba(getComputedStyle(el).color), fondo);
+      const [l1, l2] = [__luz(texto), __luz(fondo)].sort((x, y) => y - x);
+      return (l1 + 0.05) / (l2 + 0.05);
+    }),
+  );
+};
 window.__dentro = (nombre, selector, contenedor) => {
   const el = document.querySelector(selector);
   const caja = contenedor ? document.querySelector(contenedor)?.getBoundingClientRect() : { left: 0, top: 0, right: window.__ancho, bottom: window.__alto };
@@ -169,6 +211,27 @@ let pantallaActual = null;
 const revisar = async (nombre) => anotar(await js(`return __revisar(${JSON.stringify(nombre)}, ${pantallaActual.ancho});`));
 const dentro = async (nombre, selector, contenedor = null) =>
   anotar(await js(`return __dentro(${JSON.stringify(nombre)}, ${JSON.stringify(selector)}, ${JSON.stringify(contenedor)});`));
+
+// Cada botón visible de `selector`, en reposo y con el mouse encima: que su texto se lea
+// (contraste de 4.5 o más). Así se vio un botón que al pasar el mouse quedaba oscuro sobre oscuro.
+const contrasteDeBotones = async (nombre, selector) => {
+  const total = await js(`return [...document.querySelectorAll(${JSON.stringify(selector)})].length;`);
+  for (let i = 0; i < Math.min(total, 120); i++) {
+    const caja = await js(`const b = document.querySelectorAll(${JSON.stringify(selector)})[${i}];
+      if (!b || !b.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true }) || !b.textContent.trim()) return null;
+      b.scrollIntoView({ block: "center" });
+      const r = b.getBoundingClientRect();
+      return { x: r.left + r.width / 2, y: r.top + r.height / 2, texto: b.textContent.trim().slice(0, 30) };`);
+    if (!caja) continue;
+    for (const encima of [false, true]) {
+      await pedir("Input.dispatchMouseEvent", { type: "mouseMoved", x: encima ? caja.x : 0, y: encima ? caja.y : 0 });
+      await espera(encima ? 250 : 50);
+      const c = await js(`return __contraste(document.querySelectorAll(${JSON.stringify(selector)})[${i}]);`);
+      if (c < 4.5) problemas.push(`${nombre}: el botón «${caja.texto}» se lee mal${encima ? " con el mouse encima" : ""} (contraste ${c.toFixed(1)})`);
+    }
+  }
+  await pedir("Input.dispatchMouseEvent", { type: "mouseMoved", x: 0, y: 0 });
+};
 
 const abrir = async (url, listo) => {
   await pedir("Page.navigate", { url: "about:blank" });
@@ -227,6 +290,16 @@ for (const p of PANTALLAS) {
   // Una línea de bus elegida: su panel no tapa ni se sale.
   await js("document.querySelector('.secciones a[href=\"#s-buses\"]').click(); document.querySelectorAll('#lineas button.linea')[1].click();");
   await espera(1800);
+  // Su diagrama de paradas, entero (con el sentido cambiado y sin tramos plegados).
+  await js("const d = document.querySelector('#lineas .diagrama'); d.querySelectorAll('.diagrama-sentido')[1]?.click(); d.querySelector('.diagrama-mas')?.click(); d.scrollIntoView({ block: 'start' });");
+  await espera(500);
+  if (!(await js("return !!document.querySelector('#lineas .diagrama .diagrama-fila.tu');"))) problemas.push(de("el diagrama de la línea no marca tu parada"));
+  await revisar(de("diagrama de la línea"));
+  await contrasteDeBotones(de("diagrama de la línea"), "#lineas .diagrama button");
+  await contrasteDeBotones(de("página"), "body button:not(.maplibregl-ctrl button)");
+  // "Ver en el mapa" (en el celular) lleva al mapa con la línea dibujada.
+  await js("const b = [...document.querySelectorAll('.pasa-por-acciones button')].find((x) => !x.classList.contains('mi-linea-boton')); if (b) b.click(); else document.getElementById('mapa').scrollIntoView({ block: 'start' });");
+  await espera(1200);
   await revisar(de("línea elegida"));
   await dentro(de("panel de la línea"), ".panel-linea");
 
@@ -271,4 +344,4 @@ if (problemas.length) {
   for (const problema of problemas) console.error(`  ✗ ${problema}`);
   process.exit(1);
 }
-console.log("\nTodo cabe: nada se sale de la pantalla ni queda cortado.");
+console.log("\nTodo cabe y se lee: nada se sale de la pantalla ni queda cortado, y los botones tienen buen contraste.");

@@ -73,7 +73,8 @@ import {
 } from "./buses.js";
 import { alarguesUnidos, paradasDeRecorrido, planificar, prepararLineas } from "./rutas.js";
 import { proximosDeLinea } from "./vehiculos.js";
-import { SVG_BICI, crearMapa } from "./mapa.js";
+import { SVG_BICI, SVG_GLIFO, SVG_GLIFO_TRANVIA, crearMapa } from "./mapa.js";
+import { estadoDeLinea, filasDeLinea, tramosVisibles } from "./diagrama.js";
 import { minutosAlProximo } from "./vehiculos.js";
 import { PAGINA_AIRE, PAGINA_LLUVIA, URL_AIRE, URL_CLIMA, URL_LLUVIA, URL_UV, aireCercano, leerAire, leerClima, leerLluvia, leerUv, leerUvPronostico } from "./aire.js";
 import {
@@ -1269,11 +1270,16 @@ let paradasRegistradas = null; // datos/buses/paradas.geojson, para dibujar las 
  * Bajo la fila de una línea: cuántas de sus paradas se ven en el mapa y, plegada, la lista
  * de lugares por los que pasa según el recorrido oficial (larga: más de 60 en algunas).
  */
-async function pintarPasaPor(nodo, linea) {
+async function pintarPasaPor(nodo, linea, punto = null) {
   const principales = linea.trazados.filter((f) => f.properties.tipo !== "alargue");
   const nombres = new Set(principales.flatMap((f) => paradasDeRecorrido(f, paradasRegistradas).map((p) => p.id)));
-  const partes = [botonMiLinea(linea), ...(nombres.size ? [elemento("p", {}, t("paradasEnMapa", { n: nombres.size }))] : [])];
-  nodo.replaceChildren(...partes);
+  const partes = [
+    diagramaDeLinea(linea, punto),
+    elemento("div", { class: "pasa-por-acciones" }, botonMiLinea(linea), botonVerEnMapa()),
+    ...(nombres.size ? [elemento("p", {}, t("paradasEnMapa", { n: nombres.size }))] : []),
+  ];
+  // Sin con qué dibujarlo (el tranvía antes de que lleguen sus estaciones) no hay diagrama.
+  nodo.replaceChildren(...partes.filter(Boolean));
   nodo.hidden = false;
   try {
     recorridosOficiales ??= cargarJson("buses/recorridos.json");
@@ -1292,6 +1298,204 @@ async function pintarPasaPor(nodo, linea) {
   } catch {
     recorridosOficiales = null; // sin conexión: se intenta de nuevo al tocar otra línea
   }
+}
+
+// ---------- El diagrama de una línea ----------
+// Sus paradas en orden, de punta a punta, con los buses estimados avanzando entre ellas y tu
+// parada marcada: en el celular se lee mejor que un trazo enredado entre calles. Los buses se
+// mueven cada pocos segundos, solo mientras el diagrama se ve.
+const DIAGRAMA_CADA_MS = 2000;
+const DIAGRAMA_QUIETO_MS = 15000; // si se pidió reducir el movimiento: a saltos, sin animar
+
+/** Los sentidos de una línea para el diagrama: [{ trazado, desde, hacia, horario, sentido }]. */
+function sentidosDelDiagrama(linea) {
+  const esTranvia = linea.tipo === "tranvia";
+  const trazados = esTranvia ? trazadosTranvia(estacionesDelTranvia) : linea.trazados?.filter((f) => f.properties.tipo !== "alargue");
+  if (!trazados?.length) return [];
+  const delTranvia = esTranvia ? horarioTranvia(datosTranvia) : null;
+  return trazados.map((f) => {
+    const { sentido, hacia } = f.properties;
+    // Sale de donde llega el otro sentido.
+    const desde = trazados.find((o) => o !== f && o.properties.sentido !== sentido)?.properties.hacia ?? null;
+    return { trazado: f, sentido, hacia, desde, horario: esTranvia ? delTranvia : linea.horarios?.[sentido] ?? null };
+  });
+}
+
+function diagramaDeLinea(linea, punto) {
+  const esTranvia = linea.tipo === "tranvia";
+  const paradas = esTranvia ? estacionesDelTranvia : paradasRegistradas;
+  const velocidadKmH = esTranvia ? datosTranvia?.velocidad_kmh : undefined;
+  const sentidos = sentidosDelDiagrama(linea)
+    .map((s) => ({ ...s, diagrama: filasDeLinea(s.trazado, paradas, { desde: s.desde, hacia: s.hacia, punto, ...(esTranvia ? { distanciaParada: 80, juntoMetros: Infinity } : {}) }) }))
+    .filter((s) => s.diagrama);
+  if (!sentidos.length) return null;
+  // De entrada, el sentido que pasa por tu parada más pronto (o el primero).
+  const proximoEn = (s) => (s.diagrama.filas.some((f) => f.tu) ? estadoDeLinea(s.diagrama, s.horario, { velocidadKmH }).proximo : null);
+  let elegido = sentidos.reduce((mejor, s) => {
+    const a = proximoEn(mejor);
+    const b = proximoEn(s);
+    return b !== null && (a === null || b < a) ? s : mejor;
+  }, sentidos[0]);
+  let todas = false;
+
+  const raiz = elemento("div", { class: `diagrama${esTranvia ? " tranvia" : ""}` });
+  const botones = sentidos.map((s) => {
+    const b = elemento("button", { type: "button", class: "diagrama-sentido", "aria-pressed": "false" }, t("sentidoHacia", { destino: s.hacia }));
+    b.addEventListener("click", () => {
+      elegido = s;
+      todas = false;
+      pintar();
+    });
+    return b;
+  });
+  const estado = elemento("p", { class: "diagrama-estado" });
+  // Con calles de un solo sentido, la vuelta puede ir lejos: se dice en vez de dejar la duda.
+  const lejos = elemento("p", { class: "diagrama-lejos", hidden: "" }, t(esTranvia ? "diagramaLejosTranvia" : "diagramaLejos"));
+  const lista = elemento("ol", { class: "diagrama-filas" });
+  const carril = elemento("div", { class: "diagrama-buses", "aria-hidden": "true" });
+  const cuerpo = elemento("div", { class: "diagrama-cuerpo" }, lista, carril);
+  raiz.append(
+    ...(sentidos.length > 1 ? [elemento("div", { class: "diagrama-sentidos", role: "group", "aria-label": t("diagramaSentidos") }, ...botones)] : []),
+    estado,
+    lejos,
+    cuerpo,
+    elemento("p", { class: "diagrama-nota" }, t(esTranvia ? "diagramaNotaTranvia" : "diagramaNota")),
+  );
+
+  let anclas = []; // por cada fila: el elemento donde se dibuja (ella o el salto que la pliega)
+  let tuTiempo = null;
+  const pintar = () => {
+    const { filas } = elegido.diagrama;
+    const { viaje } = estadoDeLinea(elegido.diagrama, elegido.horario, { velocidadKmH });
+    raiz.classList.toggle("retorno", elegido.sentido === "retorno");
+    botones.forEach((b, i) => b.setAttribute("aria-pressed", String(sentidos[i] === elegido)));
+    lista.setAttribute("aria-label", t(esTranvia ? "diagramaEtiquetaTranvia" : "diagramaEtiqueta", { linea: linea.linea, destino: elegido.hacia }));
+    lejos.hidden = !punto || filas.some((f) => f.tu);
+    const tramos = todas ? [{ desde: 0, hasta: filas.length - 1 }] : tramosVisibles(filas);
+    anclas = new Array(filas.length);
+    tuTiempo = null;
+    const items = [];
+    tramos.forEach((tramo, n) => {
+      for (let i = tramo.desde; i <= tramo.hasta; i++) {
+        const f = filas[i];
+        const nombre = f.nombre ?? t(f.tipo === "tu" ? "diagramaCercaDeTi" : f.tipo === "inicio" ? "diagramaInicio" : "diagramaFinal");
+        const lado = f.tu ? (tuTiempo = elemento("strong", { class: "diagrama-tiempo" })) : viaje[i] !== null ? elemento("span", { class: "diagrama-viaje" }, t("diagramaViaje", { n: Math.max(1, Math.round(viaje[i])) })) : null;
+        const li = elemento(
+          "li",
+          { class: `diagrama-fila ${f.tipo}${f.tu ? " tu" : ""}${viaje[i] === null && !f.tu && filas.some((x) => x.tu) ? " antes" : ""}` },
+          elemento("span", { class: "diagrama-punto", "aria-hidden": "true" }),
+          elemento("span", { class: "diagrama-nombre" }, f.tu ? elemento("span", { class: "diagrama-tu" }, t("diagramaTu")) : null, nombre),
+          lado,
+        );
+        anclas[i] = { el: li };
+        items.push(li);
+      }
+      const siguiente = tramos[n + 1];
+      if (siguiente && siguiente.desde > tramo.hasta + 1) {
+        const ocultas = siguiente.desde - tramo.hasta - 1;
+        const boton = elemento("button", { type: "button", class: "diagrama-mas" }, t("diagramaMas", { n: ocultas }));
+        boton.addEventListener("click", () => {
+          todas = true;
+          pintar();
+        });
+        const li = elemento("li", { class: "diagrama-salto" }, elemento("span", { class: "diagrama-punto", "aria-hidden": "true" }), boton);
+        const salto = { el: li, desde: tramo.hasta + 1, hasta: siguiente.desde - 1, boton, ocultas };
+        for (let i = tramo.hasta + 1; i < siguiente.desde; i++) anclas[i] = salto;
+        items.push(li);
+      }
+    });
+    lista.replaceChildren(...items);
+    carril.replaceChildren();
+    // Recién creado, aún no está en la página: se coloca en cuanto se dibuje.
+    if (raiz.isConnected) mover(false);
+    else requestAnimationFrame(() => mover(false));
+  };
+
+  // La altura (en el diagrama) del centro del punto de una fila, o de su lugar dentro del salto.
+  const alturaDe = (i, base) => {
+    const a = anclas[i];
+    if (!a) return 0;
+    const caja = a.el.getBoundingClientRect();
+    if (a.desde === undefined) {
+      const p = a.el.querySelector(".diagrama-punto").getBoundingClientRect();
+      return p.top + p.height / 2 - base;
+    }
+    return caja.top - base + ((i - a.desde + 0.5) / (a.hasta - a.desde + 1)) * caja.height;
+  };
+
+  const glifo = esTranvia ? SVG_GLIFO_TRANVIA : SVG_GLIFO;
+  const mover = (animar = true) => {
+    const { buses, proximo } = estadoDeLinea(elegido.diagrama, elegido.horario, { velocidadKmH });
+    const tieneTu = elegido.diagrama.filas.some((f) => f.tu);
+    if (tuTiempo) tuTiempo.textContent = elegido.horario ? cuandoPasa(proximo) : "";
+    if (!elegido.horario) estado.textContent = t(esTranvia ? "tranviasSinServicio" : "busesSinHorario");
+    else if (!buses.length) estado.textContent = t(esTranvia ? "tranviasSinServicio" : "busesSinServicio");
+    else if (buses.length === 1) estado.textContent = t(esTranvia ? "tranviasEnCaminoUno" : "busesEnCaminoUno");
+    else estado.textContent = t(esTranvia ? "tranviasEnCamino" : "busesEnCamino", { n: buses.length });
+    if (!raiz.isConnected || raiz.offsetParent === null) return;
+    const base = cuerpo.getBoundingClientRect().top;
+    // Cada bus conserva su dibujo de un momento al siguiente (por la hora en que salió): si
+    // no, cuando el de adelante termina, todos los demás retrocederían un lugar animados.
+    const antes = new Map([...carril.children].map((el) => [el.dataset.salida, el]));
+    // Los que van dentro de un tramo plegado no se dibujan: en el alto de una fila caben muchas
+    // paradas y quedarían unos encima de otros. Los cuenta el botón del tramo.
+    const plegado = (b) => {
+      const i = Math.floor(b.posicion);
+      return anclas[i]?.desde !== undefined && (i + 1 >= anclas.length || anclas[i + 1] === anclas[i]);
+    };
+    const enSalto = new Map();
+    for (const b of buses) if (plegado(b)) enSalto.set(anclas[Math.floor(b.posicion)], (enSalto.get(anclas[Math.floor(b.posicion)]) ?? 0) + 1);
+    for (const salto of new Set(anclas.filter((a) => a?.boton))) {
+      const n = enSalto.get(salto) ?? 0;
+      salto.boton.textContent = n ? t(esTranvia ? "diagramaMasTranvias" : "diagramaMasBuses", { n: salto.ocultas, buses: n }) : t("diagramaMas", { n: salto.ocultas });
+    }
+    const visibles = buses.filter((b) => !plegado(b));
+    const siguen = new Set(visibles.map((b) => String(b.salida)));
+    for (const [salida, el] of antes) if (!siguen.has(salida)) el.remove();
+    visibles.forEach((b) => {
+      const i = Math.floor(b.posicion);
+      const fraccion = b.posicion - i;
+      const y = i + 1 < anclas.length ? alturaDe(i, base) + fraccion * (alturaDe(i + 1, base) - alturaDe(i, base)) : alturaDe(i, base);
+      let bus = antes.get(String(b.salida));
+      if (!bus) {
+        bus = elemento("span", { class: "diagrama-bus", "data-salida": String(b.salida) });
+        bus.innerHTML = glifo;
+        carril.append(bus);
+      }
+      const nuevo = !bus.dataset.y;
+      bus.classList.toggle("animado", animar && !nuevo && !SIN_MOVIMIENTO);
+      bus.classList.toggle("pasado", tieneTu && b.pasado);
+      bus.style.transform = `translateY(${y.toFixed(1)}px)`;
+      bus.dataset.y = y.toFixed(1);
+    });
+  };
+
+  pintar();
+  // Se mueve solo mientras está en pantalla y la página a la vista; se apaga al quitarlo.
+  let visible = false;
+  const observador = "IntersectionObserver" in window ? new IntersectionObserver(([e]) => (visible = e.isIntersecting)) : null;
+  observador?.observe(raiz);
+  const reloj = setInterval(() => {
+    if (!raiz.isConnected) {
+      clearInterval(reloj);
+      observador?.disconnect();
+      return;
+    }
+    if (document.hidden || (observador && !visible)) return;
+    mover(true);
+  }, SIN_MOVIMIENTO ? DIAGRAMA_QUIETO_MS : DIAGRAMA_CADA_MS);
+  // Con otro tamaño de letra o de pantalla, las filas cambian de alto: se recolocan.
+  const recolocar = () => (raiz.isConnected ? mover(false) : window.removeEventListener("resize", recolocar));
+  window.addEventListener("resize", recolocar);
+  return raiz;
+}
+
+/** En el celular, el mapa queda arriba: este botón lleva a ver allí la línea elegida. */
+function botonVerEnMapa() {
+  if (!window.matchMedia("(max-width: 899px)").matches) return null;
+  const boton = elemento("button", { type: "button", class: "secundario" }, t("diagramaVerMapa"));
+  boton.addEventListener("click", verMapaEnCelular);
+  return boton;
 }
 
 /** En el celular el mapa queda abajo: al elegir una ruta o una línea, se baja a verlo. */
@@ -1328,7 +1532,7 @@ function destinosDe(linea) {
 }
 
 /** Tocar una línea la dibuja en el mapa y muestra por dónde pasa; tocarla otra vez lo quita. */
-function alTocarLinea(boton, botones, linea, mapa) {
+function alTocarLinea(boton, botones, linea, mapa, punto = null) {
   const activa = boton.getAttribute("aria-pressed") === "true";
   for (const b of botones) {
     b.setAttribute("aria-pressed", "false");
@@ -1352,8 +1556,8 @@ function alTocarLinea(boton, botones, linea, mapa) {
     paradas: paradasRegistradas,
   });
   if (linea.tipo === "tranvia") mapa.mostrarCapa("tranvia");
-  pintarPasaPor(boton.nextElementSibling, linea);
-  verMapaEnCelular();
+  // En el celular ya no se salta al mapa: el diagrama queda aquí y "Ver en el mapa" lleva allá.
+  pintarPasaPor(boton.nextElementSibling, linea, punto);
 }
 
 /** Las líneas que recorren una calle, cuando se busca la calle sola. */
@@ -1556,7 +1760,7 @@ function pintarLineas(cercanas, mapa, { punto, transporte, estaciones } = {}) {
         ),
       );
       const pasaPor = elemento("div", { class: "pasa-por", hidden: "" });
-      boton.addEventListener("click", () => alTocarLinea(boton, botones, l, mapa));
+      boton.addEventListener("click", () => alTocarLinea(boton, botones, l, mapa, punto));
       botones.push(boton);
       return elemento("li", {}, boton, pasaPor);
     }),

@@ -121,6 +121,12 @@ y los buses que vienen según su frecuencia. Al elegir el tranvía también se v
 estimadas con su frecuencia y su horario habitual (no es su posición real). Con el botón "Servicios" del mapa se prenden las estaciones del tranvía, la
 BiciPública, las ciclovías y los puntos de carga para autos eléctricos.
 
+Al tocar una línea en la pestaña Buses, debajo aparece su diagrama: las paradas en orden de punta a punta,
+como el letrero de una línea de metro, con tu parada marcada, cuánto falta para el próximo bus y los minutos
+desde ella hasta cada parada siguiente. Los buses estimados avanzan sobre el diagrama, en un sentido o en el
+otro. Las paradas son las del registro municipal (el bus también para en otros puntos); en el tranvía son
+sus estaciones, y tu parada es la más cercana.
+
 ## Qué más hace
 
 - **Avisarte antes de cada recolección.** Desde la pestaña Basura te suscribes al calendario de tu zona

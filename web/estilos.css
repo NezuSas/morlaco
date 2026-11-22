@@ -127,6 +127,8 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --superficie: #0b1220;
+    --diagrama-ida: #7aa5ee;
+    --diagrama-retorno: #b197f5;
     --cal: #1e293b;
     --cal-hondo: #172238;
     --linea: #334155;
@@ -172,6 +174,8 @@
 }
 :root[data-theme="dark"] {
   --superficie: #0b1220;
+  --diagrama-ida: #7aa5ee;
+  --diagrama-retorno: #b197f5;
   --cal: #1e293b;
   --cal-hondo: #172238;
   --linea: #334155;
@@ -2689,7 +2693,7 @@ button.opcion-ruta[aria-pressed="false"] .opcion-pasos {
   margin: 0.5rem 0 0;
 }
 
-.lineas li + li {
+.lineas > li + li {
   border-top: 1px solid var(--linea);
 }
 
@@ -2803,6 +2807,253 @@ button.linea[aria-pressed="true"] {
 
 .pasa-por details p {
   margin-top: 0.35rem;
+}
+
+.pasa-por-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.pasa-por-acciones .mi-linea-boton {
+  margin-bottom: 0;
+}
+
+/* El diagrama de una línea: sus paradas en fila sobre un riel del color del sentido (como el
+   letrero de una línea de metro) y, encima del riel, los buses estimados avanzando. */
+.diagrama {
+  --color-bus: var(--diagrama-ida, var(--bus-ida));
+  --columna-riel: 1.9rem;
+  margin: 0.4rem 0 0.9rem;
+  color: var(--tinta);
+  font-size: var(--t-0);
+}
+
+.diagrama.retorno {
+  --color-bus: var(--diagrama-retorno, var(--bus-retorno));
+}
+
+.diagrama.tranvia {
+  --color-bus: var(--tranvia);
+}
+
+.diagrama-sentidos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
+.diagrama-sentido {
+  min-height: 2.5rem;
+  min-width: 0;
+  padding: 0.35rem 0.8rem;
+  border: 1.5px solid var(--linea);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--tinta);
+  font: inherit;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+/* Sin esto, el relleno oscuro de :hover de todos los botones deja el texto ilegible. */
+button.diagrama-sentido:hover {
+  border-color: var(--color-bus);
+  background: color-mix(in srgb, var(--color-bus) 12%, transparent);
+  color: var(--tinta);
+}
+
+button.diagrama-sentido[aria-pressed="true"],
+button.diagrama-sentido[aria-pressed="true"]:hover {
+  border-color: var(--color-bus);
+  background: var(--color-bus);
+  color: var(--superficie);
+}
+
+.diagrama-estado {
+  margin: 0 0 0.4rem;
+  color: var(--tinta-suave);
+}
+
+.diagrama-lejos {
+  margin: 0 0 0.5rem;
+  padding: 0.4rem 0.6rem;
+  border-left: 3px solid var(--color-bus);
+  background: var(--cal);
+  color: var(--tinta);
+}
+
+.diagrama-cuerpo {
+  position: relative;
+}
+
+.diagrama-filas {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* El riel: del primer punto al último. */
+.diagrama-filas::before {
+  content: "";
+  position: absolute;
+  top: 1.1rem;
+  bottom: 1.1rem;
+  left: calc(var(--columna-riel) / 2 - 2px);
+  width: 4px;
+  border-radius: 2px;
+  background: var(--color-bus);
+}
+
+.diagrama-fila,
+.diagrama-salto {
+  display: grid;
+  grid-template-columns: var(--columna-riel) minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 0.55rem;
+  min-height: 2.2rem;
+  padding: 0.15rem 0;
+}
+
+.diagrama-punto {
+  position: relative;
+  z-index: 1;
+  justify-self: center;
+  width: 0.85rem;
+  height: 0.85rem;
+  box-sizing: border-box;
+  border: 3px solid var(--color-bus);
+  border-radius: 50%;
+  background: var(--superficie);
+}
+
+/* Las puntas: un cuadro lleno, como el final de una línea de metro. */
+.diagrama-fila.inicio .diagrama-punto,
+.diagrama-fila.final .diagrama-punto {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 3px;
+  background: var(--color-bus);
+}
+
+.diagrama-fila.inicio .diagrama-nombre,
+.diagrama-fila.final .diagrama-nombre {
+  font-weight: 700;
+}
+
+/* Tu parada: más grande, con un anillo. */
+.diagrama-fila.tu .diagrama-punto {
+  width: 1.2rem;
+  height: 1.2rem;
+  border-width: 0;
+  background: var(--color-bus);
+  box-shadow: 0 0 0 3px var(--superficie), 0 0 0 5.5px var(--color-bus);
+}
+
+.diagrama-fila.tu {
+  min-height: 3rem;
+}
+
+.diagrama-tu {
+  display: block;
+  color: var(--color-bus);
+  font-weight: 700;
+}
+
+.diagrama-fila.antes .diagrama-nombre {
+  color: var(--tinta-suave);
+}
+
+.diagrama-nombre {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.diagrama-viaje,
+.diagrama-tiempo {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.diagrama-viaje {
+  color: var(--tinta-suave);
+}
+
+.diagrama-tiempo {
+  max-width: 9rem;
+}
+
+/* Un tramo plegado: el riel sigue, sin punto, y un botón para verlo entero. */
+.diagrama-salto .diagrama-punto {
+  visibility: hidden;
+}
+
+.diagrama-mas {
+  justify-self: start;
+  min-height: 2.5rem;
+  padding: 0.3rem 0;
+  border: 0;
+  background: none;
+  color: var(--cupula);
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+button.diagrama-mas:hover {
+  border: 0;
+  background: none;
+  color: var(--accion-hondo);
+  text-decoration: underline;
+}
+
+.diagrama-buses {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--columna-riel);
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Un bus estimado sobre el riel: un círculo de su color con el bus de lado. */
+.diagrama-bus {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  margin: -0.875rem 0 0 -0.875rem;
+  border-radius: 50%;
+  background: var(--color-bus);
+  color: var(--superficie);
+  box-shadow: 0 0 0 2px var(--superficie);
+}
+
+.diagrama-bus svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.diagrama-bus.animado {
+  transition: transform 2s linear;
+}
+
+.diagrama-bus.pasado {
+  opacity: 0.45;
+}
+
+.diagrama-nota {
+  margin: 0.4rem 0 0;
+  color: var(--tinta-suave);
 }
 
 /* Buses que pasan por una calle, cuando se busca la calle sola. */

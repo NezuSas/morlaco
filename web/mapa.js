@@ -51,11 +51,11 @@ const CADA_BUSES_QUIETO_MS = 15000; // si se pidió reducir el movimiento: a sal
 // y, encima, un bus visto de lado que no gira. Dibujos propios.
 const SVG_GOTA =
   '<svg class="bus-gota" viewBox="0 0 40 48" aria-hidden="true"><path d="M20 3 L30.2 17.9 A13 13 0 1 1 9.8 17.9 Z" fill="var(--color-bus)" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"/></svg>';
-const SVG_GLIFO =
+export const SVG_GLIFO =
   '<svg class="bus-glifo glifo-bus" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="12" rx="3" fill="currentColor"/><rect x="4" y="7.3" width="3.6" height="3.8" rx=".8" fill="var(--color-bus)"/><rect x="8.6" y="7.3" width="3.6" height="3.8" rx=".8" fill="var(--color-bus)"/><rect x="13.2" y="7.3" width="3.6" height="3.8" rx=".8" fill="var(--color-bus)"/><rect x="17.8" y="7.3" width="2.6" height="6.5" rx=".8" fill="var(--color-bus)"/><rect x="2" y="13.6" width="20" height="1" fill="var(--color-bus)" opacity=".45"/><circle cx="7" cy="17.4" r="2.3" fill="currentColor" stroke="var(--color-bus)" stroke-width="1.3"/><circle cx="17" cy="17.4" r="2.3" fill="currentColor" stroke="var(--color-bus)" stroke-width="1.3"/></svg>';
 // El tranvía de lado, con su pantógrafo y sobre el riel: en el mapa no se confunde con un bus
 // ni con la "T" de las estaciones.
-const SVG_GLIFO_TRANVIA =
+export const SVG_GLIFO_TRANVIA =
   '<svg class="bus-glifo glifo-tranvia" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 2.4h7M10.2 5.6l1.8-3.2 1.8 3.2" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><rect x="1.5" y="6" width="21" height="11.5" rx="4" fill="currentColor"/><rect x="3.6" y="8.2" width="3.6" height="4.2" rx=".9" fill="var(--color-bus)"/><rect x="8" y="8.2" width="3.6" height="4.2" rx=".9" fill="var(--color-bus)"/><rect x="12.4" y="8.2" width="3.6" height="4.2" rx=".9" fill="var(--color-bus)"/><rect x="16.8" y="8.2" width="3.6" height="4.2" rx=".9" fill="var(--color-bus)"/><rect x="1.5" y="14.2" width="21" height="1" fill="var(--color-bus)" opacity=".45"/><rect x="0.5" y="19.4" width="23" height="1.4" rx=".7" fill="currentColor"/></svg>';
 const PROPIO = "m-"; // prefijo de las fuentes y capas de Morlaco, para conservarlas al cambiar de estilo
 
