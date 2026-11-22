@@ -133,6 +133,31 @@ function imagenFlecha() {
 }
 
 /**
+ * La cruz de las farmacias para la capa de todas: la misma de sus marcas (cuadro blanco con borde
+ * y cruz verdes), dibujada al doble para pantallas nítidas.
+ */
+function imagenCruz() {
+  const n = 40;
+  const lienzo = document.createElement("canvas");
+  lienzo.width = lienzo.height = n;
+  const g = lienzo.getContext("2d");
+  const cuadro = (x, y, ancho, alto, radio) => {
+    g.beginPath();
+    if (g.roundRect) g.roundRect(x, y, ancho, alto, radio);
+    else g.rect(x, y, ancho, alto);
+    g.fill();
+  };
+  g.fillStyle = "#15803d";
+  cuadro(2, 2, n - 4, n - 4, 10);
+  g.fillStyle = "#fff";
+  cuadro(6, 6, n - 12, n - 12, 7);
+  g.fillStyle = "#15803d";
+  cuadro(17, 10, 6, 20, 1);
+  cuadro(10, 17, 20, 6, 1);
+  return g.getImageData(0, 0, n, n);
+}
+
+/**
  * El letrero de una parada, como los de la calle: un cuadro del color del sentido, con
  * borde y un bus de frente que contrastan con él (blancos en el modo claro, oscuros en el
  * oscuro). Se dibuja al doble para pantallas nítidas.
@@ -204,7 +229,7 @@ function sinMapa(contenedor) {
   contenedor.replaceChildren(Object.assign(document.createElement("p"), { textContent: t("mapaNoDisponible") }));
 }
 
-const METODOS = ["ponerAire", "agregarMercados", "agregarSalud", "mostrarCercanos", "verLugar", "agregarCapas", "mostrarCapa", "resaltar", "resaltarLinea", "dibujarRuta", "mostrar", "mostrarFarmacias", "verFarmacia", "marcarHoy", "olvidar"];
+const METODOS = ["ponerAire", "agregarMercados", "agregarSalud", "agregarFarmacias", "mostrarCercanos", "verLugar", "agregarCapas", "mostrarCapa", "resaltar", "resaltarLinea", "dibujarRuta", "mostrar", "mostrarFarmacias", "verFarmacia", "marcarHoy", "olvidar"];
 
 /**
  * El mapa de la página. Se devuelve enseguida: la página no espera a MapLibre para mostrar
@@ -432,11 +457,13 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
     paradasLinea: vacio(),
     ciclovias: vacio(),
     tranvia: vacio(),
+    farmaciasTodas: vacio(),
   };
   const transicion = { duration: SIN_MOVIMIENTO ? 0 : 450 };
   const visibles = new Set();
   const verCiclovias = () => (visibles.has("ciclovias") ? "visible" : "none");
   const verTranvia = () => (visibles.has("tranvia") ? "visible" : "none");
+  const verFarmacias = () => (visibles.has("farmacias") ? "visible" : "none");
 
   // Ida en azul cúpula y retorno en púrpura punteado; se puede ver un solo sentido.
   const PRINCIPAL = ["!=", ["get", "tipo"], "alargue"];
@@ -662,6 +689,19 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
       },
     },
     {
+      // Todas las farmacias de la ciudad (capa "Farmacias" de Servicios): son cientos, así que
+      // van dibujadas por el mapa y no como marcas sueltas. De lejos, más pequeñas.
+      id: `${PROPIO}farmacias-todas`,
+      type: "symbol",
+      source: `${PROPIO}farmaciasTodas`,
+      layout: {
+        visibility: verFarmacias(),
+        "icon-image": `${PROPIO}cruz`,
+        "icon-size": ["interpolate", ["linear"], ["zoom"], 11, 0.45, 14, 0.75, 16, 1],
+        "icon-allow-overlap": true,
+      },
+    },
+    {
       id: `${PROPIO}ruta-pie`,
       type: "line",
       source: `${PROPIO}rutaPie`,
@@ -718,6 +758,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
     for (const id of ["tranvia", "tranvia-borde"]) {
       if (mapa.getLayer(`${PROPIO}${id}`)) mapa.setLayoutProperty(`${PROPIO}${id}`, "visibility", verTranvia());
     }
+    if (mapa.getLayer(`${PROPIO}farmacias-todas`)) mapa.setLayoutProperty(`${PROPIO}farmacias-todas`, "visibility", verFarmacias());
   };
 
   /**
@@ -891,6 +932,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
     const ultimaDibujada = capas.findLastIndex((c) => c.type !== "symbol");
     const nombres = capas.slice(ultimaDibujada + 1).find((c) => c.type === "symbol")?.id;
     if (!mapa.hasImage(`${PROPIO}flecha`)) mapa.addImage(`${PROPIO}flecha`, imagenFlecha(), { sdf: true, pixelRatio: 2 });
+    if (!mapa.hasImage(`${PROPIO}cruz`)) mapa.addImage(`${PROPIO}cruz`, imagenCruz(), { pixelRatio: 2 });
     // Los letreros llevan el color de cada sentido, que cambia con el modo oscuro.
     for (const [sentido, variable] of [["ida", "--sentido-ida"], ["retorno", "--sentido-retorno"]]) {
       const id = `${PROPIO}parada-${sentido}`;
@@ -1074,6 +1116,19 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
       etiquetaFlotante.remove();
     });
   }
+  // Una farmacia de la capa de todas: su nombre y, si se sabe, si está abierta ahora.
+  const CAPA_FARMACIAS = `${PROPIO}farmacias-todas`;
+  let textoDeFarmacia = (p) => p.nombre;
+  const verFarmaciaDeCapa = (f) =>
+    etiquetaFlotante.setLngLat(f.geometry.coordinates).setText(textoDeFarmacia(f.properties)).addTo(mapa);
+  mapa.on("mousemove", CAPA_FARMACIAS, (e) => {
+    mapa.getCanvas().style.cursor = "pointer";
+    verFarmaciaDeCapa(e.features[0]);
+  });
+  mapa.on("mouseleave", CAPA_FARMACIAS, () => {
+    mapa.getCanvas().style.cursor = "";
+    etiquetaFlotante.remove();
+  });
   // Con una calle ya elegida, un solo toque en el mapa no la cambia: al moverlo o al acercarlo
   // es fácil tocarlo sin querer. Se cambia con dos toques seguidos en el mismo sitio (o doble
   // clic), así que el doble toque ya no acerca el mapa: para eso están los botones y los dos
@@ -1096,6 +1151,20 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
       toqueAnterior = null;
       etiquetaFlotante.setLngLat(parada.geometry.coordinates).setText(textoParada(parada)).addTo(mapa);
       return;
+    }
+    // Una farmacia de la capa: con algo de margen, que con el dedo son pequeñas.
+    if (visibles.has("farmacias") && mapa.getLayer(CAPA_FARMACIAS)) {
+      const m = 10;
+      const caja = [
+        [e.point.x - m, e.point.y - m],
+        [e.point.x + m, e.point.y + m],
+      ];
+      const [farmacia] = mapa.queryRenderedFeatures(caja, { layers: [CAPA_FARMACIAS] });
+      if (farmacia) {
+        toqueAnterior = null;
+        verFarmaciaDeCapa(farmacia);
+        return;
+      }
     }
     const punto = { lat: e.lngLat.lat, lon: e.lngLat.lng };
     if (!contenedor.classList.contains("con-punto")) return alElegir(punto);
@@ -1121,6 +1190,9 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
   let lugarPedido = null; // el mercado u hospital que se pidió ver desde una lista
   let paradas = [];
   let farmacias = []; // las de turno más cercanas, en su esquina aproximada
+  const textoFarmacia = (f) => (f.turno ? t("farmaciaMapa", { nombre: f.nombre }) : f.nombre);
+  const marcaFarmacia = (f) =>
+    marcador(`<span class="etiqueta-farmacia${f.turno ? " turno" : ""}">${SVG_CRUZ}</span>`, [f.lon, f.lat], { texto: textoFarmacia(f), clase: "aparece" });
   let vezFarmacia = 0; // sube con cada "Ver en el mapa": solo la última muestra su nombre
   let rutaMarcas = [];
   let elegido = null;
@@ -1153,6 +1225,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
 
   // ---------- Capas de movilidad ----------
   const grupos = { tranvia: [], bicis: [], carga: [], mercados: [], salud: [], aire: [] };
+  let todasLasFarmacias = null; // las de datos/ciudad/farmacias.json, para su capa
   const pendientes = new Map();
   function prepararCapas(bicicletas, estaciones) {
     if (estaciones) {
@@ -1181,6 +1254,20 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
         poner("tranvia", coleccion(lineas.features.filter((f) => f.properties.tipo === "tranvia")));
       });
     }
+    if (todasLasFarmacias) {
+      pendientes.set("farmacias", async () =>
+        poner(
+          "farmaciasTodas",
+          coleccion(
+            todasLasFarmacias.map((f) => ({
+              type: "Feature",
+              properties: { nombre: f.nombre ?? t("farmaciaSinNombre"), horario: f.horario },
+              geometry: { type: "Point", coordinates: [f.lon, f.lat] },
+            })),
+          ),
+        ),
+      );
+    }
     pendientes.set("carga", async () => {
       const carga = await cargarJson("movilidad/carga.geojson");
       grupos.carga = carga.features.map((f) =>
@@ -1198,6 +1285,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
       ["carga", t("capaCarga"), t("capaCargaQue"), `<span class="marca-capa carga">${SVG_RAYO}</span>`],
       ...(grupos.mercados.length ? [["mercados", t("capaMercados"), t("capaMercadosQue"), `<span class="marca-capa mercado">${SVG_MERCADO}</span>`]] : []),
       ...(grupos.salud.length ? [["salud", t("capaSalud"), t("capaSaludQue"), '<span class="marca-capa salud">H</span>']] : []),
+      ...(todasLasFarmacias ? [["farmacias", t("capaFarmacias"), t("capaFarmaciasQue", { n: todasLasFarmacias.length }), `<span class="etiqueta-farmacia">${SVG_CRUZ}</span>`]] : []),
       // El aire llega después (se pide en vivo a la EMOV): la opción está siempre y sus marcas se
       // ponen cuando llegan los datos.
       ["aire", t("capaAire"), t("capaAireQue"), `<span class="marca-aire n1">${SVG_AIRE}</span>`],
@@ -1243,8 +1331,8 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
         pendientes.set(clave, cargar); // se reintentará la próxima vez
       }
     }
-    if (clave === "ciclovias" || clave === "tranvia") ajustarCiclovias();
-    if (clave !== "ciclovias") grupos[clave].forEach((m) => (visibles.has(clave) ? m.addTo(mapa) : m.remove()));
+    if (clave === "ciclovias" || clave === "tranvia" || clave === "farmacias") ajustarCiclovias();
+    grupos[clave]?.forEach((m) => (visibles.has(clave) ? m.addTo(mapa) : m.remove()));
     if (clave === "tranvia") moverTranvias();
   }
 
@@ -1827,19 +1915,15 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
       if (SIN_MOVIMIENTO) mapa.jumpTo({ center: destino, zoom });
       else mapa.flyTo({ center: destino, zoom, speed: 1.4, curve: 1.42, essential: false });
     },
-    /** Las farmacias de turno más cercanas: una cruz verde en la esquina de su dirección. */
+    /**
+     * Las farmacias cercanas: una cruz verde. Las de turno (`turno`), llena y en la esquina
+     * aproximada de su dirección; las demás (de OpenStreetMap), con borde.
+     */
     mostrarFarmacias(lista) {
       farmacias = quitar(farmacias);
       lugarPedido?.remove();
       lugarPedido = null;
-      for (const f of lista) {
-        farmacias.push(
-          marcador(`<span class="etiqueta-farmacia">${SVG_CRUZ}</span>`, [f.lon, f.lat], {
-            texto: t("farmaciaMapa", { nombre: f.nombre }),
-            clase: "aparece",
-          }).addTo(mapa),
-        );
-      }
+      for (const f of lista) farmacias.push(marcaFarmacia(f).addTo(mapa));
     },
     /**
      * Las estaciones de calidad del aire de la EMOV, en "Servicios": cada una con su índice, del
@@ -1854,6 +1938,14 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
         }),
       );
       if (mostradas) grupos.aire.forEach((marca) => marca.addTo(mapa));
+    },
+    /**
+     * Todas las farmacias (datos/ciudad/farmacias.json) como capa de "Servicios". `texto` dice
+     * qué mostrar al tocar una (su nombre y si está abierta). Antes de agregarCapas.
+     */
+    agregarFarmacias(datos, texto) {
+      todasLasFarmacias = datos?.farmacias?.length ? datos.farmacias : null;
+      if (texto) textoDeFarmacia = texto;
     },
     /** Los hospitales y centros de salud como capa (datos/ciudad/salud.json). Antes de agregarCapas. */
     agregarSalud(salud) {
@@ -1908,10 +2000,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
         return Math.abs(p.lng - f.lon) < 1e-7 && Math.abs(p.lat - f.lat) < 1e-7;
       });
       if (!marca) {
-        marca = marcador(`<span class="etiqueta-farmacia">${SVG_CRUZ}</span>`, lugar, {
-          texto: t("farmaciaMapa", { nombre: f.nombre }),
-          clase: "aparece",
-        }).addTo(mapa);
+        marca = marcaFarmacia(f).addTo(mapa);
         farmacias.push(marca);
       }
       // La pedida se ve aunque haya una ruta o una línea dibujada (que esconden las demás).
@@ -1921,7 +2010,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
       const miVez = ++vezFarmacia;
       const mostrarNombre = () => {
         if (miVez !== vezFarmacia || !farmacias.includes(marca)) return;
-        etiquetaFlotante.setLngLat(lugar).setText(t("farmaciaMapa", { nombre: f.nombre })).addTo(mapa);
+        etiquetaFlotante.setLngLat(lugar).setText(textoFarmacia(f)).addTo(mapa);
       };
       const zoom = Math.max(mapa.getZoom(), 15.5);
       if (SIN_MOVIMIENTO) {

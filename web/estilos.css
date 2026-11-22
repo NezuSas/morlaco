@@ -2239,6 +2239,40 @@ a.ficha .pastilla.estado-alerta {
   text-underline-offset: 4px;
 }
 
+/* Lo que se sabe de su horario, y si es una de las de turno. */
+.farmacia-estado {
+  margin-top: 0.1rem;
+  font-size: var(--t-0);
+  color: var(--tinta-suave);
+}
+
+.farmacia-estado.abierta {
+  color: var(--ok);
+  font-weight: 700;
+}
+
+.farmacia-turno {
+  justify-self: start;
+  margin-top: 0.25rem;
+  padding: 0.05rem 0.5rem;
+  border-radius: 999px;
+  background: #15803d;
+  color: #fff;
+  font-size: var(--t-0);
+  font-weight: 700;
+}
+
+/* "¿Falta una farmacia?", bajo la lista de las cercanas. */
+.falta-farmacia {
+  margin-top: 0.9rem;
+}
+
+.falta-farmacia a {
+  color: var(--cupula);
+  font-weight: 700;
+  text-underline-offset: 4px;
+}
+
 /* El aviso antes de las farmacias sin ubicación. */
 .farmacias-lista > li.farmacias-sin-lugar {
   display: block;
@@ -3156,6 +3190,13 @@ button.lugar-fila[aria-pressed="true"] {
   box-shadow: 0 1px 3px rgb(0 0 0 / 0.3);
 }
 
+/* La de turno, llena: es la que cuenta de noche. */
+.etiqueta-farmacia.turno {
+  background: #15803d;
+  color: #fff;
+  border-color: #fff;
+}
+
 .etiqueta-farmacia svg {
   width: 15px;
   height: 15px;
@@ -3460,7 +3501,8 @@ button.lugar-fila[aria-pressed="true"] {
   border-top: 1px solid var(--linea);
 }
 
-.capa-fila .marca-capa {
+.capa-fila .marca-capa,
+.capa-fila .etiqueta-farmacia {
   justify-self: center;
   box-shadow: none;
 }

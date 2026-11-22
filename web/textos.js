@@ -347,6 +347,8 @@ const TEXTOS = {
     capaAireQue: "Las estaciones de la EMOV, con su índice",
     aireEstacionMapa: "Estación {estacion}: índice {valor} ({nivel})",
     capaSaludQue: "Hospitales y centros de salud",
+    capaFarmacias: "Farmacias",
+    capaFarmaciasQue: ({ n }) => `Las ${n} de Cuenca, no solo las de turno`,
     mercadoMapa: "Mercado: {nombre}",
     saludMapa: "Centro de salud: {nombre}",
     saludMapaEmergencias: "Con emergencias: {nombre}",
@@ -393,7 +395,7 @@ const TEXTOS = {
     sobreLuz:
       "Los cortes de luz son los programados que <a href=\"https://www.centrosur.gob.ec/suspensiones-programadas/\">Centro Sur</a> publica en su web. Cuando deja de publicar, no hay forma de saber si hay cortes, y entonces conviene mirar sus redes sociales.",
     sobreFarmacias:
-      "Las farmacias de turno vienen de la lista mensual de <a href=\"https://www.controlsanitario.gob.ec/turnos-de-farmacias/\">ARCSA</a> para Azuay, que a veces trae errores. La distancia se calcula con la dirección que publica ARCSA, así que es aproximada.",
+      "Las farmacias de turno vienen de la lista mensual de <a href=\"https://www.controlsanitario.gob.ec/turnos-de-farmacias/\">ARCSA</a> para Azuay, que a veces trae errores. La distancia se calcula con la dirección que publica ARCSA, así que es aproximada. Las demás farmacias (de día casi todas atienden) vienen de <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a>: pueden faltar algunas y pocas tienen su horario.",
     sobreBuses:
       "Los trazados de buses los publicó el municipio en 2022 y los horarios en 2025, en el portal <a href=\"https://cuencaendatos.cuenca.gob.ec\">Cuenca en Datos</a>. Algunas líneas pueden haber cambiado desde entonces, así que manda el letrero del bus. Las paradas son las del registro municipal, que no tiene todas. Las distancias van en línea recta y los tiempos se estiman con la frecuencia del día, a 15 km/h en bus y 4,5 km/h a pie.",
     sobreCalles:
@@ -476,7 +478,23 @@ const TEXTOS = {
     luzResumen: ({ n }) =>
       `Hoy hay ${n} ${n === 1 ? "corte programado" : "cortes programados"} en la zona de Centro Sur.`,
     luzSinCoordenadas: "Centro Sur no publica coordenadas. Busca tu calle o tu sector en la lista.",
-    tituloFarmacias: "Farmacias de turno",
+    tituloFarmacias: "Farmacias",
+    farmaciaSinNombre: "Farmacia",
+    farmaciaDistancia: "A unos {distancia}",
+    farmaciaAbierta: "Abierta, hasta las {hasta}",
+    farmaciaAbiertaSiempre: "Abierta las 24 horas",
+    farmaciaCerradaHoy: "Cerrada ahora",
+    farmaciaAbre: "Cerrada; abre a las {hora}",
+    farmaciaAbreManana: "Cerrada; abre mañana a las {hora}",
+    farmaciaEsDeTurno: "De turno esta semana",
+    farmaciasCercaTitulo: "Cerca de ti",
+    farmaciasAbiertasAhora: "Otras abiertas ahora cerca",
+    farmaciasCercaNota: ({ n }) => `De las ${n} farmacias de Cuenca que tiene OpenStreetMap. Pueden faltar algunas y pocas tienen su horario: llama antes de ir.`,
+    farmaciasCercaNinguna: "OpenStreetMap no tiene farmacias a menos de 1,5 km de tu punto.",
+    farmaciasTurnoTitulo: "De turno esta semana",
+    farmaciasTurnoNoche: "De turno esta noche",
+    farmaciaFalta: "¿Falta una farmacia?",
+    farmaciaFaltaComo: "Agrégala en OpenStreetMap, gratis, o desde el celular con la app Every Door o StreetComplete. Morlaco la suma el lunes siguiente, después de revisar los cambios.",
     farmaciasResumen: ({ n, fecha }) =>
       `Hasta el ${fecha} a las 06:00, ${n === 1 ? "está de turno 1 farmacia" : `están de turno ${n} farmacias`} en Cuenca, abiertas las 24 horas.`,
     farmaciasAviso: "La lista es de ARCSA y a veces trae errores. Llama antes de ir.",
@@ -942,6 +960,8 @@ const TEXTOS = {
     capaAireQue: "EMOV stations, with their index",
     aireEstacionMapa: "{estacion} station: index {valor} ({nivel})",
     capaSaludQue: "Hospitals and health centres",
+    capaFarmacias: "Pharmacies",
+    capaFarmaciasQue: ({ n }) => `All ${n} in Cuenca, not only those on duty`,
     mercadoMapa: "Market: {nombre}",
     saludMapa: "Health centre: {nombre}",
     saludMapaEmergencias: "Emergency department: {nombre}",
@@ -988,7 +1008,7 @@ const TEXTOS = {
     sobreLuz:
       "Power cuts are the planned outages <a href=\"https://www.centrosur.gob.ec/suspensiones-programadas/\">Centro Sur</a> publishes on its website. When it stops publishing there’s no way to know whether there are cuts, so it’s worth checking its social media.",
     sobreFarmacias:
-      "On-duty pharmacies come from the monthly list by <a href=\"https://www.controlsanitario.gob.ec/turnos-de-farmacias/\">ARCSA</a> for Azuay, which sometimes has mistakes. Distance is worked out from the address ARCSA publishes, so it’s approximate.",
+      "On-duty pharmacies come from the monthly list by <a href=\"https://www.controlsanitario.gob.ec/turnos-de-farmacias/\">ARCSA</a> for Azuay, which sometimes has mistakes. Distance is worked out from the address ARCSA publishes, so it’s approximate. The other pharmacies (almost all are open during the day) come from <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a>: some may be missing and few list their hours.",
     sobreBuses:
       "The city published the bus routes in 2022 and the timetables in 2025, on the <a href=\"https://cuencaendatos.cuenca.gob.ec\">Cuenca en Datos</a> portal. Some lines may have changed since, so the sign on the bus has the last word. Stops are those in the city’s register, which doesn’t have all of them. Distances are in a straight line and times are estimated from the day’s frequency, at 15 km/h by bus and 4.5 km/h on foot.",
     sobreCalles:
@@ -1071,7 +1091,23 @@ const TEXTOS = {
     luzResumen: ({ n }) =>
       `Today there ${n === 1 ? "is 1 scheduled outage" : `are ${n} scheduled outages`} in Centro Sur’s area.`,
     luzSinCoordenadas: "Centro Sur doesn’t publish coordinates. Look for your street or area in the list.",
-    tituloFarmacias: "Pharmacies on duty",
+    tituloFarmacias: "Pharmacies",
+    farmaciaSinNombre: "Pharmacy",
+    farmaciaDistancia: "About {distancia} away",
+    farmaciaAbierta: "Open until {hasta}",
+    farmaciaAbiertaSiempre: "Open 24 hours",
+    farmaciaCerradaHoy: "Closed now",
+    farmaciaAbre: "Closed; opens at {hora}",
+    farmaciaAbreManana: "Closed; opens tomorrow at {hora}",
+    farmaciaEsDeTurno: "On duty this week",
+    farmaciasCercaTitulo: "Near you",
+    farmaciasAbiertasAhora: "Others open now nearby",
+    farmaciasCercaNota: ({ n }) => `From the ${n} Cuenca pharmacies in OpenStreetMap. Some may be missing and few list their hours: call before you go.`,
+    farmaciasCercaNinguna: "OpenStreetMap has no pharmacies within 1.5 km of your spot.",
+    farmaciasTurnoTitulo: "On duty this week",
+    farmaciasTurnoNoche: "On duty tonight",
+    farmaciaFalta: "Is a pharmacy missing?",
+    farmaciaFaltaComo: "Add it on OpenStreetMap, for free, or from your phone with the Every Door or StreetComplete app. Morlaco adds it the following Monday, after reviewing the changes.",
     farmaciasResumen: ({ n, fecha }) =>
       `Until ${fecha} at 06:00, ${n === 1 ? "1 pharmacy is" : `${n} pharmacies are`} on duty in Cuenca, open 24 hours.`,
     farmaciasAviso: "The list comes from ARCSA and sometimes has mistakes. Call before you go.",

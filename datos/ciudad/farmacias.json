@@ -1,0 +1,3116 @@
+{
+  "metadata": {
+    "titulo": "Farmacias de Cuenca",
+    "fuente": "OpenStreetMap, vía la API Overpass",
+    "atribucion": "© colaboradores de OpenStreetMap",
+    "licencia": "Open Database License (ODbL) 1.0",
+    "nota": "Todas las farmacias que OpenStreetMap tiene en la ciudad, no solo las de turno. horario es la etiqueta opening_hours de OpenStreetMap tal cual (null si no la tiene; \"24/7\" es abierta siempre). nombre es null si no lo tiene. Los datos son de la comunidad y pueden faltar farmacias: conviene llamar antes de ir."
+  },
+  "farmacias": [
+    {
+      "osm": "node/4829497729",
+      "nombre": "Adelys",
+      "lat": -2.89979,
+      "lon": -79.00773,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13638883008",
+      "nombre": "Adelys Garden",
+      "lat": -2.9,
+      "lon": -79.00465,
+      "direccion": "Juan Jaramillo 8-21",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13939342001",
+      "nombre": "Austro Farma",
+      "lat": -2.8904,
+      "lon": -79.00902,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/14142642606",
+      "nombre": "Austro Farmacia",
+      "lat": -2.88879,
+      "lon": -79.02602,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13148527801",
+      "nombre": "Bio Armonia",
+      "lat": -2.89948,
+      "lon": -79.01134,
+      "direccion": "Avenida Loja 1-82",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4736769521",
+      "nombre": "Biofarmacia",
+      "lat": -2.87678,
+      "lon": -79.03064,
+      "direccion": "Abelardo J. Andrade",
+      "telefono": "072857026",
+      "horario": "Mo-Su 07:00-22:00"
+    },
+    {
+      "osm": "node/13850640904",
+      "nombre": "Bione",
+      "lat": -2.88751,
+      "lon": -79.00811,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/14133923404",
+      "nombre": "Botica Olmedo",
+      "lat": -2.89584,
+      "lon": -79.00169,
+      "direccion": "Hermano Miguel 10-71",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/1778229004",
+      "nombre": "Boticas Internacional",
+      "lat": -2.89526,
+      "lon": -79.00303,
+      "direccion": "Mariscal Lamar 7-45",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4391377991",
+      "nombre": "Boutique Olmedo",
+      "lat": -2.90023,
+      "lon": -79.00396,
+      "direccion": "Juan Jaramillo 7-39",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/2565667587",
+      "nombre": "C&C",
+      "lat": -2.91286,
+      "lon": -79.00095,
+      "direccion": null,
+      "telefono": "0984473706",
+      "horario": null
+    },
+    {
+      "osm": "node/4539864291",
+      "nombre": "CORPDESFA",
+      "lat": -2.90907,
+      "lon": -79.01247,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/2616742994",
+      "nombre": "CORPDESFA",
+      "lat": -2.8793,
+      "lon": -78.98082,
+      "direccion": "Avenida de las Américas 1-15",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/11214227737",
+      "nombre": "Carlo Pharmacy",
+      "lat": -2.89465,
+      "lon": -79.05089,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/5143463921",
+      "nombre": "Carmita García",
+      "lat": -2.89528,
+      "lon": -79.00232,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4752069822",
+      "nombre": "Casa del diabéticos",
+      "lat": -2.90307,
+      "lon": -79.01532,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/6384042188",
+      "nombre": "Centenario",
+      "lat": -2.90267,
+      "lon": -79.00663,
+      "direccion": "Avenida Fray Vicente Solano",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4692270990",
+      "nombre": "Comadrona",
+      "lat": -2.86819,
+      "lon": -78.95128,
+      "direccion": "Camino a Paccha",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/14295083782",
+      "nombre": "Comesto Logika",
+      "lat": -2.89024,
+      "lon": -78.9821,
+      "direccion": "Sara Urco",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/1756110599",
+      "nombre": "Comunitarias San Joaquín",
+      "lat": -2.8962,
+      "lon": -79.0523,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/14044356601",
+      "nombre": "Corpdesfa",
+      "lat": -2.89944,
+      "lon": -78.98485,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/11151921905",
+      "nombre": "Corpdesfa",
+      "lat": -2.894,
+      "lon": -79.0072,
+      "direccion": "Mariscal Lamar 11-88",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13798817901",
+      "nombre": "Corpdesfa",
+      "lat": -2.88186,
+      "lon": -78.98492,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/5008277425",
+      "nombre": "Corpdesfa Arenal",
+      "lat": -2.89562,
+      "lon": -79.03279,
+      "direccion": "Avenida Carlos Arizaga Vega",
+      "telefono": null,
+      "horario": "Mo-Fr 07:00-19:00; Sa 08:00-16:00"
+    },
+    {
+      "osm": "node/4235442092",
+      "nombre": "Cruz Azul",
+      "lat": -2.93112,
+      "lon": -79.04372,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13159046001",
+      "nombre": "Cruz Azul",
+      "lat": -2.91593,
+      "lon": -79.03807,
+      "direccion": "Avenida de las Américas",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/6378486447",
+      "nombre": "Cruz Azul",
+      "lat": -2.91538,
+      "lon": -79.01817,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4689164689",
+      "nombre": "Cruz Azul",
+      "lat": -2.91368,
+      "lon": -79.03934,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/10176634317",
+      "nombre": "Cruz Azul",
+      "lat": -2.90908,
+      "lon": -78.99991,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/3260569862",
+      "nombre": "Cruz Azul",
+      "lat": -2.90314,
+      "lon": -79.02001,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "way/553397535",
+      "nombre": "Cruz Azul",
+      "lat": -2.90277,
+      "lon": -78.98424,
+      "direccion": "Avenida Max Uhle",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/3839227716",
+      "nombre": "Cruz Azul",
+      "lat": -2.90086,
+      "lon": -79.00053,
+      "direccion": "Antonio Vargas Machuca",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/5333744701",
+      "nombre": "Cruz Azul",
+      "lat": -2.89961,
+      "lon": -79.02679,
+      "direccion": "Avenida de las Américas",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/7105916317",
+      "nombre": "Cruz Azul",
+      "lat": -2.89873,
+      "lon": -79.00511,
+      "direccion": "Presidente Córdova 6-92",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/10241258873",
+      "nombre": "Cruz Azul",
+      "lat": -2.89742,
+      "lon": -79.00604,
+      "direccion": "Mariscal Sucre 10-02",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4909750821",
+      "nombre": "Cruz Azul",
+      "lat": -2.89695,
+      "lon": -79.00387,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4827861921",
+      "nombre": "Cruz Azul",
+      "lat": -2.89642,
+      "lon": -79.00673,
+      "direccion": "Calle General Torres",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/5341720272",
+      "nombre": "Cruz Azul",
+      "lat": -2.89639,
+      "lon": -79.00273,
+      "direccion": "Presidente Borrero 9-96",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/7969024854",
+      "nombre": "Cruz Azul",
+      "lat": -2.89577,
+      "lon": -79.00456,
+      "direccion": "Gran Colombia 8-92",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12516774001",
+      "nombre": "Cruz Azul",
+      "lat": -2.89567,
+      "lon": -79.00057,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/1778229070",
+      "nombre": "Cruz Azul",
+      "lat": -2.89558,
+      "lon": -79.00167,
+      "direccion": "Mariscal Lamar 6-03",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/5335443386",
+      "nombre": "Cruz Azul",
+      "lat": -2.89481,
+      "lon": -78.99941,
+      "direccion": "Antonio Vargas Machuca",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/11228203037",
+      "nombre": "Cruz Azul",
+      "lat": -2.89267,
+      "lon": -79.00496,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12670884601",
+      "nombre": "Cruz Azul",
+      "lat": -2.89144,
+      "lon": -79.00893,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/10665784005",
+      "nombre": "Cruz Azul",
+      "lat": -2.89134,
+      "lon": -79.0235,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4154579913",
+      "nombre": "Cruz Azul",
+      "lat": -2.89046,
+      "lon": -79.02881,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/3895139671",
+      "nombre": "Cruz Azul",
+      "lat": -2.89027,
+      "lon": -78.99764,
+      "direccion": "Avenida Héroes de Verdeloma",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4127070591",
+      "nombre": "Cruz Azul",
+      "lat": -2.88392,
+      "lon": -79.01612,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/3780389790",
+      "nombre": "Cruz Azul",
+      "lat": -2.88383,
+      "lon": -78.99064,
+      "direccion": "Avenida de las Américas",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "way/1569569293",
+      "nombre": "Cruz Azul",
+      "lat": -2.85037,
+      "lon": -79.01292,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12641484101",
+      "nombre": "Cuxibamba",
+      "lat": -2.90215,
+      "lon": -79.0065,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12826090401",
+      "nombre": "Cuxibamba",
+      "lat": -2.88424,
+      "lon": -79.00265,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "way/664892860",
+      "nombre": "Dulce Maria",
+      "lat": -2.87774,
+      "lon": -78.94507,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/2539830476",
+      "nombre": "Económicas",
+      "lat": -2.9112,
+      "lon": -79.03602,
+      "direccion": "Avenida de las Américas",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4717533297",
+      "nombre": "El Ahorro",
+      "lat": -2.90275,
+      "lon": -79.02304,
+      "direccion": "Avenida Unidad Nacional",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/1764250765",
+      "nombre": "El Paraiso",
+      "lat": -2.90617,
+      "lon": -78.9884,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/10202323017",
+      "nombre": "El descuento",
+      "lat": -2.90378,
+      "lon": -79.00874,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/2565553507",
+      "nombre": "El Ángel",
+      "lat": -2.9117,
+      "lon": -78.99839,
+      "direccion": "Avenida Paucarbamba",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12281972902",
+      "nombre": "FARMACIA S.M",
+      "lat": -2.91178,
+      "lon": -79.00792,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12281992301",
+      "nombre": "FARMACIA S.M",
+      "lat": -2.90242,
+      "lon": -78.99282,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12281996001",
+      "nombre": "FARMACIA S.M",
+      "lat": -2.88579,
+      "lon": -78.95773,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "way/831976186",
+      "nombre": "FARMAHORRO MAS",
+      "lat": -2.85328,
+      "lon": -78.98068,
+      "direccion": "Vía a San Miguel",
+      "telefono": null,
+      "horario": "Mo-Fr 09:00-18:00"
+    },
+    {
+      "osm": "node/13176186054",
+      "nombre": "Famacia MM",
+      "lat": -2.91782,
+      "lon": -79.04844,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/14020226401",
+      "nombre": "FarmAlianza",
+      "lat": -2.90462,
+      "lon": -79.0052,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/14103893101",
+      "nombre": "FarmAlianza",
+      "lat": -2.90329,
+      "lon": -79.00958,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13585985404",
+      "nombre": "Farma Azuay",
+      "lat": -2.90998,
+      "lon": -79.02396,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/11341961471",
+      "nombre": "Farma BS",
+      "lat": -2.89416,
+      "lon": -79.0128,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/14045082801",
+      "nombre": "FarmaAty",
+      "lat": -2.90018,
+      "lon": -79.00028,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/7766338842",
+      "nombre": "FarmaSol",
+      "lat": -2.92342,
+      "lon": -79.01022,
+      "direccion": "Camino a Turi",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/5332072667",
+      "nombre": "FarmaSur",
+      "lat": -2.93571,
+      "lon": -79.04573,
+      "direccion": "Panamerica Sur",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/14295407001",
+      "nombre": "Farmaci VIDA",
+      "lat": -2.90648,
+      "lon": -79.0436,
+      "direccion": "1 de septiembre",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12498396501",
+      "nombre": "Farmacia",
+      "lat": -2.89148,
+      "lon": -79.00496,
+      "direccion": "Pío Bravo 10-10",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4671590692",
+      "nombre": "Farmacia",
+      "lat": -2.88321,
+      "lon": -79.05679,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4671617194",
+      "nombre": "Farmacia",
+      "lat": -2.88284,
+      "lon": -79.05791,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4519706590",
+      "nombre": "Farmacia",
+      "lat": -2.88109,
+      "lon": -79.06158,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12656833101",
+      "nombre": "Farmacia Baños",
+      "lat": -2.91968,
+      "lon": -79.06221,
+      "direccion": null,
+      "telefono": null,
+      "horario": "Mo-Sa 09:00-18:00"
+    },
+    {
+      "osm": "node/6983210794",
+      "nombre": "Farmacia Bione",
+      "lat": -2.89479,
+      "lon": -78.99524,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4592215389",
+      "nombre": "Farmacia Bravo",
+      "lat": -2.91633,
+      "lon": -79.03321,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "way/552031218",
+      "nombre": "Farmacia Buena Esperanza",
+      "lat": -2.88953,
+      "lon": -78.98159,
+      "direccion": "Avenida Hurtado de Mendoza",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "way/419904172",
+      "nombre": "Farmacia CRUZ AZUL",
+      "lat": -2.89737,
+      "lon": -78.97982,
+      "direccion": "Avenida González Suárez",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12063508165",
+      "nombre": "Farmacia Comunitaria",
+      "lat": -2.88526,
+      "lon": -78.98751,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4896241988",
+      "nombre": "Farmacia Cruz Azul",
+      "lat": -2.91265,
+      "lon": -79.02149,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4835522834",
+      "nombre": "Farmacia Cruz Azul",
+      "lat": -2.89533,
+      "lon": -79.0107,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/7008486273",
+      "nombre": "Farmacia Cruz azul",
+      "lat": -2.90268,
+      "lon": -79.00839,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/5063239924",
+      "nombre": "Farmacia Disa",
+      "lat": -2.89551,
+      "lon": -79.00054,
+      "direccion": "Mariano Cueva",
+      "telefono": null,
+      "horario": "Mo-Su 08:00-19:00"
+    },
+    {
+      "osm": "node/5333746134",
+      "nombre": "Farmacia Dominic",
+      "lat": -2.92784,
+      "lon": -79.04251,
+      "direccion": "Panamerica Sur",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/6744727885",
+      "nombre": "Farmacia Económica",
+      "lat": -2.86334,
+      "lon": -78.96531,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12106110837",
+      "nombre": "Farmacia Eloy Alfaro",
+      "lat": -2.89108,
+      "lon": -79.02501,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4829543723",
+      "nombre": "Farmacia Espejo",
+      "lat": -2.89954,
+      "lon": -79.00815,
+      "direccion": "Calle Larga 11-69",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/2565898853",
+      "nombre": "Farmacia FARMACOM",
+      "lat": -2.89889,
+      "lon": -78.9839,
+      "direccion": "Avenida González Suárez",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13618199402",
+      "nombre": "Farmacia Galenica",
+      "lat": -2.89219,
+      "lon": -79.00608,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4835522928",
+      "nombre": "Farmacia Ideal",
+      "lat": -2.90014,
+      "lon": -79.00425,
+      "direccion": "Juan Jaramillo 7-73",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "way/507108971",
+      "nombre": "Farmacia MEDICITY",
+      "lat": -2.89968,
+      "lon": -78.9843,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/6949298818",
+      "nombre": "Farmacia Medical",
+      "lat": -2.91234,
+      "lon": -79.03008,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12652936001",
+      "nombre": "Farmacia Medical",
+      "lat": -2.89223,
+      "lon": -79.00208,
+      "direccion": "Pío Bravo 7-02",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/6610900987",
+      "nombre": "Farmacia Mia",
+      "lat": -2.88806,
+      "lon": -79.03004,
+      "direccion": null,
+      "telefono": null,
+      "horario": "Mo-Fr 07:00-18:00"
+    },
+    {
+      "osm": "way/419911147",
+      "nombre": "Farmacia POPULAR",
+      "lat": -2.90106,
+      "lon": -78.98438,
+      "direccion": "Avenida Max Uhle",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "way/419806086",
+      "nombre": "Farmacia POPULAR UNIDAS",
+      "lat": -2.89408,
+      "lon": -78.97759,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/14298281532",
+      "nombre": "Farmacia Plus",
+      "lat": -2.86927,
+      "lon": -78.97565,
+      "direccion": "Edmundo Granda Ugalde y Alejandro Muñoz Dávila",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4441452690",
+      "nombre": "Farmacia Popular",
+      "lat": -2.9079,
+      "lon": -79.00091,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/3831283730",
+      "nombre": "Farmacia Popular",
+      "lat": -2.90011,
+      "lon": -78.97504,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4829543724",
+      "nombre": "Farmacia Popular",
+      "lat": -2.89995,
+      "lon": -79.00748,
+      "direccion": "Calle Larga 10-95",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12663211801",
+      "nombre": "Farmacia Popular",
+      "lat": -2.89774,
+      "lon": -79.02552,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/10187065717",
+      "nombre": "Farmacia Popular",
+      "lat": -2.89471,
+      "lon": -79.0118,
+      "direccion": "Baltazara de Calderón",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4835522830",
+      "nombre": "Farmacia Popular",
+      "lat": -2.89393,
+      "lon": -79.01323,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13289188101",
+      "nombre": "Farmacia RedMed",
+      "lat": -2.9134,
+      "lon": -78.99669,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/5499779170",
+      "nombre": "Farmacia Renueva tu Vida",
+      "lat": -2.9081,
+      "lon": -79.05367,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12281786801",
+      "nombre": "Farmacia S.M",
+      "lat": -2.91143,
+      "lon": -79.02093,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/14095707001",
+      "nombre": "Farmacia San Agustin",
+      "lat": -2.88774,
+      "lon": -78.99046,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/14291778075",
+      "nombre": "Farmacia San Antonio",
+      "lat": -2.9023,
+      "lon": -79.0502,
+      "direccion": "Ciudad de Cuenca",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/5335443364",
+      "nombre": "Farmacia San Pedro",
+      "lat": -2.90374,
+      "lon": -78.9968,
+      "direccion": "Huayna Cápac",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "way/552031217",
+      "nombre": "Farmacia San Pedro #1",
+      "lat": -2.8897,
+      "lon": -78.9818,
+      "direccion": "Avenida Hurtado de Mendoza",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/3673577404",
+      "nombre": "Farmacia Sayausi",
+      "lat": -2.87367,
+      "lon": -79.07448,
+      "direccion": "Av. Ordoñez Lazo",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/14295083326",
+      "nombre": "Farmacia Suiza",
+      "lat": -2.85177,
+      "lon": -79.01405,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/2565483634",
+      "nombre": "Farmacia popular",
+      "lat": -2.91167,
+      "lon": -79.00679,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/6924841485",
+      "nombre": "Farmacia popular",
+      "lat": -2.8983,
+      "lon": -79.00307,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4835522835",
+      "nombre": "Farmacia popular",
+      "lat": -2.89803,
+      "lon": -79.00716,
+      "direccion": "General Torres 7-21",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4929218921",
+      "nombre": "Farmacia popular",
+      "lat": -2.89215,
+      "lon": -79.00696,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13717413101",
+      "nombre": "Farmacia regional",
+      "lat": -2.89407,
+      "lon": -79.00341,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/8253198529",
+      "nombre": "Farmacia solidaria",
+      "lat": -2.89809,
+      "lon": -79.00347,
+      "direccion": "Mariscal Sucre 7-40",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/7872927185",
+      "nombre": "Farmacia solidaria",
+      "lat": -2.8625,
+      "lon": -78.93825,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13603555701",
+      "nombre": "Farmacia super ahorro",
+      "lat": -2.8911,
+      "lon": -79.01114,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/5341143070",
+      "nombre": "Farmacias",
+      "lat": -2.88744,
+      "lon": -78.99353,
+      "direccion": "Armenillas",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/5333746127",
+      "nombre": "Farmacias Comunitarias",
+      "lat": -2.91769,
+      "lon": -79.03879,
+      "direccion": "Avenida de las Américas",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4522478592",
+      "nombre": "Farmacias CorpsDesFa",
+      "lat": -2.89843,
+      "lon": -79.00206,
+      "direccion": "Mariscal Sucre",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/5335443372",
+      "nombre": "Farmacias Cruz Azul",
+      "lat": -2.89521,
+      "lon": -78.99671,
+      "direccion": "Avenida Huayna Capac",
+      "telefono": null,
+      "horario": "Mo-Su 08:00+"
+    },
+    {
+      "osm": "node/10099546518",
+      "nombre": "Farmacias Cuxibamba",
+      "lat": -2.89441,
+      "lon": -79.00635,
+      "direccion": "General Torres 10-98",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "way/553287525",
+      "nombre": "Farmacias Cuxipamba",
+      "lat": -2.89526,
+      "lon": -78.99841,
+      "direccion": "Tomás Ordoñez",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13753092801",
+      "nombre": "Farmacias Disa",
+      "lat": -2.89971,
+      "lon": -79.00791,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/11144934506",
+      "nombre": "Farmacias Disa",
+      "lat": -2.89796,
+      "lon": -79.00802,
+      "direccion": "Presidente Córdova 11-96",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13191565701",
+      "nombre": "Farmacias Disa Vademequm",
+      "lat": -2.90856,
+      "lon": -78.99383,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4829543725",
+      "nombre": "Farmacias Economicas",
+      "lat": -2.90007,
+      "lon": -79.00734,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13585881601",
+      "nombre": "Farmacias Economicas",
+      "lat": -2.89838,
+      "lon": -78.97308,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13370540502",
+      "nombre": "Farmacias Economicas",
+      "lat": -2.89737,
+      "lon": -79.0067,
+      "direccion": "Mariscal Sucre 10-87",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13706964302",
+      "nombre": "Farmacias Economicas",
+      "lat": -2.88709,
+      "lon": -79.03371,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13151746701",
+      "nombre": "Farmacias Económicas",
+      "lat": -2.89911,
+      "lon": -79.01059,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/1778229001",
+      "nombre": "Farmacias Económicas",
+      "lat": -2.89533,
+      "lon": -79.00265,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4962048426",
+      "nombre": "Farmacias Económicas",
+      "lat": -2.89518,
+      "lon": -78.99858,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12467175001",
+      "nombre": "Farmacias Económicas",
+      "lat": -2.89388,
+      "lon": -79.0,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/8432087562",
+      "nombre": "Farmacias Familias",
+      "lat": -2.88435,
+      "lon": -79.01604,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13644194801",
+      "nombre": "Farmacias IK",
+      "lat": -2.89402,
+      "lon": -79.01058,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12343905912",
+      "nombre": "Farmacias MIA",
+      "lat": -2.92806,
+      "lon": -79.04281,
+      "direccion": "Av. Panamericana Sur 1",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/7003493881",
+      "nombre": "Farmacias MIA",
+      "lat": -2.90634,
+      "lon": -79.00901,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12343905913",
+      "nombre": "Farmacias MIA",
+      "lat": -2.90618,
+      "lon": -78.99275,
+      "direccion": "Av. Paseo de los Cañaris N/P y Cacique Chaparra",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12343905911",
+      "nombre": "Farmacias MIA",
+      "lat": -2.89925,
+      "lon": -79.00828,
+      "direccion": "Tarqui y Calle Larga",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "way/313435697",
+      "nombre": "Farmacias MIA",
+      "lat": -2.89924,
+      "lon": -78.98398,
+      "direccion": "Avenida González Suárez",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12343905906",
+      "nombre": "Farmacias MIA",
+      "lat": -2.89836,
+      "lon": -78.98125,
+      "direccion": "Av. González Suarez 1331 & Carlos Mariategui",
+      "telefono": "+593 99 042 4241",
+      "horario": "Mo-Su 09:30-21:00"
+    },
+    {
+      "osm": "node/12343905917",
+      "nombre": "Farmacias MIA",
+      "lat": -2.89825,
+      "lon": -78.99889,
+      "direccion": "Tomas Ordoñez N/P y Simón Bolívar",
+      "telefono": "+593 99 042 4241",
+      "horario": "Mo-Sa 07:00-22:00; Su 08:00-21:00"
+    },
+    {
+      "osm": "node/12343905916",
+      "nombre": "Farmacias MIA",
+      "lat": -2.89699,
+      "lon": -78.97688,
+      "direccion": "Av. Gonzalez Suarez y Av. Rayoloma",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12343905907",
+      "nombre": "Farmacias MIA",
+      "lat": -2.89599,
+      "lon": -79.00059,
+      "direccion": "Mariano Cueva 10-84",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12343905918",
+      "nombre": "Farmacias MIA",
+      "lat": -2.89566,
+      "lon": -79.02675,
+      "direccion": "Roberto Crespo Ordoñez y Carlos Veintimilla",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12343905908",
+      "nombre": "Farmacias MIA",
+      "lat": -2.8923,
+      "lon": -78.98553,
+      "direccion": "Avenida Hurtado de Mendoza 10-96 y Av. Paseo de los Canaris",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12343905910",
+      "nombre": "Farmacias MIA",
+      "lat": -2.88928,
+      "lon": -79.0324,
+      "direccion": "Av. Ordoñez Lasso",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/10155725617",
+      "nombre": "Farmacias Maldonados",
+      "lat": -2.90341,
+      "lon": -79.00365,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/5334360589",
+      "nombre": "Farmacias Medicity",
+      "lat": -2.91595,
+      "lon": -79.01016,
+      "direccion": "José Ortega Y Gasset",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/14316426767",
+      "nombre": "Farmacias Medicity",
+      "lat": -2.90496,
+      "lon": -79.0412,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/5343226551",
+      "nombre": "Farmacias Medicity",
+      "lat": -2.89778,
+      "lon": -79.01912,
+      "direccion": "Avenida Remigio Crespo Toral",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "way/553397622",
+      "nombre": "Farmacias Mia",
+      "lat": -2.91061,
+      "lon": -78.99409,
+      "direccion": "Avenida Del Paraíso",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13645558302",
+      "nombre": "Farmacias Mia",
+      "lat": -2.90517,
+      "lon": -78.99202,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/9661932918",
+      "nombre": "Farmacias Mia",
+      "lat": -2.89752,
+      "lon": -79.00167,
+      "direccion": "Simón Bolívar 5-78",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/9708245017",
+      "nombre": "Farmacias Mía",
+      "lat": -2.90905,
+      "lon": -79.00835,
+      "direccion": "Avenida Fray Vicente Solano 7-37",
+      "telefono": null,
+      "horario": "Mo-Su 07:00-22:00"
+    },
+    {
+      "osm": "node/12106953801",
+      "nombre": "Farmacias Mía",
+      "lat": -2.89858,
+      "lon": -79.00211,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/6946489831",
+      "nombre": "Farmacias Popular",
+      "lat": -2.91361,
+      "lon": -79.03061,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13274821624",
+      "nombre": "Farmacias Popular",
+      "lat": -2.90943,
+      "lon": -78.99424,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/5335534354",
+      "nombre": "Farmacias Popular",
+      "lat": -2.89942,
+      "lon": -78.99278,
+      "direccion": "La República",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/14134878001",
+      "nombre": "Farmacias Popular",
+      "lat": -2.89884,
+      "lon": -78.99792,
+      "direccion": "Manuel Vega 8-60",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13585881602",
+      "nombre": "Farmacias Popular",
+      "lat": -2.89869,
+      "lon": -78.97367,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13588152301",
+      "nombre": "Farmacias Popular",
+      "lat": -2.89861,
+      "lon": -78.99659,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "way/552271421",
+      "nombre": "Farmacias Popular",
+      "lat": -2.89845,
+      "lon": -78.99007,
+      "direccion": "Avenida Guapondelig",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13370540901",
+      "nombre": "Farmacias Popular",
+      "lat": -2.89581,
+      "lon": -79.00831,
+      "direccion": "Simón Bolívar 12-50",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/1778229024",
+      "nombre": "Farmacias Popular",
+      "lat": -2.89446,
+      "lon": -79.00548,
+      "direccion": "Mariscal Lamar",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13644187401",
+      "nombre": "Farmacias Popular",
+      "lat": -2.89297,
+      "lon": -79.00026,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12516579301",
+      "nombre": "Farmacias Popular",
+      "lat": -2.8846,
+      "lon": -79.00306,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13175748302",
+      "nombre": "Farmacias Popular",
+      "lat": -2.88016,
+      "lon": -79.06604,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12710521701",
+      "nombre": "Farmacias Salud",
+      "lat": -2.90531,
+      "lon": -79.03281,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/11440644169",
+      "nombre": "Farmacias Santa Martha",
+      "lat": -2.89586,
+      "lon": -79.00059,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13522178302",
+      "nombre": "Farmacias Santa Martha",
+      "lat": -2.89378,
+      "lon": -79.00041,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/6382041195",
+      "nombre": "Farmacias Santamaria",
+      "lat": -2.89668,
+      "lon": -79.00176,
+      "direccion": "Hermano Miguel 9-92",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/2565677435",
+      "nombre": "Farmacias Suiza",
+      "lat": -2.91241,
+      "lon": -79.00405,
+      "direccion": null,
+      "telefono": null,
+      "horario": "Mo-Fr 08:00-21:00; Su,Sa 09:00-19:00"
+    },
+    {
+      "osm": "way/1569305372",
+      "nombre": "Farmacias Suiza",
+      "lat": -2.90607,
+      "lon": -79.04396,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13585878701",
+      "nombre": "Farmacias Suiza",
+      "lat": -2.8982,
+      "lon": -78.9727,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/11060590412",
+      "nombre": "Farmacias Suiza",
+      "lat": -2.89576,
+      "lon": -79.00867,
+      "direccion": "Simón Bolívar 12-96",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13939350502",
+      "nombre": "Farmacias Suiza",
+      "lat": -2.89296,
+      "lon": -79.01146,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13273198101",
+      "nombre": "Farmacias Suizas",
+      "lat": -2.88754,
+      "lon": -78.97893,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/11776506572",
+      "nombre": "Farmacias comunitarias",
+      "lat": -2.91025,
+      "lon": -79.0355,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12852068602",
+      "nombre": "Farmacias comunitarias",
+      "lat": -2.89997,
+      "lon": -79.02071,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13638883004",
+      "nombre": "Farmacias economicas",
+      "lat": -2.89734,
+      "lon": -79.00187,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13638887901",
+      "nombre": "Farmacias economicas",
+      "lat": -2.89539,
+      "lon": -79.00043,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12557348803",
+      "nombre": "Farmacias económicas",
+      "lat": -2.90023,
+      "lon": -78.99453,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12827475801",
+      "nombre": "Farmacias económicas",
+      "lat": -2.8972,
+      "lon": -79.02409,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13124125801",
+      "nombre": "Farmacias popular",
+      "lat": -2.90195,
+      "lon": -79.00855,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/5056307921",
+      "nombre": "Farmacias popular",
+      "lat": -2.89689,
+      "lon": -79.00077,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12613493202",
+      "nombre": "Farmacias popular",
+      "lat": -2.88725,
+      "lon": -79.03326,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13175748601",
+      "nombre": "Farmacias popular",
+      "lat": -2.88676,
+      "lon": -79.04384,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13410439902",
+      "nombre": "Farmacias suiza",
+      "lat": -2.9022,
+      "lon": -79.02043,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12521434701",
+      "nombre": "Farmacias suiza",
+      "lat": -2.89917,
+      "lon": -79.01656,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4317198486",
+      "nombre": "Farmacias suiza",
+      "lat": -2.88541,
+      "lon": -78.99828,
+      "direccion": "Avenida Miraflores",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/3391499038",
+      "nombre": "Farmacias suizas",
+      "lat": -2.8838,
+      "lon": -78.99078,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/1777917865",
+      "nombre": "Farmacía Sana Sana",
+      "lat": -2.91356,
+      "lon": -79.02137,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "way/658562722",
+      "nombre": "Farmahorro",
+      "lat": -2.88614,
+      "lon": -78.95796,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "way/1569586669",
+      "nombre": "Farmahorro",
+      "lat": -2.83337,
+      "lon": -78.98463,
+      "direccion": "Vía a San Miguel",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13585985201",
+      "nombre": "Farmasol",
+      "lat": -2.91587,
+      "lon": -79.02146,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4687823089",
+      "nombre": "Farmasol",
+      "lat": -2.91349,
+      "lon": -78.99239,
+      "direccion": "Manuel Agustin Landivar",
+      "telefono": null,
+      "horario": "Mo-Su 09:00-21:00"
+    },
+    {
+      "osm": "way/696502314",
+      "nombre": "Farmasol",
+      "lat": -2.91153,
+      "lon": -79.00776,
+      "direccion": "Avenida 10 de Agosto",
+      "telefono": null,
+      "horario": "Mo-Sa 08:00-20:00"
+    },
+    {
+      "osm": "node/4483051493",
+      "nombre": "Farmasol",
+      "lat": -2.90332,
+      "lon": -78.97944,
+      "direccion": "Avenida 24 de Mayo",
+      "telefono": null,
+      "horario": "Mo-Fr 20:00-08:00; Sa-Su 20:00-01:00"
+    },
+    {
+      "osm": "node/12521427702",
+      "nombre": "Farmasol",
+      "lat": -2.90134,
+      "lon": -79.01512,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/2539898391",
+      "nombre": "Farmasol",
+      "lat": -2.8987,
+      "lon": -79.01265,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "way/692006723",
+      "nombre": "Farmasol",
+      "lat": -2.89839,
+      "lon": -79.00505,
+      "direccion": "Benigno Malo",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13370504403",
+      "nombre": "Farmasol",
+      "lat": -2.89757,
+      "lon": -79.00149,
+      "direccion": "Simón Bolívar 5-52",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13016281604",
+      "nombre": "Farmasol",
+      "lat": -2.89632,
+      "lon": -79.00295,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/2658143087",
+      "nombre": "Farmasol",
+      "lat": -2.89435,
+      "lon": -78.98388,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/6737143664",
+      "nombre": "Farmasol",
+      "lat": -2.89311,
+      "lon": -79.01521,
+      "direccion": null,
+      "telefono": "+593992752662",
+      "horario": "Mo-Fr 08:00-20:00; Sa 13:00-19:00; Su 09:00-13:00"
+    },
+    {
+      "osm": "node/12832537201",
+      "nombre": "Farmasol",
+      "lat": -2.89291,
+      "lon": -79.00586,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/5334350597",
+      "nombre": "Farmasol",
+      "lat": -2.89049,
+      "lon": -78.96603,
+      "direccion": "Avenida González Suárez",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13175747903",
+      "nombre": "Farmasol",
+      "lat": -2.88793,
+      "lon": -79.03811,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "way/552440216",
+      "nombre": "Farmasol",
+      "lat": -2.88471,
+      "lon": -79.00255,
+      "direccion": "Luis Cordero",
+      "telefono": null,
+      "horario": "Mo-Sa 08:00-20:00; Su 08:00-13:00"
+    },
+    {
+      "osm": "way/650266146",
+      "nombre": "Farmasol",
+      "lat": -2.86945,
+      "lon": -78.92592,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12289043990",
+      "nombre": "Fybeca",
+      "lat": -2.91965,
+      "lon": -79.06417,
+      "direccion": "Avenida Ricardo Durán",
+      "telefono": null,
+      "horario": "Mo-Su 10:00-21:00"
+    },
+    {
+      "osm": "node/13159052501",
+      "nombre": "Fybeca",
+      "lat": -2.91641,
+      "lon": -79.03876,
+      "direccion": "Avenida de las Américas",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/11036068605",
+      "nombre": "Fybeca",
+      "lat": -2.91379,
+      "lon": -79.02888,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/8508794817",
+      "nombre": "Fybeca",
+      "lat": -2.91347,
+      "lon": -79.01296,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/11077752205",
+      "nombre": "Fybeca",
+      "lat": -2.90995,
+      "lon": -78.99937,
+      "direccion": "Avenida Paucarbamba",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13081765001",
+      "nombre": "Fybeca",
+      "lat": -2.90912,
+      "lon": -79.00736,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "way/673433392",
+      "nombre": "Fybeca",
+      "lat": -2.90615,
+      "lon": -79.00354,
+      "direccion": "José Peralta",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4708436190",
+      "nombre": "Fybeca",
+      "lat": -2.90252,
+      "lon": -79.00805,
+      "direccion": "Daniel Córdova",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12591688501",
+      "nombre": "Fybeca",
+      "lat": -2.90205,
+      "lon": -79.02999,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "way/301183239",
+      "nombre": "Fybeca",
+      "lat": -2.9017,
+      "lon": -78.99697,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "way/507105397",
+      "nombre": "Fybeca",
+      "lat": -2.89905,
+      "lon": -78.98324,
+      "direccion": "Avenida González Suárez",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/2617484356",
+      "nombre": "Fybeca",
+      "lat": -2.89859,
+      "lon": -79.01802,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/7969056402",
+      "nombre": "Fybeca",
+      "lat": -2.89826,
+      "lon": -79.00521,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/2402765366",
+      "nombre": "Fybeca",
+      "lat": -2.89657,
+      "lon": -79.00546,
+      "direccion": "Simon Bolivar",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/1482900722",
+      "nombre": "Fybeca",
+      "lat": -2.89164,
+      "lon": -79.01968,
+      "direccion": null,
+      "telefono": null,
+      "horario": "Mo-Fr 08:30-22:15, Sa,Su 09:00-21:45"
+    },
+    {
+      "osm": "node/11028625905",
+      "nombre": "Fybeca",
+      "lat": -2.89109,
+      "lon": -79.02882,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/1234702795",
+      "nombre": "Fybeca",
+      "lat": -2.89074,
+      "lon": -78.98475,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/9809245817",
+      "nombre": "Fybeca",
+      "lat": -2.88964,
+      "lon": -79.03106,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13707087002",
+      "nombre": "Fybeca",
+      "lat": -2.88603,
+      "lon": -79.04454,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/1778215625",
+      "nombre": "Galatea",
+      "lat": -2.89611,
+      "lon": -79.00382,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12437224607",
+      "nombre": "Galatea Farm",
+      "lat": -2.89274,
+      "lon": -79.00021,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/11084390105",
+      "nombre": "Gopal",
+      "lat": -2.89853,
+      "lon": -79.00583,
+      "direccion": "Presidente Córdova 9-78",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13121974301",
+      "nombre": "HospiFarma",
+      "lat": -2.88487,
+      "lon": -79.00176,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13367824509",
+      "nombre": "Jardines del saber",
+      "lat": -2.89215,
+      "lon": -79.00206,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/3406310731",
+      "nombre": "La Gloria",
+      "lat": -2.90193,
+      "lon": -79.01791,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4401724689",
+      "nombre": "La Primavera",
+      "lat": -2.90663,
+      "lon": -79.00805,
+      "direccion": "Avenida Remigio Crespo Toral",
+      "telefono": "2814181",
+      "horario": "Mo-Fr 09:00-19:00; Sa 09:00-13:00"
+    },
+    {
+      "osm": "node/13104742455",
+      "nombre": "La Union",
+      "lat": -2.89602,
+      "lon": -78.99562,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/11948995269",
+      "nombre": "La botica",
+      "lat": -2.89668,
+      "lon": -79.00507,
+      "direccion": "Simón Bolívar 9-24",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/3397624039",
+      "nombre": "Las Acacias",
+      "lat": -2.90765,
+      "lon": -79.01915,
+      "direccion": null,
+      "telefono": null,
+      "horario": "Mo-Fr 09:00-16:00"
+    },
+    {
+      "osm": "node/1331217484",
+      "nombre": "Madita",
+      "lat": -2.9018,
+      "lon": -79.03414,
+      "direccion": "Daniel Fernández de Córdova",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/14291892653",
+      "nombre": "Med&Farma",
+      "lat": -2.90518,
+      "lon": -79.04945,
+      "direccion": "1 de septiembre",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/2729923930",
+      "nombre": "Medical Solutions",
+      "lat": -2.90131,
+      "lon": -79.00823,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12656809602",
+      "nombre": "Medicity",
+      "lat": -2.91408,
+      "lon": -79.03757,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12021072569",
+      "nombre": "Medicity",
+      "lat": -2.91264,
+      "lon": -79.00171,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12467681903",
+      "nombre": "Medicity",
+      "lat": -2.91078,
+      "lon": -79.00364,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13585985104",
+      "nombre": "Medicity",
+      "lat": -2.91055,
+      "lon": -79.0196,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/5239639321",
+      "nombre": "Medicity",
+      "lat": -2.90597,
+      "lon": -79.01635,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/11427594570",
+      "nombre": "Medicity",
+      "lat": -2.90422,
+      "lon": -79.01354,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/11342050769",
+      "nombre": "Medicity",
+      "lat": -2.90216,
+      "lon": -79.00813,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13201240101",
+      "nombre": "Medicity",
+      "lat": -2.89824,
+      "lon": -78.99994,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12849761301",
+      "nombre": "Medicity",
+      "lat": -2.89662,
+      "lon": -79.00531,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/10705486226",
+      "nombre": "Medicity",
+      "lat": -2.88957,
+      "lon": -79.02376,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/8288234467",
+      "nombre": "Medicity Estadio",
+      "lat": -2.90758,
+      "lon": -79.00528,
+      "direccion": "Avenida Del Estadio 4-33",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/6946489835",
+      "nombre": "Medteam",
+      "lat": -2.91344,
+      "lon": -79.03041,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/1778229041",
+      "nombre": "Mia",
+      "lat": -2.89522,
+      "lon": -79.0025,
+      "direccion": "Mariscal Lamar 6-84",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/2152738075",
+      "nombre": "Monay 1",
+      "lat": -2.9009,
+      "lon": -78.97563,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13931946301",
+      "nombre": "Natural Vitality",
+      "lat": -2.90405,
+      "lon": -79.01347,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13759738901",
+      "nombre": "Naturista NaturalVID",
+      "lat": -2.8952,
+      "lon": -79.00767,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12064871405",
+      "nombre": "Novafarma",
+      "lat": -2.88719,
+      "lon": -78.98942,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4728112992",
+      "nombre": "Odontomax",
+      "lat": -2.89064,
+      "lon": -78.96734,
+      "direccion": "Avenida González Suárez",
+      "telefono": "099664450",
+      "horario": null
+    },
+    {
+      "osm": "node/4323333392",
+      "nombre": "Olmedo",
+      "lat": -2.89841,
+      "lon": -79.00688,
+      "direccion": "Presidente Córdova 10-79",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13797129401",
+      "nombre": "Oncobiologico",
+      "lat": -2.90833,
+      "lon": -79.01261,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/5058344824",
+      "nombre": "Panalera",
+      "lat": -2.89532,
+      "lon": -79.00221,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/11342050569",
+      "nombre": "Phamarcy's",
+      "lat": -2.90202,
+      "lon": -79.00833,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/14156069501",
+      "nombre": "Pharma Salud",
+      "lat": -2.89443,
+      "lon": -79.01035,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13115269050",
+      "nombre": "Pharmaclinic",
+      "lat": -2.90766,
+      "lon": -79.00116,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/5333744638",
+      "nombre": "Pharmacy's",
+      "lat": -2.91927,
+      "lon": -79.00805,
+      "direccion": "Circunvalación Sur",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "way/311476541",
+      "nombre": "Pharmacy's",
+      "lat": -2.90752,
+      "lon": -79.00797,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "way/553594977",
+      "nombre": "Pharmacy's",
+      "lat": -2.90535,
+      "lon": -79.01081,
+      "direccion": "Avenida Remigio Crespo Toral 2-170",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "way/301183240",
+      "nombre": "Pharmacy's",
+      "lat": -2.90203,
+      "lon": -78.99662,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/9771075517",
+      "nombre": "Pharmacy's",
+      "lat": -2.89195,
+      "lon": -79.02002,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13285145601",
+      "nombre": "Pharmacy's",
+      "lat": -2.87771,
+      "lon": -78.94456,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/2402764368",
+      "nombre": "Pharmacy's farmacia",
+      "lat": -2.90641,
+      "lon": -79.00183,
+      "direccion": "José Peralta",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/2618511758",
+      "nombre": "Pharmacys",
+      "lat": -2.89722,
+      "lon": -78.9771,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12366322601",
+      "nombre": "Pharmacys",
+      "lat": -2.89253,
+      "lon": -79.02661,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/2402779084",
+      "nombre": "Pharmacys",
+      "lat": -2.88832,
+      "lon": -79.03572,
+      "direccion": "Av. Ordoñez Lazo",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13115263701",
+      "nombre": "Pharmahorro",
+      "lat": -2.89154,
+      "lon": -79.01312,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/3397519283",
+      "nombre": "Popular",
+      "lat": -2.90278,
+      "lon": -78.9933,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/14295417111",
+      "nombre": "Popular",
+      "lat": -2.89182,
+      "lon": -78.98191,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/3801233357",
+      "nombre": "Popular Unidas",
+      "lat": -2.89926,
+      "lon": -78.98976,
+      "direccion": "Avenida González Suárez",
+      "telefono": null,
+      "horario": "Mo-Sa 07:00-20:00"
+    },
+    {
+      "osm": "node/4718783292",
+      "nombre": "Productos Naturales Vilcabamba",
+      "lat": -2.89536,
+      "lon": -79.00197,
+      "direccion": "Mariscal Lamar 6_40",
+      "telefono": "0982678073",
+      "horario": null
+    },
+    {
+      "osm": "node/6384703385",
+      "nombre": "Pumapungo",
+      "lat": -2.90535,
+      "lon": -78.99664,
+      "direccion": "Avenida Huayna Capac 2-45",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/14297849889",
+      "nombre": "Punto Farma",
+      "lat": -2.88346,
+      "lon": -79.00753,
+      "direccion": "Avenida Abelardo J. Andrade",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4842914122",
+      "nombre": "Reina del Cisne",
+      "lat": -2.89228,
+      "lon": -78.9965,
+      "direccion": "Avenida Huayna Capac",
+      "telefono": null,
+      "horario": "Mo-Sa 08:00-22:00"
+    },
+    {
+      "osm": "node/13260425201",
+      "nombre": "Salud Vida",
+      "lat": -2.91215,
+      "lon": -78.99503,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/10800488805",
+      "nombre": "Salud natural",
+      "lat": -2.89196,
+      "lon": -79.02591,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "way/677309759",
+      "nombre": "San Agustin",
+      "lat": -2.88096,
+      "lon": -78.94963,
+      "direccion": "Berlín 31",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/3397624036",
+      "nombre": "San Andres",
+      "lat": -2.90478,
+      "lon": -79.01468,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/3832833383",
+      "nombre": "San Francisco",
+      "lat": -2.89958,
+      "lon": -79.00641,
+      "direccion": "Juan Jaramillo 10-01",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "way/156193781",
+      "nombre": "San Francisco",
+      "lat": -2.89494,
+      "lon": -78.99821,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/7017895633",
+      "nombre": "San Rafael",
+      "lat": -2.88271,
+      "lon": -78.95458,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/6378486448",
+      "nombre": "Sana Sana",
+      "lat": -2.91432,
+      "lon": -79.02215,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/1777917874",
+      "nombre": "Sana Sana",
+      "lat": -2.91416,
+      "lon": -79.0227,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "way/553397607",
+      "nombre": "Sana Sana",
+      "lat": -2.90581,
+      "lon": -78.99235,
+      "direccion": "Paseo de los Cañaris",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "way/553397556",
+      "nombre": "Sana Sana",
+      "lat": -2.90226,
+      "lon": -78.98463,
+      "direccion": "Avenida Max Uhle",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/3829704131",
+      "nombre": "Sana Sana",
+      "lat": -2.89942,
+      "lon": -78.99071,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4827914738",
+      "nombre": "Sana Sana",
+      "lat": -2.89884,
+      "lon": -79.02893,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/5862384089",
+      "nombre": "Sana Sana",
+      "lat": -2.88526,
+      "lon": -78.99839,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/5175638922",
+      "nombre": "Sana Sana",
+      "lat": -2.88009,
+      "lon": -78.96657,
+      "direccion": "Batallón Yaguachi",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/10993138905",
+      "nombre": "Santa Ines",
+      "lat": -2.89864,
+      "lon": -79.00589,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/5343226556",
+      "nombre": "Santa Martha",
+      "lat": -2.8973,
+      "lon": -79.02336,
+      "direccion": "Avenida Remigio Crespo Toral",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/858858803",
+      "nombre": "Santa Martha",
+      "lat": -2.89509,
+      "lon": -79.00144,
+      "direccion": "Hermano Miguel 11-42",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4020168891",
+      "nombre": "Santa Martha",
+      "lat": -2.89486,
+      "lon": -79.0004,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4829543925",
+      "nombre": "Santamartha",
+      "lat": -2.89998,
+      "lon": -79.00715,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4835522924",
+      "nombre": "Santamartha",
+      "lat": -2.89817,
+      "lon": -79.00719,
+      "direccion": "Presidente Córdova 11-02",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12896000101",
+      "nombre": "Santo Remedio",
+      "lat": -2.89438,
+      "lon": -78.99659,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/1932435541",
+      "nombre": "Servicio óptico",
+      "lat": -2.89708,
+      "lon": -79.0246,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12588401104",
+      "nombre": "Servifarm",
+      "lat": -2.89767,
+      "lon": -79.00915,
+      "direccion": "Presidente Córdova 13-02",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/6384700498",
+      "nombre": "Sol",
+      "lat": -2.90109,
+      "lon": -78.9996,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/6946537850",
+      "nombre": "Su Farmacia",
+      "lat": -2.91369,
+      "lon": -79.03112,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/11151942608",
+      "nombre": "Supernatura",
+      "lat": -2.89792,
+      "lon": -79.00882,
+      "direccion": "Presidente Córdova 12-61",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/4353317489",
+      "nombre": "Súper farmacia",
+      "lat": -2.90112,
+      "lon": -79.02983,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/11611585069",
+      "nombre": "Vanttive",
+      "lat": -2.90563,
+      "lon": -79.01443,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13929366001",
+      "nombre": "Veda Farma",
+      "lat": -2.8902,
+      "lon": -79.00976,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/1764258789",
+      "nombre": "Vid 3",
+      "lat": -2.90141,
+      "lon": -78.99188,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/2565553510",
+      "nombre": "Vid II",
+      "lat": -2.91178,
+      "lon": -78.99834,
+      "direccion": "Avenida Paucarbamba",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/5058344826",
+      "nombre": "Vida nueva",
+      "lat": -2.89872,
+      "lon": -79.00571,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12557372801",
+      "nombre": "Vital Farme",
+      "lat": -2.90047,
+      "lon": -78.99447,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/11552235569",
+      "nombre": "Vital Farme",
+      "lat": -2.8899,
+      "lon": -79.03015,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12281783701",
+      "nombre": "farmacia S.M #564",
+      "lat": -2.91449,
+      "lon": -79.02792,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12281772501",
+      "nombre": "farmacia Santa Marta",
+      "lat": -2.89766,
+      "lon": -79.02955,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12281785101",
+      "nombre": "farmacia Santa Martha",
+      "lat": -2.90218,
+      "lon": -79.01455,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12051081495",
+      "nombre": "farmacia po´pular",
+      "lat": -2.88599,
+      "lon": -78.98784,
+      "direccion": null,
+      "telefono": null,
+      "horario": "08:00-21:00"
+    },
+    {
+      "osm": "node/4272459191",
+      "nombre": null,
+      "lat": -2.93474,
+      "lon": -79.04503,
+      "direccion": "Panamerica Sur",
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/13141935423",
+      "nombre": null,
+      "lat": -2.92581,
+      "lon": -79.0368,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/7012952404",
+      "nombre": null,
+      "lat": -2.92033,
+      "lon": -79.06521,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/1777898822",
+      "nombre": null,
+      "lat": -2.91524,
+      "lon": -79.01547,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/3665106569",
+      "nombre": null,
+      "lat": -2.91238,
+      "lon": -78.99357,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/6136219510",
+      "nombre": null,
+      "lat": -2.9015,
+      "lon": -79.03013,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/5149965322",
+      "nombre": null,
+      "lat": -2.89947,
+      "lon": -79.00677,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/5687868225",
+      "nombre": null,
+      "lat": -2.89933,
+      "lon": -79.00722,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "way/653211289",
+      "nombre": null,
+      "lat": -2.89423,
+      "lon": -78.93826,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/1499686171",
+      "nombre": null,
+      "lat": -2.89305,
+      "lon": -78.99787,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/2269065090",
+      "nombre": null,
+      "lat": -2.88776,
+      "lon": -78.97551,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/3673577424",
+      "nombre": null,
+      "lat": -2.8742,
+      "lon": -79.073,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/6981491462",
+      "nombre": null,
+      "lat": -2.86105,
+      "lon": -78.93499,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/14298038560",
+      "nombre": null,
+      "lat": -2.85134,
+      "lon": -79.01295,
+      "direccion": null,
+      "telefono": null,
+      "horario": null
+    },
+    {
+      "osm": "node/12337250617",
+      "nombre": null,
+      "lat": -2.85071,
+      "lon": -79.01487,
+      "direccion": "Avenida 5 de Febrero",
+      "telefono": null,
+      "horario": "Mo-Su 09:00-21:00"
+    }
+  ]
+}

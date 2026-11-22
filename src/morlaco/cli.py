@@ -10,7 +10,7 @@ from collections.abc import Callable, Sequence
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from morlaco import calendario, cambios, catalogo, paginas, red, revision
+from morlaco import calendario, cambios, catalogo, paginas, red, revision, vigilancia_farmacias
 from morlaco.comun import Resultado
 from morlaco.fuentes import (
     agua,
@@ -61,6 +61,18 @@ def _leer_estado(ruta: Path) -> dict:
         return {}
 
 
+ARCHIVO_FARMACIAS = "ciudad/farmacias.json"
+
+
+def _vigilar_farmacias(nueva: dict, salida: Path) -> dict:
+    """Todas las farmacias vienen de OpenStreetMap, que edita cualquiera: antes de publicarlas
+    se comparan con las publicadas (lo nuevo se avisa; lo masivo se detiene)."""
+    anterior = _leer_estado(salida / ARCHIVO_FARMACIAS) or None
+    manual = _leer_estado(salida / "manual" / "farmacias.json")
+    revisado = revision.fecha(manual.get("revisado"))
+    return vigilancia_farmacias.combinar(nueva, anterior, revisado, revision.hoy_en_cuenca())
+
+
 def actualizar(
     nombres: Sequence[str],
     salida: Path,
@@ -85,6 +97,8 @@ def actualizar(
             print(f"[error] {nombre}: {type(error).__name__}: {error}", file=sys.stderr)
             return error
         for ruta, contenido in resultado.archivos.items():
+            if ruta == ARCHIVO_FARMACIAS:
+                contenido = _vigilar_farmacias(contenido, salida)
             escribir(salida / ruta, contenido)
         estado[nombre] = {
             "ok": True,

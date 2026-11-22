@@ -10,7 +10,11 @@ import {
   cercanosPorTipo,
   avisosAguaPorConfirmar,
   avisosDePrensaVigentes,
+  esDeNoche,
+  esLaDeTurno,
   estadoHorario,
+  estadoHorarioOsm,
+  farmaciasCerca,
   cortesAgua,
   enlaceCorreoAviso,
   enlaceReporteDireccion,
@@ -919,139 +923,223 @@ function pintarLuz(suspensiones) {
   );
 }
 
-/**
- * Farmacias de turno de esta semana. Si el índice de calles ya está cargado (o se carga),
- * las que tienen dirección de esquina se ordenan por cercanía aproximada al punto.
- */
-function pintarFarmacias(datos, punto, alUbicar = () => {}, alMapa = () => {}, verEnMapa = null) {
-  const caja = $("farmacias-estado");
-  if (!datos) {
-    caja.replaceChildren(elemento("p", { class: "aviso" }, t("farmaciasError")));
-    return;
-  }
-  const pdf = datos.metadata?.pdfs?.at(-1) ?? datos.metadata?.pagina;
-  const enlacePdf = elemento("a", { href: pdf, target: "_blank", rel: "noopener" }, t("farmaciasPdf"));
-  const turno = turnoActual(datos.turnos);
-  if (!turno) {
-    caja.replaceChildren(elemento("p", { class: "aviso" }, t("farmaciasSinTurno"), enlacePdf, "."));
-    return;
-  }
+/** "Abierta, hasta las 20:00", "Cerrada; abre a las 08:00"… según su horario de OpenStreetMap. */
+function textoEstadoFarmacia(estado) {
+  if (!estado) return null;
+  if (estado.abierto) return estado.siempre ? t("farmaciaAbiertaSiempre") : t("farmaciaAbierta", { hasta: estado.cierra });
+  if (!estado.abre) return t("farmaciaCerradaHoy");
+  return t(estado.manana ? "farmaciaAbreManana" : "farmaciaAbre", { hora: estado.abre });
+}
 
-  let lista = turno.farmacias.map((f) => ({ ...f, metros: null }));
-  const contenedor = elemento("ul", { class: "farmacias-lista" });
-  const orden = elemento("p", { class: "detalle", hidden: "" }, t("farmaciasOrden"));
-  const filtro = elemento("input", {
-    type: "search",
-    name: "filtro-farmacias",
-    autocomplete: "off",
-    placeholder: t("farmaciasFiltro"),
-    "aria-label": t("farmaciasFiltroAria"),
-  });
+/**
+ * Las farmacias: de día, las más cercanas de todas las que tiene OpenStreetMap (ARCSA solo
+ * publica las de turno, y de día casi todas atienden); de noche, primero las de turno de esta
+ * semana y después las cercanas que se sabe abiertas. Las de turno se ordenan por cercanía
+ * aproximada cuando llega el índice de calles. `alMapa` recibe lo que va al mapa, cada farmacia
+ * con `turno` si es de turno; `alUbicar`, la más cercana para el resumen.
+ */
+function pintarFarmacias(datos, punto, todas, { alUbicar = () => {}, alMapa = () => {}, verEnMapa = null } = {}) {
+  const caja = $("farmacias-estado");
+  const noche = esDeNoche();
+  const turno = datos ? turnoActual(datos.turnos) : null;
+  const pdf = datos?.metadata?.pdfs?.at(-1) ?? datos?.metadata?.pagina ?? "https://www.controlsanitario.gob.ec/turnos-de-farmacias/";
+  const enlacePdf = () => elemento("a", { href: pdf, target: "_blank", rel: "noopener" }, t("farmaciasPdf"));
 
   // Lleva el mapa a la farmacia (en el celular, baja hasta el mapa).
-  const botonVerEnMapa = (f) => {
+  const botonVerEnMapa = (nombre, lugar, turno) => {
     const boton = elemento("button", { type: "button", class: "secundario ver-en-mapa" }, t("verEnMapa"));
     boton.addEventListener("click", () => {
-      verEnMapa({ nombre: f.nombre, lat: f.lugar.lat, lon: f.lugar.lon });
+      verEnMapa({ nombre, lat: lugar.lat, lon: lugar.lon, turno });
       verMapaEnCelular();
     });
     return boton;
   };
-
-  const pintarLista = () => {
-    const visibles = filtrarFarmacias(lista, filtro.value);
-    if (!visibles.length) {
-      contenedor.replaceChildren(elemento("li", { class: "sin-lineas" }, t("farmaciasNinguna")));
-      return;
-    }
-    const filas = visibles.map((f) =>
-      elemento(
-        "li",
-        {},
-        elemento(
-          "div",
-          { class: "farmacia-texto" },
-          elemento("strong", {}, f.nombre),
-          elemento("span", {}, f.direccion),
-          f.metros !== null
-            ? elemento("span", { class: "frecuencia" }, t(f.porZona ? "aproximadoZona" : "aproximado", { distancia: formatoDistancia(f.metros) }))
-            : null,
-          f.lugar
-            ? elemento(
-                "span",
-                { class: "farmacia-enlaces" },
-                verEnMapa ? botonVerEnMapa(f) : null,
-                // Indicaciones en Google Maps hasta la esquina de la farmacia (solo al tocar).
-                elemento(
-                  "a",
-                  { href: `https://www.google.com/maps/dir/?api=1&destination=${f.lugar.lat},${f.lugar.lon}`, target: "_blank", rel: "noopener" },
-                  t("comoLlegar"),
-                ),
-              )
-            : null,
-        ),
-        botonLlamar(f.tel ?? f.telefono, f.nombre),
-      ),
+  const enlaces = (nombre, lugar, turno = false) =>
+    elemento(
+      "span",
+      { class: "farmacia-enlaces" },
+      verEnMapa ? botonVerEnMapa(nombre, lugar, turno) : null,
+      // Indicaciones en Google Maps hasta la farmacia (solo al tocar).
+      elemento("a", { href: `https://www.google.com/maps/dir/?api=1&destination=${lugar.lat},${lugar.lon}`, target: "_blank", rel: "noopener" }, t("comoLlegar")),
     );
-    // Las que no se pudieron ubicar van al final, separadas: su orden no es por cercanía.
-    const primeraSinLugar = visibles.findIndex((f) => !f.lugar);
-    if (primeraSinLugar > 0) {
-      filas.splice(primeraSinLugar, 0, elemento("li", { class: "farmacias-sin-lugar" }, t("farmaciasSinLugar")));
-    }
-    contenedor.replaceChildren(...filas);
-    // Las más cercanas primero; el resto, a un toque (salvo al filtrar).
-    const VISIBLES = 6;
-    const ocultas = filtro.value ? [] : filas.slice(VISIBLES);
-    if (ocultas.length) {
-      for (const li of ocultas) li.hidden = true;
-      const ver = elemento("button", { type: "button", class: "secundario ver-mas" }, t("verMasFarmacias", { n: ocultas.length }));
-      ver.addEventListener("click", () => {
-        for (const li of ocultas) li.hidden = false;
-        ver.parentElement.remove();
-      });
-      contenedor.append(elemento("li", { class: "ver-mas-fila" }, ver));
-    }
+
+  // Lo que va al mapa: las de turno más cercanas y las cercanas de OpenStreetMap, sin repetir.
+  const enMapa = { turno: [], cerca: [] };
+  const alMapaJuntas = () =>
+    alMapa([
+      ...enMapa.turno.map((f) => ({ ...f, turno: true })),
+      ...enMapa.cerca.filter((c) => !enMapa.turno.some((f) => distanciaMetros(c, f) < 80)),
+    ]);
+
+  // ---- Las cercanas, de OpenStreetMap ----
+  let ubicadasDeTurno = [];
+  const cerca = punto && todas ? farmaciasCerca(punto, todas, noche ? { soloAbiertas: true, maximoMetros: 3000 } : {}) : [];
+  const listaCerca = elemento("ul", { class: "farmacias-lista" });
+  const pintarCerca = () => {
+    listaCerca.replaceChildren(
+      ...cerca.map((f) => {
+        const nombre = f.nombre ?? t("farmaciaSinNombre");
+        const estado = textoEstadoFarmacia(f.estado);
+        const deTurno = esLaDeTurno(f, ubicadasDeTurno);
+        return elemento(
+          "li",
+          {},
+          elemento(
+            "div",
+            { class: "farmacia-texto" },
+            elemento("strong", {}, nombre),
+            f.direccion ? elemento("span", {}, f.direccion) : null,
+            elemento("span", { class: "frecuencia" }, t("farmaciaDistancia", { distancia: formatoDistancia(f.metros) })),
+            estado ? elemento("span", { class: `farmacia-estado${f.estado.abierto ? " abierta" : ""}` }, estado) : null,
+            deTurno ? elemento("span", { class: "farmacia-turno" }, t("farmaciaEsDeTurno")) : null,
+            enlaces(nombre, f),
+          ),
+          botonLlamar(f.telefono, nombre),
+        );
+      }),
+    );
   };
-  filtro.addEventListener("input", pintarLista);
-  pintarLista();
+  pintarCerca();
+  const totalOsm = todas?.farmacias?.length ?? 0;
+  // Para que la lista crezca: se agrega en OpenStreetMap y Morlaco la toma el lunes, después
+  // de compararla con la semana anterior. El enlace abre Cuenca, no la calle de quien mira.
+  const faltaUna = () =>
+    elemento(
+      "p",
+      { class: "detalle falta-farmacia" },
+      elemento("a", { href: "https://www.openstreetmap.org/edit#map=15/-2.8990/-79.0050", target: "_blank", rel: "noopener" }, t("farmaciaFalta")),
+      " ",
+      t("farmaciaFaltaComo"),
+    );
+  const bloqueCerca = !punto || !todas
+    ? []
+    : cerca.length
+      ? [
+          elemento("h3", { class: "subtitulo" }, t(noche ? "farmaciasAbiertasAhora" : "farmaciasCercaTitulo")),
+          elemento("p", { class: "detalle" }, t("farmaciasCercaNota", { n: totalOsm })),
+          listaCerca,
+          faltaUna(),
+        ]
+      : noche
+        ? []
+        : [elemento("h3", { class: "subtitulo" }, t("farmaciasCercaTitulo")), elemento("p", { class: "detalle" }, t("farmaciasCercaNinguna")), faltaUna()];
+  // De día, la más cercana va al resumen y las primeras, al mapa.
+  if (!noche && cerca.length) {
+    alUbicar({ nombre: cerca[0].nombre ?? t("farmaciaSinNombre"), metros: cerca[0].metros, deTurno: false });
+    enMapa.cerca = cerca.filter((f) => f.metros <= 1000).slice(0, 4).map((f) => ({ nombre: f.nombre ?? t("farmaciaSinNombre"), lat: f.lat, lon: f.lon }));
+  } else if (noche) {
+    enMapa.cerca = cerca.slice(0, 3).map((f) => ({ nombre: f.nombre ?? t("farmaciaSinNombre"), lat: f.lat, lon: f.lon }));
+  }
+  alMapaJuntas();
 
-  const fin = new Date(`${turno.fin}T12:00:00Z`);
-  const fecha = new Intl.DateTimeFormat(etiquetaIdioma(), { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" }).format(fin);
-  caja.replaceChildren(
-    elemento("p", { class: "luz-resumen" }, t("farmaciasResumen", { n: turno.farmacias.length, fecha })),
-    elemento("p", { class: "aviso" }, t("farmaciasAviso"), " ", t("farmaciasFuente"), enlacePdf, "."),
-    elemento("div", { class: "filtro-cortes" }, filtro),
-    orden,
-    contenedor,
-  );
+  // ---- Las de turno, de ARCSA ----
+  let bloqueTurno;
+  if (!datos) {
+    bloqueTurno = [elemento("p", { class: "aviso" }, t("farmaciasError"))];
+  } else if (!turno) {
+    bloqueTurno = [elemento("p", { class: "aviso" }, t("farmaciasSinTurno"), enlacePdf(), ".")];
+  } else {
+    let lista = turno.farmacias.map((f) => ({ ...f, metros: null }));
+    const contenedor = elemento("ul", { class: "farmacias-lista" });
+    const orden = elemento("p", { class: "detalle", hidden: "" }, t("farmaciasOrden"));
+    const filtro = elemento("input", {
+      type: "search",
+      name: "filtro-farmacias",
+      autocomplete: "off",
+      placeholder: t("farmaciasFiltro"),
+      "aria-label": t("farmaciasFiltroAria"),
+    });
 
-  // Orden por cercanía: necesita el índice de calles (se descarga una vez y queda guardado).
-  if (punto) {
-    Promise.all([cargarIndiceCalles(), cargarBarrios()])
-      .then(([indice, barrios]) => {
-        lista = lista
-          .map((f) => {
-            // La esquina exacta o, si la dirección no la da, el barrio o la calle que nombra.
-            const esquina = ubicarEsquina(f.direccion, indice);
-            const lugar = esquina ?? ubicarAproximado(f.direccion, indice, barrios);
-            return { ...f, lugar, porZona: !esquina && Boolean(lugar), metros: lugar ? Math.round(distanciaMetros(punto, lugar)) : null };
-          })
-          .sort((a, b) => (a.metros ?? Infinity) - (b.metros ?? Infinity));
-        if (lista.some((f) => f.metros !== null)) orden.hidden = false;
-        pintarLista();
-        if (lista[0]?.metros !== null && lista[0]?.metros !== undefined) alUbicar(lista[0]);
-        // Las tres más cercanas, también en el mapa (si su esquina está a menos de 3 km).
-        alMapa(
-          lista
+    const pintarLista = () => {
+      const visibles = filtrarFarmacias(lista, filtro.value);
+      if (!visibles.length) {
+        contenedor.replaceChildren(elemento("li", { class: "sin-lineas" }, t("farmaciasNinguna")));
+        return;
+      }
+      const filas = visibles.map((f) =>
+        elemento(
+          "li",
+          {},
+          elemento(
+            "div",
+            { class: "farmacia-texto" },
+            elemento("strong", {}, f.nombre),
+            elemento("span", {}, f.direccion),
+            f.metros !== null
+              ? elemento("span", { class: "frecuencia" }, t(f.porZona ? "aproximadoZona" : "aproximado", { distancia: formatoDistancia(f.metros) }))
+              : null,
+            f.lugar ? enlaces(f.nombre, f.lugar, true) : null,
+          ),
+          botonLlamar(f.tel ?? f.telefono, f.nombre),
+        ),
+      );
+      // Las que no se pudieron ubicar van al final, separadas: su orden no es por cercanía.
+      const primeraSinLugar = visibles.findIndex((f) => !f.lugar);
+      if (primeraSinLugar > 0) {
+        filas.splice(primeraSinLugar, 0, elemento("li", { class: "farmacias-sin-lugar" }, t("farmaciasSinLugar")));
+      }
+      contenedor.replaceChildren(...filas);
+      // Las más cercanas primero; el resto, a un toque (salvo al filtrar). De día, las de
+      // turno importan menos: se ven menos de entrada.
+      const VISIBLES = noche ? 6 : 3;
+      const ocultas = filtro.value ? [] : filas.slice(VISIBLES);
+      if (ocultas.length) {
+        for (const li of ocultas) li.hidden = true;
+        const ver = elemento("button", { type: "button", class: "secundario ver-mas" }, t("verMasFarmacias", { n: ocultas.length }));
+        ver.addEventListener("click", () => {
+          for (const li of ocultas) li.hidden = false;
+          ver.parentElement.remove();
+        });
+        contenedor.append(elemento("li", { class: "ver-mas-fila" }, ver));
+      }
+    };
+    filtro.addEventListener("input", pintarLista);
+    pintarLista();
+
+    const fin = new Date(`${turno.fin}T12:00:00Z`);
+    const fecha = new Intl.DateTimeFormat(etiquetaIdioma(), { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" }).format(fin);
+    bloqueTurno = [
+      elemento("p", { class: "luz-resumen" }, t("farmaciasResumen", { n: turno.farmacias.length, fecha })),
+      elemento("p", { class: "aviso" }, t("farmaciasAviso"), " ", t("farmaciasFuente"), enlacePdf(), "."),
+      elemento("div", { class: "filtro-cortes" }, filtro),
+      orden,
+      contenedor,
+    ];
+
+    // Orden por cercanía: necesita el índice de calles (se descarga una vez y queda guardado).
+    if (punto) {
+      Promise.all([cargarIndiceCalles(), cargarBarrios()])
+        .then(([indice, barrios]) => {
+          lista = lista
+            .map((f) => {
+              // La esquina exacta o, si la dirección no la da, el barrio o la calle que nombra.
+              const esquina = ubicarEsquina(f.direccion, indice);
+              const lugar = esquina ?? ubicarAproximado(f.direccion, indice, barrios);
+              return { ...f, lugar, porZona: !esquina && Boolean(lugar), metros: lugar ? Math.round(distanciaMetros(punto, lugar)) : null };
+            })
+            .sort((a, b) => (a.metros ?? Infinity) - (b.metros ?? Infinity));
+          if (lista.some((f) => f.metros !== null)) orden.hidden = false;
+          pintarLista();
+          // Ya ubicadas, se puede decir cuáles de las cercanas son de turno.
+          ubicadasDeTurno = lista.filter((f) => f.lugar && !f.porZona);
+          pintarCerca();
+          // De noche, la de turno más cercana es la del resumen (de día ya está la más cercana).
+          if ((noche || !cerca.length) && lista[0]?.metros !== null && lista[0]?.metros !== undefined) alUbicar({ ...lista[0], deTurno: true });
+          // Las tres más cercanas, también en el mapa (si su esquina está a menos de 3 km).
+          enMapa.turno = lista
             .filter((f) => f.lugar && f.metros <= 3000)
             .slice(0, 3)
-            .map((f) => ({ nombre: f.nombre, lat: f.lugar.lat, lon: f.lugar.lon })),
-        );
-      })
-      .catch(() => {
-        // Sin índice de calles, la lista queda en el orden de ARCSA.
-      });
+            .map((f) => ({ nombre: f.nombre, lat: f.lugar.lat, lon: f.lugar.lon }));
+          alMapaJuntas();
+        })
+        .catch(() => {
+          // Sin índice de calles, la lista queda en el orden de ARCSA.
+        });
+    }
   }
+  const tituloTurno = bloqueCerca.length ? [elemento("h3", { class: "subtitulo" }, t(noche ? "farmaciasTurnoNoche" : "farmaciasTurnoTitulo"))] : [];
+  // De noche mandan las de turno; de día, las cercanas.
+  caja.replaceChildren(...(noche ? [...tituloTurno, ...bloqueTurno, ...bloqueCerca] : [...bloqueCerca, ...tituloTurno, ...bloqueTurno]));
 }
 
 // Una parada "tiene" una línea si su recorrido pasa a menos de esto.
@@ -1655,11 +1743,15 @@ function pintarResumen({ zona, suspensiones, turnos, cercanas }) {
   $("resumen").replaceChildren(...fichas.map((f) => f.li));
   return {
     farmaciaCercana(farmacia) {
-      // Cuál es la más cercana, con su nombre: "13 de turno" no dice a dónde ir.
+      // Cuál es la más cercana, con su nombre: "13 de turno" no dice a dónde ir. De día es la
+      // más cercana de todas; de noche, la de turno más cercana.
       const valor = fichaFarmacias.li.querySelector(".ficha-valor");
       if (farmacia.nombre) {
         valor.textContent = farmacia.nombre;
-        fichaFarmacias.detalle.textContent = t("resumenFarmaciaCercaDe", { n: turno.farmacias.length, distancia: formatoDistancia(farmacia.metros) });
+        fichaFarmacias.detalle.textContent =
+          farmacia.deTurno && turno
+            ? t("resumenFarmaciaCercaDe", { n: turno.farmacias.length, distancia: formatoDistancia(farmacia.metros) })
+            : t("resumenFarmaciaCerca", { distancia: formatoDistancia(farmacia.metros) });
       } else {
         fichaFarmacias.detalle.textContent = t("resumenFarmaciaCerca", { distancia: formatoDistancia(farmacia.metros) });
       }
@@ -2517,7 +2609,7 @@ async function iniciar() {
     mensaje(t("errorDatos"), true);
     return;
   }
-  const [suspensiones, paradas, estado, lineas, rutas, bicicletas, turnosFarmacias, transporte, estacionesTranvia, recorridoTranvia, basura, agua, cerca, diasFeriado, avisosAgua, cierresVias, avisosLuz, tramites, salud] = await Promise.all(
+  const [suspensiones, paradas, estado, lineas, rutas, bicicletas, turnosFarmacias, transporte, estacionesTranvia, recorridoTranvia, basura, agua, cerca, diasFeriado, avisosAgua, cierresVias, avisosLuz, tramites, salud, todasFarmacias] = await Promise.all(
     [
       "luz/suspensiones.json",
       "buses/paradas.geojson",
@@ -2538,6 +2630,7 @@ async function iniciar() {
       "luz/avisos.json",
       "manual/tramites.json",
       "ciudad/salud.json",
+      "ciudad/farmacias.json",
     ].map((r) =>
       cargarJson(r).catch(() => null),
     ),
@@ -2735,10 +2828,14 @@ async function iniciar() {
     pintarPasaje(transporte?.tarifas, transporte?.metadata?.revisado);
     const resumen = pintarResumen({ zona, suspensiones, turnos: turnosFarmacias, cercanas: cercanasLineas });
     actualizarFalta();
-    pintarFarmacias(turnosFarmacias, punto, (f) => resumen.farmaciaCercana(f), (lista) => {
-      // Si mientras tanto se eligió otro punto, estas farmacias ya no corresponden.
-      if (puntoActual === punto) mapa.mostrarFarmacias(lista);
-    }, (farmacia) => mapa.verFarmacia(farmacia));
+    pintarFarmacias(turnosFarmacias, punto, todasFarmacias, {
+      alUbicar: (f) => resumen.farmaciaCercana(f),
+      alMapa: (lista) => {
+        // Si mientras tanto se eligió otro punto, estas farmacias ya no corresponden.
+        if (puntoActual === punto) mapa.mostrarFarmacias(lista);
+      },
+      verEnMapa: (farmacia) => mapa.verFarmacia(farmacia),
+    });
     // Un corte de agua de hoy o de mañana sale también en el resumen.
     const posibles = avisosAguaPorConfirmar(avisosAgua, agua);
     const proximo = pintarAgua(agua, posibles)[0];
@@ -2838,6 +2935,11 @@ async function iniciar() {
   mapaDelAire = mapa;
   mapa.ponerAire(estacionesAire);
   mapa.agregarSalud(salud);
+  // Todas las farmacias, como capa: al tocar una, su nombre y si está abierta (si se sabe).
+  mapa.agregarFarmacias(todasFarmacias, ({ nombre, horario }) => {
+    const estado = textoEstadoFarmacia(estadoHorarioOsm(horario));
+    return estado ? `${nombre}. ${estado}` : nombre;
+  });
   mapa.agregarCapas(bicicletas, estacionesTranvia, {
     trazos: trazadosTranvia(estacionesTranvia),
     horario: horarioTranvia(datosTranvia),

@@ -86,10 +86,10 @@ pestaña.
 
 | Pestaña | Lo que te dice |
 |---|---|
-| **Resumen** | Cuándo pasa el recolector, la farmacia de turno más cercana con su nombre, las líneas de bus que pasan por tu esquina y la calidad del aire. Cada ficha se tiñe según su estado: ámbar si el recolector pasa hoy, verde si todo está bien, rojo si hay un aviso. |
+| **Resumen** | Cuándo pasa el recolector, la farmacia más cercana con su nombre (de noche, la de turno), las líneas de bus que pasan por tu esquina y la calidad del aire. Cada ficha se tiñe según su estado: ámbar si el recolector pasa hoy, verde si todo está bien, rojo si hay un aviso. |
 | **Basura** | Los días y el horario de tu zona, cuánto falta para que empiece (cuando ya falta poco), el recorrido del recolector por la ciudad hoy, qué va en la funda negra y en la celeste y qué día toca la celeste. También qué pasa en feriados y dónde llevar lo que no va en las fundas (orgánicos, vidrio, escombros, pilas). |
 | **Cortes** | Los cortes de luz programados por Centro Sur para hoy, y si publicó cronogramas nuevos. Debajo, los cortes de agua anunciados por ETAPA para los próximos días, con sus sectores y horario. |
-| **Farmacias** | Las farmacias de turno de la semana (abiertas las 24 horas), ordenadas por cercanía, con su teléfono para llamar con un toque, un botón para verlas en el mapa y otro para que Google Maps te lleve. |
+| **Farmacias** | De día, las farmacias más cercanas a tu calle, de todas las de Cuenca (y si su horario dice que están abiertas); de noche, primero las de turno de la semana (abiertas las 24 horas). Todas con su distancia, su teléfono para llamar con un toque, un botón para verlas en el mapa y otro para que Google Maps te lleve. |
 | **Buses** | Qué bus te lleva a donde vas, las líneas que pasan cerca y cada cuánto pasan hoy, su recorrido en el mapa, las paradas y la estación del tranvía más cercanas, el pasaje vigente y los cambios recientes de líneas. |
 | **Cerca** | La zona WiFi gratis, el mercado, el punto para dejar pilas y el destacamento de la Guardia Ciudadana más cercanos, con su horario o su teléfono, y la estación de BiciPública más cercana. |
 | **Aire** | El índice de calidad del aire de la estación de la EMOV más cercana, con su recomendación, el índice UV y la temperatura. |
@@ -141,7 +141,7 @@ BiciPública, las ciclovías y los puntos de carga para autos eléctricos.
 - **Mostrar cierres de vías y cortes de luz que anuncia la prensa**, sin revisar y con el enlace a la nota.
 - **Marcar en el mapa lo que tienes cerca**: los dos mercados más cercanos, el hospital con emergencias y el
   centro de salud público más cercano, siempre a la vista alrededor de tu calle (se esconden mientras miras una
-  línea o una ruta). Todos los mercados y todos los centros de salud están, además, en el botón "Servicios" del mapa.
+  línea o una ruta). Todos los mercados, todos los centros de salud y todas las farmacias de la ciudad están, además, en el botón "Servicios" del mapa.
 - **Listar los mercados municipales**, del más cercano al más lejano; al tocar uno (o el hospital), el mapa va
   hasta él. Y las páginas oficiales de trámites, pagos y reclamos.
 - **Emergencias y salud**: el botón para llamar al ECU 911 y el hospital con emergencias y el centro de salud
@@ -203,6 +203,7 @@ Todo sale de **fuentes oficiales y públicas** y, cuando una institución solo l
 | Cortes de luz | Centro Sur, suspensiones programadas | Se revisa todos los días, pero **Centro Sur no actualiza su cronograma desde julio de 2026**; la página lo dice |
 | Cortes de agua | ETAPA EP, a través de El Mercurio | Se busca todos los días. Lo que cita a ETAPA se muestra enseguida como "por confirmar"; una persona lo revisa después |
 | Farmacias de turno | ARCSA, lista mensual de Azuay | Se revisa todos los días |
+| Las demás farmacias | OpenStreetMap | Se revisa cada lunes |
 | Buses | GAD Municipal, portal Cuenca en Datos | Horarios de 2025 y recorridos de 2022: manda el letrero del bus |
 | Tranvía | Tranvía de Cuenca | Se revisa todos los días |
 | Aire, sol y temperatura | Red de Monitoreo de la EMOV EP | En vivo, cada vez que abres la página |

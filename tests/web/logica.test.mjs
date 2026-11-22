@@ -479,3 +479,55 @@ test("estadoHorario: abierto o cerrado según el horario escrito", async () => {
   assert.equal(estadoHorario("Lunes a domingo", a_las_10), null);
   assert.equal(estadoHorario(undefined, a_las_10), null);
 });
+
+test("estadoHorarioOsm: lee el horario de OpenStreetMap", async () => {
+  const { estadoHorarioOsm } = await import("../../web/logica.js");
+  // 2026-11-23 es lunes; Cuenca va en UTC-5.
+  const lunes = (h, m = 0) => new Date(Date.UTC(2026, 10, 23, h + 5, m));
+  const sabado = (h) => new Date(Date.UTC(2026, 10, 28, h + 5));
+  const domingo = (h) => new Date(Date.UTC(2026, 10, 29, h + 5));
+  assert.deepEqual(estadoHorarioOsm("Mo-Sa 08:00-20:00; Su 09:00-13:00", lunes(10)), { abierto: true, cierra: "20:00", siempre: false });
+  assert.deepEqual(estadoHorarioOsm("Mo-Sa 08:00-20:00; Su 09:00-13:00", lunes(7, 30)), { abierto: false, abre: "08:00", manana: false });
+  assert.deepEqual(estadoHorarioOsm("Mo-Sa 08:00-20:00; Su 09:00-13:00", sabado(21)), { abierto: false, abre: "09:00", manana: true });
+  assert.equal(estadoHorarioOsm("Mo-Sa 08:00-20:00; Su 09:00-13:00", domingo(12)).cierra, "13:00");
+  // Sin días, todos; reglas separadas por coma; la que pasa la medianoche.
+  assert.equal(estadoHorarioOsm("08:00-21:00", domingo(20)).abierto, true);
+  assert.equal(estadoHorarioOsm("Mo-Fr 08:30-22:15, Sa,Su 09:00-21:45", sabado(21)).cierra, "21:45");
+  // El martes a las 3 sigue el turno del lunes; el lunes a las 3, el del domingo ya cerró a la 1.
+  const martes3 = new Date(Date.UTC(2026, 10, 24, 8));
+  assert.deepEqual(estadoHorarioOsm("Mo-Fr 20:00-08:00; Sa-Su 20:00-01:00", martes3), { abierto: true, cierra: "08:00", siempre: false });
+  assert.deepEqual(estadoHorarioOsm("Mo-Fr 20:00-08:00; Sa-Su 20:00-01:00", lunes(3)), { abierto: false, abre: "20:00", manana: false });
+  assert.equal(estadoHorarioOsm("Mo-Fr 09:00-18:00", sabado(10)).abierto, false);
+  assert.equal(estadoHorarioOsm("Mo-Fr 09:00-18:00", sabado(10)).abre, null);
+  assert.deepEqual(estadoHorarioOsm("24/7", lunes(3)), { abierto: true, cierra: null, siempre: true });
+  // Lo que no se entiende, no se adivina.
+  assert.equal(estadoHorarioOsm("Mo-Su 08:00+", lunes(10)), null);
+  assert.equal(estadoHorarioOsm("Mo-Fr 08:00-18:00; PH off", lunes(10)), null);
+  assert.equal(estadoHorarioOsm(null, lunes(10)), null);
+});
+
+test("farmaciasCerca y esLaDeTurno: las de OpenStreetMap junto al punto", async () => {
+  const { farmaciasCerca, esLaDeTurno, esDeNoche } = await import("../../web/logica.js");
+  const lunes10 = new Date(Date.UTC(2026, 10, 23, 15));
+  const punto = { lat: -2.9, lon: -79.0 };
+  const datos = {
+    farmacias: [
+      { nombre: "Lejana", lat: -2.95, lon: -79.0, horario: null },
+      { nombre: "Cerrada", lat: -2.9001, lon: -79.0, horario: "Mo-Fr 18:00-21:00" },
+      { nombre: "Farmacias Cruz Azul", lat: -2.902, lon: -79.0, horario: null },
+      { nombre: "Abierta", lat: -2.903, lon: -79.0, horario: "Mo-Su 08:00-22:00" },
+    ],
+  };
+  // Las cerradas, aunque estén más cerca, van al final; la lejana queda fuera.
+  assert.deepEqual(farmaciasCerca(punto, datos, { fecha: lunes10 }).map((f) => f.nombre), ["Farmacias Cruz Azul", "Abierta", "Cerrada"]);
+  assert.deepEqual(farmaciasCerca(punto, datos, { fecha: lunes10, soloAbiertas: true }).map((f) => f.nombre), ["Abierta"]);
+  assert.equal(farmaciasCerca(punto, datos, { fecha: lunes10 })[0].metros, 222);
+  // La de turno, con su esquina a 167 m y el nombre como lo escribe ARCSA; a 300 m ya no.
+  const turno = [{ nombre: "FARMACIA CRUZ AZUL", lugar: { lat: -2.9035, lon: -79.0 } }];
+  assert.equal(esLaDeTurno(datos.farmacias[2], turno), true);
+  assert.equal(esLaDeTurno(datos.farmacias[2], [{ ...turno[0], lugar: { lat: -2.9047, lon: -79.0 } }]), false);
+  assert.equal(esLaDeTurno(datos.farmacias[3], turno), false);
+  assert.equal(esLaDeTurno({ nombre: null, lat: -2.902, lon: -79.0 }, turno), false);
+  assert.equal(esDeNoche(new Date(Date.UTC(2026, 10, 24, 3))), true); // 22:00
+  assert.equal(esDeNoche(lunes10), false);
+});

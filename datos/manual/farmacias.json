@@ -1,0 +1,7 @@
+{
+  "metadata": {
+    "titulo": "Revisión de las farmacias de OpenStreetMap",
+    "nota": "Cada lunes se comparan todas las farmacias de OpenStreetMap con las publicadas. Lo que cambia se avisa en la revisión diaria de GitHub, y si llegan o se quitan más de 20 en una semana no se publican. Cuando alguien revise los cambios (y deshaga en OpenStreetMap lo que sea falso), pone aquí la fecha del día en «revisado»: el aviso se cierra y lo detenido se publica en la siguiente actualización semanal."
+  },
+  "revisado": "2026-11-22"
+}

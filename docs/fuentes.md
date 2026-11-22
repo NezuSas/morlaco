@@ -25,6 +25,7 @@ Cómo leer las tablas:
 | Cortes de luz programados | Ninguna web publica los de Cuenca | Sin fuente regular | Automática, avisa del vacío |
 | Cortes de agua | El Mercurio | Al día | Detectada a diario y mostrada como "por confirmar"; confirmada a mano |
 | Farmacias de turno | PDF mensual de ARCSA | Al día | Automática, diaria |
+| Las demás farmacias | OpenStreetMap | Al día según la comunidad; pocas con horario | Automática, cada lunes |
 | Buses: horarios y recorridos | Cuenca en Datos (abril de 2026) | Atrasada | Automática, semanal |
 | Buses: cambios de 2026 y pasaje | El Mercurio | Al día | A mano |
 | Tranvía | API de su web | Al día | Automática, diaria |
@@ -111,6 +112,24 @@ confirmar, dicho como tal, sirve más que un corte confirmado que llega tarde.
 **Ojo:** el PDF tiene errores de la propia fuente (años mal escritos, farmacias de otros cantones). Morlaco
 corrige lo evidente y pide llamar antes de ir. Si un mes ARCSA tarda en publicar, la página se queda sin
 turno y lo dice.
+
+ARCSA solo publica las de turno (unas 13 por semana), que son las que abren de noche. De día casi todas
+atienden, así que la página muestra también **todas las farmacias que tiene OpenStreetMap** (unas 345 en
+noviembre de 2026), en `datos/ciudad/farmacias.json`, que se baja cada lunes con las calles. Pocas tienen
+horario (unas 26) y ninguna está marcada como abierta las 24 horas, así que de noche mandan las de turno. Una
+farmacia de OpenStreetMap se marca "de turno esta semana" solo si se llama parecido a una de turno ubicada
+en su esquina exacta, a menos de 200 m. Las que falten se pueden agregar en OpenStreetMap y Morlaco las toma
+el lunes siguiente (la página lo invita con «¿Falta una farmacia?»).
+
+Como OpenStreetMap lo edita cualquiera, cada lunes se compara la lista nueva con la publicada
+(`src/morlaco/vigilancia_farmacias.py`):
+
+- Las farmacias nuevas, quitadas o con otro nombre, horario o teléfono salen en el aviso de revisión de
+  GitHub, con el enlace a su historial en OpenStreetMap. Si alguna es falsa, se deshace allí.
+- Si en una semana llegan más de 20 nuevas, o se quitan más de 20, esas no se publican (puede ser un ataque
+  o un error grande): quedan detenidas y el aviso lo dice.
+- Revisado todo, se pone la fecha del día en `revisado` de `datos/manual/farmacias.json`. El aviso deja de
+  insistir enseguida y lo detenido se publica en la siguiente actualización semanal.
 
 ## Buses y tranvía
 

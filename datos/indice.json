@@ -684,6 +684,45 @@
       }
     },
     {
+      "id": "farmacias",
+      "archivo": "ciudad/farmacias.json",
+      "formato": "JSON",
+      "tema": "salud",
+      "titulo": "Farmacias",
+      "descripcion": "Todas las farmacias que OpenStreetMap tiene en Cuenca, no solo las de turno: de día casi todas atienden. Pueden faltar algunas; llama antes de ir.",
+      "campos": {
+        "nombre": "Nombre (null si OpenStreetMap no lo tiene)",
+        "lat, lon": "Coordenadas del punto",
+        "direccion": "Calle y número, si OpenStreetMap los tiene",
+        "telefono": "Teléfono, si OpenStreetMap lo tiene",
+        "horario": "opening_hours de OpenStreetMap tal cual (\"24/7\" es siempre abierta), o null",
+        "osm": "Elemento de OpenStreetMap (node/123, way/456)",
+        "metadata.cambios / detenidas": "Lo que cambió desde la última revisión, y lo que se detuvo por llegar de golpe"
+      },
+      "fuente_morlaco": "calles",
+      "frecuencia": "semanal",
+      "fuente": "OpenStreetMap",
+      "licencia": "ODbL 1.0 (© colaboradores de OpenStreetMap)",
+      "url": "https://nezusas.github.io/morlaco/datos/ciudad/farmacias.json",
+      "en": {
+        "titulo": "Pharmacies",
+        "descripcion": "Every pharmacy OpenStreetMap has in Cuenca, not only the ones on duty: during the day almost all of them are open.",
+        "frecuencia": "weekly",
+        "campos": {
+          "nombre": "Name (null if OpenStreetMap has none)",
+          "lat, lon": "Coordinates of the point",
+          "direccion": "Street and number, if OpenStreetMap has them",
+          "telefono": "Phone, if OpenStreetMap has it",
+          "horario": "OpenStreetMap opening_hours as is (\"24/7\" is always open), or null",
+          "osm": "OpenStreetMap element (node/123, way/456)",
+          "metadata.cambios / detenidas": "What changed since the last review, and what is held back because too much arrived at once"
+        },
+        "formato": "JSON",
+        "fuente": "OpenStreetMap",
+        "licencia": "ODbL 1.0 (© OpenStreetMap contributors)"
+      }
+    },
+    {
       "id": "barrios",
       "archivo": "ciudad/barrios.json",
       "formato": "JSON",

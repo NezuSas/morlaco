@@ -499,6 +499,109 @@ export function avisosDePrensaVigentes(datos, fecha = new Date(), { dias = 2, ca
     .sort((a, b) => (a.fecha ?? a.publicado ?? "").localeCompare(b.fecha ?? b.publicado ?? ""));
 }
 
+const DIAS_OSM = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+
+/**
+ * El horario de OpenStreetMap (la etiqueta opening_hours: "Mo-Sa 08:00-20:00; Su 09:00-13:00")
+ * como siete listas de tramos en minutos, de lunes a domingo; un tramo que pasa la medianoche
+ * termina después de 1440. null si trae algo que no se entiende (feriados, "08:00+", meses…):
+ * mejor no decir nada que equivocarse.
+ */
+function leerHorarioOsm(texto) {
+  const limpio = (texto ?? "").trim();
+  if (!limpio) return null;
+  if (limpio === "24/7") return DIAS_OSM.map(() => [[0, 1440]]);
+  const semana = DIAS_OSM.map(() => []);
+  // Las reglas van separadas por ";" (o por ", " antes de otros días).
+  const reglas = limpio.split(/\s*;\s*|,\s+(?=(?:Mo|Tu|We|Th|Fr|Sa|Su)\b)/).filter(Boolean);
+  for (const regla of reglas) {
+    const partes = /^((?:(?:Mo|Tu|We|Th|Fr|Sa|Su)(?:-(?:Mo|Tu|We|Th|Fr|Sa|Su))?,?)+)?\s*(.+)$/.exec(regla);
+    if (!partes) return null;
+    const dias = [];
+    for (const grupo of (partes[1] ?? "Mo-Su").split(",").filter(Boolean)) {
+      const [desde, hasta = desde] = grupo.split("-").map((d) => DIAS_OSM.indexOf(d));
+      for (let i = desde; ; i = (i + 1) % 7) {
+        dias.push(i);
+        if (i === hasta) break;
+      }
+    }
+    const horas = partes[2].trim();
+    let tramos = [];
+    if (!/^(off|closed)$/.test(horas)) {
+      for (const tramo of horas.split(",")) {
+        const m = /^(\d{1,2}):(\d{2})-(\d{1,2}):(\d{2})$/.exec(tramo.trim());
+        if (!m) return null;
+        const inicio = Number(m[1]) * 60 + Number(m[2]);
+        let fin = Number(m[3]) * 60 + Number(m[4]);
+        if (fin <= inicio) fin += 1440;
+        tramos.push([inicio, fin]);
+      }
+    }
+    // Como en OpenStreetMap, una regla posterior reemplaza a la anterior en sus días.
+    for (const d of dias) semana[d] = tramos;
+    tramos = null;
+  }
+  return semana;
+}
+
+/**
+ * ¿Está abierta ahora, según su horario de OpenStreetMap? { abierto: true, cierra, siempre } o
+ * { abierto: false, abre, manana } (abre es null si no abre ni hoy ni mañana). null si no hay
+ * horario o no se entiende.
+ */
+export function estadoHorarioOsm(texto, fecha = new Date()) {
+  const semana = leerHorarioOsm(texto);
+  if (!semana) return null;
+  if (texto.trim() === "24/7") return { abierto: true, cierra: null, siempre: true };
+  const { diaIso, minutos } = horaCuenca(fecha);
+  const hoy = diaIso - 1;
+  const ayer = (hoy + 6) % 7;
+  const hora = (m) => `${String(Math.floor((m % 1440) / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
+  const abiertoHoy = semana[hoy].find(([a, b]) => a <= minutos && minutos < b);
+  if (abiertoHoy) return { abierto: true, cierra: hora(abiertoHoy[1]), siempre: false };
+  const deAyer = semana[ayer].find(([, b]) => b > 1440 && minutos < b - 1440);
+  if (deAyer) return { abierto: true, cierra: hora(deAyer[1]), siempre: false };
+  const luego = semana[hoy].filter(([a]) => a > minutos).sort((x, y) => x[0] - y[0])[0];
+  if (luego) return { abierto: false, abre: hora(luego[0]), manana: false };
+  const manana = [...semana[(hoy + 1) % 7]].sort((x, y) => x[0] - y[0])[0];
+  return { abierto: false, abre: manana ? hora(manana[0]) : null, manana: Boolean(manana) };
+}
+
+/**
+ * De noche (de las 21:00 a las 07:00, hora de Cuenca) casi todas las farmacias cierran y las que
+ * cuentan son las de turno; de día, cualquiera cercana sirve.
+ */
+export function esDeNoche(fecha = new Date()) {
+  const { minutos } = horaCuenca(fecha);
+  return minutos >= 21 * 60 || minutos < 7 * 60;
+}
+
+/**
+ * Las farmacias de OpenStreetMap (datos/ciudad/farmacias.json) más cercanas al punto, con su
+ * distancia y su estado de ahora si tienen horario: [{ ...farmacia, metros, estado }]. Las que
+ * se sabe que están cerradas van al final. Con `soloAbiertas`, solo las que se sabe abiertas.
+ */
+export function farmaciasCerca(punto, datos, { maximo = 5, maximoMetros = 1500, soloAbiertas = false, fecha = new Date() } = {}) {
+  return (datos?.farmacias ?? [])
+    .map((f) => ({ ...f, metros: Math.round(distanciaMetros(punto, f)), estado: estadoHorarioOsm(f.horario, fecha) }))
+    .filter((f) => f.metros <= maximoMetros && (!soloAbiertas || f.estado?.abierto))
+    .sort((a, b) => Number(a.estado?.abierto === false) - Number(b.estado?.abierto === false) || a.metros - b.metros)
+    .slice(0, maximo);
+}
+
+/**
+ * ¿Es esta farmacia de OpenStreetMap una de las de turno? La de turno está en la esquina de su
+ * dirección (aproximada), así que basta con que se llamen parecido y estén a menos de 200 m.
+ * Conviene pasar solo las de turno ubicadas en su esquina exacta: con las cadenas, una ubicada
+ * "por esa zona" podría confundirse con otro local.
+ */
+export function esLaDeTurno(farmacia, turno) {
+  const clave = (n) => normalizar(n).replace(/\bfarmacias?\b|\bde\b|[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
+  const nombre = clave(farmacia.nombre);
+  if (!nombre) return false;
+  return turno.some((f) => f.lugar && distanciaMetros(farmacia, f.lugar) < 200 && (clave(f.nombre).includes(nombre) || nombre.includes(clave(f.nombre))));
+}
+
 /**
  * ¿Está abierto ahora un lugar cuyo horario dice "De 08:00 a 18:00"? Devuelve { abierto, abre,
  * cierra } o null si el texto no trae un horario así (no se adivina).

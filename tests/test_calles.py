@@ -66,12 +66,14 @@ def test_obtener_consulta_overpass_dentro_de_cuenca():
     assert '"highway"' in consulta and "-2.98,-79.1,-2.82,-78.92" in consulta
     # En la misma consulta van los barrios, las parroquias y las urbanizaciones.
     assert '"place"' in consulta and '"boundary"="administrative"' in consulta
-    assert resultado.resumen == {"calles": 2, "tramos": 3, "barrios": 0, "salud": 0}
+    assert resultado.resumen == {"calles": 2, "tramos": 3, "barrios": 0, "salud": 0, "farmacias": 0}
     assert list(resultado.archivos) == [
         "calles/calles.geojson",
         "ciudad/barrios.json",
         "ciudad/salud.json",
+        "ciudad/farmacias.json",
     ]
+    assert '"amenity"="pharmacy"' in consulta
 
 
 def test_parsear_barrios_toma_lugares_parroquias_y_urbanizaciones():
@@ -149,3 +151,48 @@ def test_parsear_salud_clasifica_y_descarta_lo_que_no_es_atencion_general():
     }
     ricaurte = next(lugar for lugar in datos["lugares"] if "Ricaurte" in lugar["nombre"])
     assert ricaurte["telefono"] == "+593 7 4209089"
+
+
+def test_parsear_farmacias_toma_todas_sin_repetir_la_misma():
+    def farmacia(nombre, lat=-2.9, lon=-79.0, tipo="node", **extra):
+        punto = {"lat": lat, "lon": lon}
+        base = punto if tipo == "node" else {"center": punto}
+        etiquetas = {"amenity": "pharmacy", **({"name": nombre} if nombre else {}), **extra}
+        return {"type": tipo, **base, "tags": etiquetas}
+
+    elementos = [
+        farmacia("Farmacias Cruz Azul", opening_hours="24/7", phone="+593 7 2800000;072811111"),
+        # El mismo local, como edificio: no se repite.
+        farmacia("Farmacias Cruz Azul", lat=-2.90002, tipo="way"),
+        # La misma cadena en otra calle: es otra farmacia.
+        farmacia("Farmacias Cruz Azul", lat=-2.91),
+        farmacia(None, lon=-79.01, **{"addr:street": "Calle Larga", "addr:housenumber": "7-45"}),
+        # Sin nombre, junto a una que lo tiene: es la misma.
+        farmacia(None, lat=-2.91015),
+        # El mismo nombre escrito distinto, a 11 m.
+        farmacia("farmacias cruz azul", lat=-2.9101),
+        {
+            "type": "node",
+            "lat": -2.9,
+            "lon": -79.0,
+            "tags": {"healthcare": "pharmacy", "name": "Botica"},
+        },
+        farmacia("Lejos", lat=-3.5),  # fuera de la ciudad
+        {
+            "type": "node",
+            "lat": -2.9,
+            "lon": -79.0,
+            "tags": {"shop": "chemist", "name": "Droguería"},
+        },
+    ]
+    datos = calles.parsear_farmacias(json.dumps({"elements": elementos}).encode())
+    assert [(f["nombre"], f["lat"]) for f in datos["farmacias"]] == [
+        ("Botica", -2.9),
+        ("Farmacias Cruz Azul", -2.91),
+        ("Farmacias Cruz Azul", -2.9),
+        (None, -2.9),
+    ]
+    assert datos["farmacias"][3]["lon"] == -79.01
+    cruz = datos["farmacias"][2]
+    assert (cruz["horario"], cruz["telefono"]) == ("24/7", "+593 7 2800000")
+    assert datos["farmacias"][3]["direccion"] == "Calle Larga 7-45"

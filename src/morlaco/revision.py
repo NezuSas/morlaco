@@ -14,7 +14,7 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
-from morlaco import revisar_gtfs
+from morlaco import revisar_gtfs, vigilancia_farmacias
 from morlaco.fuentes import feriados
 
 DIAS_FARMACIAS = 7  # aviso si los turnos publicados se acaban en menos de esto
@@ -42,6 +42,9 @@ def _fecha(texto: str | None) -> date | None:
         return date.fromisoformat(str(texto)[:10])
     except (TypeError, ValueError):
         return None
+
+
+fecha = _fecha
 
 
 def revisar(datos: Path, hoy: date, validacion: Path | None = None) -> list[dict[str, str]]:
@@ -79,6 +82,16 @@ def revisar(datos: Path, hoy: date, validacion: Path | None = None) -> list[dict
                 "Revisa si ARCSA ya publicó el PDF del mes siguiente.",
             }
         )
+
+    # 2b. Todas las farmacias (de OpenStreetMap, que edita cualquiera): lo que cambió esta
+    # semana y lo que se detuvo por llegar de golpe, hasta que alguien lo revise.
+    revisado_farmacias = _fecha((_leer(datos / "manual" / "farmacias.json") or {}).get("revisado"))
+    pendientes += [
+        {"tema": "farmacias", "mensaje": punto}
+        for punto in vigilancia_farmacias.pendientes(
+            _leer(datos / "ciudad" / "farmacias.json"), revisado_farmacias
+        )
+    ]
 
     # 3. Cambios de líneas que vencen pronto: confirmar si siguen o quitarlos.
     transporte = _leer(datos / "manual" / "transporte.json") or {}

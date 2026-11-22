@@ -14,7 +14,8 @@ corte de agua anunciado por sectores cae cerca. De cada uno se guarda un punto
 (el del lugar, o el centro de su área), no su contorno.
 
 Y los hospitales y centros de salud: el hospital con emergencias y el centro de salud
-público más cercanos a cada calle.
+público más cercanos a cada calle. Y todas las farmacias: ARCSA solo publica las de turno
+(las que abren de noche), pero de día casi todas atienden.
 """
 
 from __future__ import annotations
@@ -57,6 +58,9 @@ _CONSULTA_SALUD = (
     f'nwr["amenity"="hospital"]{_CAJA_OVERPASS};'
     f'nwr["amenity"="clinic"]["name"~"centro de salud|subcentro|hospital",i]{_CAJA_OVERPASS};'
 )
+_CONSULTA_FARMACIAS = (
+    f'nwr["amenity"="pharmacy"]{_CAJA_OVERPASS};nwr["healthcare"="pharmacy"]{_CAJA_OVERPASS};'
+)
 CONSULTA = (
     "[out:json][timeout:150];"
     f'way["highway"]["name"]{_CAJA_OVERPASS};'
@@ -64,6 +68,8 @@ CONSULTA = (
     f"({_CONSULTA_LUGARES});"
     "out tags center;"
     f"({_CONSULTA_SALUD});"
+    "out tags center;"
+    f"({_CONSULTA_FARMACIAS});"
     "out tags center;"
 )
 # Un centro de salud público, por su nombre; y lo que no es atención general (dentistas,
@@ -297,21 +303,91 @@ def parsear_salud(contenido: bytes) -> dict[str, Any]:
     }
 
 
+def _entre(a: dict[str, Any], b: dict[str, Any]) -> float:
+    """Metros entre dos puntos {lat, lon} cercanos."""
+    dy = (a["lat"] - b["lat"]) * _METROS_POR_GRADO
+    dx = (a["lon"] - b["lon"]) * _METROS_POR_GRADO * math.cos(math.radians(a["lat"]))
+    return math.hypot(dx, dy)
+
+
+def parsear_farmacias(contenido: bytes) -> dict[str, Any]:
+    """Todas las farmacias que OpenStreetMap tiene en Cuenca, un punto por cada una.
+
+    Muchas comparten nombre (las cadenas), así que una se descarta solo si es la misma vista
+    dos veces: el mismo nombre a menos de 25 m (el local y su edificio), o una sin nombre a
+    menos de 40 m de otra que sí lo tiene. `horario` es la etiqueta opening_hours tal cual (la
+    página la interpreta), o null."""
+    elementos = json.loads(decodificar(contenido)).get("elements", [])
+    candidatas: list[dict[str, Any]] = []
+    for elemento in elementos:
+        etiquetas = elemento.get("tags", {})
+        punto = elemento if elemento.get("type") == "node" else elemento.get("center")
+        es_farmacia = "pharmacy" in {etiquetas.get("amenity"), etiquetas.get("healthcare")}
+        if not es_farmacia or not punto:
+            continue
+        lat, lon = round(punto["lat"], 5), round(punto["lon"], 5)
+        if not (CAJA[0] <= lat <= CAJA[2] and CAJA[1] <= lon <= CAJA[3]):
+            continue
+        nombre = limpiar(etiquetas.get("name") or etiquetas.get("brand")) or None
+        telefono = etiquetas.get("phone") or etiquetas.get("contact:phone")
+        calle = limpiar(etiquetas.get("addr:street"))
+        numero = limpiar(etiquetas.get("addr:housenumber"))
+        candidatas.append(
+            {
+                "osm": f"{elemento.get('type', 'node')}/{elemento.get('id')}",
+                "nombre": nombre,
+                "lat": lat,
+                "lon": lon,
+                "direccion": " ".join(filter(None, [calle, numero])) or None,
+                "telefono": limpiar(telefono.split(";")[0]) if telefono else None,
+                "horario": limpiar(etiquetas.get("opening_hours")) or None,
+            }
+        )
+    # Primero las que tienen más datos: de dos repetidas, queda la más completa.
+    candidatas.sort(key=lambda f: -sum(v is not None for v in f.values()))
+    farmacias: list[dict[str, Any]] = []
+    for f in candidatas:
+        nombre = (f["nombre"] or "").lower()
+        repetida = any(
+            (nombre and (otra["nombre"] or "").lower() == nombre and _entre(otra, f) < 25)
+            or (not nombre and _entre(otra, f) < 40)
+            for otra in farmacias
+        )
+        if not repetida:
+            farmacias.append(f)
+    return {
+        "metadata": {
+            "titulo": "Farmacias de Cuenca",
+            "fuente": "OpenStreetMap, vía la API Overpass",
+            "atribucion": "© colaboradores de OpenStreetMap",
+            "licencia": "Open Database License (ODbL) 1.0",
+            "nota": "Todas las farmacias que OpenStreetMap tiene en la ciudad, no solo las de "
+            "turno. horario es la etiqueta opening_hours de OpenStreetMap tal cual (null si no "
+            'la tiene; "24/7" es abierta siempre). nombre es null si no lo tiene. Los datos son '
+            "de la comunidad y pueden faltar farmacias: conviene llamar antes de ir.",
+        },
+        "farmacias": sorted(farmacias, key=lambda f: (f["nombre"] or "~", f["lat"], f["lon"])),
+    }
+
+
 def obtener(descargar: red.Descargador = red.descargar) -> Resultado:
     contenido = descargar(f"{OVERPASS}?{urlencode({'data': CONSULTA})}")
     calles = parsear_overpass(contenido)
     barrios = parsear_barrios(contenido)
     salud = parsear_salud(contenido)
+    farmacias = parsear_farmacias(contenido)
     return Resultado(
         archivos={
             "calles/calles.geojson": calles,
             "ciudad/barrios.json": barrios,
             "ciudad/salud.json": salud,
+            "ciudad/farmacias.json": farmacias,
         },
         resumen={
             "calles": len(calles["features"]),
             "tramos": sum(len(f["geometry"]["coordinates"]) for f in calles["features"]),
             "barrios": len(barrios["barrios"]),
             "salud": len(salud["lugares"]),
+            "farmacias": len(farmacias["farmacias"]),
         },
     )
