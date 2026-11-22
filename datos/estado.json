@@ -1,12 +1,16 @@
 {
   "agua": {
     "ok": true,
-    "actualizado": "2026-11-20T18:57:03+00:00",
+    "actualizado": "2026-11-22T02:39:04+00:00",
     "archivos": [
-      "agua/avisos.json"
+      "agua/avisos.json",
+      "luz/avisos.json",
+      "movilidad/cierres.json"
     ],
     "resumen": {
-      "avisos": 1
+      "avisos": 1,
+      "cierres_movilidad": 4,
+      "avisos_luz": 0
     }
   },
   "buses": {
