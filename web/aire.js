@@ -12,10 +12,11 @@ export const URL_AIRE = "https://caire.emov.gob.ec/datos/ica/obtener";
 export const URL_UV = "https://caire.emov.gob.ec/datos/iuv/obtenerUltimoIuv";
 export const URL_CLIMA = "https://caire.emov.gob.ec/datos/datos/obtenerUltimosMeteorologico";
 export const PAGINA_AIRE = "https://caire.emov.gob.ec/";
-// La lluvia de las próximas horas, del pronóstico abierto de Open-Meteo (CC BY 4.0). Se pide
-// siempre para el mismo punto, el centro de Cuenca: no se le envía la ubicación de nadie.
+// La lluvia de las próximas horas y el índice UV del día, del pronóstico abierto de Open-Meteo
+// (CC BY 4.0), en una sola consulta. Se pide siempre para el mismo punto, el centro de Cuenca:
+// no se le envía la ubicación de nadie.
 export const URL_LLUVIA =
-  "https://api.open-meteo.com/v1/forecast?latitude=-2.9&longitude=-79.0&hourly=precipitation_probability,precipitation&forecast_days=2&timezone=America%2FGuayaquil";
+  "https://api.open-meteo.com/v1/forecast?latitude=-2.9&longitude=-79.0&hourly=precipitation_probability,precipitation,uv_index&forecast_days=2&timezone=America%2FGuayaquil";
 export const PAGINA_LLUVIA = "https://open-meteo.com/";
 
 /** Un dato más viejo que esto no se muestra: ya no dice cómo está el aire ahora. */
@@ -141,4 +142,31 @@ export function leerLluvia(respuesta, fecha = new Date(), horas = 8) {
     }
   }
   return { desde: null, probabilidad: Math.round(maxima), ahora: false };
+}
+
+/** Desde este índice el sol pide cuidado (la escala de la OMS lo llama "alto"). */
+const UV_ALTO = 6;
+
+/**
+ * El sol de hoy según el pronóstico por horas: { maximo, nivel, hora, desde, hasta }. `hora`
+ * es cuándo llega a su máximo y `desde`-`hasta`, las horas con UV alto o más (null si no las
+ * hay). null si la respuesta no trae el día de hoy o si las horas de sol fuerte ya pasaron
+ * (de noche no hay nada que advertir).
+ */
+export function leerUvPronostico(respuesta, fecha = new Date()) {
+  const { time, uv_index: indices } = respuesta?.hourly ?? {};
+  if (!Array.isArray(time) || !Array.isArray(indices)) return null;
+  const { fecha: hoy, minutos } = horaCuenca(fecha);
+  const deHoy = time.map((t, i) => ({ t, uv: indices[i] })).filter((h) => h.t.startsWith(hoy) && Number.isFinite(h.uv));
+  if (!deHoy.length) return null;
+  const pico = deHoy.reduce((a, b) => (b.uv > a.uv ? b : a));
+  const altas = deHoy.filter((h) => h.uv >= UV_ALTO);
+  const hora = (h) => h.t.slice(11, 16);
+  // La franja termina al final de su última hora: "hasta las 14:00" si la última alta es la de las 13.
+  const hasta = altas.length ? `${String(Number(hora(altas.at(-1)).slice(0, 2)) + 1).padStart(2, "0")}:00` : null;
+  const finDelSol = hasta ?? `${String(Number(hora(pico).slice(0, 2)) + 1).padStart(2, "0")}:00`;
+  const [hh, mm] = finDelSol.split(":").map(Number);
+  if (minutos >= hh * 60 + mm) return null;
+  const maximo = Math.round(pico.uv);
+  return { maximo, nivel: nivelUv(maximo), hora: hora(pico), desde: altas.length ? hora(altas[0]) : null, hasta };
 }

@@ -118,7 +118,7 @@ Si escribes solo una calle ("Av. Solano"), ves las líneas que la recorren.
 
 El mapa muestra las zonas de recolección (resaltadas las que tienen recolección hoy), tu punto, las paradas
 y los buses que vienen según su frecuencia. Al elegir el tranvía también se ven sus unidades en camino,
-estimadas con su frecuencia y su horario habitual (no es su posición real). Con el botón de capas se prenden las estaciones del tranvía, la
+estimadas con su frecuencia y su horario habitual (no es su posición real). Con el botón "Servicios" del mapa se prenden las estaciones del tranvía, la
 BiciPública, las ciclovías y los puntos de carga para autos eléctricos.
 
 ## Qué más hace
@@ -132,14 +132,16 @@ BiciPública, las ciclovías y los puntos de carga para autos eléctricos.
   cuándo llega tu bus, si va a llover y cómo está el sol.
 - **Poner tu línea arriba.** Marcas una línea de bus (o el tranvía) como tuya y su próximo paso sale siempre
   al inicio, en las calles por donde pasa.
-- **Avisar si va a llover** en las próximas horas, con el pronóstico abierto de Open-Meteo para el centro de
-  Cuenca.
+- **Avisar si va a llover** en las próximas horas y **cuándo quema el sol**: el máximo de UV del día y las horas
+  de sol fuerte, con el pronóstico abierto de Open-Meteo para el centro de Cuenca.
+- **Mostrar las estaciones de calidad del aire** de la EMOV en el mapa, cada una con su índice y el color de su
+  nivel, desde el botón "Servicios".
 - **Buscar por barrio o parroquia** ("Totoracocha", "El Vecino"), además de por calle o lugar.
 - **Decir si un corte de agua nombra tu sector**, comparando los sectores del aviso con tu calle y tu barrio.
 - **Mostrar cierres de vías y cortes de luz que anuncia la prensa**, sin revisar y con el enlace a la nota.
 - **Marcar en el mapa lo que tienes cerca**: los dos mercados más cercanos, el hospital con emergencias y el
   centro de salud público más cercano, siempre a la vista alrededor de tu calle (se esconden mientras miras una
-  línea o una ruta). Todos los mercados y todos los centros de salud están, además, como capas del mapa.
+  línea o una ruta). Todos los mercados y todos los centros de salud están, además, en el botón "Servicios" del mapa.
 - **Listar los mercados municipales**, del más cercano al más lejano; al tocar uno (o el hospital), el mapa va
   hasta él. Y las páginas oficiales de trámites, pagos y reclamos.
 - **Emergencias y salud**: el botón para llamar al ECU 911 y el hospital con emergencias y el centro de salud
@@ -537,9 +539,9 @@ Para lo que solo se ve en la pantalla hay una prueba aparte, que sí usa la red 
 node tests/ui/celular.mjs
 ```
 
-Abre la página a 320, 360 y 412 px y en escritorio, recorre cada pestaña, despliega el menú "Más", las capas
+Abre la página a 320, 360 y 412 px y en escritorio, recorre cada pestaña, despliega el menú "Más", los servicios
 del mapa, una línea de bus, el mapa ampliado y las sugerencias del buscador, y avisa si algo se sale de la
-pantalla o no cabe en su contenedor (el panel de capas dentro del mapa, por ejemplo). También falla si la
+pantalla o no cabe en su contenedor (el panel "Servicios" dentro del mapa, por ejemplo). También falla si la
 página muestra errores en la consola. Conviene correrla antes de enviar cualquier cambio de la web.
 
 ```

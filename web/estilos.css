@@ -3248,6 +3248,48 @@ button.lugar-fila[aria-pressed="true"] {
   display: none;
 }
 
+/* Una estación de aire: blanca, con el ícono del aire y su índice, y un borde del color de su
+   nivel (los de la escala de la EMOV). Blanca para que no se confunda con un número de línea
+   o de zona, que en el mapa son pastillas de color. */
+.marca-aire {
+  --color-aire: #2e8b3d;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 26px;
+  padding: 0 7px 0 5px;
+  border: 2.5px solid var(--color-aire);
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.25);
+  color: #1d2533;
+  font: 700 0.78rem/1 var(--letra);
+  white-space: nowrap;
+}
+
+.marca-aire svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: var(--color-aire);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+}
+
+.marca-aire.n2 { --color-aire: #d39e00; }
+.marca-aire.n3 { --color-aire: #e07b00; }
+.marca-aire.n4 { --color-aire: #c62828; }
+.marca-aire.n5 { --color-aire: #8e24aa; }
+.marca-aire.n6 { --color-aire: #7b1026; }
+
+/* En el panel de "Servicios", la misma marca, sin número. */
+.capa-fila .marca-aire {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  justify-content: center;
+}
+
 .marca-capa.carga {
   background: var(--aviso);
   color: #141d2e;
@@ -3344,6 +3386,8 @@ button.lugar-fila[aria-pressed="true"] {
   background: var(--superficie);
 }
 
+/* El botón "Servicios": cerrado, solo el ícono (no le quita espacio al mapa); abierto, el mismo
+   botón muestra "Servicios" como título del panel. */
 .control-capas summary {
   display: grid;
   place-items: center;
@@ -3351,35 +3395,34 @@ button.lugar-fila[aria-pressed="true"] {
   height: 44px;
   cursor: pointer;
   list-style: none;
+  font-weight: 700;
+}
+
+.control-capas[open] summary {
+  display: flex;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  width: auto;
+  padding: 0 0.95rem 0 13px;
 }
 
 .control-capas summary::-webkit-details-marker {
   display: none;
 }
 
+.control-capas summary svg {
+  flex: none;
+  color: var(--cupula);
+}
+
 .capas-titulo {
   display: none;
-}
-
-.control-capas[open] summary {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: auto;
-  padding: 0 0 0 0.95rem;
-  gap: 1rem;
-}
-
-.control-capas[open] summary svg {
-  flex: none;
-  margin: 0 13px; /* el ícono queda donde estaba con el panel cerrado */
-  color: var(--cupula);
+  color: var(--tinta);
+  white-space: nowrap;
 }
 
 .control-capas[open] .capas-titulo {
   display: block;
-  color: var(--tinta);
-  font-weight: 700;
 }
 
 /* El panel de capas: un título, y por capa su marca del mapa, qué muestra y un interruptor. */

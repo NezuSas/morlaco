@@ -115,3 +115,23 @@ test("leerLluvia: desde cuándo es probable la lluvia en las próximas horas", a
   assert.equal(leerLluvia(respuesta(seca), new Date("2026-11-25T15:10:00Z")), null);
   assert.equal(leerLluvia(null), null);
 });
+
+test("leerUvPronostico: el máximo del día y las horas de sol fuerte", async () => {
+  const { leerUvPronostico } = await import("../../web/aire.js");
+  const horas = Array.from({ length: 24 }, (_, h) => `2026-11-22T${String(h).padStart(2, "0")}:00`);
+  const uv = Array(24).fill(0);
+  [2.4, 4.8, 7.1, 8.9, 9.35, 8.35, 5.85, 3].forEach((v, i) => (uv[8 + i] = v)); // de 08:00 a 15:00
+  const respuesta = { hourly: { time: horas, uv_index: uv } };
+  const a_las = (h) => new Date(`2026-11-22T${String(h + 5).padStart(2, "0")}:00:00Z`);
+  // A las 7: llega a 9 (muy alto) hacia las 12; fuerte de 10 a 14.
+  assert.deepEqual(leerUvPronostico(respuesta, a_las(7)), { maximo: 9, nivel: 4, hora: "12:00", desde: "10:00", hasta: "14:00" });
+  // A las 13 sigue valiendo; a las 14 ya pasó lo fuerte y no se advierte nada.
+  assert.equal(leerUvPronostico(respuesta, a_las(13)).maximo, 9);
+  assert.equal(leerUvPronostico(respuesta, a_las(14)), null);
+  // Un día nublado, sin horas altas: el máximo sin franja.
+  const suave = { hourly: { time: horas, uv_index: uv.map((v) => v * 0.45) } };
+  assert.deepEqual(leerUvPronostico(suave, a_las(7)), { maximo: 4, nivel: 2, hora: "12:00", desde: null, hasta: null });
+  // Sin el día de hoy, nada.
+  assert.equal(leerUvPronostico(respuesta, new Date("2026-11-25T12:00:00Z")), null);
+  assert.equal(leerUvPronostico(null), null);
+});

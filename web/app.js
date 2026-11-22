@@ -70,7 +70,7 @@ import { alarguesUnidos, paradasDeRecorrido, planificar, prepararLineas } from "
 import { proximosDeLinea } from "./vehiculos.js";
 import { SVG_BICI, crearMapa } from "./mapa.js";
 import { minutosAlProximo } from "./vehiculos.js";
-import { PAGINA_AIRE, PAGINA_LLUVIA, URL_AIRE, URL_CLIMA, URL_LLUVIA, URL_UV, aireCercano, leerAire, leerClima, leerLluvia, leerUv } from "./aire.js";
+import { PAGINA_AIRE, PAGINA_LLUVIA, URL_AIRE, URL_CLIMA, URL_LLUVIA, URL_UV, aireCercano, leerAire, leerClima, leerLluvia, leerUv, leerUvPronostico } from "./aire.js";
 import {
   LUGARES,
   cambiarLugar,
@@ -1109,6 +1109,8 @@ let paradasProximos = [];
 
 // Sin conexión, de cuándo son los datos guardados: "de hace 3 horas" dice más que "los últimos".
 let ultimaActualizacion = null;
+// El mapa, para darle las estaciones de aire cuando lleguen (pueden llegar antes que él).
+let mapaDelAire = null;
 function pintarSinConexion() {
   const aviso = $("sin-conexion");
   if (!ultimaActualizacion || Number.isNaN(ultimaActualizacion.getTime())) return;
@@ -1675,7 +1677,7 @@ const nombreContaminante = (clave) => {
  * "Aire hoy": un renglón en el resumen y su sección, con la estación de la EMOV más cercana.
  * Sin dato reciente (o sin conexión con la EMOV) no se muestra nada.
  */
-function pintarAire(estacion, { uv = null, clima = null, lluvia = null } = {}) {
+function pintarAire(estacion, { uv = null, clima = null, lluvia = null, solHoy = null } = {}) {
   $("resumen").querySelector(".ficha-aire")?.remove();
   // De noche el índice UV es 0 y no dice nada: se deja solo la temperatura.
   if (uv && !(uv.valor > 0)) uv = null;
@@ -1688,7 +1690,7 @@ function pintarAire(estacion, { uv = null, clima = null, lluvia = null } = {}) {
         ? t("lluviaAhora", { probabilidad: lluvia.probabilidad })
         : t("lluviaDesde", { hora: lluvia.desde, probabilidad: lluvia.probabilidad });
   ponerFrase("lluvia", textoLluvia);
-  const hay = Boolean(estacion || uv || clima || lluvia);
+  const hay = Boolean(estacion || uv || clima || lluvia || solHoy);
   $("s-aire").hidden = !hay;
   $("nav-aire").hidden = !hay;
   if (!hay) return;
@@ -1715,7 +1717,16 @@ function pintarAire(estacion, { uv = null, clima = null, lluvia = null } = {}) {
       ? [t("resumenAireCon", { nivel: t("aireNiveles")[estacion.nivel - 1].toLowerCase(), valor: estacion.valor, estacion: estacion.nombre }), temperatura].filter(Boolean).join(". ")
       : [t("resumenAire", { valor: estacion.valor, estacion: estacion.nombre }), extras].filter(Boolean).join(". ");
   // En la frase del día, el sol solo cuando hay que cuidarse de él.
-  ponerFrase("sol", uv && uv.nivel >= 3 ? t("fraseSol", { nivel: nivelUv.toLowerCase(), valor: uv.valor }) : null);
+  // En la frase del día, el sol: mejor el pronóstico (dice cuándo cuidarse) que el dato del momento.
+  const nivelPico = solHoy ? t("uvNiveles")[solHoy.nivel - 1].toLowerCase() : null;
+  ponerFrase(
+    "sol",
+    solHoy?.desde
+      ? t("fraseSolHoy", { valor: solHoy.maximo, nivel: nivelPico, hora: solHoy.hora, desde: solHoy.desde, hasta: solHoy.hasta })
+      : uv && uv.nivel >= 3
+        ? t("fraseSol", { nivel: nivelUv.toLowerCase(), valor: uv.valor })
+        : null,
+  );
   const gravedad = Math.max(gravedadAire, gravedadUv);
   const estado = gravedad === 1 ? "ok" : gravedad === 2 ? "atencion" : gravedad >= 3 ? "alerta" : null;
   // Solo con la lluvia (la EMOV sin responder) no hay nada que poner en la ficha: la lluvia ya
@@ -1744,6 +1755,20 @@ function pintarAire(estacion, { uv = null, clima = null, lluvia = null } = {}) {
         t("uvResumen", { valor: uv.valor, nivel: nivelUv.toLowerCase() }),
       ),
       elemento("p", { class: "aire-recomendacion" }, t("uvRecomendaciones")[uv.nivel - 1]),
+    );
+  }
+  if (solHoy) {
+    // El resto del día, del pronóstico: cuándo llega al máximo y las horas de sol fuerte.
+    if (!uv) bloquesSol.push(elemento("h3", { class: "subtitulo" }, t("uvTitulo")));
+    bloquesSol.push(
+      elemento(
+        "p",
+        { class: uv ? "detalle" : "luz-resumen" },
+        elemento("i", { class: `nivel-uv n${solHoy.nivel}`, "aria-hidden": "true" }),
+        solHoy.desde
+          ? t("uvPronostico", { valor: solHoy.maximo, nivel: nivelPico, hora: solHoy.hora, desde: solHoy.desde, hasta: solHoy.hasta })
+          : t("uvPronosticoSuave", { valor: solHoy.maximo, nivel: nivelPico, hora: solHoy.hora }),
+      ),
     );
   }
   if (clima) {
@@ -2565,6 +2590,7 @@ async function iniciar() {
         uv: uv.status === "fulfilled" ? leerUv(uv.value) : null,
         clima: clima.status === "fulfilled" ? leerClima(clima.value) : null,
         lluvia: lluvia.status === "fulfilled" ? leerLluvia(lluvia.value) : null,
+        solHoy: lluvia.status === "fulfilled" ? leerUvPronostico(lluvia.value) : null,
       };
       if (!estacionesAire.length && !extrasAire.uv && !extrasAire.clima && !extrasAire.lluvia) throw new Error("sin datos");
     } catch {
@@ -2576,6 +2602,8 @@ async function iniciar() {
     }
     if (puntoActual) pintarAire(aireCercano(puntoActual, estacionesAire), extrasAire);
     pintarAireCuenca(estacionesAire, extrasAire);
+    // Y en el mapa, en "Servicios" (el mapa puede no estar listo todavía: lo toma al crearse).
+    mapaDelAire?.ponerAire(estacionesAire);
   };
 
   const nombreLugar = (clave) => t(clave === "casa" ? "lugarCasa" : "lugarTrabajo");
@@ -2807,6 +2835,8 @@ async function iniciar() {
   // Con la capa del tranvía prendida se ven también sus unidades en camino (estimadas).
   // Los mercados y la salud, también como capas del mapa.
   mapa.agregarMercados(cerca);
+  mapaDelAire = mapa;
+  mapa.ponerAire(estacionesAire);
   mapa.agregarSalud(salud);
   mapa.agregarCapas(bicicletas, estacionesTranvia, {
     trazos: trazadosTranvia(estacionesTranvia),

@@ -67,6 +67,9 @@ export const SVG_BICI =
 // La cruz de las farmacias.
 // Un hospital con emergencias: "H" en rojo; un centro de salud: "H" en verde.
 const marcaSalud = (tipo) => `<span class="marca-capa salud${tipo === "emergencias" ? "" : " centro"}">H</span>`;
+// El aire, como en la pestaña Aire: tres ráfagas de viento.
+const SVG_AIRE =
+  '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h10.5a2.5 2.5 0 1 0-2.4-3.2M3 13h15a2.5 2.5 0 1 1-2.4 3.2M3 17h7.5a2 2 0 1 1-1.9 2.6"/></svg>';
 // Un mercado: la canasta de la feria.
 const SVG_MERCADO =
   '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10h16l-1.6 9a1.5 1.5 0 0 1-1.5 1.2H7.1a1.5 1.5 0 0 1-1.5-1.2zM8 10l3-6M16 10l-3-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 14v3M12 14v3M15 14v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
@@ -77,8 +80,10 @@ const SVG_AMPLIAR =
   '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7" /></svg>';
 const SVG_CERRAR =
   '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M5 5l14 14M19 5 5 19" /></svg>';
+// "Servicios": cuatro casillas, como un tablero de lo que la ciudad ofrece (tranvía, bicis,
+// mercados, salud…). No son capas de un mapa técnico: son cosas que la gente usa.
 const SVG_CAPAS =
-  '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></svg>';
+  '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.8"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.8"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.8"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.8"/></svg>';
 
 const ESPERA_BIBLIOTECA_MS = 20000;
 
@@ -199,7 +204,7 @@ function sinMapa(contenedor) {
   contenedor.replaceChildren(Object.assign(document.createElement("p"), { textContent: t("mapaNoDisponible") }));
 }
 
-const METODOS = ["agregarMercados", "agregarSalud", "mostrarCercanos", "verLugar", "agregarCapas", "mostrarCapa", "resaltar", "resaltarLinea", "dibujarRuta", "mostrar", "mostrarFarmacias", "verFarmacia", "marcarHoy", "olvidar"];
+const METODOS = ["ponerAire", "agregarMercados", "agregarSalud", "mostrarCercanos", "verLugar", "agregarCapas", "mostrarCapa", "resaltar", "resaltarLinea", "dibujarRuta", "mostrar", "mostrarFarmacias", "verFarmacia", "marcarHoy", "olvidar"];
 
 /**
  * El mapa de la página. Se devuelve enseguida: la página no espera a MapLibre para mostrar
@@ -1147,7 +1152,7 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
   }
 
   // ---------- Capas de movilidad ----------
-  const grupos = { tranvia: [], bicis: [], carga: [], mercados: [], salud: [] };
+  const grupos = { tranvia: [], bicis: [], carga: [], mercados: [], salud: [], aire: [] };
   const pendientes = new Map();
   function prepararCapas(bicicletas, estaciones) {
     if (estaciones) {
@@ -1193,11 +1198,15 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
       ["carga", t("capaCarga"), t("capaCargaQue"), `<span class="marca-capa carga">${SVG_RAYO}</span>`],
       ...(grupos.mercados.length ? [["mercados", t("capaMercados"), t("capaMercadosQue"), `<span class="marca-capa mercado">${SVG_MERCADO}</span>`]] : []),
       ...(grupos.salud.length ? [["salud", t("capaSalud"), t("capaSaludQue"), '<span class="marca-capa salud">H</span>']] : []),
+      // El aire llega después (se pide en vivo a la EMOV): la opción está siempre y sus marcas se
+      // ponen cuando llegan los datos.
+      ["aire", t("capaAire"), t("capaAireQue"), `<span class="marca-aire n1">${SVG_AIRE}</span>`],
     ];
     const control = document.createElement("details");
     control.className = "maplibregl-ctrl control-capas";
     // Cerrado, solo el ícono; abierto, el título al lado (el mismo botón cierra el panel).
-    control.innerHTML = `<summary aria-label="${t("capasMapa")}" title="${t("capasMapa")}"><span class="capas-titulo" aria-hidden="true">${t("capasMapa")}</span>${SVG_CAPAS}</summary>`;
+    // Siempre con su nombre a la vista, "Servicios": un ícono solo no se entendía.
+    control.innerHTML = `<summary aria-label="${t("capasMapaAria")}" title="${t("capasMapaAria")}">${SVG_CAPAS}<span class="capas-titulo" aria-hidden="true">${t("capasMapa")}</span></summary>`;
     const panelCapas = document.createElement("div");
     panelCapas.className = "panel-capas";
     for (const [clave, texto, que, marca] of opciones) {
@@ -1831,6 +1840,20 @@ async function montar(contenedor, zonas, alElegir, { cargarJson, sinMovimiento, 
           }).addTo(mapa),
         );
       }
+    },
+    /**
+     * Las estaciones de calidad del aire de la EMOV, en "Servicios": cada una con su índice, del
+     * color de su nivel. Se llama cada vez que llegan datos nuevos (cada media hora).
+     */
+    ponerAire(estaciones) {
+      const mostradas = visibles.has("aire");
+      grupos.aire.forEach((marca) => marca.remove());
+      grupos.aire = (estaciones ?? []).map((e) =>
+        marcador(`<span class="marca-aire n${e.nivel}">${SVG_AIRE}${e.valor}</span>`, [e.lon, e.lat], {
+          texto: t("aireEstacionMapa", { estacion: e.nombre, valor: e.valor, nivel: t("aireNiveles")[e.nivel - 1].toLowerCase() }),
+        }),
+      );
+      if (mostradas) grupos.aire.forEach((marca) => marca.addTo(mapa));
     },
     /** Los hospitales y centros de salud como capa (datos/ciudad/salud.json). Antes de agregarCapas. */
     agregarSalud(salud) {
