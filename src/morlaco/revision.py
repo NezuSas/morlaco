@@ -21,6 +21,7 @@ DIAS_FARMACIAS = 7  # aviso si los turnos publicados se acaban en menos de esto
 DIAS_AVISOS = 14  # aviso si un cambio de línea o los feriados vencen en menos de esto
 DIAS_FERIADOS = 30  # aviso si la lista de próximos feriados se acaba antes de esto
 DIAS_REVISION = 90  # aviso si un dato a mano lleva más de esto sin revisarse
+DIAS_SERVICIOS = 5  # aviso si un feriado está a menos de esto y no tiene anotado qué cambia
 
 
 def _leer(ruta: Path) -> dict[str, Any] | None:
@@ -138,6 +139,26 @@ def revisar(datos: Path, hoy: date, validacion: Path | None = None) -> list[dict
                     "tema": "feriados",
                     "mensaje": f"La lista de próximos feriados {cuando}. "
                     "Añade los siguientes días de descanso, con su fuente.",
+                }
+            )
+
+    # 5a. Un día de descanso cerca sin anotar qué anunciaron las instituciones (la página
+    # muestra "lo que cambia" desde una semana antes).
+    for dia in lista_feriados.get("dias") or []:
+        cuando = _fecha(dia.get("fecha"))
+        if (
+            cuando
+            and hoy <= cuando <= hoy + timedelta(days=DIAS_SERVICIOS)
+            and "servicios" not in dia
+        ):
+            pendientes.append(
+                {
+                    "tema": "feriados",
+                    "mensaje": f"El {cuando.isoformat()} es día de descanso ({dia.get('es')}) y no "
+                    "está anotado qué cambia. Busca en El Mercurio la nota de servicios en el "
+                    "feriado y añade a ese día en `datos/manual/feriados.json` `servicios` con "
+                    "su `lista` (es, en) y su `fuente`; si no hay anuncios, "
+                    '`"servicios": {"lista": []}`.',
                 }
             )
 

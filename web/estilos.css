@@ -231,6 +231,12 @@ html {
   -webkit-text-size-adjust: 100%;
 }
 
+/* Letra grande (el botón "Aa"): todo va en rem, así que crece la página entera, botones
+   incluidos, y no solo el texto. */
+html[data-letra="grande"] {
+  font-size: 118.75%;
+}
+
 body {
   margin: 0;
   background: var(--superficie);
@@ -630,6 +636,24 @@ button.boton-tema[hidden] {
   display: none;
 }
 
+/* "Aa": la A grande y la a pequeña dicen qué hace sin palabras. Prendido, se ve marcado. */
+.boton-letra > span {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.boton-letra > span > span {
+  font-size: 0.75em;
+}
+
+button.boton-letra[aria-pressed="true"] {
+  border-color: var(--cupula);
+  background: var(--cupula);
+  color: var(--sobre-accion);
+}
+
 .boton-tema svg {
   fill: none;
   stroke: currentColor;
@@ -657,6 +681,21 @@ button.boton-tema[hidden] {
   button.idioma:not(.boton-tema) {
     padding-inline: 0.6rem;
     white-space: nowrap;
+  }
+  /* Con "Instalar" a la vista o con la letra grande no cabe todo: queda el ícono de Morlaco
+     (la palabra sigue para los lectores de pantalla) y, con la letra grande, "Instalar" se va,
+     que se usa una sola vez. */
+  .barra:has(#instalar:not([hidden])) .marca span,
+  html[data-letra="grande"] .marca span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  html[data-letra="grande"] #instalar {
+    display: none;
   }
 }
 
@@ -1683,6 +1722,64 @@ a.ficha .pastilla.estado-alerta {
 }
 
 /* ---------- Hoy en Cuenca (portada) ---------- */
+
+/* Lo que cambia en el próximo día de descanso: plegable, con el título como resumen. */
+.feriado-cambios {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--linea);
+  border-left: 4px solid var(--cupula);
+  border-radius: var(--radio-control);
+  background: var(--superficie);
+}
+
+.feriado-cambios > summary {
+  cursor: pointer;
+  font-weight: 700;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.feriado-cambios > summary::-webkit-details-marker {
+  display: none;
+}
+
+/* La flecha, como la de "Más": abajo plegado, arriba desplegado. */
+.feriado-cambios > summary::after {
+  content: "";
+  flex: none;
+  width: 0.5em;
+  height: 0.5em;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-0.15em) rotate(45deg);
+}
+
+.feriado-cambios[open] > summary::after {
+  transform: translateY(0.1em) rotate(225deg);
+}
+
+.feriado-lista {
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.feriado-lista > li {
+  padding: 0.45rem 0;
+  border-top: 1px solid var(--linea);
+}
+
+.feriado-cambios .detalle {
+  margin: 0.6rem 0 0;
+}
+
+.feriado-cambios a {
+  color: var(--cupula);
+}
 
 .hoy-cuenca {
   margin: 2.25rem 0 1rem;
@@ -3720,6 +3817,8 @@ button.lugar-fila[aria-pressed="true"] {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  /* En la cuadrícula del panel, sin esto el texto más largo del desplegable lo ensancha. */
+  min-width: 0;
   font-weight: 700;
 }
 

@@ -105,6 +105,7 @@
       <div class="barra-acciones">
         <button type="button" id="instalar" class="idioma" data-t="instalar" data-t-aria-label="instalarAria" hidden>Instalar</button>
         <button type="button" id="idioma" class="idioma" lang="en" data-t="cambiarIdioma" data-t-aria-label="cambiarIdiomaAria">English</button>
+        <button type="button" id="letra" class="idioma boton-tema boton-letra" aria-label="Agrandar la letra" aria-pressed="false" hidden><span aria-hidden="true">A<span>a</span></span></button>
         <button type="button" id="tema" class="idioma boton-tema" aria-label="Cambiar a modo oscuro" hidden>
           <svg class="icono-luna" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z" /></svg>
           <svg class="icono-sol" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8" /></svg>
@@ -237,6 +238,7 @@
               <p id="hoy-fecha" class="hoy-fecha"></p>
               <p id="hoy-recolector" class="hoy-frase"></p>
               <p id="hoy-otros" class="hoy-frase"></p>
+              <div id="feriado-portada" hidden></div>
             </section>
           </div>
 
@@ -260,6 +262,8 @@
               <!-- La línea que la persona marcó como suya, con su próximo bus. -->
               <div id="mi-linea" class="mi-linea" hidden></div>
               <ul id="resumen" class="resumen"></ul>
+              <!-- Lo que cambia en el próximo día de descanso, si está a una semana o menos. -->
+              <div id="feriado-resumen" hidden></div>
               <p id="resumen-nota" class="resumen-nota" hidden></p>
               <details id="sobre-datos" class="sobre-datos">
                 <summary data-t="sobreTitulo">Sobre estos datos</summary>

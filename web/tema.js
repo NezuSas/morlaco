@@ -78,4 +78,43 @@
 
   aplicar(guardado());
   window.morlacoTema = { oscuro, cambiar, boton };
+
+  // ---------- Letra grande ----------
+  // Agranda toda la página (texto y botones, que van en rem) para quien lee con la letra del
+  // celular al máximo. Se guarda en este dispositivo y se pone antes de pintar, como el modo.
+  const CLAVE_LETRA = "morlaco:letra";
+  const letraGrande = () => raiz.dataset.letra === "grande";
+  const ponerLetra = (grande) => {
+    if (grande) raiz.dataset.letra = "grande";
+    else delete raiz.dataset.letra;
+  };
+  try {
+    ponerLetra(localStorage.getItem(CLAVE_LETRA) === "grande");
+  } catch {
+    // Sin almacenamiento: tamaño normal.
+  }
+  /** El botón "Aa": `nombres` trae { agrandar, achicar }, ya traducidos. */
+  const botonLetra = (nodo, nombres) => {
+    if (!nodo) return;
+    const pintar = () => {
+      nodo.setAttribute("aria-pressed", String(letraGrande()));
+      nodo.setAttribute("aria-label", letraGrande() ? nombres.achicar : nombres.agrandar);
+      nodo.title = letraGrande() ? nombres.achicar : nombres.agrandar;
+    };
+    nodo.addEventListener("click", () => {
+      ponerLetra(!letraGrande());
+      try {
+        if (letraGrande()) localStorage.setItem(CLAVE_LETRA, "grande");
+        else localStorage.removeItem(CLAVE_LETRA);
+      } catch {
+        // Sin almacenamiento: vale mientras la página esté abierta.
+      }
+      pintar();
+      // El mapa cambia de alto con la letra: que se vuelva a medir.
+      window.dispatchEvent(new Event("resize"));
+    });
+    pintar();
+    nodo.hidden = false;
+  };
+  window.morlacoLetra = { grande: letraGrande, boton: botonLetra };
 })();

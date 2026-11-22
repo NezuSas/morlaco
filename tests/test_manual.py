@@ -67,6 +67,15 @@ def test_feriados_completos_ordenados_y_con_fuente():
         assert dia["tipo"] in ("nacional", "local", "suspension")
         assert dia["es"].strip() and dia["en"].strip()
         assert dia["fuente"]["nombre"] and dia["fuente"]["url"].startswith("https://")
+        # Lo que anunciaron las instituciones para ese día, si se anotó: en los dos idiomas y
+        # con su fuente (una lista vacía dice que se buscó y no hubo anuncios).
+        if "servicios" in dia:
+            servicios = dia["servicios"]
+            for anuncio in servicios["lista"]:
+                assert anuncio["es"].strip() and anuncio["en"].strip()
+            if servicios["lista"]:
+                assert servicios["fuente"]["nombre"]
+                assert servicios["fuente"]["url"].startswith("https://")
     _fecha(datos["metadata"]["revisado"])
     for nota in datos.get("descartados", []):
         assert nota["enlace"].startswith("https://")

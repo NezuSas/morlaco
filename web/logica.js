@@ -478,6 +478,37 @@ export function proximoFeriado(datos, fecha = new Date(), maximoDias = 21) {
   return { dia: dias[0], hasta: seguidos.at(-1).fecha, faltan };
 }
 
+/**
+ * Lo que cambia en un día de descanso (el de `proximoFeriado`), cada cosa con su fuente si la
+ * tiene: [{ tema, texto, fuente }]. Primero lo que más se pregunta (la basura) y lo que las
+ * instituciones anunciaron para ese feriado (anotado a mano en datos/manual/feriados.json, en
+ * `servicios`); después lo que vale para cualquier feriado.
+ */
+export function cambiosDelFeriado(feriado, { basura = null, transporte = null, turnos = null } = {}) {
+  if (!feriado) return [];
+  const { dia } = feriado;
+  const lengua = idioma();
+  const cambios = [];
+  const regla = basura?.feriados;
+  if (regla && regla.desde <= dia.fecha && dia.fecha <= regla.hasta) {
+    cambios.push({ tema: "basura", texto: regla[lengua] ?? regla.es, fuente: regla.fuente ?? null });
+  }
+  const anunciado = dia.servicios;
+  for (const s of anunciado?.lista ?? []) {
+    cambios.push({ tema: "anunciado", texto: s[lengua] ?? s.es, fuente: anunciado.fuente ?? null });
+  }
+  // Las de turno de ese día, al mediodía (cada turno empieza a las 06:00).
+  const turno = turnoActual(turnos?.turnos, new Date(`${dia.fecha}T17:00:00Z`));
+  cambios.push({ tema: "farmacias", texto: turno ? t("feriadoFarmacias", { n: turno.farmacias.length }) : t("feriadoFarmaciasSin"), fuente: null });
+  const horarioTranvia = transporte?.tranvia?.horario;
+  if (/feriado/i.test(horarioTranvia?.nota ?? "")) {
+    cambios.push({ tema: "tranvia", texto: t("feriadoTranvia"), fuente: horarioTranvia.fuente ? { nombre: t("feriadoFuenteTranvia"), url: horarioTranvia.fuente } : null });
+  }
+  cambios.push({ tema: "oficinas", texto: t(dia.tipo === "suspension" ? "feriadoOficinasSuspension" : "feriadoOficinas"), fuente: null });
+  cambios.push({ tema: "emergencias", texto: t("feriadoEmergencias"), fuente: null });
+  return cambios;
+}
+
 /** Farmacias cuyo nombre o dirección contiene el texto, sin importar tildes ni mayúsculas. */
 export function filtrarFarmacias(farmacias, texto) {
   const buscado = normalizar(texto);

@@ -150,6 +150,8 @@ BiciPública, las ciclovías y los puntos de carga para autos eléctricos.
 - **Compartir una ruta**: un enlace que abre la misma búsqueda de bus desde la misma calle. Si el destino es
   tu Casa o tu Trabajo, se manda solo su punto, no el nombre.
 - **Avisar de los días de descanso** en la frase del día, con un calendario de feriados al que suscribirse.
+  Desde una semana antes, **lo que cambia ese día**: la basura, lo que anunciaron las instituciones en la
+  prensa, las farmacias de turno, el tranvía, los trámites y las emergencias, cada cosa con su fuente.
 - **Atajos al mantener presionado el ícono** de la app instalada: Casa, Trabajo, farmacias de turno y buses.
 - **Decir de cuándo son los datos sin conexión** ("actualizados hace 5 h").
 - **Guardar dos lugares**, Casa y Trabajo. Quedan a la vista bajo el nombre de la calle, para pasar de uno a
@@ -169,6 +171,8 @@ BiciPública, las ciclovías y los puntos de carga para autos eléctricos.
   cualquier app de mapas. Se cierra con la X o con el botón atrás del teléfono.
 - **Verse en claro o en oscuro.** Sigue el modo de tu dispositivo, y el botón de la luna (o el sol) de la
   barra lo cambia cuando quieras.
+- **Letra grande.** El botón «Aa» de la barra agranda toda la página, botones incluidos, para quien lee con
+  la letra del celular al máximo. Queda guardado en ese dispositivo.
 - **Imprimir la hoja de tu zona**, con los días de recolección y las farmacias de turno, para la
   refrigeradora o la cartelera del edificio.
 - **Un [cartel con código QR](https://nezusas.github.io/morlaco/web/cartel.html)** para la puerta de un

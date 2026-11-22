@@ -39,6 +39,7 @@ import {
   paradasCercanas,
   proximaRecoleccion,
   proximoFeriado,
+  cambiosDelFeriado,
   puntoDesdeHash,
   recoleccionDeHoy,
   revisarUbicacion,
@@ -116,6 +117,55 @@ const fechaDia = (iso) => {
   // En español se escribe "miércoles 28 de octubre", sin la coma que pone Intl.
   return idioma() === "es" ? texto.replace(",", "") : texto;
 };
+
+/**
+ * "Lo que cambia el viernes 25 de diciembre (Navidad)": la basura, lo que anunciaron las
+ * instituciones, las farmacias de turno, el tranvía, las oficinas y las emergencias. Sale en la
+ * portada y en el resumen cuando el día de descanso está a una semana o menos. `abierto`:
+ * desplegado de entrada.
+ */
+function pintarFeriado(caja, diasFeriado, datos, { abierto = true } = {}) {
+  const feriado = proximoFeriado(diasFeriado, new Date(), 7);
+  caja.hidden = !feriado;
+  if (!feriado) return caja.replaceChildren();
+  const nombre = feriado.dia[idioma()] ?? feriado.dia.es;
+  const cuando =
+    feriado.faltan === 0
+      ? t("feriadoCuandoHoy")
+      : feriado.hasta === feriado.dia.fecha
+        ? t("feriadoCuandoDia", { fecha: fechaDia(feriado.dia.fecha) })
+        : t("feriadoCuandoDia", { fecha: t("feriadoVariosDias", { desde: fechaDia(feriado.dia.fecha), hasta: fechaDia(feriado.hasta) }) });
+  const cambios = cambiosDelFeriado(feriado, datos);
+  const titulo = elemento("summary", {}, t("feriadoCambiosTitulo", { cuando, nombre }));
+  const lista = elemento(
+    "ul",
+    { class: "feriado-lista" },
+    ...cambios.map((c) =>
+      elemento(
+        "li",
+        { class: `feriado-${c.tema}` },
+        elemento("strong", {}, t("feriadoTemas")[c.tema]),
+        " ",
+        c.texto,
+      ),
+    ),
+  );
+  // Las fuentes, una vez cada una, al pie.
+  const fuentes = [...new Map(cambios.filter((c) => c.fuente?.url).map((c) => [c.fuente.url, c.fuente])).values()];
+  const pie = fuentes.length
+    ? elemento(
+        "p",
+        { class: "detalle" },
+        t("feriadoFuentes"),
+        ...fuentes.flatMap((f, i) => [i ? ", " : " ", elemento("a", { href: f.url, target: "_blank", rel: "noopener" }, f.nombre)]),
+        ".",
+      )
+    : null;
+  const sinAnuncio = feriado.dia.servicios ? null : elemento("p", { class: "detalle" }, t("feriadoSinAnuncio"));
+  const detalles = elemento("details", { class: "feriado-cambios" }, titulo, lista, sinAnuncio, pie);
+  detalles.open = abierto;
+  caja.replaceChildren(detalles);
+}
 
 /** Pone los textos del HTML en el idioma actual (atributos data-t*). */
 function aplicarTextos() {
@@ -2595,6 +2645,7 @@ async function iniciar() {
     enlace.textContent = CORREO_AVISOS;
   }
   window.morlacoTema?.boton($("tema"), { oscuro: t("temaOscuroAria"), claro: t("temaClaroAria") });
+  window.morlacoLetra?.boton($("letra"), { agrandar: t("letraAgrandarAria"), achicar: t("letraAchicarAria") });
   // Cambiar de idioma recarga la página: el punto elegido sigue en la dirección (#lat,lon).
   $("idioma").addEventListener("click", () => {
     guardar(CLAVE_IDIOMA, idioma() === "en" ? "es" : "en");
@@ -2886,6 +2937,7 @@ async function iniciar() {
       li.classList.add("ficha-agua");
       $("resumen").append(li);
     }
+    pintarFeriado($("feriado-resumen"), diasFeriado, { basura, transporte, turnos: turnosFarmacias });
     pintarSalud(punto, salud, mapa);
     pintarCerca(punto, cerca);
     pintarMercados(punto, cerca, mapa);
@@ -2913,7 +2965,11 @@ async function iniciar() {
   colocarMapa();
   // La portada, viva: lo de hoy en la ciudad, al día cada minuto (el recolector avanza de zona).
   zonasDeCuenca = zonas;
-  const hoyEnCuenca = () => pintarHoyEnCuenca({ zonas, suspensiones, turnos: turnosFarmacias, agua, avisosAgua, diasFeriado });
+  const hoyEnCuenca = () => {
+    pintarHoyEnCuenca({ zonas, suspensiones, turnos: turnosFarmacias, agua, avisosAgua, diasFeriado });
+    // En la portada, plegado: la frase de la fecha ya avisa del feriado.
+    pintarFeriado($("feriado-portada"), diasFeriado, { basura, transporte, turnos: turnosFarmacias }, { abierto: false });
+  };
   hoyEnCuenca();
   setInterval(() => !document.hidden && hoyEnCuenca(), 60_000);
   actualizarAire();
@@ -3092,6 +3148,11 @@ async function iniciar() {
     masAcciones.querySelector("summary").focus();
   });
   for (const id of ["whatsapp", "borrar-punto"]) $(id).addEventListener("click", () => (masAcciones.open = false));
+  // Si al abrirse no cabe debajo (en el celular, sobre todo con la letra grande), la página
+  // baja lo justo para verlo entero.
+  masAcciones.addEventListener("toggle", () => {
+    if (masAcciones.open) masAcciones.querySelector(".mas-acciones-panel")?.scrollIntoView({ block: "nearest", behavior: "instant" });
+  });
   elegirPestana("s-resumen", { desplazar: false });
   $("cambiar-punto").addEventListener("click", () => {
     document.querySelector(".consulta").classList.add("cambiando");

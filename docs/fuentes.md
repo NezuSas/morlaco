@@ -40,7 +40,7 @@ Cómo leer las tablas:
 | [Mapa de zonas](https://emac.gob.ec/mapa-zonas-de-recoleccion/) (Google My Maps, KML) | Las 8 zonas urbanas con días y horario | Al día | Automática |
 | [Servicio de recolección](https://emac.gob.ec/servicio-de-recoleccion-de-desechos-y-residuos-solidos/) | Funda celeste miércoles o jueves; zona rural: 2 días por semana entre 08:00 y 15:00 | Al día, sin cambios desde mayo de 2024 | A mano |
 | [BIOEMAC](https://emac.gob.ec/bioemac/), [escombros](https://emac.gob.ec/gestion-de-escombros/), [obligaciones](https://emac.gob.ec/informacion-obligaciones-y-recomendaciones/) | Dónde llevar orgánicos, vidrio, escombros, agujas | Al día; algunas páginas son de 2024 | A mano |
-| El Mercurio, 1 a 3 días antes de cada feriado | Si la recolección cambia (hasta ahora, nunca) y qué cierra | Al día | A mano |
+| El Mercurio, 1 a 3 días antes de cada feriado | Si la recolección cambia (hasta ahora, nunca), qué cierra y qué atiende (salud, escombrera, bancos) | Al día | A mano: va en `servicios` de ese día en `datos/manual/feriados.json`, y la revisión diaria lo recuerda 5 días antes |
 | El Mercurio: días de descanso por decreto | Feriados decretados, suspensiones de jornada y traslados (se anuncian con 2 o 3 semanas) | Al día | Semanal, por revisar en `datos/feriados/avisos.json` |
 | [Rendición de cuentas 2025](https://emac.gob.ec/wp-content/uploads/2026/05/Rendicion_2025_BC.pdf) | Qué programas siguen activos (Punto Limpio, trueque, funda verde) | Mayo de 2026 | Consulta |
 | Línea 139, (07) 4134 801, info@emac.gob.ec | Dudas y denuncias | — | Remitir |

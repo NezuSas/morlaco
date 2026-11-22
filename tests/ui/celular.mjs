@@ -20,6 +20,8 @@ const RAIZ = resolve(fileURLToPath(import.meta.url), "../../..");
 const PUNTO = "#-2.8974,-79.0045"; // el Parque Calderón: pasan buses, tranvía y hay farmacias
 const PANTALLAS = [
   { nombre: "320 px", ancho: 320, alto: 640, movil: true, oscuro: true },
+  // Con el botón "Aa": todo crece un 19 % y es donde más fácil se desborda algo.
+  { nombre: "320 px con letra grande", ancho: 320, alto: 640, movil: true, letra: true },
   { nombre: "360 px", ancho: 360, alto: 760, movil: true },
   { nombre: "412 px", ancho: 412, alto: 900, movil: true },
   { nombre: "escritorio", ancho: 1280, alto: 800, movil: false },
@@ -189,6 +191,10 @@ for (const p of PANTALLAS) {
 
   // La portada, sin nada guardado (ni la última calle, ni la copia sin conexión).
   await pedir("Storage.clearDataForOrigin", { origin: new URL(BASE).origin, storageTypes: "local_storage,service_workers,cache_storage" });
+  if (p.letra) {
+    await abrir(`${BASE}?ui=${Date.now()}`, "document.querySelector('#inicio')");
+    await js("localStorage.setItem('morlaco:letra', 'grande');");
+  }
   await abrir(`${BASE}?ui=${Date.now()}`, "document.querySelector('#inicio') && !document.querySelector('#inicio').hidden");
   await revisar(de("portada"));
 

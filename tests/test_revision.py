@@ -160,3 +160,27 @@ def test_lee_el_informe_del_validador_oficial_si_se_le_pasa(tmp_path):
     )
     (pendiente,) = revision.revisar(tmp_path, date(2026, 11, 10), validacion)
     assert pendiente["tema"] == "gtfs" and "`x_error` (2 casos)" in pendiente["mensaje"]
+
+
+def test_avisa_si_un_feriado_cercano_no_tiene_anotado_que_cambia(tmp_path):
+    _datos(tmp_path)
+
+    def sin_anotar(hoy):
+        return [
+            p
+            for p in revision.revisar(tmp_path, hoy)
+            if "no está anotado qué cambia" in p["mensaje"]
+        ]
+
+    assert sin_anotar(date(2026, 12, 19)) == []  # a seis días, todavía no
+    [aviso] = sin_anotar(date(2026, 12, 20))
+    assert "El 2026-12-25 es día de descanso" in aviso["mensaje"]
+    _escribir(
+        tmp_path,
+        "manual/feriados.json",
+        {
+            "metadata": {"revisado": "2026-11-10"},
+            "dias": [{"fecha": "2026-12-25", "servicios": {"lista": []}}],
+        },
+    )
+    assert sin_anotar(date(2026, 12, 20)) == []

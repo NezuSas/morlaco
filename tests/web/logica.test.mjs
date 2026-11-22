@@ -531,3 +531,31 @@ test("farmaciasCerca y esLaDeTurno: las de OpenStreetMap junto al punto", async 
   assert.equal(esDeNoche(new Date(Date.UTC(2026, 10, 24, 3))), true); // 22:00
   assert.equal(esDeNoche(lunes10), false);
 });
+
+test("cambiosDelFeriado: lo que cambia en un día de descanso", async () => {
+  const { cambiosDelFeriado } = await import("../../web/logica.js");
+  const fuente = { nombre: "El Mercurio", url: "https://elmercurio.com.ec/x" };
+  const feriado = {
+    dia: {
+      fecha: "2026-12-25",
+      tipo: "nacional",
+      es: "Navidad",
+      servicios: { lista: [{ es: "La escombrera abre de 08:00 a 12:00.", en: "The rubble dump opens 08:00-12:00." }], fuente },
+    },
+    hasta: "2026-12-25",
+    faltan: 3,
+  };
+  const basura = { feriados: { es: "En feriados el recolector pasa igual.", desde: "2025-12-30", hasta: "2027-03-31", fuente } };
+  const transporte = { tranvia: { horario: { nota: "Cambia en feriados y por mantenimiento.", fuente: "https://elmercurio.com.ec/t" } } };
+  const turnos = { turnos: [{ inicio: "2026-12-19", fin: "2026-12-26", farmacias: [{}, {}, {}] }] };
+  const cambios = cambiosDelFeriado(feriado, { basura, transporte, turnos });
+  assert.deepEqual(cambios.map((c) => c.tema), ["basura", "anunciado", "farmacias", "tranvia", "oficinas", "emergencias"]);
+  assert.match(cambios[2].texto, /Ese día son 3/);
+  assert.equal(cambios[1].fuente, fuente);
+  // Sin turnos para ese día, sin regla de basura vigente, sin anuncios; y una suspensión.
+  const otro = cambiosDelFeriado({ ...feriado, dia: { fecha: "2027-06-01", tipo: "suspension", es: "Suspensión" } }, { basura, turnos });
+  assert.deepEqual(otro.map((c) => c.tema), ["farmacias", "oficinas", "emergencias"]);
+  assert.match(otro[0].texto, /todavía no publica/);
+  assert.match(otro[1].texto, /decreto/);
+  assert.deepEqual(cambiosDelFeriado(null), []);
+});
