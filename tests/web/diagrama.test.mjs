@@ -131,3 +131,58 @@ test("cada bus se reconoce de un momento al siguiente por la hora en que salió"
   assert.deepEqual(antes, [9 * 60 + 50, 10 * 60]);
   assert.deepEqual(despues, [10 * 60, 10 * 60 + 10]);
 });
+
+// ---------- El tranvía ----------
+import { estadoDelTranvia, filasDelTranvia, tramoDelTranvia, tusEstaciones } from "../../web/diagrama.js";
+
+// Un tranvía de juguete: ida hacia el este por el ecuador; la vuelta, de regreso por una
+// paralela un poco al norte. A y D en los dos sentidos (D con un andén por sentido); B solo
+// en la ida y C solo en la vuelta.
+const estacion = (id, nombre, km, lat, orden) => ({ type: "Feature", properties: { id, nombre, orden }, geometry: { type: "Point", coordinates: [km * GRADO_KM, lat] } });
+const ESTACIONES = {
+  type: "FeatureCollection",
+  features: [
+    estacion("A", "A", 0, 0, { Este: 1, Oeste: 3 }),
+    estacion("B", "B", 2, 0, { Este: 2 }),
+    estacion("C", "C", 3, 0.002, { Oeste: 2 }),
+    estacion("D1", "D", 5, 0, { Este: 3 }),
+    estacion("D2", "D", 5, 0.002, { Oeste: 1 }),
+  ],
+};
+const RIELES = [
+  { type: "Feature", properties: { sentido: "ida", hacia: "Este" }, geometry: { type: "LineString", coordinates: [[0, 0], [5 * GRADO_KM, 0]] } },
+  { type: "Feature", properties: { sentido: "retorno", hacia: "Oeste" }, geometry: { type: "LineString", coordinates: [[5 * GRADO_KM, 0.002], [0, 0.002]] } },
+];
+
+test("el tranvía: una fila por estación, en el orden de la ida, con los dos andenes juntos", () => {
+  const m = filasDelTranvia(ESTACIONES, RIELES);
+  assert.deepEqual(
+    m.filas.map((f) => [f.nombre, f.ida, f.vuelta]),
+    [["A", true, true], ["B", true, false], ["C", false, true], ["D", true, true]],
+  );
+  // La ida baja por las filas; la vuelta sube.
+  assert.deepEqual(m.ida.paradas.map((p) => p.fila), [0, 1, 3]);
+  assert.deepEqual(m.vuelta.paradas.map((p) => p.fila), [3, 2, 0]);
+});
+
+test("un tranvía entre dos estaciones de su sentido salta las que no son suyas", () => {
+  const m = filasDelTranvia(ESTACIONES, RIELES);
+  // En la vuelta, a 1 km del inicio (D): entre D (fila 3) y C (fila 2), a la mitad.
+  const t = tramoDelTranvia(1000, m.vuelta.paradas);
+  assert.equal(t.desde, 3);
+  assert.equal(t.hasta, 2);
+  assert.ok(Math.abs(t.fraccion - 0.5) < 0.02, String(t.fraccion));
+  // En la ida, a 3 km: entre B (fila 1) y D (fila 3), sin parar en C.
+  assert.deepEqual([tramoDelTranvia(3000, m.ida.paradas).desde, tramoDelTranvia(3000, m.ida.paradas).hasta], [1, 3]);
+});
+
+test("tu estación de cada sentido es la más cercana de las que lo sirven", () => {
+  const m = filasDelTranvia(ESTACIONES, RIELES);
+  const tuyas = tusEstaciones(m, { lat: 0.001, lon: 2.9 * GRADO_KM });
+  assert.equal(m.filas[tuyas.ida.fila].nombre, "B");
+  assert.equal(m.filas[tuyas.vuelta.fila].nombre, "C");
+  const { ida, vuelta, proximos } = estadoDelTranvia(m, { inicio: "06:00", fin: "20:00", intervalo_min: 10 }, tuyas, { fecha: DIEZ, velocidadKmH: 15 });
+  assert.ok(ida.length > 0 && vuelta.length > 0);
+  assert.ok(proximos.ida >= 0 && proximos.vuelta >= 0);
+  assert.equal(tusEstaciones(m, null), null);
+});

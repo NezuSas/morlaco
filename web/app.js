@@ -74,7 +74,7 @@ import {
 import { alarguesUnidos, paradasDeRecorrido, planificar, prepararLineas } from "./rutas.js";
 import { proximosDeLinea } from "./vehiculos.js";
 import { SVG_BICI, SVG_GLIFO, SVG_GLIFO_TRANVIA, crearMapa } from "./mapa.js";
-import { estadoDeLinea, filasDeLinea, tramosVisibles } from "./diagrama.js";
+import { estadoDeLinea, estadoDelTranvia, filasDeLinea, filasDelTranvia, tramosVisibles, tusEstaciones } from "./diagrama.js";
 import { minutosAlProximo } from "./vehiculos.js";
 import { PAGINA_AIRE, PAGINA_LLUVIA, URL_AIRE, URL_CLIMA, URL_LLUVIA, URL_UV, aireCercano, leerAire, leerClima, leerLluvia, leerUv, leerUvPronostico } from "./aire.js";
 import {
@@ -1274,7 +1274,7 @@ async function pintarPasaPor(nodo, linea, punto = null) {
   const principales = linea.trazados.filter((f) => f.properties.tipo !== "alargue");
   const nombres = new Set(principales.flatMap((f) => paradasDeRecorrido(f, paradasRegistradas).map((p) => p.id)));
   const partes = [
-    diagramaDeLinea(linea, punto),
+    linea.tipo === "tranvia" ? botonIrAlTranvia() : diagramaDeLinea(linea, punto),
     elemento("div", { class: "pasa-por-acciones" }, botonMiLinea(linea), botonVerEnMapa()),
     ...(nombres.size ? [elemento("p", {}, t("paradasEnMapa", { n: nombres.size }))] : []),
   ];
@@ -1473,7 +1473,11 @@ function diagramaDeLinea(linea, punto) {
   pintar();
   // Se mueve solo mientras está en pantalla y la página a la vista; se apaga al quitarlo.
   let visible = false;
-  const observador = "IntersectionObserver" in window ? new IntersectionObserver(([e]) => (visible = e.isIntersecting)) : null;
+  const observador = "IntersectionObserver" in window ? new IntersectionObserver(([e]) => {
+          visible = e.isIntersecting;
+          // Al aparecer (por ejemplo, al abrir la pestaña) se colocan sin esperar al reloj.
+          if (visible) mover(false);
+        }) : null;
   observador?.observe(raiz);
   const reloj = setInterval(() => {
     if (!raiz.isConnected) {
@@ -1488,6 +1492,188 @@ function diagramaDeLinea(linea, punto) {
   const recolocar = () => (raiz.isConnected ? mover(false) : window.removeEventListener("resize", recolocar));
   window.addEventListener("resize", recolocar);
   return raiz;
+}
+
+// ---------- El tranvía, siempre a la vista ----------
+// En la pestaña Buses, estés donde estés: sus estaciones de punta a punta en dos rieles (ida
+// baja, vuelta sube; en el centro cada sentido va por su calle), tu estación de cada sentido
+// con cuánto falta, y los tranvías estimados avanzando.
+let relojTranvia = null;
+// Más lejos que esto de la estación, cuánto falta para el tranvía no te sirve (no llegas a
+// pie): se dice solo cuál es la más cercana.
+const TRANVIA_A_PIE_M = 1500;
+
+function pintarTranvia(punto, mapa) {
+  const caja = $("tranvia");
+  clearInterval(relojTranvia);
+  const trazos = trazadosTranvia(estacionesDelTranvia);
+  const modelo = trazos ? filasDelTranvia(estacionesDelTranvia, trazos) : null;
+  if (!modelo) {
+    caja.hidden = true;
+    caja.replaceChildren();
+    return;
+  }
+  const horario = horarioTranvia(datosTranvia);
+  const velocidadKmH = datosTranvia?.velocidad_kmh;
+  const todas = tusEstaciones(modelo, punto);
+  const cerca = (e) => (e && e.distancia <= TRANVIA_A_PIE_M ? e : null);
+  const tuyas = todas && { ida: cerca(todas.ida), vuelta: cerca(todas.vuelta) };
+  const lejana = todas && !tuyas.ida && !tuyas.vuelta ? [todas.ida, todas.vuelta].filter(Boolean).sort((a, b) => a.distancia - b.distancia)[0] : null;
+  const sentidos = [
+    { clave: "ida", hacia: modelo.ida.hacia, flecha: "▼" },
+    { clave: "vuelta", hacia: modelo.vuelta.hacia, flecha: "▲" },
+  ];
+
+  const tiempos = {};
+  const proximos = elemento(
+    "ul",
+    { class: "tranvia-proximos" },
+    ...sentidos.map((s) => {
+      const tuya = tuyas?.[s.clave];
+      tiempos[s.clave] = elemento("strong", {});
+      return elemento(
+        "li",
+        { class: `tranvia-proximo ${s.clave}` },
+        elemento("span", { class: "tranvia-flecha", "aria-hidden": "true" }, s.flecha),
+        elemento(
+          "span",
+          {},
+          tuya
+            ? t("tranviaDesde", { destino: s.hacia, estacion: modelo.filas[tuya.fila].nombre, distancia: formatoDistancia(tuya.distancia) })
+            : t("sentidoHacia", { destino: s.hacia }),
+          horario && tuya ? " " : null,
+          horario && tuya ? tiempos[s.clave] : null,
+        ),
+      );
+    }),
+  );
+  const estado = elemento("p", { class: "diagrama-estado" });
+  const riel = { ida: elemento("span", { class: "tranvia-riel ida" }), vuelta: elemento("span", { class: "tranvia-riel vuelta" }) };
+  const lista = elemento(
+    "ol",
+    { class: "tranvia-filas", "aria-label": t("tranviaFilasAria", { desde: modelo.filas[0].nombre, hasta: modelo.filas.at(-1).nombre }) },
+    ...modelo.filas.map((f, i) => {
+      const tuIda = tuyas?.ida?.fila === i;
+      const tuVuelta = tuyas?.vuelta?.fila === i;
+      return elemento(
+        "li",
+        { class: `tranvia-fila${tuIda || tuVuelta ? " tu" : ""}${i === 0 || i === modelo.filas.length - 1 ? " punta" : ""}` },
+        elemento("span", { class: `tranvia-punto ida${f.ida ? "" : " sin"}${tuIda ? " tuya" : ""}`, "aria-hidden": "true" }),
+        elemento("span", { class: `tranvia-punto vuelta${f.vuelta ? "" : " sin"}${tuVuelta ? " tuya" : ""}`, "aria-hidden": "true" }),
+        elemento(
+          "span",
+          { class: "diagrama-nombre" },
+          // La flecha, del color de su riel, dice de qué sentido es tu estación.
+          tuIda || tuVuelta
+            ? elemento(
+                "span",
+                { class: "diagrama-tu tranvia-tu" },
+                tuIda ? elemento("span", { class: "tranvia-flecha ida", "aria-hidden": "true" }, "▼") : null,
+                tuVuelta ? elemento("span", { class: "tranvia-flecha vuelta", "aria-hidden": "true" }, "▲") : null,
+                " ",
+                t("tranviaTuEstacion"),
+              )
+            : null,
+          f.nombre,
+          // Para lectores de pantalla: en qué sentido para (los rieles son solo dibujo).
+          f.ida && f.vuelta ? null : elemento("span", { class: "oculto-accesible" }, ` (${t("sentidoHacia", { destino: f.ida ? modelo.ida.hacia : modelo.vuelta.hacia })})`),
+        ),
+      );
+    }),
+  );
+  const carril = elemento("div", { class: "tranvia-carril", "aria-hidden": "true" });
+  const cuerpo = elemento("div", { class: "tranvia-cuerpo" }, riel.ida, riel.vuelta, lista, carril);
+  const verMapa = elemento("button", { type: "button", class: "secundario" }, t("diagramaVerMapa"));
+  verMapa.addEventListener("click", () => {
+    mapa?.mostrarCapa("tranvia");
+    verMapaEnCelular();
+  });
+  const minutos = frecuenciaTranvia(datosTranvia);
+  caja.replaceChildren(
+    ...[
+      elemento("h3", { class: "subtitulo" }, t("subtituloTranvia")),
+      elemento(
+        "p",
+        { class: "detalle tranvia-horario" },
+        minutos && horario ? t("tranviaBloqueHorario", { minutos, inicio: horario.inicio, fin: horario.fin }) : t("tranviaBloqueSinHorario"),
+      ),
+      proximos,
+      lejana ? elemento("p", { class: "diagrama-lejos" }, t("tranviaLejos", { estacion: modelo.filas[lejana.fila].nombre, distancia: formatoDistancia(lejana.distancia) })) : null,
+      estado,
+      cuerpo,
+      elemento("p", { class: "diagrama-nota" }, t("tranviaNota")),
+      elemento("div", { class: "pasa-por-acciones" }, verMapa),
+    ].filter(Boolean),
+  );
+  caja.hidden = false;
+
+  // El centro del punto de una fila en un riel, medido dentro del cuerpo.
+  const centro = (fila, base) => {
+    const p = lista.children[fila]?.querySelector(".tranvia-punto")?.getBoundingClientRect();
+    return p ? p.top + p.height / 2 - base : 0;
+  };
+  const glifo = SVG_GLIFO_TRANVIA;
+  const mover = (animar = true) => {
+    const ahora = estadoDelTranvia(modelo, horario, tuyas, { velocidadKmH });
+    for (const s of sentidos) tiempos[s.clave].textContent = cuandoPasa(ahora.proximos[s.clave]);
+    const total = ahora.ida.length + ahora.vuelta.length;
+    estado.textContent = !horario || !total ? t("tranviasSinServicio") : total === 1 ? t("tranviasEnCaminoUno") : t("tranviasEnCamino", { n: total });
+    if (!caja.isConnected || caja.offsetParent === null) return;
+    const base = cuerpo.getBoundingClientRect().top;
+    const arriba = centro(0, base);
+    const abajo = centro(modelo.filas.length - 1, base);
+    for (const r of Object.values(riel)) {
+      r.style.top = `${arriba}px`;
+      r.style.height = `${Math.max(0, abajo - arriba)}px`;
+    }
+    const antes = new Map([...carril.children].map((el) => [el.dataset.clave, el]));
+    const siguen = new Set();
+    for (const s of sentidos) {
+      for (const v of ahora[s.clave]) {
+        const clave = `${s.clave}-${v.salida}`;
+        siguen.add(clave);
+        const y = centro(v.desde, base) + v.fraccion * (centro(v.hasta, base) - centro(v.desde, base));
+        let el = antes.get(clave);
+        if (!el) {
+          el = elemento("span", { class: `diagrama-bus tranvia-vehiculo ${s.clave}`, "data-clave": clave });
+          el.innerHTML = glifo;
+          carril.append(el);
+        }
+        el.classList.toggle("animado", animar && Boolean(el.dataset.y) && !SIN_MOVIMIENTO);
+        el.style.transform = `translateY(${y.toFixed(1)}px)`;
+        el.dataset.y = y.toFixed(1);
+      }
+    }
+    for (const [clave, el] of antes) if (!siguen.has(clave)) el.remove();
+  };
+  mover(false);
+  requestAnimationFrame(() => mover(false));
+  let visible = false;
+  const observador = "IntersectionObserver" in window ? new IntersectionObserver(([e]) => {
+          visible = e.isIntersecting;
+          // Al aparecer (por ejemplo, al abrir la pestaña) se colocan sin esperar al reloj.
+          if (visible) mover(false);
+        }) : null;
+  observador?.observe(cuerpo);
+  relojTranvia = setInterval(() => {
+    if (!cuerpo.isConnected) {
+      clearInterval(relojTranvia);
+      observador?.disconnect();
+      return;
+    }
+    if (document.hidden || (observador && !visible)) return;
+    mover(true);
+  }, SIN_MOVIMIENTO ? DIAGRAMA_QUIETO_MS : DIAGRAMA_CADA_MS);
+  const recolocar = () => (cuerpo.isConnected ? mover(false) : window.removeEventListener("resize", recolocar));
+  window.addEventListener("resize", recolocar);
+}
+
+/** En la fila del tranvía de la lista: lleva al bloque del tranvía, que ya tiene su diagrama. */
+function botonIrAlTranvia() {
+  if ($("tranvia").hidden) return null;
+  const boton = elemento("button", { type: "button", class: "secundario" }, t("tranviaVerDiagrama"));
+  boton.addEventListener("click", () => $("tranvia").scrollIntoView({ behavior: SIN_MOVIMIENTO ? "auto" : "smooth", block: "start" }));
+  return boton;
 }
 
 /** En el celular, el mapa queda arriba: este botón lleva a ver allí la línea elegida. */
@@ -3080,6 +3266,7 @@ async function iniciar() {
     }
     const cercanasLineas = lineas ? lineasCercanas(punto, lineas, rutas?.rutas ?? []) : null;
     pintarLineas(cercanasLineas, mapa, { punto, transporte, estaciones: estacionesTranvia });
+    pintarTranvia(punto, mapa);
     pintarPasaje(transporte?.tarifas, transporte?.metadata?.revisado);
     const resumen = pintarResumen({ zona, suspensiones, turnos: turnosFarmacias, cercanas: cercanasLineas });
     actualizarFalta();

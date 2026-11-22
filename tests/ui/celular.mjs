@@ -302,6 +302,24 @@ for (const p of PANTALLAS) {
   await espera(1200);
   await revisar(de("línea elegida"));
   await dentro(de("panel de la línea"), ".panel-linea");
+  // El tranvía, siempre a la vista: su bloque con los dos rieles, y el botón de su fila en la
+  // lista lleva hasta él.
+  if (!(await js("return !document.getElementById('tranvia').hidden && document.querySelectorAll('#tranvia .tranvia-fila').length > 10;"))) problemas.push(de("no se ve el bloque del tranvía"));
+  await js("document.getElementById('tranvia').scrollIntoView({ block: 'start' });");
+  await espera(600);
+  if (!(await js("return document.querySelectorAll('#tranvia .tranvia-vehiculo').length > 0 || /no hay/.test(document.querySelector('#tranvia .diagrama-estado').textContent);"))) problemas.push(de("el bloque del tranvía no dibuja sus tranvías"));
+  await revisar(de("bloque del tranvía"));
+  await contrasteDeBotones(de("bloque del tranvía"), "#tranvia button");
+  const irAlTranvia = await js(`const b = [...document.querySelectorAll('#lineas button.linea')].find((x) => x.querySelector('.numero-linea').textContent === 'T');
+    if (!b) return 'sin tranvía en la lista';
+    b.click(); await new Promise((r) => setTimeout(r, 400));
+    const ir = [...b.nextElementSibling.querySelectorAll('button')].find((x) => x.textContent === ${JSON.stringify("Ver el diagrama del tranvía")});
+    if (!ir) return 'falta el botón';
+    scrollTo(0, 0); ir.click(); await new Promise((r) => setTimeout(r, 1500));
+    const top = document.getElementById('tranvia').getBoundingClientRect().top;
+    b.click();
+    return top > -2 && top < 250 ? 'ok' : 'el bloque quedó en ' + Math.round(top) + ' px';`);
+  if (irAlTranvia !== "ok") problemas.push(de(`"Ver el diagrama del tranvía": ${irAlTranvia}`));
 
   // El mapa ampliado (solo en el celular): la barra con la X y las capas dentro.
   if (p.movil) {

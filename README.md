@@ -127,6 +127,12 @@ desde ella hasta cada parada siguiente. Los buses estimados avanzan sobre el dia
 otro. Las paradas son las del registro municipal (el bus también para en otros puntos); en el tranvía son
 sus estaciones, y tu parada es la más cercana.
 
+El tranvía tiene además su propio bloque en la pestaña Buses, siempre a la vista aunque vivas lejos de la
+vía: sus estaciones de punta a punta en dos rieles, rojo el de ida y dorado el de vuelta (en el centro cada
+sentido va por su calle y para en sus estaciones), tu estación en cada sentido con cuánto falta para el
+próximo, y los tranvías estimados avanzando. Si la estación más cercana queda a más de 1,5 km, solo dice
+cuál es y a qué distancia.
+
 ## Qué más hace
 
 - **Avisarte antes de cada recolección.** Desde la pestaña Basura te suscribes al calendario de tu zona

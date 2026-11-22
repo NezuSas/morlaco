@@ -4,6 +4,7 @@
 // Sin DOM ni red: aquí solo se calcula qué va en cada fila.
 
 import { paradasDeRecorrido } from "./rutas.js";
+import { distanciaMetros } from "./logica.js";
 import { VELOCIDAD_KMH, busesEnCamino, lugarEnRecorrido, medirRecorrido, minutosAlProximo, minutosDelDia, puntosDeTrazado } from "./vehiculos.js";
 
 // Más lejos que esto del recorrido, el punto no está "en" la línea: no hay tu parada. Es más
@@ -118,4 +119,112 @@ export function tramosVisibles(filas) {
   tramos.push(centro);
   if (centro.hasta < ultimo) tramos.push({ desde: ultimo, hasta: ultimo });
   return tramos;
+}
+
+// ---------- El tranvía, con sus dos sentidos a la vez ----------
+// Dos rieles lado a lado, como en el letrero de una línea de metro: el de ida (hacia Parque
+// Industrial) baja y el de vuelta sube. En los extremos las estaciones son las mismas en los
+// dos sentidos; en el centro cada sentido va por su calle y para en las suyas.
+
+/**
+ * Las filas del diagrama del tranvía, de la punta de inicio de la ida a su final: [{ nombre,
+ * id, ida, vuelta }] (ida/vuelta: si el tranvía para ahí en ese sentido). Por cada sentido,
+ * sus estaciones en orden con los metros por su riel: { fila, metros }. `trazos` son los dos
+ * recorridos ([ida, vuelta], como los da trazadosTranvia); null si falta algo.
+ */
+export function filasDelTranvia(estaciones, trazos) {
+  if (!estaciones?.features?.length || trazos?.length !== 2) return null;
+  const [ida, vuelta] = trazos.map((f) => ({ hacia: f.properties.hacia, medida: medirRecorrido(puntosDeTrazado(f.geometry)) }));
+  if (!(ida.medida.total > 0) || !(vuelta.medida.total > 0)) return null;
+  const sirve = (f, sentido) => Number.isFinite(f.properties.orden?.[sentido.hacia]);
+  const enRiel = (f, sentido) => {
+    const [lon, lat] = f.geometry.coordinates;
+    return lugarEnRecorrido({ lat, lon }, sentido.medida).metros;
+  };
+  // Todas en el orden de la ida: las de la vuelta, por dónde quedan junto a ese riel (en el
+  // centro las calles van paralelas, a una o dos cuadras).
+  const estacionesEnOrden = estaciones.features
+    .filter((f) => sirve(f, ida) || sirve(f, vuelta))
+    .map((f) => ({ f, eje: enRiel(f, ida) }))
+    .sort((a, b) => a.eje - b.eje);
+  // Una estación con un andén por sentido viene dos veces (Río Tarqui): va en una sola fila.
+  const filas = [];
+  const filaDe = [];
+  for (const { f } of estacionesEnOrden) {
+    const anterior = filas.at(-1);
+    if (anterior && anterior.nombre === f.properties.nombre) {
+      anterior.ida ||= sirve(f, ida);
+      anterior.vuelta ||= sirve(f, vuelta);
+    } else {
+      filas.push({
+        nombre: f.properties.nombre,
+        id: f.properties.id,
+        ida: sirve(f, ida),
+        vuelta: sirve(f, vuelta),
+        lat: f.geometry.coordinates[1],
+        lon: f.geometry.coordinates[0],
+      });
+    }
+    filaDe.push(filas.length - 1);
+  }
+  const paradasDe = (sentido) =>
+    estacionesEnOrden
+      .map(({ f }, i) => (sirve(f, sentido) ? { fila: filaDe[i], metros: enRiel(f, sentido) } : null))
+      .filter(Boolean)
+      .sort((a, b) => a.metros - b.metros);
+  return {
+    filas,
+    ida: { hacia: ida.hacia, largo: ida.medida.total, paradas: paradasDe(ida) },
+    vuelta: { hacia: vuelta.hacia, largo: vuelta.medida.total, paradas: paradasDe(vuelta) },
+  };
+}
+
+/** Dónde va un tranvía a `metros` del inicio de su riel: entre qué filas y en qué fracción. */
+export function tramoDelTranvia(metros, paradas) {
+  if (!paradas.length) return null;
+  if (metros <= paradas[0].metros) return { desde: paradas[0].fila, hasta: paradas[0].fila, fraccion: 0 };
+  for (let i = 1; i < paradas.length; i++) {
+    if (metros <= paradas[i].metros) {
+      const [a, b] = [paradas[i - 1], paradas[i]];
+      return { desde: a.fila, hasta: b.fila, fraccion: b.metros > a.metros ? (metros - a.metros) / (b.metros - a.metros) : 0 };
+    }
+  }
+  const ultima = paradas.at(-1);
+  return { desde: ultima.fila, hasta: ultima.fila, fraccion: 0 };
+}
+
+/**
+ * Tu estación en cada sentido: la más cercana al punto de las que sirven ese sentido, con su
+ * fila, la distancia en línea recta y los metros por el riel. null sin punto.
+ */
+export function tusEstaciones(modelo, punto) {
+  if (!punto || !modelo) return null;
+  const de = (sentido, clave) => {
+    let mejor = null;
+    for (const p of modelo[sentido].paradas) {
+      const f = modelo.filas[p.fila];
+      if (!f[clave]) continue;
+      const d = distanciaMetros(punto, f);
+      if (!mejor || d < mejor.distancia) mejor = { fila: p.fila, distancia: d, metros: p.metros };
+    }
+    return mejor;
+  };
+  return { ida: de("ida", "ida"), vuelta: de("vuelta", "vuelta") };
+}
+
+/**
+ * Lo que cambia con la hora: los tranvías de cada sentido ({ salida, desde, hasta, fraccion })
+ * y cuánto falta para el próximo en tu estación de cada sentido.
+ */
+export function estadoDelTranvia(modelo, horario, tuyas, { fecha = new Date(), velocidadKmH = VELOCIDAD_KMH } = {}) {
+  const ahora = minutosDelDia(fecha);
+  const sentido = (clave) => {
+    const { largo, paradas } = modelo[clave];
+    return busesEnCamino(horario, largo, fecha, velocidadKmH).map((metros) => ({
+      salida: Math.round(ahora - (metros / 1000 / velocidadKmH) * 60),
+      ...tramoDelTranvia(metros, paradas),
+    }));
+  };
+  const proximo = (clave) => (tuyas?.[clave] ? minutosAlProximo(horario, modelo[clave].largo, tuyas[clave].metros, fecha, velocidadKmH) : null);
+  return { ida: sentido("ida"), vuelta: sentido("vuelta"), proximos: { ida: proximo("ida"), vuelta: proximo("vuelta") } };
 }

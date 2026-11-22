@@ -3056,6 +3056,169 @@ button.diagrama-mas:hover {
   color: var(--tinta-suave);
 }
 
+/* El tranvía, siempre a la vista en Buses: dos rieles, rojo el de ida (baja) y dorado el de
+   vuelta (sube), los colores de la bandera de Cuenca. */
+.tranvia-bloque {
+  --color-bus: var(--tranvia);
+  --columna-tranvia: 1.6rem;
+  margin: 0.5rem 0 1.5rem;
+  font-size: var(--t-0);
+}
+
+.tranvia-horario {
+  margin: 0 0 0.5rem;
+}
+
+.tranvia-proximos {
+  display: grid;
+  gap: 0.3rem;
+  margin: 0 0 0.6rem;
+  padding: 0;
+  list-style: none;
+  font-size: var(--t-1, 1rem);
+}
+
+.tranvia-proximo {
+  display: grid;
+  grid-template-columns: 1.2rem minmax(0, 1fr);
+  align-items: baseline;
+}
+
+.tranvia-flecha {
+  font-size: 0.85em;
+}
+
+.tranvia-proximo.ida .tranvia-flecha,
+.tranvia-flecha.ida {
+  color: var(--tranvia);
+}
+
+.tranvia-proximo.vuelta .tranvia-flecha,
+.tranvia-flecha.vuelta {
+  color: var(--oro-grafico);
+}
+
+.diagrama-tu.tranvia-tu {
+  color: var(--tinta);
+}
+
+.tranvia-cuerpo {
+  position: relative;
+}
+
+.tranvia-riel {
+  position: absolute;
+  top: 0;
+  width: 4px;
+  border-radius: 2px;
+}
+
+.tranvia-riel.ida {
+  left: calc(var(--columna-tranvia) / 2 - 2px);
+  background: var(--tranvia);
+}
+
+.tranvia-riel.vuelta {
+  left: calc(var(--columna-tranvia) * 1.5 - 2px);
+  background: var(--oro-grafico);
+}
+
+.tranvia-filas {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tranvia-fila {
+  display: grid;
+  grid-template-columns: var(--columna-tranvia) var(--columna-tranvia) minmax(0, 1fr);
+  align-items: center;
+  min-height: 2rem;
+  padding: 0.1rem 0;
+}
+
+.tranvia-fila .diagrama-nombre {
+  margin-left: 0.55rem;
+}
+
+.tranvia-fila.tu {
+  min-height: 2.8rem;
+}
+
+.tranvia-fila.punta .diagrama-nombre {
+  font-weight: 700;
+}
+
+.tranvia-punto {
+  position: relative;
+  z-index: 1;
+  justify-self: center;
+  width: 0.8rem;
+  height: 0.8rem;
+  box-sizing: border-box;
+  border: 3px solid var(--tranvia);
+  border-radius: 50%;
+  background: var(--superficie);
+}
+
+.tranvia-punto.vuelta {
+  border-color: var(--oro-grafico);
+}
+
+/* El sentido que no para ahí: el riel sigue, sin punto. */
+.tranvia-punto.sin {
+  visibility: hidden;
+}
+
+.tranvia-fila.punta .tranvia-punto {
+  width: 0.95rem;
+  height: 0.95rem;
+  border-radius: 3px;
+  background: var(--tranvia);
+}
+
+.tranvia-fila.punta .tranvia-punto.vuelta {
+  background: var(--oro-grafico);
+}
+
+.tranvia-punto.tuya {
+  width: 1.1rem;
+  height: 1.1rem;
+  border-width: 0;
+  background: var(--tranvia);
+  box-shadow: 0 0 0 2.5px var(--superficie), 0 0 0 5px var(--tranvia);
+}
+
+.tranvia-punto.vuelta.tuya {
+  background: var(--oro-grafico);
+  box-shadow: 0 0 0 2.5px var(--superficie), 0 0 0 5px var(--oro-grafico);
+}
+
+.tranvia-carril {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.diagrama-bus.tranvia-vehiculo {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: -0.75rem 0 0 -0.75rem;
+  left: calc(var(--columna-tranvia) / 2);
+}
+
+.diagrama-bus.tranvia-vehiculo.vuelta {
+  --color-bus: var(--oro-grafico);
+  left: calc(var(--columna-tranvia) * 1.5);
+}
+
+.tranvia-vehiculo svg {
+  width: 1rem;
+  height: 1rem;
+}
+
 /* Buses que pasan por una calle, cuando se busca la calle sola. */
 .buses-calle {
   margin-bottom: 2rem;
