@@ -1,7 +1,7 @@
 {
   "agua": {
     "ok": true,
-    "actualizado": "2026-11-23T03:07:59+00:00",
+    "actualizado": "2026-11-23T20:45:00+00:00",
     "archivos": [
       "agua/avisos.json",
       "luz/avisos.json",
@@ -14,7 +14,7 @@
     }
   },
   "buses": {
-    "ok": true,
+    "ok": false,
     "actualizado": "2026-11-19T14:46:39+00:00",
     "archivos": [
       "buses/lineas.geojson",
@@ -38,10 +38,12 @@
         "sin_trazado": [],
         "version": "03e9658dfe36"
       }
-    }
+    },
+    "ultimo_intento": "2026-11-23T20:54:06+00:00",
+    "error": "URLError: <urlopen error [Errno 110] Connection timed out>"
   },
   "calles": {
-    "ok": true,
+    "ok": false,
     "actualizado": "2026-11-16T21:12:45+00:00",
     "archivos": [
       "calles/calles.geojson"
@@ -49,11 +51,13 @@
     "resumen": {
       "calles": 2836,
       "tramos": 6778
-    }
+    },
+    "ultimo_intento": "2026-11-23T20:54:06+00:00",
+    "error": "URLError: <urlopen error [Errno 101] Network is unreachable>"
   },
   "cerca": {
     "ok": true,
-    "actualizado": "2026-11-16T21:14:44+00:00",
+    "actualizado": "2026-11-23T20:45:05+00:00",
     "archivos": [
       "ciudad/cerca.geojson"
     ],
@@ -67,7 +71,7 @@
   },
   "farmacias": {
     "ok": true,
-    "actualizado": "2026-11-20T18:57:00+00:00",
+    "actualizado": "2026-11-23T20:44:53+00:00",
     "archivos": [
       "farmacias/turnos.json"
     ],
@@ -79,7 +83,7 @@
   },
   "feriados": {
     "ok": true,
-    "actualizado": "2026-11-19T16:21:37+00:00",
+    "actualizado": "2026-11-23T20:45:06+00:00",
     "archivos": [
       "feriados/avisos.json"
     ],
@@ -89,7 +93,7 @@
   },
   "luz": {
     "ok": true,
-    "actualizado": "2026-11-20T18:56:55+00:00",
+    "actualizado": "2026-11-23T20:37:49+00:00",
     "archivos": [
       "luz/suspensiones.json"
     ],
@@ -103,7 +107,7 @@
     }
   },
   "movilidad": {
-    "ok": true,
+    "ok": false,
     "actualizado": "2026-11-16T21:13:24+00:00",
     "archivos": [
       "movilidad/bicicletas.geojson",
@@ -114,11 +118,13 @@
       "bicicletas": 21,
       "carga": 11,
       "ciclovias": 174
-    }
+    },
+    "ultimo_intento": "2026-11-23T20:54:06+00:00",
+    "error": "URLError: <urlopen error [Errno 101] Network is unreachable>"
   },
   "recoleccion": {
     "ok": true,
-    "actualizado": "2026-11-20T18:56:38+00:00",
+    "actualizado": "2026-11-23T20:37:39+00:00",
     "archivos": [
       "recoleccion/calendarios/zona-1.ics",
       "recoleccion/calendarios/zona-2.ics",
@@ -147,7 +153,7 @@
   },
   "tranvia": {
     "ok": true,
-    "actualizado": "2026-11-20T18:57:01+00:00",
+    "actualizado": "2026-11-23T20:44:57+00:00",
     "archivos": [
       "buses/tranvia.geojson"
     ],

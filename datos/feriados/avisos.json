@@ -4,7 +4,7 @@
     "fuente": "El Mercurio (Cuenca)",
     "pagina": "https://elmercurio.com.ec/",
     "datos": "https://elmercurio.com.ec/wp-json/wp/v2/posts",
-    "desde": "2026-10-20",
+    "desde": "2026-10-24",
     "nota": "Notas cuyo título anuncia un día de descanso, un feriado decretado o un traslado. No cambian la página: una persona las lee y añade el día a datos/manual/feriados.json, o descarta la nota."
   },
   "avisos": [
