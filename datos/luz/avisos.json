@@ -4,8 +4,19 @@
     "fuente": "El Mercurio (Cuenca)",
     "pagina": "https://elmercurio.com.ec/cuenca/",
     "datos": "https://elmercurio.com.ec/wp-json/wp/v2/posts",
-    "desde": "2026-11-02",
+    "desde": "2026-11-03",
     "nota": "Notas cuyo título anuncia cortes de energía que tocan a Cuenca o al Azuay. Sin revisar: la página muestra las que citan a la Centro Sur, con su enlace. La fecha y el horario se leen de la nota automáticamente y pueden faltar."
   },
-  "avisos": []
+  "avisos": [
+    {
+      "publicado": "2026-11-23",
+      "titulo": "Se registran varios cortes de energía en Cuenca la noche de este 23 de noviembre",
+      "enlace": "https://elmercurio.com.ec/cuenca/2026/11/23/cortes-energia-noviembre-cuenca-quito/",
+      "resumen": "Cerca de las 21:00 de este 23 de noviembre se registraron cortes de energía en varias ciudades del país, entre ellas Cuenca, Quito e Ibarra. De acuerdo a distintos reportes que recibió El Mercurio, en el caso de Cuenca, el Centro Histórico, Misicata, El Cebollar no tuvieron luz. No obstante, pasadas las 21:30, el servicio…",
+      "menciona_centrosur": false,
+      "fecha": "2026-11-23",
+      "desde": null,
+      "hasta": null
+    }
+  ]
 }
