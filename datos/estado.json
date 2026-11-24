@@ -1,7 +1,7 @@
 {
   "agua": {
     "ok": true,
-    "actualizado": "2026-11-24T06:24:52+00:00",
+    "actualizado": "2026-11-24T19:32:09+00:00",
     "archivos": [
       "agua/avisos.json",
       "luz/avisos.json",
@@ -10,7 +10,7 @@
     "resumen": {
       "avisos": 1,
       "cierres_movilidad": 3,
-      "avisos_luz": 1
+      "avisos_luz": 2
     }
   },
   "buses": {
@@ -71,7 +71,7 @@
   },
   "farmacias": {
     "ok": true,
-    "actualizado": "2026-11-23T20:44:53+00:00",
+    "actualizado": "2026-11-24T19:31:00+00:00",
     "archivos": [
       "farmacias/turnos.json"
     ],
@@ -93,7 +93,7 @@
   },
   "luz": {
     "ok": true,
-    "actualizado": "2026-11-23T20:37:49+00:00",
+    "actualizado": "2026-11-24T19:30:55+00:00",
     "archivos": [
       "luz/suspensiones.json"
     ],
@@ -124,7 +124,7 @@
   },
   "recoleccion": {
     "ok": true,
-    "actualizado": "2026-11-23T20:37:39+00:00",
+    "actualizado": "2026-11-24T19:30:33+00:00",
     "archivos": [
       "recoleccion/calendarios/zona-1.ics",
       "recoleccion/calendarios/zona-2.ics",
@@ -153,12 +153,14 @@
   },
   "tranvia": {
     "ok": true,
-    "actualizado": "2026-11-23T20:44:57+00:00",
+    "actualizado": "2026-11-24T19:32:03+00:00",
     "archivos": [
+      "buses/tranvia-recorrido.geojson",
       "buses/tranvia.geojson"
     ],
     "resumen": {
-      "estaciones": 28
+      "estaciones": 28,
+      "recorrido_km": 19.897
     }
   }
 }
