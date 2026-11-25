@@ -9,6 +9,16 @@
   },
   "avisos": [
     {
+      "publicado": "2026-11-25",
+      "titulo": "Apagón expone el déficit eléctrico de Ecuador y la situación crítica de Mazar",
+      "enlace": "https://elmercurio.com.ec/nacional/2026/11/25/apagones-ecuador-deficit-electrico-mazar-nivel-noviembre-2026/",
+      "resumen": "La interrupción del suministro eléctrico registrada en varias ciudades del país la noche del lunes 23 de noviembre de 2026, puso en duda la capacidad del sistema nacional para atender la demanda. Aunque el Gobierno atribuyó el episodio a una falla técnica y descartó nuevos racionamientos, el apagón ocurrió en un escenario de restricciones de…",
+      "menciona_centrosur": false,
+      "fecha": "2026-11-26",
+      "desde": null,
+      "hasta": null
+    },
+    {
       "publicado": "2026-11-24",
       "titulo": "CNEL atribuye a El Niño los cortes de energía del lunes en cuatro provincias",
       "enlace": "https://elmercurio.com.ec/nacional/2026/11/24/cortes-energia-ecuador-cuenca-razones-cnel/",
