@@ -4,7 +4,7 @@
     "fuente": "ARCSA, Coordinación Zonal 6",
     "pagina": "https://www.controlsanitario.gob.ec/turnos-de-farmacias/",
     "pdfs": [
-      "https://www.controlsanitario.gob.ec/wp-content/uploads/downloads/2026/10/11.-ARCSA-CZ6-Turno-de-farmacia-AZUAY-NOVIEMBRE-2026.pdf"
+      "https://www.controlsanitario.gob.ec/wp-content/uploads/downloads/2026/11/12.-ARCSA-CZ6-Turno-de-farmacia-AZUAY-DICIEMBRE-2026.pdf"
     ],
     "horario": "Cada turno va de las 06:00 del día de inicio a las 06:00 del día final.",
     "descartadas": 2,
@@ -12,338 +12,476 @@
   },
   "turnos": [
     {
-      "inicio": "2026-10-31",
-      "fin": "2026-11-07",
+      "inicio": "2025-12-26",
+      "fin": "2026-01-02",
       "farmacias": [
         {
-          "nombre": "Farmacias Economax",
-          "direccion": "Vía al Valle Valle Camino del Valle",
-          "telefono": "04222222",
-          "tel": "+5934222222"
-        },
-        {
-          "nombre": "Farmacia Mayrita",
-          "direccion": "Barrial Blanco y el Chorro",
-          "telefono": "967977545",
-          "tel": "+593967977545"
-        },
-        {
-          "nombre": "Farmacias Mia",
-          "direccion": "Av. Hurtado de Mendoza 10-96 y Av. Paseo de los Cañaris",
-          "telefono": "73702200",
-          "tel": "+59373702200"
-        },
-        {
-          "nombre": "Farmacia Popular Unidas 29",
-          "direccion": "Av. Ricardo Durán y 24 de Diciembre",
-          "telefono": "072857540",
-          "tel": "+59372857540"
-        },
-        {
-          "nombre": "Pharmacy's",
-          "direccion": "Av. Remigio Crespo Toral 2-160",
-          "telefono": "043731390",
-          "tel": "+59343731390"
-        },
-        {
-          "nombre": "Hospital Santa Inés",
-          "direccion": "Av. Daniel Córdova 2-67 y Av. Agustin Cueva",
-          "telefono": "2827888",
-          "tel": "+59372827888"
-        },
-        {
-          "nombre": "Farmacia Víctor",
-          "direccion": "Av. de las Américas y Entrada a Misicata",
-          "telefono": "072855259",
-          "tel": "+59372855259"
-        },
-        {
-          "nombre": "Calle Ramírez Raissa Elizabeth",
-          "direccion": "Av. Gil Ramírez Dávalos 2-50 y Sebastián de Benalcazar",
+          "nombre": "Mi Farmacia",
+          "direccion": "Vía a San Bartolomé Bella Unión Vía a San Bartolomé",
           "telefono": null,
           "tel": null
         },
         {
-          "nombre": "Farmasol Sayausí",
-          "direccion": "Av. Ordoñez Lasso y Km 6",
-          "telefono": "2370347",
-          "tel": "+59372370347"
+          "nombre": "Popular Unidas 61",
+          "direccion": "San Sebastián Ordoñez Lasso y Paseo 3 de Noviembre",
+          "telefono": "072858703",
+          "tel": "+59372858703"
         },
         {
-          "nombre": "Farmadent",
-          "direccion": "San Miguel",
-          "telefono": "096325036",
-          "tel": "+59396325036"
+          "nombre": "Farmacia Moises",
+          "direccion": "Barrial Blanco y Paseo Milchichig",
+          "telefono": "4129975",
+          "tel": "+59374129975"
         },
         {
-          "nombre": "Farmacia Farmasur",
-          "direccion": "7 1/2 Panamericana Sur y Calle de las Cometas y Nero",
-          "telefono": "2385618",
-          "tel": "+59372385618"
-        },
-        {
-          "nombre": "Farmacia San Pedro",
-          "direccion": "Tres de Mayo Ordoñez Lasso y Chamburo",
-          "telefono": "4187210",
-          "tel": "+59374187210"
-        }
-      ]
-    },
-    {
-      "inicio": "2026-11-07",
-      "fin": "2026-11-14",
-      "farmacias": [
-        {
-          "nombre": "Farmacia Rey David",
-          "direccion": "Av. Ordoñez Lazo 4-113 y el Huando",
-          "telefono": "4191011",
-          "tel": "+59374191011"
-        },
-        {
-          "nombre": "Soy Formulador",
-          "direccion": "Vega Muñoz 6-72 y Borrero",
-          "telefono": "981137440",
-          "tel": "+593981137440"
-        },
-        {
-          "nombre": "Farmacias Mia",
-          "direccion": "Mariscal Sucre y Hermano Miguel",
-          "telefono": "3702200",
-          "tel": "+59373702200"
-        },
-        {
-          "nombre": "Farmacias Económicas Cuenca el Vergel",
-          "direccion": "Av. el Paraíso 1-92 y Azuay",
+          "nombre": "Farmacias Económicas Cuenca Manuel Agustin",
+          "direccion": "El Vergel Manuel Agustin Landívar L-4 Av. 10 de Agosto",
           "telefono": "022993100",
           "tel": "+59322993100"
         },
         {
-          "nombre": "Farmacia Santa Martha 555",
-          "direccion": "Av. Hurtado de Mendoza 11-73 y Av. Paseo de los Cañaris",
+          "nombre": "Corpdesfa",
+          "direccion": "Carlos Arízaga Vega y Francisco Cisneros Barcenas",
+          "telefono": "2853055",
+          "tel": "+59372853055"
+        },
+        {
+          "nombre": "Farmacia Santa Martha",
+          "direccion": "Av. de las Américas y Av. Remigio Crespo",
+          "telefono": "2255080",
+          "tel": "+59372255080"
+        },
+        {
+          "nombre": "Botica Marianita de Jesús",
+          "direccion": "Juan Pio Montufar y Manuel Quiroga",
+          "telefono": null,
+          "tel": null
+        },
+        {
+          "nombre": "Farmafrank",
+          "direccion": "Octavio Díaz 1-09 y General Eloy Alfaro",
+          "telefono": "999061282",
+          "tel": "+593999061282"
+        },
+        {
+          "nombre": "Farmacias Popular Unidas 17",
+          "direccion": "Hermano Miguel y Gran Colombia",
+          "telefono": "072858703",
+          "tel": "+59372858703"
+        },
+        {
+          "nombre": "Medipharma",
+          "direccion": "Vía al Valle y Entrada a Castilla Cruz",
+          "telefono": "1111111",
+          "tel": "+59371111111"
+        },
+        {
+          "nombre": "Farmacia Suiza",
+          "direccion": "Av. Pichincha y Sucre",
+          "telefono": "990292013",
+          "tel": "+593990292013"
+        },
+        {
+          "nombre": "Farmacia Ximena",
+          "direccion": "Panamericana Sur y Entreda a Punta Corral",
+          "telefono": "980105444",
+          "tel": "+593980105444"
+        },
+        {
+          "nombre": "Farmacias Mia",
+          "direccion": "Carlos Mariategui y Ruben Dario",
+          "telefono": "73702200",
+          "tel": "+59373702200"
+        },
+        {
+          "nombre": "Pharma Health",
+          "direccion": "Ricardo Durán y Vicente Melo",
+          "telefono": "993532291",
+          "tel": "+593993532291"
+        },
+        {
+          "nombre": "Medi-Carr",
+          "direccion": "Totoracocha Yana Urco Edificio y Antisana",
+          "telefono": null,
+          "tel": null
+        }
+      ]
+    },
+    {
+      "inicio": "2026-11-28",
+      "fin": "2026-12-05",
+      "farmacias": [
+        {
+          "nombre": "Medilyf",
+          "direccion": "Vía a Icto Cruz Ciudadela Santa María del Verg Julio Verne y Johan Moliere",
+          "telefono": "4097680",
+          "tel": "+59374097680"
+        },
+        {
+          "nombre": "Farmacia Superahorro S.a.s.",
+          "direccion": "Totoracocha Yaguarcocha 02-96 y Hurtado de Mendoza",
+          "telefono": null,
+          "tel": null
+        },
+        {
+          "nombre": "Farmasol Monay",
+          "direccion": "Ciudadela: Tomebamba las Primicias y el Zurriago",
+          "telefono": "4199746",
+          "tel": "+59374199746"
+        },
+        {
+          "nombre": "Tu Farmacia",
+          "direccion": "Daniel Durán y Vía a Deleg",
+          "telefono": "098756092",
+          "tel": "+59398756092"
+        },
+        {
+          "nombre": "Farmacia Universal",
+          "direccion": "Simón Bolívar Antonio de Ricaurte y Av. 18 de Noviembre",
+          "telefono": "998009900",
+          "tel": "+593998009900"
+        },
+        {
+          "nombre": "Farmacia Comunitaria Profarma",
+          "direccion": "El Cebollar Abelardo J Andrade y Euclides",
+          "telefono": "074056725",
+          "tel": "+59374056725"
+        },
+        {
+          "nombre": "Farmacias Económicas Cuenca Totoracocha",
+          "direccion": "Av. Hurtado Mendoza y Calle Bulan",
+          "telefono": "2993100",
+          "tel": "+59372993100"
+        },
+        {
+          "nombre": "Farmacia Suiza",
+          "direccion": "Remigio Crespo Toral 8-94 y Cañar 1",
+          "telefono": "994127613",
+          "tel": "+593994127613"
+        },
+        {
+          "nombre": "Farmacias Mia Mric2",
+          "direccion": "25 de Marzo y Juan Estrobel",
+          "telefono": "3702200",
+          "tel": "+59373702200"
+        },
+        {
+          "nombre": "Farmacias Económicas Cuenca Gaspar de Sangurima",
+          "direccion": "Gaspar de Sangurima y Tomás Ordoñez Esquina",
+          "telefono": "022993100",
+          "tel": "+59322993100"
+        },
+        {
+          "nombre": "Farmacia Familyfarma",
+          "direccion": "Pio Bravo 4-65 y Mariano Cueva",
+          "telefono": "4115465",
+          "tel": "+59374115465"
+        },
+        {
+          "nombre": "Naturequimic Farmacia",
+          "direccion": "Av. de las Américas 1031 Luis Cordero y Miguel Cordero",
+          "telefono": "07824681",
+          "tel": "+5937824681"
+        },
+        {
+          "nombre": "Popular Unidas 59",
+          "direccion": "Control Sur Panamericana Sur",
+          "telefono": "072858703",
+          "tel": "+59372858703"
+        },
+        {
+          "nombre": "Farmacia Quinde",
+          "direccion": "La Inmaculada Emilio Lopez Ortega 3 Abelardo J Andrade",
+          "telefono": "979424151",
+          "tel": "+593979424151"
+        },
+        {
+          "nombre": "Farmasol San Alfonso II",
+          "direccion": "Pte. Antonio Borrero y Gran Colombia Esquina",
+          "telefono": "2813059",
+          "tel": "+59372813059"
+        }
+      ]
+    },
+    {
+      "inicio": "2026-12-05",
+      "fin": "2026-12-12",
+      "farmacias": [
+        {
+          "nombre": "Farmacias Popular Unidas 34",
+          "direccion": "Antonio Ramírez y Av. Diez de Agosto",
+          "telefono": "072858703",
+          "tel": "+59372858703"
+        },
+        {
+          "nombre": "Farmacia Superahorro S.a.s.",
+          "direccion": "Plaza del Arte Gaspar Sangurima 17-100 y Octavio Cordero",
+          "telefono": null,
+          "tel": null
+        },
+        {
+          "nombre": "Santa Martha 681",
+          "direccion": "Adolfo Torres y Francisco Carrasco",
           "telefono": "052627852",
           "tel": "+59352627852"
         },
         {
-          "nombre": "Farmacia Cevallos",
-          "direccion": "Vía a San Fermín 5 1/2 San Juan a Cuarta Transversal Puerto Azul C1 Alianza y Av. Real Audiencia",
-          "telefono": null,
-          "tel": null
-        },
-        {
-          "nombre": "Farmacia Healthy",
-          "direccion": "Bella Unión",
-          "telefono": null,
-          "tel": null
-        },
-        {
-          "nombre": "Farmacia Famedic",
-          "direccion": "La Unión Quebrada de Turi",
-          "telefono": "2370587",
-          "tel": "+59372370587"
-        },
-        {
-          "nombre": "Farmacias Mia",
-          "direccion": "Vía Principal Paucarbamba y los Alisos",
-          "telefono": "3702200",
-          "tel": "+59373702200"
-        },
-        {
-          "nombre": "Farmacia Santa Inés 2",
-          "direccion": "Presidente Córdova 9-77 y Padre Aguirre",
-          "telefono": "2837497",
-          "tel": "+59372837497"
-        },
-        {
-          "nombre": "Farmacia Sysfarma",
-          "direccion": "San Joaquín 1 y San Joaquín",
-          "telefono": "998836892",
-          "tel": "+593998836892"
-        },
-        {
-          "nombre": "Farmacias Mia",
-          "direccion": "Tarqui y Calle Larga",
-          "telefono": "3702200",
-          "tel": "+59373702200"
-        },
-        {
-          "nombre": "Farmacia Farma7",
-          "direccion": "Víctor Figueroa y Antonino Castro",
-          "telefono": "072878023",
-          "tel": "+59372878023"
-        },
-        {
-          "nombre": "Farmacia Popular Unidas 64",
-          "direccion": "Pumapungo y Paseo de los Cañaris",
+          "nombre": "Popular Unidas 78",
+          "direccion": "Camino a Racar",
           "telefono": "072858703",
           "tel": "+59372858703"
-        }
-      ]
-    },
-    {
-      "inicio": "2026-11-14",
-      "fin": "2026-11-21",
-      "farmacias": [
-        {
-          "nombre": "Buena Esperanza",
-          "direccion": "Av. Hurtado de Mendoza L-32 Antisana",
-          "telefono": "072862792",
-          "tel": "+59372862792"
         },
         {
-          "nombre": "Cruz Azul 24 de Mayo",
-          "direccion": "Av. Abelardo J Andrade y Av. del Chofer",
-          "telefono": "4081739",
-          "tel": "+59374081739"
+          "nombre": "Farmacias Cruz Azul",
+          "direccion": "Tomás Ordoñez y Av. Héroes de Verdeloma",
+          "telefono": "4205003",
+          "tel": "+59374205003"
         },
         {
-          "nombre": "Farmacenter",
-          "direccion": "La Merced y Curiquinge",
-          "telefono": "996428652",
-          "tel": "+593996428652"
+          "nombre": "Corpdesfa",
+          "direccion": "General Córdova 1-15 y Av. de las Américas",
+          "telefono": "2867252",
+          "tel": "+59372867252"
         },
         {
-          "nombre": "Fybeca Tres Puentes",
-          "direccion": "Av. Primero de Mayo 2-87 y Pasaje Primero de Mayo",
-          "telefono": "042446520",
-          "tel": "+59342446520"
+          "nombre": "Pharmacy's",
+          "direccion": "Miguel Cordero 6-50 y Av. Solano",
+          "telefono": "043731390",
+          "tel": "+59343731390"
         },
         {
-          "nombre": "Farmacia Monte Sión",
-          "direccion": "Av. Don Bosco 2-58 y Domingo Savio",
-          "telefono": "072812332",
-          "tel": "+59372812332"
+          "nombre": "Farmacia Popular Unidas 28",
+          "direccion": "Turuhaico y Enrique Espin",
+          "telefono": "072858703",
+          "tel": "+59372858703"
         },
         {
-          "nombre": "Lufarm",
-          "direccion": "Vía a San Miguel del Bicentenario y Eloy Monje",
+          "nombre": "Farmacia Farmalife",
+          "direccion": "Puerto de Palos y Francisco de Orellana",
+          "telefono": "096796338",
+          "tel": "+59396796338"
+        },
+        {
+          "nombre": "El Descuento San Vicente",
+          "direccion": "Camino a Mayancela 1 y",
           "telefono": null,
           "tel": null
         },
         {
-          "nombre": "Ca Miguel Cordero Dávila",
-          "direccion": "Miguel Cordero Dávila Work Center 1 y Paucarbamba",
-          "telefono": "4103162",
-          "tel": "+59374103162"
+          "nombre": "Sufarmacia San Andrés",
+          "direccion": "Ricardo Muñoz Dávila y Luis Cordero Dávila",
+          "telefono": "994059397",
+          "tel": "+593994059397"
         },
         {
-          "nombre": "Sanasana Gil Ramírez Dávalos",
-          "direccion": "Panamericana Norte 108 Batallón Rifles",
-          "telefono": "042446520",
-          "tel": "+59342446520"
-        },
-        {
-          "nombre": "Dermoskincare SAS",
-          "direccion": "Avenida 12 de Abril Local 4 Unidad Nacional",
+          "nombre": "Farmalianza",
+          "direccion": "José Alvear Laboratorio Biomolecular y Tadeo Torres",
           "telefono": null,
           "tel": null
         },
         {
-          "nombre": "Farmacia Cruz Azul Turuhuayco",
-          "direccion": "Mirafloes Av. Américas y Av. Turuhuayco",
-          "telefono": "4092860",
-          "tel": "+59374092860"
-        },
-        {
-          "nombre": "Farmacia",
-          "direccion": "Sin Nombre y Subida las Pencas",
-          "telefono": "074036714",
-          "tel": "+59374036714"
-        },
-        {
-          "nombre": "In The Zone",
-          "direccion": "Barrial Blanco 15-178 y Julio Jaramillo",
+          "nombre": "Farmacia Lafarma",
+          "direccion": "Daniel Fernandez de Córdova y Víctor Tinoco Chacon",
           "telefono": null,
           "tel": null
         },
         {
-          "nombre": "Farmacia la Rebaja",
-          "direccion": "De los Chasquis y Cojimies",
+          "nombre": "Farmacia Don Víctor",
+          "direccion": "El Carmen y Interseccion:",
+          "telefono": "996231366",
+          "tel": "+593996231366"
+        },
+        {
+          "nombre": "Cvs Pharmacy",
+          "direccion": "El Valle los Cipreces",
           "telefono": null,
           "tel": null
         }
       ]
     },
     {
-      "inicio": "2026-11-21",
-      "fin": "2026-11-28",
+      "inicio": "2026-12-12",
+      "fin": "2026-12-19",
       "farmacias": [
         {
-          "nombre": "Totalcare",
-          "direccion": "Las Malvinas y Calle Sin Nombre",
-          "telefono": null,
-          "tel": null
+          "nombre": "Pharma Make",
+          "direccion": "Centro Eloy Riera Plaza Central Esquina",
+          "telefono": "072897345",
+          "tel": "+59372897345"
         },
         {
-          "nombre": "Biofarma",
-          "direccion": "Vía a Octavio Cordero y la y Hacia Ochoa León",
-          "telefono": "2365008",
-          "tel": "+59372365008"
+          "nombre": "Aguirre Lojano Mónica Carolina",
+          "direccion": "Misicata 1 de Septiembre y Ciudad de Cuenca",
+          "telefono": "074195104",
+          "tel": "+59374195104"
         },
         {
-          "nombre": "Farmacia Suiza",
-          "direccion": "Miguel Cordero Dávila y Alberto Palacios",
-          "telefono": "991047430",
-          "tel": "+593991047430"
+          "nombre": "Farmacias Medicity Cuenca Challuabamba",
+          "direccion": "Sector Challuabamba Cultura Jama Coaque y Av. del Bombero",
+          "telefono": "992862748",
+          "tel": "+593992862748"
         },
         {
-          "nombre": "Farmasol Don Bosco",
-          "direccion": "Av. Don Bosco 3-65 y Juan de Sama",
-          "telefono": "2888759",
-          "tel": "+59372888759"
+          "nombre": "Farmacias Económicas Cuenca Ricaurte",
+          "direccion": "Antonio Ricaurte y Benigno Vásquez",
+          "telefono": "2993100",
+          "tel": "+59372993100"
         },
         {
-          "nombre": "Farmacias Popular Unidas 37",
-          "direccion": "10 de Agosto y Francisco Moscoso",
+          "nombre": "Farmacia Medicnatural 1",
+          "direccion": "Antonio de Ricaurte",
+          "telefono": "072862971",
+          "tel": "+59372862971"
+        },
+        {
+          "nombre": "Farmacia Santa Martha",
+          "direccion": "Hermano Miguel 11-46 y Mariscar Lamar",
+          "telefono": "2255080",
+          "tel": "+59372255080"
+        },
+        {
+          "nombre": "Farmacia Popular Unidas Nñ 23",
+          "direccion": "Ricardo Durán y José Mejía Lequerica",
           "telefono": "072858703",
           "tel": "+59372858703"
         },
         {
-          "nombre": "Farmacias Económicas Cuenca Calle Larga",
-          "direccion": "Larga 10-81 y Santa Teresita",
-          "telefono": "22993100",
+          "nombre": "Farmacias Económicas Cuenca el Valle",
+          "direccion": "Vía al Valle y Calle",
+          "telefono": "022993100",
           "tel": "+59322993100"
         },
         {
-          "nombre": "Popular Unidas 16",
-          "direccion": "Max Uhle y Paseo de los Cañaris",
+          "nombre": "Family Farmacy 2",
+          "direccion": "Av. Hurtado de Mendoza 6-46",
+          "telefono": "969254266",
+          "tel": "+593969254266"
+        },
+        {
+          "nombre": "Farma Vida",
+          "direccion": "Vía a Mayancela y del Retorno",
+          "telefono": "074207652",
+          "tel": "+59374207652"
+        },
+        {
+          "nombre": "Farmacia el Descuento Barrial Blanco",
+          "direccion": "Barrial Blanco y Obispo Ordoñez Crespo",
+          "telefono": "074189178",
+          "tel": "+59374189178"
+        },
+        {
+          "nombre": "Farmacia Reina del Rosario",
+          "direccion": "Camino a Soldados Barabon Chico Camino a Soldados y Av. Enrique Arízaga Toral",
+          "telefono": "096851629",
+          "tel": "+59396851629"
+        },
+        {
+          "nombre": "Hospirio",
+          "direccion": "Av. 24 de Mayo y Av. de las Américas",
+          "telefono": "072459555",
+          "tel": "+59372459555"
+        },
+        {
+          "nombre": "Infinity Farmacia",
+          "direccion": "General Escandón y Víctor Manuel Albornoz",
+          "telefono": null,
+          "tel": null
+        },
+        {
+          "nombre": "Farmasol Centro Historico",
+          "direccion": "Benigno Malo y Sucre",
+          "telefono": "2839479",
+          "tel": "+59372839479"
+        }
+      ]
+    },
+    {
+      "inicio": "2026-12-19",
+      "fin": "2026-12-26",
+      "farmacias": [
+        {
+          "nombre": "Pharmacy's",
+          "direccion": "Av. Fray Vicente Solano L 1 Av. Remigio Crespo",
+          "telefono": "043731390",
+          "tel": "+59343731390"
+        },
+        {
+          "nombre": "Farmacia Popular Unidas 31",
+          "direccion": "El Despacho y Santa Ana",
           "telefono": "072858703",
           "tel": "+59372858703"
         },
         {
-          "nombre": "Farmacia Cuatro Ríos el Verde",
-          "direccion": "Gullanzhapa y Vía Turi Tarqui",
+          "nombre": "Cruz Azul San Joaquín Centro",
+          "direccion": "Av. Carlos Arízaga Vega y Monseñor Leonidas Proaño",
+          "telefono": "074177200",
+          "tel": "+59374177200"
+        },
+        {
+          "nombre": "Botica Molleturo",
+          "direccion": "Parroquia Central Cas Molleturo 1 Molleturo y Calle el Mercado",
+          "telefono": "995368465",
+          "tel": "+593995368465"
+        },
+        {
+          "nombre": "Bio Salud Mi Comunitaria",
+          "direccion": "Turuhuaico y Calle Vieja",
+          "telefono": "4058765",
+          "tel": "+59374058765"
+        },
+        {
+          "nombre": "Farmacia Servifarm",
+          "direccion": "Los Andes y Charruas",
           "telefono": null,
           "tel": null
         },
         {
-          "nombre": "Farmacia Popular Unidas 47",
-          "direccion": "Ciudadela Eucapliptos Federico González Suárez y Benhur",
-          "telefono": "072857540",
-          "tel": "+59372857540"
+          "nombre": "Farmacia Comunitaria Cordero",
+          "direccion": "Cristóbal Colón y Miguel de Cervantes",
+          "telefono": "984975240",
+          "tel": "+593984975240"
         },
         {
-          "nombre": "Farmacia Familiar",
-          "direccion": "Av. del Chofer y Av. Abelardo J. Andrade",
-          "telefono": null,
-          "tel": null
+          "nombre": "Farmacias Medicity Cuenca Luis de León",
+          "direccion": "Quinta Lucrecia Av. Isabel la Católica y Calle Fray Luis de León Esquin",
+          "telefono": "2993100",
+          "tel": "+59372993100"
         },
         {
-          "nombre": "Fybeca Benigno Malo",
-          "direccion": "Benigno Malo S Secundaria",
+          "nombre": "Farmatodo",
+          "direccion": "Aurelio Aguilar Vásquez y Fray Vicente Solano",
+          "telefono": "4175147",
+          "tel": "+59374175147"
+        },
+        {
+          "nombre": "Farmacia Rotary",
+          "direccion": "Av. del Cóndor y los Andes",
+          "telefono": "2901242",
+          "tel": "+59372901242"
+        },
+        {
+          "nombre": "Farmasol Terminal Terrestre",
+          "direccion": "Av. España Terminal Terrestre y Sebastián de Benalcazar",
+          "telefono": "2845502",
+          "tel": "+59372845502"
+        },
+        {
+          "nombre": "Fybeca Vista Linda",
+          "direccion": "Av. 12 de Octubre y Francisco de Quevedo",
           "telefono": "042446520",
           "tel": "+59342446520"
         },
         {
-          "nombre": "Farmasol Eucaliptos",
-          "direccion": "Av. González Suárez y Cumanda",
-          "telefono": "074058228",
-          "tel": "+59374058228"
+          "nombre": "Farmacia Virgen de la Nube",
+          "direccion": "Av. 24 de Mayo 8-144 y Ángel Paredes",
+          "telefono": "4098451",
+          "tel": "+59374098451"
         },
         {
-          "nombre": "Fabbys Pharmacy",
-          "direccion": "Cajabamba 1-41 y Gapal",
-          "telefono": "099661662",
-          "tel": "+59399661662"
+          "nombre": "Farmacia Suiza",
+          "direccion": "Los Andes 2-199 y Av. Hurtado de Mendoza 1",
+          "telefono": "968078776",
+          "tel": "+593968078776"
         }
       ]
     }
