@@ -4,7 +4,7 @@
     "fuente": "El Mercurio (Cuenca)",
     "pagina": "https://elmercurio.com.ec/cuenca/",
     "datos": "https://elmercurio.com.ec/wp-json/wp/v2/posts",
-    "desde": "2026-11-06",
+    "desde": "2026-11-07",
     "nota": "Notas cuyo título anuncia cortes de energía que tocan a Cuenca o al Azuay. Sin revisar: la página muestra las que citan a la Centro Sur, con su enlace. La fecha y el horario se leen de la nota automáticamente y pueden faltar."
   },
   "avisos": [
